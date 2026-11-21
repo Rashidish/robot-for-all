@@ -158,7 +158,7 @@ Each item is one PR. Stop for review where marked ⏸.
 5. ~~Content pipeline + schema validation + sample lesson page + print stylesheet~~ ✅ Done (PR #9)
 6. ~~PWA manifest, icons, service worker, offline page, update notice~~ ✅ Done (hand-written ~100-line service worker instead of Workbox: no dependency, fully auditable)
 7. ~~"Download for offline" for lessons~~ ✅ Done
-8. Security headers, privacy page
+8. ~~Security headers, privacy page~~ ✅ Done. CSP allows only our own files (no inline code, checked in CI)
 9. Playwright e2e (incl. offline and no-third-party checks), Lighthouse CI, size budgets
 10. Deploy to hosting on the domain ⏸ (owner connects the domain and accounts)
 

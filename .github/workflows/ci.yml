@@ -67,6 +67,8 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+      - name: No inline scripts or styles (strict CSP)
+        run: node scripts/check-no-inline.mjs apps/web/dist
       - name: Service worker is valid JavaScript
         run: node --check apps/web/dist/sw.js && grep -c '"/offline/"' apps/web/dist/sw.js
       - name: Page sizes
