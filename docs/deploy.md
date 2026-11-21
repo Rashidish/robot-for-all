@@ -13,27 +13,24 @@ Deployment stays switched off until the two secrets below exist; until then the 
 
 ### 1. Cloudflare account
 1. Sign up at dash.cloudflare.com (free plan) and turn on two-factor authentication.
-2. Note your **Account ID** (shown on the account home page, right-hand side).
+2. Copy your **Account ID**: Account home → the **⋯** menu next to your account name → **Copy account ID**, or Compute → Workers & Pages, right-hand panel.
 
-### 2. Create the Pages project
-1. **Workers & Pages → Create → Pages → Upload assets** ("Direct Upload").
-2. Project name: **`robot-for-all`** (must match exactly).
-3. Upload any small file to finish creating it; the first real deploy replaces it.
+You don't need to create the Pages project: the first deploy creates `robot-for-all` automatically.
 
-### 3. API token for GitHub
-1. **My Profile → API Tokens → Create Token → Create Custom Token**.
-2. Permissions: **Account → Cloudflare Pages → Edit**. Nothing else.
-3. Account resources: your account only. Set an expiry date (e.g. 12 months) and renew it.
-4. Copy the token (shown once).
+### 2. API token for GitHub
+1. Profile icon (top right) → **Profile → API Tokens → Create Token → Create Custom Token → Get started**.
+2. Name: `GitHub deploy`. Permissions: **Account → Cloudflare Pages → Edit**. Nothing else.
+3. Account resources: **Include → your account**. Set an expiry (e.g. 12 months).
+4. **Continue to summary → Create Token**, then copy it (shown once).
 
-### 4. Add the secrets to GitHub
+### 3. Add the secrets to GitHub
 **github.com/Rashidish/robot-for-all → Settings → Secrets and variables → Actions → New repository secret**:
-- `CLOUDFLARE_API_TOKEN`: the token from step 3
+- `CLOUDFLARE_API_TOKEN`: the token from step 2
 - `CLOUDFLARE_ACCOUNT_ID`: the Account ID from step 1
 
-The next merge to `main` publishes the site to `robot-for-all.pages.dev`.
+The next merge to `main` creates the project and publishes the site to `robot-for-all.pages.dev`.
 
-### 5. Your domain
+### 4. Your domain
 1. Register the domain (registrar lock and two-factor on).
 2. In the Pages project: **Custom domains → Set up a custom domain**, e.g. `learn.<your-domain>`. Use **one hostname for everything** (zero-rating, ADR-0002).
 3. Follow Cloudflare's DNS instructions. HTTPS is automatic.
