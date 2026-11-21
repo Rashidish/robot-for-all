@@ -8,7 +8,11 @@ export const PAGES_CACHE = 'rfa-pages';
  * The URLs to save for a lesson: the page itself plus its same-origin resources
  * (styles, scripts, images, templates). Other sites are never fetched or stored.
  */
-export function lessonUrls(pagePath: string, resources: readonly string[], origin: string): string[] {
+export function lessonUrls(
+  pagePath: string,
+  resources: readonly string[],
+  origin: string
+): string[] {
   const urls = new Set<string>([pagePath]);
   for (const resource of resources) {
     if (!resource) continue;

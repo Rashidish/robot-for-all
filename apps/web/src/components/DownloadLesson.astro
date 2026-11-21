@@ -4,8 +4,12 @@ import { m } from '../i18n';
 ---
 
 <div class="download" data-download hidden>
-  <button type="button" class="button" data-download-button>{m.lesson_download()}</button>
-  <p class="hint" data-download-status aria-live="polite">{m.lesson_download_hint()}</p>
+  <button type="button" class="button" data-download-button>
+    {m.lesson_download()}
+  </button>
+  <p class="hint" data-download-status aria-live="polite">
+    {m.lesson_download_hint()}
+  </p>
   <template data-text-saving>{m.lesson_saving()}</template>
   <template data-text-saved>{m.lesson_saved()}</template>
   <template data-text-failed>{m.lesson_save_failed()}</template>
