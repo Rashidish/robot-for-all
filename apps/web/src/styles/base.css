@@ -107,6 +107,11 @@ a {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
   header,
   footer,
   .skip-link,
