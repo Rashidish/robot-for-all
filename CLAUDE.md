@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.1 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.2 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -126,7 +126,10 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /tests               End-to-end tests
 ```
 
-### Lesson content schema (front matter)
+### Lesson content (see ADR-0004)
+One folder per lesson: `index.md` (English source), `index.<lang>.md` for translations, `images/` for pictures.
+
+Front matter is metadata only:
 ```yaml
 id: p1-crank-01
 title: Crank-powered waving rhino
@@ -136,16 +139,16 @@ mechanism: crank         # crank | gear | lever | linkage | ...
 syllabus_links:          # CAPS topic references
   - subject: Natural Sciences and Technology
     topic: Structures / mechanical systems
-primm: { predict: ..., run: ..., investigate: ..., modify: ..., make: ... }
 duration_minutes: 45
 cost_estimate_zar: 15
 parts: [{ item: cardboard A4, qty: 2 }, { item: straw, qty: 3 }]
 templates: [rhino-body.svg]
-languages: [en]          # add codes as translations land
-status: draft            # draft | in_review | published
+status: draft            # draft | in_review | published (published requires reviewed_by)
 ai_generated: true
 reviewed_by: null
 ```
+The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make.
+Languages are worked out from the files present, never typed by hand.
 Teachers and content editors must be able to add a lesson without touching code.
 
 ---
@@ -230,3 +233,4 @@ build:     ...
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-21 | First draft |
+| 0.2 | 2026-11-21 | Lesson content rules aligned with ADR-0004 (PRIMM in body, computed languages) |

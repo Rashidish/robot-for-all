@@ -1,0 +1,45 @@
+name: ADR-001 benchmark
+
+# Builds the two framework prototypes and reports what a phone downloads.
+# Informational only: not a required check. Remove with prototypes/ in M1 step 2.
+on:
+  pull_request:
+    paths:
+      - 'prototypes/**'
+      - 'scripts/measure-build.mjs'
+      - '.github/workflows/adr-001-benchmark.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.proto }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - proto: sveltekit
+            out: build
+          - proto: astro
+            out: dist
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Install
+        working-directory: prototypes/${{ matrix.proto }}
+        run: npm install --no-audit --no-fund
+      - name: Resolved versions
+        working-directory: prototypes/${{ matrix.proto }}
+        run: npm ls --depth=0
+      - name: Build
+        working-directory: prototypes/${{ matrix.proto }}
+        run: npm run build
+      - name: Measure lesson page
+        run: node scripts/measure-build.mjs prototypes/${{ matrix.proto }}/${{ matrix.out }} lessons/p1-crank-01 ${{ matrix.proto }}
+      - name: Measure home page
+        run: node scripts/measure-build.mjs prototypes/${{ matrix.proto }}/${{ matrix.out }} . ${{ matrix.proto }}
