@@ -22,16 +22,16 @@
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test"
   },
   "devDependencies": {
-    "@eslint/js": "latest",
-    "eslint": "latest",
-    "eslint-plugin-astro": "latest",
-    "eslint-plugin-svelte": "latest",
-    "globals": "latest",
-    "prettier": "latest",
-    "prettier-plugin-astro": "latest",
-    "prettier-plugin-svelte": "latest",
-    "typescript": "latest",
-    "typescript-eslint": "latest",
-    "vitest": "latest"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "eslint-plugin-svelte": "^3.24.1",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
+    "prettier-plugin-astro": "^1.1.2",
+    "prettier-plugin-svelte": "^4.2.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "^5.1.1"
   }
 }

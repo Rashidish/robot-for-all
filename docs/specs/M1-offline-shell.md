@@ -152,7 +152,7 @@ CI (GitHub Actions): lint → types → unit → build → e2e → Lighthouse �
 Each item is one PR. Stop for review where marked ⏸.
 
 1. ~~Write ADR-001 to ADR-004 with small prototypes~~ ✅ Done (PR #3)
-2. Monorepo scaffold, TypeScript strict, lint, format, CI skeleton
+2. ~~Monorepo scaffold, TypeScript strict, lint, format, CI skeleton~~ ✅ Done (PR #4)
 3. App shell layout + accessible UI basics (`/packages/ui`)
 4. i18n package, language switcher (hidden while English is the only language), English + pseudo-locale
 5. Content pipeline + schema validation + sample lesson page + print stylesheet

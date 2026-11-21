@@ -9,11 +9,11 @@
     "typecheck": "astro check"
   },
   "dependencies": {
-    "@astrojs/svelte": "latest",
-    "astro": "latest",
-    "svelte": "latest"
+    "@astrojs/svelte": "^9.1.6",
+    "astro": "^7.4.13",
+    "svelte": "^5.59.1"
   },
   "devDependencies": {
-    "@astrojs/check": "latest"
+    "@astrojs/check": "^0.9.12"
   }
 }

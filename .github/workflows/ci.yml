@@ -41,25 +41,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-      - name: Install
-        id: install
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            echo "::warning::No package-lock.json yet. Generating one and auto-formatting; its contents are printed below for committing."
-            npm install --no-audit
-            npx prettier --write . > /dev/null
-            npx eslint . --fix || true
-            git diff > bootstrap-fixes.patch
-            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Print bootstrap files (one-time, until package-lock.json is committed)
-        if: steps.install.outputs.bootstrap == 'true'
-        run: |
-          echo "BOOTSTRAP-BEGIN"
-          tar czf - package-lock.json bootstrap-fixes.patch | base64 -w 2000
-          echo "BOOTSTRAP-END"
+          cache: npm
+      - name: Install (exact versions from package-lock.json)
+        run: npm ci
       - name: Resolved versions
         run: npm ls --depth=0 --workspaces --include-workspace-root
       - name: Dependency audit (high and critical)

@@ -4,7 +4,7 @@
 
 Robot For All is a free, low-data STEM and robotics learning platform. Learners start with cardboard, sticks and one motor, move on to coding micro:bit and ESP boards, then design complete robot projects. Teachers, coaches and parents get ready-made lessons linked to the CAPS syllabus, printable templates and parts lists.
 
-**Status:** M1 (offline shell), in planning. See [`docs/specs/M1-offline-shell.md`](docs/specs/M1-offline-shell.md).
+**Status:** M1 (offline shell), in progress. See [`docs/specs/M1-offline-shell.md`](docs/specs/M1-offline-shell.md).
 
 ## Start here
 
@@ -31,13 +31,13 @@ tests/            End-to-end tests
 
 ## Commands
 
-Filled in once ADR-001 (framework) is approved.
+Needs Node 24 (minimum 22.17).
 
 ```
-install:  TBD
-dev:      TBD
-test:     TBD
-build:    TBD
+npm ci           # install exact versions
+npm run dev      # local site at http://localhost:4321
+npm run check    # format, lint, type-check, unit tests
+npm run build    # static site in apps/web/dist
 ```
 
 ## Licences
