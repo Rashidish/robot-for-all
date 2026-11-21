@@ -1,6 +1,6 @@
 # Spec: M1 — Offline Shell
 
-> **Version:** 0.1 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.2 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line current; log changes at the bottom.
 > **Depends on:** `CLAUDE.md` v0.1 · **Status:** Draft, awaiting approval
 
@@ -23,7 +23,7 @@ M1 has **no accounts, no AI and no database**. It proves the hard non-negotiable
 - Installable PWA (add to home screen) with app icon and splash
 - Offline support via service worker: shell and visited pages work with no connection
 - **One sample lesson** (from `/content/lessons`) rendered from Markdown, to prove the content pipeline and offline caching
-- i18n: English + **isiZulu** (strings marked "needs review"), plus a pseudo-locale for testing
+- i18n plumbing with **English only** at launch, plus a pseudo-locale for testing. Every string still goes through translation keys, so adding a language later is a content change, not a code change
 - "Download for offline" button on the sample lesson
 - Print stylesheet (the lesson prints cleanly on A4)
 - CI: lint, type-check, unit tests, end-to-end tests, Lighthouse, bundle-size check, dependency and secret scanning
@@ -41,8 +41,7 @@ Accounts, progress tracking, template generator, block coding, simulator, AI hel
 **Journey A: first visit (online)**
 1. Thandi opens the link from a WhatsApp message.
 2. The home page loads quickly on mobile data and shows "Robot For All" with a short promise and one sample lesson.
-3. She switches the language to isiZulu; the page changes at once without reloading.
-4. A prompt offers "Add to home screen". She accepts.
+3. A prompt offers "Add to home screen". She accepts.
 
 **Journey B: preparing for class**
 1. She opens the sample lesson and taps "Download for offline".
@@ -68,7 +67,7 @@ Accounts, progress tracking, template generator, block coding, simulator, AI hel
 | FR-4 | "Download for offline" caches a lesson and all its assets; shows progress and success/failure |
 | FR-5 | Offline fallback page for uncached routes, translated |
 | FR-6 | When a new version is deployed, users see a small "Update available — refresh" notice; no silent breakage |
-| FR-7 | Language switcher: English, isiZulu, pseudo-locale (dev only). Choice saved on device. Defaults to device language if supported, else English |
+| FR-7 | Language switcher, shown only when more than one language is available. At launch: English only; pseudo-locale in development builds. Choice saved on device. Defaults to device language if supported, else English |
 | FR-8 | All UI text comes from translation files; build fails if a key is missing in English |
 | FR-9 | Lesson pages are built from `/content/lessons/*.md` with front matter per the CLAUDE.md schema; invalid front matter fails the build |
 | FR-10 | Print stylesheet for lessons (A4, hides navigation) |
@@ -164,7 +163,7 @@ Each item is one PR. Stop for review where marked ⏸.
 1. Write ADR-001 to ADR-004 with small prototypes ⏸
 2. Monorepo scaffold, TypeScript strict, lint, format, CI skeleton
 3. App shell layout + accessible UI basics (`/packages/ui`)
-4. i18n package, language switcher, English + isiZulu + pseudo-locale
+4. i18n package, language switcher (hidden while English is the only language), English + pseudo-locale
 5. Content pipeline + schema validation + sample lesson page + print stylesheet
 6. PWA manifest, icons, service worker, offline page, update notice
 7. "Download for offline" for lessons
@@ -188,7 +187,7 @@ None in M1. Keeping the shell free of third parties and lightweight is what make
 | Risk | Mitigation |
 |---|---|
 | Zero-rating rules unknown | Owner contacts Vodacom early; keep everything self-hosted so we can comply |
-| isiZulu strings inaccurate | Mark "needs review"; recruit a native-speaker reviewer before launch |
+| Translations added later break layouts (longer words) | Pseudo-locale lengthens text by ~40% in testing, so layouts are proven before real translations arrive |
 | Service worker bugs leave users on stale versions | Versioned caches, update notice, kill-switch service worker ready to deploy |
 | Budgets too tight for later features | Budgets apply per page; heavy tools (editor, simulator) load only on their own pages |
 | Free hosting limits change | Static output is portable; any static host works |
@@ -198,7 +197,6 @@ None in M1. Keeping the shell free of third parties and lightweight is what make
 - Register the domain (registrar lock + 2FA)
 - Create GitHub organisation/repo and hosting account; give Claude Code repo access
 - Test on a real low-end Android phone
-- Find an isiZulu reviewer
 - Ask Vodacom about zero-rating requirements
 
 ---
@@ -208,3 +206,4 @@ None in M1. Keeping the shell free of third parties and lightweight is what make
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-21 | First draft |
+| 0.2 | 2026-11-21 | English only at launch; translations added later (ADR-0003) |

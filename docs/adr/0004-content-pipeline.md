@@ -27,7 +27,7 @@ Lessons are the heart of the platform, and most will be AI-drafted in the back o
 Layout:
 ```
 content/lessons/<id>/index.md        English (source)
-content/lessons/<id>/index.zu.md     isiZulu translation (same front matter id)
+content/lessons/<id>/index.<lang>.md Translations, added later (e.g. index.zu.md)
 content/lessons/<id>/images/         Lesson images (source; optimised at build)
 content/projects/<id>/templates/     Printable SVG templates
 ```
