@@ -98,7 +98,7 @@ Accounts, progress tracking, template generator, block coding, simulator, AI hel
 Browser (PWA)
  ├─ Static HTML pages (prebuilt)        ← lessons, home, about, privacy
  ├─ Small JS islands                    ← language switcher, offline download, update notice
- ├─ Service worker (Workbox)            ← precache shell, runtime cache lessons
+ ├─ Service worker (hand-written)       ← precache shell, runtime cache lessons
  └─ Cache Storage + localStorage        ← saved lessons, language choice
         ▲
         │ HTTPS, own domain only
@@ -156,7 +156,7 @@ Each item is one PR. Stop for review where marked ⏸.
 3. ~~App shell layout + accessible UI basics~~ ✅ Done (PR #7). Styles and components live in `apps/web/src` until a second app needs them; then they move to `/packages/ui`
 4. ~~Translations wired through Paraglide JS (English only)~~ ✅ Done (PR #8). The language switcher is built when the second language arrives; the pseudo-locale arrives with the browser tests in step 9, where it is used
 5. ~~Content pipeline + schema validation + sample lesson page + print stylesheet~~ ✅ Done (PR #9)
-6. PWA manifest, icons, service worker, offline page, update notice
+6. ~~PWA manifest, icons, service worker, offline page, update notice~~ ✅ Done (hand-written ~100-line service worker instead of Workbox: no dependency, fully auditable)
 7. "Download for offline" for lessons
 8. Security headers, privacy page
 9. Playwright e2e (incl. offline and no-third-party checks), Lighthouse CI, size budgets

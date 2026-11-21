@@ -67,6 +67,8 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+      - name: Service worker is valid JavaScript
+        run: node --check apps/web/dist/sw.js && grep -c '"/offline/"' apps/web/dist/sw.js
       - name: Page sizes
         run: |
           node scripts/measure-build.mjs apps/web/dist . home

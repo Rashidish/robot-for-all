@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.4 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.5 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -95,7 +95,7 @@ Reuse proven open source before writing our own.
 |---|---|---|
 | Language | TypeScript (strict) | One language front to back |
 | Web app | **Astro + Svelte islands** (ADR-0001) | Zero JS on content pages; Svelte only where interactive |
-| Offline | Service worker (Workbox) + IndexedDB | Offline lessons and progress |
+| Offline | Small hand-written service worker, generated at build (`apps/web/src/sw/`); IndexedDB for progress later | No dependency; every line auditable |
 | Translations | **Paraglide JS 2**; English only at launch (ADR-0003) | Missing strings fail the build; tiny downloads |
 | Lesson content | **Markdown + front matter, Zod-validated** (ADR-0004) | Free, reviewable, offline-friendly |
 | Block coding | Blockly | Industry standard, open source |
@@ -241,3 +241,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.2 | 2026-11-21 | Lesson content rules aligned with ADR-0004 (PRIMM in body, computed languages) |
 | 0.3 | 2026-11-21 | Tech stack updated from accepted ADRs 0001–0004 |
 | 0.4 | 2026-11-21 | Commands filled in (M1 step 2) |
+| 0.5 | 2026-11-22 | Offline: hand-written service worker instead of Workbox (M1 step 6) |

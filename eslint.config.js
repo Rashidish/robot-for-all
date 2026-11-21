@@ -29,5 +29,12 @@ export default tseslint.config(
     languageOptions: {
       globals: { ...globals.browser, ...globals.node }
     }
+  },
+  {
+    // Service worker template: __PRECACHE__ is filled in at build time.
+    files: ['apps/web/src/sw/sw-template.js'],
+    languageOptions: {
+      globals: { ...globals.serviceworker, __PRECACHE__: 'readonly' }
+    }
   }
 );
