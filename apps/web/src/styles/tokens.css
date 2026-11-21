@@ -1,0 +1,47 @@
+/*
+ * Design tokens. Colours are checked against WCAG 2.2 AA by tokens.test.ts.
+ * "Cardboard" palette: warm paper background, cardboard-brown accent.
+ */
+:root {
+  color-scheme: light dark;
+
+  --color-bg: #fffaf2;
+  --color-surface: #ffffff;
+  --color-text: #1f1a14;
+  --color-muted: #5b5048;
+  --color-accent: #8a4b14;
+  --color-on-accent: #ffffff;
+  --color-border: #d9cbb8;
+  --color-focus: #1d5fbf;
+
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --text-base: 1.0625rem; /* 17px: easier to read on small screens */
+  --text-sm: 0.9375rem;
+  --text-lg: 1.25rem;
+  --text-xl: clamp(1.75rem, 6vw, 2.5rem);
+  --leading: 1.6;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius: 0.5rem;
+  --tap: 2.75rem; /* 44px minimum touch target */
+  --content-width: 42rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #17130f;
+    --color-surface: #221c16;
+    --color-text: #f4ede4;
+    --color-muted: #c2b5a6;
+    --color-accent: #f0a85a;
+    --color-on-accent: #17130f;
+    --color-border: #4a3f33;
+    --color-focus: #7fb3ff;
+  }
+}
