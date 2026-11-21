@@ -40,6 +40,10 @@ npm run check    # format, lint, type-check, unit tests
 npm run build    # static site in apps/web/dist
 ```
 
+## Deploying
+
+See [`docs/deploy.md`](docs/deploy.md).
+
 ## Licences
 
 - Code: MIT (see `LICENSE`)

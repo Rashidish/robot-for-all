@@ -4,8 +4,9 @@ import { checkPrimm, isVisible } from './schema';
 
 export type LessonEntry = CollectionEntry<'lessons'>;
 
-/** Production builds set SHOW_DRAFTS=false so only published lessons go live (ADR-0004 rule 4). */
-export const showDrafts = import.meta.env['SHOW_DRAFTS'] !== 'false';
+/** Production builds set SHOW_DRAFTS=false so only published lessons go live (ADR-0004 rule 4).
+ * Read from the build environment (this code only runs at build time, never in the browser). */
+export const showDrafts = process.env['SHOW_DRAFTS'] !== 'false';
 
 export async function getLessons(): Promise<LessonEntry[]> {
   const all = await getCollection('lessons');
