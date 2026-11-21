@@ -47,21 +47,19 @@ jobs:
           if [ -f package-lock.json ]; then
             npm ci
           else
-            echo "::warning::No package-lock.json yet. Generating one and auto-formatting; download the 'bootstrap' artifact and commit it."
+            echo "::warning::No package-lock.json yet. Generating one and auto-formatting; its contents are printed below for committing."
             npm install --no-audit
             npx prettier --write . > /dev/null
             npx eslint . --fix || true
             git diff > bootstrap-fixes.patch
             echo "bootstrap=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Upload bootstrap files
+      - name: Print bootstrap files (one-time, until package-lock.json is committed)
         if: steps.install.outputs.bootstrap == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: bootstrap
-          path: |
-            package-lock.json
-            bootstrap-fixes.patch
+        run: |
+          echo "BOOTSTRAP-BEGIN"
+          tar czf - package-lock.json bootstrap-fixes.patch | base64 -w 2000
+          echo "BOOTSTRAP-END"
       - name: Resolved versions
         run: npm ls --depth=0 --workspaces --include-workspace-root
       - name: Dependency audit (high and critical)
