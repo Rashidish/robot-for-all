@@ -2,6 +2,9 @@ package-lock.json
 **/dist/
 **/.astro/
 coverage/
+playwright-report/
+test-results/
+.lighthouseci/
 apps/web/src/paraglide/
 # Docs and lessons are written by people; don't reformat their prose.
 *.md

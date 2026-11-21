@@ -71,10 +71,25 @@ jobs:
         run: node scripts/check-no-inline.mjs apps/web/dist
       - name: Service worker is valid JavaScript
         run: node --check apps/web/dist/sw.js && grep -c '"/offline/"' apps/web/dist/sw.js
-      - name: Page sizes
+      - name: Page size budgets (fail when exceeded)
         run: |
-          node scripts/measure-build.mjs apps/web/dist . home
-          node scripts/measure-build.mjs apps/web/dist lessons lesson-list
-          node scripts/measure-build.mjs apps/web/dist lessons/p1-crank-01 lesson
+          node scripts/measure-build.mjs apps/web/dist . home 150
+          node scripts/measure-build.mjs apps/web/dist lessons lesson-list 250
+          node scripts/measure-build.mjs apps/web/dist lessons/p1-crank-01 lesson 250
+      - name: Install browser for tests
+        run: npx playwright install --with-deps chromium
+      - name: Browser tests (360 px phone, offline, accessibility)
+        run: npm run e2e
+      - name: Lighthouse (performance and accessibility at least 90)
+        run: npm run lighthouse
+      - name: Save test report and 360 px screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-report
+          path: |
+            playwright-report/
+            test-results/
+            .lighthouseci/
+          retention-days: 14
 
-  # Coming in later M1 steps: Playwright e2e and offline tests, Lighthouse CI, size budgets that fail the build.

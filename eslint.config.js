@@ -12,6 +12,9 @@ export default tseslint.config(
       '**/.astro/**',
       '**/node_modules/**',
       'coverage/**',
+      'playwright-report/**',
+      'test-results/**',
+      '.lighthouseci/**',
       'apps/web/src/paraglide/**'
     ]
   },
