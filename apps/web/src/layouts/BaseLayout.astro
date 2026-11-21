@@ -2,7 +2,7 @@
 import '../styles/base.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { lang, t } from '../i18n';
+import { lang, m } from '../i18n';
 
 interface Props {
   /** Page title; the site name is added after it. Leave out on the home page. */
@@ -10,8 +10,8 @@ interface Props {
   description?: string;
 }
 
-const { title, description = t('app.description') } = Astro.props;
-const fullTitle = title ? `${title} · ${t('app.name')}` : `${t('app.name')}: ${t('app.tagline')}`;
+const { title, description = m.app_description() } = Astro.props;
+const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.app_tagline()}`;
 ---
 
 <!doctype html>
@@ -28,7 +28,7 @@ const fullTitle = title ? `${title} · ${t('app.name')}` : `${t('app.name')}: ${
   </head>
   <body>
     <a class="skip-link" href="#main">
-      {t('skip.link')}
+      {m.skip_link()}
     </a>
     <SiteHeader />
     <main id="main" tabindex="-1">

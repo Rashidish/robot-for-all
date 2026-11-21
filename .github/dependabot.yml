@@ -8,6 +8,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # typescript-eslint 8.x does not support TypeScript 7 yet (see PR #6).
+      - dependency-name: typescript
+        versions: ['>=7']
     groups:
       astro-svelte:
         patterns: ['astro', '@astrojs/*', 'svelte']

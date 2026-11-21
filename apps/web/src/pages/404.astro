@@ -1,14 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { t } from '../i18n';
+import { m } from '../i18n';
 ---
 
-<BaseLayout title={t('notfound.title')}>
-  <h1>{t('notfound.title')}</h1>
-  <p>{t('notfound.body')}</p>
+<BaseLayout title={m.notfound_title()}>
+  <h1>{m.notfound_title()}</h1>
+  <p>{m.notfound_body()}</p>
   <p>
     <a class="button" href="/">
-      {t('notfound.home')}
+      {m.notfound_home()}
     </a>
   </p>
 </BaseLayout>

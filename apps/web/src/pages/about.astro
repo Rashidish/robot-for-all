@@ -1,19 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { t } from '../i18n';
+import { m } from '../i18n';
 ---
 
-<BaseLayout title={t('nav.about')}>
-  <h1>{t('about.title')}</h1>
-  <p>{t('about.mission')}</p>
+<BaseLayout title={m.nav_about()}>
+  <h1>{m.about_title()}</h1>
+  <p>{m.about_mission()}</p>
 
-  <h2>{t('about.how_title')}</h2>
+  <h2>{m.about_how_title()}</h2>
   <ol>
-    <li>{t('about.how_build')}</li>
-    <li>{t('about.how_control')}</li>
-    <li>{t('about.how_integrate')}</li>
+    <li>{m.about_how_build()}</li>
+    <li>{m.about_how_control()}</li>
+    <li>{m.about_how_integrate()}</li>
   </ol>
 
-  <h2>{t('about.who_title')}</h2>
-  <p>{t('about.who_body')}</p>
+  <h2>{m.about_who_title()}</h2>
+  <p>{m.about_who_body()}</p>
 </BaseLayout>

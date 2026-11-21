@@ -11,18 +11,21 @@
     "apps/web"
   ],
   "scripts": {
-    "dev": "npm run dev -w apps/web",
-    "build": "npm run build -w apps/web",
+    "i18n": "paraglide-js compile --project ./project.inlang --outdir ./apps/web/src/paraglide",
+    "dev": "npm run i18n && npm run dev -w apps/web",
+    "build": "npm run i18n && npm run build -w apps/web",
     "preview": "npm run preview -w apps/web",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "npm run typecheck -w apps/web",
-    "test": "vitest run",
+    "typecheck": "npm run i18n && npm run typecheck -w apps/web",
+    "test": "npm run i18n && vitest run",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@inlang/paraglide-js": "latest",
+    "@inlang/plugin-message-format": "latest",
     "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-svelte": "^3.24.1",
