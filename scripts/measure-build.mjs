@@ -27,7 +27,11 @@ const html = readFileSync(pageFile, 'utf8');
 seen.set(pageFile, Buffer.from(html));
 for (const m of html.matchAll(/<(?:script|link)\b[^>]*?(?:src|href)=["']([^"']+)["'][^>]*>/g)) {
   const ref = m[1];
-  if (/^https?:/.test(ref)) { console.error(`THIRD-PARTY REQUEST: ${ref}`); process.exitCode = 1; continue; }
+  if (/^https?:/.test(ref)) {
+    console.error(`THIRD-PARTY REQUEST: ${ref}`);
+    process.exitCode = 1;
+    continue;
+  }
   if (!/\.(js|css)$/.test(ref)) continue;
   add(ref.startsWith('/') ? join(root, ref) : resolve(dirname(pageFile), ref));
 }
@@ -47,10 +51,20 @@ const kb = (n) => (n / 1024).toFixed(1);
 
 let md = `### ${label}: \`${pagePath}\`\n\n| | Files | Raw KB | Gzip KB | Brotli KB |\n|---|---|---|---|---|\n`;
 for (const k of ['html', 'js', 'css']) {
-  const n = [...seen.keys()].filter((f) => (k === 'html' ? f.endsWith('.html') : f.endsWith(`.${k}`))).length;
+  const n = [...seen.keys()].filter((f) =>
+    k === 'html' ? f.endsWith('.html') : f.endsWith(`.${k}`)
+  ).length;
   md += `| ${k.toUpperCase()} | ${n} | ${kb(rows[k][0])} | ${kb(rows[k][1])} | ${kb(rows[k][2])} |\n`;
 }
 md += `| **Total** | ${seen.size} | ${kb(total[0])} | **${kb(total[1])}** | ${kb(total[2])} |\n\n`;
 console.log(md);
-console.log(JSON.stringify({ label, page: pagePath, gzipBytes: total[1], brotliBytes: total[2], jsGzipBytes: rows.js[1] }));
+console.log(
+  JSON.stringify({
+    label,
+    page: pagePath,
+    gzipBytes: total[1],
+    brotliBytes: total[2],
+    jsGzipBytes: rows.js[1]
+  })
+);
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);

@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.3 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.4 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -195,15 +195,18 @@ Teachers and content editors must be able to add a lesson without touching code.
 8. **Update docs** (spec, ADR, this file) in the same PR when behaviour or decisions change.
 9. **Ask, don't guess,** when a requirement is unclear or touches money, children's data or safety.
 
-### Commands (fill in at M1)
+### Commands
+Node 24 (see `.nvmrc`; minimum 22.17). Run from the repo root:
 ```
-install:   ...
-dev:       ...
-test:      ...
-e2e:       ...
-lint:      ...
-build:     ...
+install:   npm ci                 # exact versions from package-lock.json
+dev:       npm run dev            # http://localhost:4321
+check:     npm run check          # format + lint + types + unit tests (what CI runs)
+test:      npm test
+e2e:       (added in M1 step 9)
+lint:      npm run lint           # npm run format to auto-fix formatting
+build:     npm run build          # static site in apps/web/dist
 ```
+Always commit `package-lock.json` changes; CI installs with `npm ci` and fails if it is out of date.
 
 ---
 
@@ -237,3 +240,4 @@ build:     ...
 | 0.1 | 2026-11-21 | First draft |
 | 0.2 | 2026-11-21 | Lesson content rules aligned with ADR-0004 (PRIMM in body, computed languages) |
 | 0.3 | 2026-11-21 | Tech stack updated from accepted ADRs 0001–0004 |
+| 0.4 | 2026-11-21 | Commands filled in (M1 step 2) |
