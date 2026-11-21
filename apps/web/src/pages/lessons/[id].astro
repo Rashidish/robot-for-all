@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import DownloadLesson from '../../components/DownloadLesson.astro';
 import { m } from '../../i18n';
 import { getLessons, type LessonEntry } from '../../lessons/load';
 
@@ -38,6 +39,8 @@ const { Content } = await render(lesson);
     <li>{m.lesson_cost({ amount: data.cost_estimate_zar })}</li>
     <li>{m.lesson_mechanism({ mechanism: data.mechanism })}</li>
   </ul>
+
+  <DownloadLesson />
 
   <section class="parts" aria-labelledby="parts-title">
     <h2 id="parts-title">{m.lesson_parts_title()}</h2>

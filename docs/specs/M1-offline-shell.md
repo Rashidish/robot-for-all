@@ -157,7 +157,7 @@ Each item is one PR. Stop for review where marked ⏸.
 4. ~~Translations wired through Paraglide JS (English only)~~ ✅ Done (PR #8). The language switcher is built when the second language arrives; the pseudo-locale arrives with the browser tests in step 9, where it is used
 5. ~~Content pipeline + schema validation + sample lesson page + print stylesheet~~ ✅ Done (PR #9)
 6. ~~PWA manifest, icons, service worker, offline page, update notice~~ ✅ Done (hand-written ~100-line service worker instead of Workbox: no dependency, fully auditable)
-7. "Download for offline" for lessons
+7. ~~"Download for offline" for lessons~~ ✅ Done
 8. Security headers, privacy page
 9. Playwright e2e (incl. offline and no-third-party checks), Lighthouse CI, size budgets
 10. Deploy to hosting on the domain ⏸ (owner connects the domain and accounts)

@@ -1,0 +1,100 @@
+---
+// "Download for offline" button (FR-4). Hidden unless the browser can store pages offline.
+import { m } from '../i18n';
+---
+
+<div class="download" data-download hidden>
+  <button type="button" class="button" data-download-button>
+    {m.lesson_download()}
+  </button>
+  <p class="hint" data-download-status aria-live="polite">
+    {m.lesson_download_hint()}
+  </p>
+  <template data-text-saving>{m.lesson_saving()}</template>
+  <template data-text-saved>{m.lesson_saved()}</template>
+  <template data-text-failed>{m.lesson_save_failed()}</template>
+</div>
+
+<script>
+  import { lessonUrls, PAGES_CACHE } from '../lessons/offline';
+
+  const box = document.querySelector<HTMLElement>('[data-download]');
+  const button = document.querySelector<HTMLButtonElement>('[data-download-button]');
+  const status = document.querySelector<HTMLElement>('[data-download-status]');
+  const text = (name: string) =>
+    document.querySelector<HTMLTemplateElement>(`[data-text-${name}]`)?.content.textContent ?? '';
+
+  const page = window.location.pathname;
+  const resources = [
+    ...[...document.querySelectorAll<HTMLScriptElement>('script[src]')].map((s) => s.src),
+    ...[...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].map((l) => l.href),
+    ...[...document.querySelectorAll<HTMLImageElement>('img')].map((i) => i.currentSrc || i.src),
+    ...[...document.querySelectorAll<HTMLAnchorElement>('a[href$=".svg"]')].map((a) => a.href)
+  ];
+
+  const showSaved = () => {
+    if (!button || !status) return;
+    button.disabled = true;
+    button.textContent = `✓ ${text('saved')}`;
+    status.textContent = '';
+  };
+
+  if (box && button && status && 'caches' in window && 'serviceWorker' in navigator) {
+    box.hidden = false;
+
+    caches
+      .open(PAGES_CACHE)
+      .then((cache) => cache.match(page))
+      .then((hit) => {
+        if (hit) showSaved();
+      })
+      .catch(() => undefined);
+
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      status.textContent = text('saving');
+      try {
+        const cache = await caches.open(PAGES_CACHE);
+        await cache.addAll(lessonUrls(page, resources, window.location.origin));
+        showSaved();
+      } catch {
+        button.disabled = false;
+        status.textContent = text('failed');
+      }
+    });
+  }
+</script>
+
+<style>
+  .download {
+    margin: var(--space-6) 0;
+  }
+
+  .download[hidden] {
+    display: none;
+  }
+
+  .button {
+    border: 0;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .button:disabled {
+    cursor: default;
+    opacity: 0.85;
+  }
+
+  .hint {
+    margin: var(--space-2) 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  @media print {
+    .download {
+      display: none !important;
+    }
+  }
+</style>
