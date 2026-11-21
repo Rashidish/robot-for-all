@@ -1,4 +1,3 @@
-// @ts-nocheck: template; __PRECACHE__ is replaced at build time.
 /* Robot For All service worker (M1 spec FR-3, FR-5, FR-6).
  * Generated at build time from apps/web/src/sw/sw-template.js; VERSION and PRECACHE are filled in.
  * Rules: same-origin GET only; only successful (200, same-origin) responses are cached;
