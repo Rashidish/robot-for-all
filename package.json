@@ -25,12 +25,12 @@
     "lighthouse": "lhci autorun"
   },
   "devDependencies": {
-    "@axe-core/playwright": "latest",
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
     "@inlang/paraglide-js": "^3.2.2",
     "@inlang/plugin-message-format": "^4.6.0",
-    "@lhci/cli": "latest",
-    "@playwright/test": "latest",
+    "@lhci/cli": "^0.16.1",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^24.0.0",
     "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
