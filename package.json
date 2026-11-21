@@ -24,8 +24,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@inlang/paraglide-js": "latest",
-    "@inlang/plugin-message-format": "latest",
+    "@inlang/paraglide-js": "^3.2.2",
+    "@inlang/plugin-message-format": "^4.6.0",
     "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-svelte": "^3.24.1",
