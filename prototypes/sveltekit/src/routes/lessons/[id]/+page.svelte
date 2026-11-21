@@ -1,5 +1,5 @@
 <script>
-  import LangSwitch from '$lib/LangSwitch.svelte';
+  import LangSwitch from '../../../lib/LangSwitch.svelte';
   let { data } = $props();
 </script>
 

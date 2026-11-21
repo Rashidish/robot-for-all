@@ -1,4 +1,4 @@
-import { loadLesson, lessonIds } from '$lib/lesson.js';
+import { loadLesson, lessonIds } from '../../../lib/lesson.js';
 
 export const entries = () => lessonIds.map((id) => ({ id }));
 

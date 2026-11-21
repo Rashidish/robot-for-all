@@ -1,6 +1,6 @@
 // Measures what a phone downloads for one page of a static build.
 // Usage: node scripts/measure-build.mjs <buildDir> <pagePath> <label>
-// Follows the page's <script src>, <link href> (stylesheet/modulepreload) and static JS imports.
+// Follows <script src>, <link href>, any other same-origin .js/.css referenced in the HTML, and static JS imports.
 import { readFileSync, existsSync, appendFileSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
@@ -31,11 +31,9 @@ for (const m of html.matchAll(/<(?:script|link)\b[^>]*?(?:src|href)=["']([^"']+)
   if (!/\.(js|css)$/.test(ref)) continue;
   add(ref.startsWith('/') ? join(root, ref) : resolve(dirname(pageFile), ref));
 }
-// Inline dynamic imports in HTML (SvelteKit boots with import("/_app/...") inside a <script>)
-for (const m of html.matchAll(/import\(["']([^"']+\.js)["']\)/g)) {
-  const ref = m[1];
-  add(ref.startsWith('/') ? join(root, ref) : resolve(dirname(pageFile), ref));
-}
+// Any other same-origin .js/.css the page points at: inline import("..."), Astro islands
+// (component-url / renderer-url), etc.
+for (const m of html.matchAll(/["'(](\/[^"'()\s]+\.(?:js|css))["')]/g)) add(join(root, m[1]));
 
 const rows = { html: [0, 0, 0], js: [0, 0, 0], css: [0, 0, 0] };
 for (const [file, buf] of seen) {
