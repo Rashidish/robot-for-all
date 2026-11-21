@@ -27,7 +27,9 @@ const fullTitle = title ? `${title} · ${t('app.name')}` : `${t('app.name')}: ${
     <title>{fullTitle}</title>
   </head>
   <body>
-    <a class="skip-link" href="#main">{t('skip.link')}</a>
+    <a class="skip-link" href="#main">
+      {t('skip.link')}
+    </a>
     <SiteHeader />
     <main id="main" tabindex="-1">
       <slot />
