@@ -19,15 +19,15 @@ const { Content } = await render(lesson);
 ---
 
 <BaseLayout title={data.title}>
-  <p class="back"><a href="/lessons/">← {m.lesson_back()}</a></p>
+  <p class="back">
+    <a href="/lessons/">← {m.lesson_back()}</a>
+  </p>
 
-  {
-    data.status !== 'published' && (
-      <p class="draft" role="note">
-        {m.lesson_draft_notice()}
-      </p>
-    )
-  }
+  {data.status !== 'published' && (
+    <p class="draft" role="note">
+      {m.lesson_draft_notice()}
+    </p>
+  )}
 
   <h1>{data.title}</h1>
 
@@ -42,13 +42,11 @@ const { Content } = await render(lesson);
   <section class="parts" aria-labelledby="parts-title">
     <h2 id="parts-title">{m.lesson_parts_title()}</h2>
     <ul>
-      {
-        data.parts.map((part) => (
-          <li>
-            {part.qty} × {part.item}
-          </li>
-        ))
-      }
+      {data.parts.map((part) => (
+        <li>
+          {part.qty} × {part.item}
+        </li>
+      ))}
     </ul>
   </section>
 
@@ -56,20 +54,18 @@ const { Content } = await render(lesson);
     <Content />
   </div>
 
-  {
-    data.syllabus_links.length > 0 && (
-      <section aria-labelledby="syllabus-title">
-        <h2 id="syllabus-title">{m.lesson_syllabus_title()}</h2>
-        <ul>
-          {data.syllabus_links.map((link) => (
-            <li>
-              {link.subject}: {link.topic}
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
+  {data.syllabus_links.length > 0 && (
+    <section aria-labelledby="syllabus-title">
+      <h2 id="syllabus-title">{m.lesson_syllabus_title()}</h2>
+      <ul>
+        {data.syllabus_links.map((link) => (
+          <li>
+            {link.subject}: {link.topic}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 
   <p>
     <button type="button" class="button" data-print hidden>

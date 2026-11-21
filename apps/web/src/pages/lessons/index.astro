@@ -10,11 +10,9 @@ const lessons = await getLessons();
 <BaseLayout title={m.lessons_title()}>
   <h1>{m.lessons_title()}</h1>
   <p>{m.lessons_intro()}</p>
-  {
-    lessons.length === 0 ? (
-      <p class="muted">{m.lessons_empty()}</p>
-    ) : (
-      lessons.map((lesson) => <LessonCard lesson={lesson} />)
-    )
-  }
+  {lessons.length === 0 ? (
+    <p class="muted">{m.lessons_empty()}</p>
+  ) : (
+    lessons.map((lesson) => <LessonCard lesson={lesson} />)
+  )}
 </BaseLayout>

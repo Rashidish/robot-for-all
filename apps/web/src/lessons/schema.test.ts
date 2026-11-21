@@ -30,7 +30,11 @@ describe('lesson front matter', () => {
   });
 
   it('accepts a published lesson with a reviewer', () => {
-    const result = lessonSchema.safeParse({ ...valid, status: 'published', reviewed_by: 'T. Mokoena' });
+    const result = lessonSchema.safeParse({
+      ...valid,
+      status: 'published',
+      reviewed_by: 'T. Mokoena'
+    });
     expect(result.success).toBe(true);
   });
 
