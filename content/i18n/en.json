@@ -1,0 +1,13 @@
+{
+  "app.name": "Robot For All",
+  "app.tagline": "From Cardboard to Innovation",
+  "nav.home": "Home",
+  "nav.about": "About",
+  "nav.privacy": "Privacy",
+  "lesson.download": "Download for offline",
+  "lesson.saved": "Saved for offline",
+  "offline.title": "You're offline",
+  "offline.body": "Saved lessons are still available.",
+  "update.available": "Update available — refresh",
+  "language.label": "Language"
+}

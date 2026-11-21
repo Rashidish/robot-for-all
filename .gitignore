@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.svelte-kit/
+.astro/
+.output/
+coverage/
+playwright-report/
+test-results/
+.lighthouseci/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.claude/settings.local.json

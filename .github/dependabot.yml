@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  # Add npm once package.json exists (M1 step 2).
