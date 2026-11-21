@@ -1,0 +1,18 @@
+# Cloudflare Pages response headers (M1 spec §8). Checked by apps/web/src/security/headers.test.ts.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(), serial=(), bluetooth=(), payment=(), browsing-topics=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+# The service worker must always be checked for updates.
+/sw.js
+  Cache-Control: no-cache
+
+# Build assets have content hashes in their names, so they never change.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
