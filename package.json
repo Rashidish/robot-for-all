@@ -20,12 +20,17 @@
     "format:check": "prettier --check .",
     "typecheck": "npm run i18n && npm run typecheck -w apps/web",
     "test": "npm run i18n && vitest run",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test"
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
+    "e2e": "playwright test",
+    "lighthouse": "lhci autorun"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
     "@inlang/paraglide-js": "^3.2.2",
     "@inlang/plugin-message-format": "^4.6.0",
+    "@lhci/cli": "^0.16.1",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^24.0.0",
     "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",

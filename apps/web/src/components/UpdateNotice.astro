@@ -15,11 +15,15 @@ import { m } from '../i18n';
   if ('serviceWorker' in navigator && import.meta.env.PROD) {
     const notice = document.querySelector<HTMLElement>('[data-update]');
     const button = document.querySelector<HTMLButtonElement>('[data-update-button]');
+    let updating = false;
 
     const offer = (worker: ServiceWorker) => {
       if (!notice || !button) return;
       notice.hidden = false;
-      button.onclick = () => worker.postMessage({ type: 'SKIP_WAITING' });
+      button.onclick = () => {
+        updating = true;
+        worker.postMessage({ type: 'SKIP_WAITING' });
+      };
     };
 
     navigator.serviceWorker.register('/sw.js').then((reg) => {
@@ -33,10 +37,11 @@ import { m } from '../i18n';
       });
     });
 
-    let reloading = false;
+    // Reload only after the learner tapped "Update now". On a first visit the worker also takes
+    // control (controllerchange fires), and reloading then would waste data for nothing.
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (reloading) return;
-      reloading = true;
+      if (!updating) return;
+      updating = false;
       window.location.reload();
     });
   }

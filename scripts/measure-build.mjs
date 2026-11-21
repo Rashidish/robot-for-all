@@ -1,11 +1,12 @@
 // Measures what a phone downloads for one page of a static build.
-// Usage: node scripts/measure-build.mjs <buildDir> <pagePath> <label>
+// Usage: node scripts/measure-build.mjs <buildDir> <pagePath> <label> [budgetKB]
+// With a budget, exits with an error when the page's gzip total is larger (CLAUDE.md §9.6).
 // Follows <script src>, <link href>, any other same-origin .js/.css referenced in the HTML, and static JS imports.
 import { readFileSync, existsSync, appendFileSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 
-const [buildDir, pagePath, label] = process.argv.slice(2);
+const [buildDir, pagePath, label, budget] = process.argv.slice(2);
 const root = resolve(buildDir);
 const pageFile = join(root, pagePath, 'index.html');
 const seen = new Map();
@@ -68,3 +69,12 @@ console.log(
   })
 );
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
+if (budget) {
+  const limit = Number(budget) * 1024;
+  if (total[1] > limit) {
+    console.error(`OVER BUDGET: ${label} is ${kb(total[1])} KB gzip; the limit is ${budget} KB.`);
+    process.exitCode = 1;
+  } else {
+    console.log(`Within budget: ${kb(total[1])} KB of ${budget} KB.`);
+  }
+}

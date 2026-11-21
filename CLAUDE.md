@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.5 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.6 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -202,7 +202,8 @@ install:   npm ci                 # exact versions from package-lock.json
 dev:       npm run dev            # http://localhost:4321
 check:     npm run check          # format + lint + types + unit tests (what CI runs)
 test:      npm test
-e2e:       (added in M1 step 9)
+e2e:       npm run build && npm run e2e   # browser tests on a 360 px phone (first time: npx playwright install chromium)
+lighthouse: npm run lighthouse          # performance/accessibility must be 90+
 lint:      npm run lint           # npm run format to auto-fix formatting
 build:     npm run build          # static site in apps/web/dist
 ```
@@ -242,3 +243,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.3 | 2026-11-21 | Tech stack updated from accepted ADRs 0001–0004 |
 | 0.4 | 2026-11-21 | Commands filled in (M1 step 2) |
 | 0.5 | 2026-11-22 | Offline: hand-written service worker instead of Workbox (M1 step 6) |
+| 0.6 | 2026-11-22 | Browser tests, accessibility checks, Lighthouse and size budgets run in CI (M1 step 9) |
