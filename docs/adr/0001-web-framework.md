@@ -1,6 +1,6 @@
 # ADR-0001: Web framework
 
-- **Status:** Proposed (recommendation: Astro)
+- **Status:** Accepted (2026-11-21)
 - **Date:** 2026-11-21
 - **Decider:** Rashid Ishmail
 
@@ -59,5 +59,5 @@ This reverses the earlier SvelteKit recommendation in CLAUDE.md and the M1 spec.
 - Each heavy tool loads only on its own page, so the editor never slows down a lesson.
 - The teacher/coach/parent portal (M5) is app-like. Build it first as large Svelte islands inside Astro. If that becomes awkward, `apps/admin` or the portal can be a separate SvelteKit app sharing the same Svelte components, with no rewrite of the components themselves.
 - Page-to-page navigation is plain links rather than a client-side router. That's fine for lessons and works better offline. Astro's view transitions can be added later if wanted.
-- CLAUDE.md §5 and the M1 spec are updated to Astro once this ADR is accepted.
+- CLAUDE.md §5 and the M1 spec are updated to Astro (done on acceptance).
 - Revisit if the portal or offline sync in M5 needs more app structure than islands handle well.

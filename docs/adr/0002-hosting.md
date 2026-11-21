@@ -1,6 +1,6 @@
 # ADR-0002: Hosting
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-21)
 - **Date:** 2026-11-21
 - **Decider:** Rashid Ishmail
 

@@ -107,16 +107,7 @@ Static hosting / edge CDN (free tier)
 CI (GitHub Actions): lint → types → unit → build → e2e → Lighthouse → size → deploy
 ```
 
-**Framework decision: ADR-001 (first task).** Choose between:
-- **SvelteKit (static adapter):** small bundles, and it grows well into an app (editor, accounts, portal). *Recommended*, because later milestones are app-heavy.
-- **Astro:** smallest output for content pages, but app features need more glue later.
-
-Claude Code: write ADR-001 comparing these against the §5 targets with a tiny prototype of each, then stop for approval.
-
-**Other decisions to record as ADRs**
-- ADR-002 Hosting (e.g. Cloudflare Pages vs GitHub Pages vs Netlify), weighing free-tier limits, South African edge locations, custom domain and HTTPS
-- ADR-003 i18n library (must support plurals, load per-language files on demand, and fail the build on missing keys)
-- ADR-004 Content pipeline (Markdown + front matter, schema validation e.g. Zod)
+**Decisions (accepted 2026-11-21):** Astro + Svelte islands (ADR-0001), Cloudflare Pages on a single hostname (ADR-0002), Paraglide JS 2 with English only at launch (ADR-0003), Markdown + Zod content pipeline (ADR-0004).
 
 **Repo:** set up the monorepo layout from CLAUDE.md §6. M1 only fills `/apps/web`, `/packages/ui`, `/packages/i18n`, `/content`, `/docs`, `/tests`.
 
@@ -141,7 +132,7 @@ Claude Code: write ADR-001 comparing these against the §5 targets with a tiny p
 
 ## 9. Acceptance criteria (definition of done)
 
-- [ ] ADR-001 to ADR-004 written and approved
+- [x] ADR-001 to ADR-004 written and approved
 - [ ] All FR-1 to FR-12 pass end-to-end tests (Playwright) on a 360 px mobile emulation
 - [ ] Offline test: install, go offline, reopen, sample lesson loads in full; unvisited page shows the translated offline page
 - [ ] Update test: deploy a new version; the update notice appears and refreshing loads it
@@ -160,7 +151,7 @@ Claude Code: write ADR-001 comparing these against the §5 targets with a tiny p
 
 Each item is one PR. Stop for review where marked ⏸.
 
-1. Write ADR-001 to ADR-004 with small prototypes ⏸
+1. ~~Write ADR-001 to ADR-004 with small prototypes~~ ✅ Done (PR #3)
 2. Monorepo scaffold, TypeScript strict, lint, format, CI skeleton
 3. App shell layout + accessible UI basics (`/packages/ui`)
 4. i18n package, language switcher (hidden while English is the only language), English + pseudo-locale

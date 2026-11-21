@@ -1,6 +1,6 @@
 # ADR-0004: Content pipeline
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-21)
 - **Date:** 2026-11-21
 - **Decider:** Rashid Ishmail
 
