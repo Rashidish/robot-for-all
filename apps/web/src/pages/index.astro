@@ -1,20 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { t } from '../i18n';
+import { m } from '../i18n';
 ---
 
 <BaseLayout>
-  <h1>{t('app.tagline')}</h1>
-  <p class="intro">{t('home.intro')}</p>
+  <h1>{m.app_tagline()}</h1>
+  <p class="intro">{m.home_intro()}</p>
   <ul class="points">
-    <li>{t('home.point_free')}</li>
-    <li>{t('home.point_cheap')}</li>
-    <li>{t('home.point_offline')}</li>
+    <li>{m.home_point_free()}</li>
+    <li>{m.home_point_cheap()}</li>
+    <li>{m.home_point_offline()}</li>
   </ul>
-  <p class="muted">{t('home.coming_soon')}</p>
+  <p class="muted">{m.home_coming_soon()}</p>
   <p>
     <a class="button" href="/about/">
-      {t('home.learn_more')}
+      {m.home_learn_more()}
     </a>
   </p>
 </BaseLayout>

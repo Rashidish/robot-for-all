@@ -7,7 +7,13 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/.astro/**', '**/node_modules/**', 'coverage/**']
+    ignores: [
+      '**/dist/**',
+      '**/.astro/**',
+      '**/node_modules/**',
+      'coverage/**',
+      'apps/web/src/paraglide/**'
+    ]
   },
   js.configs.recommended,
   ...tseslint.configs.strict,

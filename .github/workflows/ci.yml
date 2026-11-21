@@ -43,7 +43,15 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: Install (exact versions from package-lock.json)
-        run: npm ci
+        run: |
+          if ! npm ci; then
+            echo "::error::package-lock.json is out of date. A regenerated lockfile is printed below (base64 tar.gz) so it can be committed."
+            npm install --no-audit > /dev/null
+            echo "LOCKFILE-BEGIN"
+            tar czf - package-lock.json | base64 -w 2000
+            echo "LOCKFILE-END"
+            exit 1
+          fi
       - name: Resolved versions
         run: npm ls --depth=0 --workspaces --include-workspace-root
       - name: Dependency audit (high and critical)
