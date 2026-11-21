@@ -3,7 +3,9 @@ import { expect, LESSON, test } from './fixtures';
 test.describe('pages on a 360 px phone', () => {
   test('home page shows the promise and links to lessons', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('From Cardboard to Innovation');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'From Cardboard to Innovation'
+    );
     await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
     await page.getByRole('link', { name: 'See the lessons' }).click();
     await expect(page).toHaveURL(/\/lessons\/$/);

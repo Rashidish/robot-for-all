@@ -38,10 +38,7 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText("You're offline");
   });
 
-  test('Download for offline saves a lesson for use without signal', async ({
-    page,
-    context
-  }) => {
+  test('Download for offline saves a lesson for use without signal', async ({ page, context }) => {
     await page.goto(LESSON);
     await waitForServiceWorker(page);
 

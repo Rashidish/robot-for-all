@@ -92,4 +92,3 @@ jobs:
             test-results/
             .lighthouseci/
           retention-days: 14
-
