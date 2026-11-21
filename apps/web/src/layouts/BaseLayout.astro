@@ -1,0 +1,59 @@
+---
+import '../styles/base.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { lang, t } from '../i18n';
+
+interface Props {
+  /** Page title; the site name is added after it. Leave out on the home page. */
+  title?: string;
+  description?: string;
+}
+
+const { title, description = t('app.description') } = Astro.props;
+const fullTitle = title ? `${title} · ${t('app.name')}` : `${t('app.name')}: ${t('app.tagline')}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#fffaf2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('skip.link')}</a>
+    <SiteHeader />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: var(--space-2);
+    top: -10rem;
+    z-index: 10;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 600;
+  }
+
+  .skip-link:focus {
+    top: var(--space-2);
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

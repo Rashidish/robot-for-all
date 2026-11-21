@@ -153,7 +153,7 @@ Each item is one PR. Stop for review where marked ⏸.
 
 1. ~~Write ADR-001 to ADR-004 with small prototypes~~ ✅ Done (PR #3)
 2. ~~Monorepo scaffold, TypeScript strict, lint, format, CI skeleton~~ ✅ Done (PR #4)
-3. App shell layout + accessible UI basics (`/packages/ui`)
+3. ~~App shell layout + accessible UI basics~~ ✅ Done (PR #5). Styles and components live in `apps/web/src` until a second app needs them; then they move to `/packages/ui`
 4. i18n package, language switcher (hidden while English is the only language), English + pseudo-locale
 5. Content pipeline + schema validation + sample lesson page + print stylesheet
 6. PWA manifest, icons, service worker, offline page, update notice
