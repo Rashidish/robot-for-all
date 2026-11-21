@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.1 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.3 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -87,21 +87,23 @@ Current milestone: **M1**.
 
 ---
 
-## 5. Tech stack (proposed; confirm each with an ADR)
+## 5. Tech stack (decisions recorded in `docs/adr/`)
 
 Reuse proven open source before writing our own.
 
 | Need | Proposed choice | Why |
 |---|---|---|
 | Language | TypeScript (strict) | One language front to back |
-| Web app | Lightweight framework with small bundles (SvelteKit or Astro + islands) | Low data on cheap phones |
+| Web app | **Astro + Svelte islands** (ADR-0001) | Zero JS on content pages; Svelte only where interactive |
 | Offline | Service worker (Workbox) + IndexedDB | Offline lessons and progress |
+| Translations | **Paraglide JS 2**; English only at launch (ADR-0003) | Missing strings fail the build; tiny downloads |
+| Lesson content | **Markdown + front matter, Zod-validated** (ADR-0004) | Free, reviewable, offline-friendly |
 | Block coding | Blockly | Industry standard, open source |
 | micro:bit | MakeCode (self-hosted if needed for zero-rating) + WebUSB flashing | Free, proven, has simulator |
 | Python in browser | Pyodide (lazy-loaded, later milestones only) | No server cost |
 | Simulator | Canvas 2D + small physics lib | 2D before 3D |
 | Database / auth | Postgres (e.g. Supabase) | Free tier, row-level security |
-| Hosting | Static/edge hosting with a free tier | Near-zero running cost |
+| Hosting | **Cloudflare Pages**, one hostname for everything (ADR-0002) | Free unlimited static traffic; zero-rating friendly |
 | AI | Claude API via our own server only | Keys never reach the browser |
 | Offline platform option | Evaluate Kolibri for schools with no internet | Built for this case |
 
@@ -126,7 +128,10 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /tests               End-to-end tests
 ```
 
-### Lesson content schema (front matter)
+### Lesson content (see ADR-0004)
+One folder per lesson: `index.md` (English source), `index.<lang>.md` for translations, `images/` for pictures.
+
+Front matter is metadata only:
 ```yaml
 id: p1-crank-01
 title: Crank-powered waving rhino
@@ -136,16 +141,16 @@ mechanism: crank         # crank | gear | lever | linkage | ...
 syllabus_links:          # CAPS topic references
   - subject: Natural Sciences and Technology
     topic: Structures / mechanical systems
-primm: { predict: ..., run: ..., investigate: ..., modify: ..., make: ... }
 duration_minutes: 45
 cost_estimate_zar: 15
 parts: [{ item: cardboard A4, qty: 2 }, { item: straw, qty: 3 }]
 templates: [rhino-body.svg]
-languages: [en]          # add codes as translations land
-status: draft            # draft | in_review | published
+status: draft            # draft | in_review | published (published requires reviewed_by)
 ai_generated: true
 reviewed_by: null
 ```
+The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make.
+Languages are worked out from the files present, never typed by hand.
 Teachers and content editors must be able to add a lesson without touching code.
 
 ---
@@ -230,3 +235,5 @@ build:     ...
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-21 | First draft |
+| 0.2 | 2026-11-21 | Lesson content rules aligned with ADR-0004 (PRIMM in body, computed languages) |
+| 0.3 | 2026-11-21 | Tech stack updated from accepted ADRs 0001–0004 |

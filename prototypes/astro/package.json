@@ -1,0 +1,14 @@
+{
+  "name": "proto-astro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build"
+  },
+  "devDependencies": {
+    "@astrojs/svelte": "latest",
+    "astro": "latest",
+    "marked": "latest",
+    "svelte": "latest"
+  }
+}

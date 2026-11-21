@@ -15,7 +15,6 @@ parts:
   - { item: wooden skewer, qty: 1 }
   - { item: glue stick or tape, qty: 1 }
 templates: [rhino-body.svg]
-languages: [en]
 status: draft
 ai_generated: true
 reviewed_by: null

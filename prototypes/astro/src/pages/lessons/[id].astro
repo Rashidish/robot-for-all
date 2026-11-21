@@ -1,0 +1,24 @@
+---
+import LangSwitch from '../../lib/LangSwitch.svelte';
+import { loadLesson, lessonIds } from '../../lib/lesson.js';
+
+export function getStaticPaths() {
+  return lessonIds.map((id) => ({ params: { id } }));
+}
+
+const lesson = loadLesson(Astro.params.id);
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{lesson.title} · Robot For All</title>
+  </head>
+  <body>
+    <LangSwitch client:load />
+    <article>
+      <h1>{lesson.title}</h1>
+      <Fragment set:html={lesson.html} />
+    </article>
+  </body>
+</html>
