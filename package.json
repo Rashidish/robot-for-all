@@ -22,7 +22,8 @@
     "test": "npm run i18n && vitest run",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "e2e": "playwright test",
-    "lighthouse": "lhci autorun"
+    "lighthouse": "lhci autorun",
+    "build:production": "SHOW_DRAFTS=false npm run build"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
@@ -41,6 +42,7 @@
     "prettier-plugin-svelte": "^4.2.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.73.0",
-    "vitest": "^5.1.1"
+    "vitest": "^5.1.1",
+    "wrangler": "latest"
   }
 }
