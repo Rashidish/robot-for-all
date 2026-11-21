@@ -1,0 +1,6 @@
+package-lock.json
+**/dist/
+**/.astro/
+coverage/
+# Docs and lessons are written by people; don't reformat their prose.
+*.md

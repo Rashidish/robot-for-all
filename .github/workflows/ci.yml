@@ -13,10 +13,10 @@ jobs:
     name: Secret scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -24,7 +24,7 @@ jobs:
     name: Content checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Translation files are valid JSON
         run: for f in content/i18n/*.json; do python3 -m json.tool "$f" > /dev/null || exit 1; done
       - name: Every lesson has front matter
@@ -33,5 +33,50 @@ jobs:
             head -1 "$f" | grep -q '^---$' || { echo "Missing front matter: $f"; exit 1; }
           done
 
-  # Added in M1 step 2 once the framework is chosen (ADR-001):
-  # lint, type-check, unit tests, build, Playwright e2e, Lighthouse CI, bundle-size budgets.
+  app:
+    name: Lint, types, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - name: Install
+        id: install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "::warning::No package-lock.json yet. Generating one and auto-formatting; download the 'bootstrap' artifact and commit it."
+            npm install --no-audit
+            npx prettier --write . > /dev/null
+            npx eslint . --fix || true
+            git diff > bootstrap-fixes.patch
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Upload bootstrap files
+        if: steps.install.outputs.bootstrap == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap
+          path: |
+            package-lock.json
+            bootstrap-fixes.patch
+      - name: Resolved versions
+        run: npm ls --depth=0 --workspaces --include-workspace-root
+      - name: Dependency audit (high and critical)
+        run: npm audit --audit-level=high
+      - name: Format
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Type-check
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Page size (home)
+        run: node scripts/measure-build.mjs apps/web/dist . web
+
+  # Coming in later M1 steps: Playwright e2e and offline tests, Lighthouse CI, size budgets that fail the build.

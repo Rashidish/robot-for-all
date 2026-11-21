@@ -1,0 +1,19 @@
+{
+  "name": "@robot-for-all/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/svelte": "latest",
+    "astro": "latest",
+    "svelte": "latest"
+  },
+  "devDependencies": {
+    "@astrojs/check": "latest"
+  }
+}

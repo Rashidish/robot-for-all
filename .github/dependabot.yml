@@ -4,4 +4,12 @@ updates:
     directory: /
     schedule:
       interval: weekly
-  # Add npm once package.json exists (M1 step 2).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      astro-svelte:
+        patterns: ['astro', '@astrojs/*', 'svelte']
+      lint-format:
+        patterns: ['eslint*', '@eslint/*', 'typescript-eslint', 'prettier*', 'globals']
