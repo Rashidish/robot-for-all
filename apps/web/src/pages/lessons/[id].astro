@@ -1,0 +1,150 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { m } from '../../i18n';
+import { getLessons, type LessonEntry } from '../../lessons/load';
+
+export async function getStaticPaths() {
+  const lessons = await getLessons();
+  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson } }));
+}
+
+interface Props {
+  lesson: LessonEntry;
+}
+
+const { lesson } = Astro.props;
+const { data } = lesson;
+const { Content } = await render(lesson);
+---
+
+<BaseLayout title={data.title}>
+  <p class="back">
+    <a href="/lessons/">← {m.lesson_back()}</a>
+  </p>
+
+  {data.status !== 'published' && (
+    <p class="draft" role="note">
+      {m.lesson_draft_notice()}
+    </p>
+  )}
+
+  <h1>{data.title}</h1>
+
+  <ul class="facts">
+    <li>{m.lesson_phase({ phase: data.phase })}</li>
+    <li>{m.lesson_grades({ grades: data.grades.join('–') })}</li>
+    <li>{m.lesson_duration({ minutes: data.duration_minutes })}</li>
+    <li>{m.lesson_cost({ amount: data.cost_estimate_zar })}</li>
+    <li>{m.lesson_mechanism({ mechanism: data.mechanism })}</li>
+  </ul>
+
+  <section class="parts" aria-labelledby="parts-title">
+    <h2 id="parts-title">{m.lesson_parts_title()}</h2>
+    <ul>
+      {data.parts.map((part) => (
+        <li>
+          {part.qty} × {part.item}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <div class="lesson-body">
+    <Content />
+  </div>
+
+  {data.syllabus_links.length > 0 && (
+    <section aria-labelledby="syllabus-title">
+      <h2 id="syllabus-title">{m.lesson_syllabus_title()}</h2>
+      <ul>
+        {data.syllabus_links.map((link) => (
+          <li>
+            {link.subject}: {link.topic}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <p>
+    <button type="button" class="button" data-print hidden>
+      {m.lesson_print()}
+    </button>
+  </p>
+</BaseLayout>
+
+<script>
+  // Progressive enhancement: the print button only appears when JavaScript runs.
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-print]')) {
+    button.hidden = false;
+    button.addEventListener('click', () => window.print());
+  }
+</script>
+
+<style>
+  .back {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .draft {
+    padding: var(--space-3) var(--space-4);
+    border-left: 4px solid var(--color-accent);
+    background: var(--color-surface);
+    font-weight: 600;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .facts li {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: var(--text-sm);
+  }
+
+  .parts {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  .parts h2 {
+    margin-top: 0;
+  }
+
+  button.button {
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  @media print {
+    .back,
+    [data-print] {
+      display: none !important;
+    }
+
+    .facts li,
+    .parts {
+      border-color: #999;
+    }
+
+    .lesson-body h2 {
+      break-after: avoid;
+    }
+
+    .parts,
+    .lesson-body p {
+      break-inside: avoid;
+    }
+  }
+</style>

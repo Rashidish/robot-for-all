@@ -11,11 +11,11 @@ import { m } from '../i18n';
     <li>{m.home_point_cheap()}</li>
     <li>{m.home_point_offline()}</li>
   </ul>
-  <p class="muted">{m.home_coming_soon()}</p>
-  <p>
-    <a class="button" href="/about/">
-      {m.home_learn_more()}
+  <p class="actions">
+    <a class="button" href="/lessons/">
+      {m.home_browse()}
     </a>
+    <a href="/about/">{m.home_learn_more()}</a>
   </p>
 </BaseLayout>
 
@@ -30,5 +30,12 @@ import { m } from '../i18n';
 
   .points li {
     margin-bottom: var(--space-2);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
   }
 </style>

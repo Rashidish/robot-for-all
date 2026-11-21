@@ -67,7 +67,10 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
-      - name: Page size (home)
-        run: node scripts/measure-build.mjs apps/web/dist . web
+      - name: Page sizes
+        run: |
+          node scripts/measure-build.mjs apps/web/dist . home
+          node scripts/measure-build.mjs apps/web/dist lessons lesson-list
+          node scripts/measure-build.mjs apps/web/dist lessons/p1-crank-01 lesson
 
   # Coming in later M1 steps: Playwright e2e and offline tests, Lighthouse CI, size budgets that fail the build.

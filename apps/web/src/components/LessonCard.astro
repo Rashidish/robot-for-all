@@ -1,0 +1,53 @@
+---
+import { m } from '../i18n';
+import type { LessonEntry } from '../lessons/load';
+
+interface Props {
+  lesson: LessonEntry;
+}
+
+const { data } = Astro.props.lesson;
+---
+
+<article class="card">
+  <h2>
+    <a href={`/lessons/${data.id}/`}>{data.title}</a>
+  </h2>
+  <p class="meta">
+    {m.lesson_phase({ phase: data.phase })} · {m.lesson_grades({ grades: data.grades.join('–') })} ·
+    {m.lesson_duration({ minutes: data.duration_minutes })}
+  </p>
+  {data.status !== 'published' && <p class="draft">{m.lesson_draft_notice()}</p>}
+</article>
+
+<style>
+  .card {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-2);
+  }
+
+  h2 a {
+    display: inline-block;
+    min-height: var(--tap);
+    padding-top: var(--space-1);
+  }
+
+  .meta,
+  .draft {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .draft {
+    margin-top: var(--space-2);
+    font-weight: 600;
+  }
+</style>
