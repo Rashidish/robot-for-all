@@ -81,7 +81,9 @@ jobs:
       - name: Browser tests (360 px phone, offline, accessibility)
         run: npm run e2e
       - name: Lighthouse (performance and accessibility at least 90)
-        run: npm run lighthouse
+        run: |
+          npm run lighthouse
+          node -e "for (const r of require('./.lighthouseci/manifest.json')) console.log(r.url, Object.entries(r.summary).map(([k, v]) => k + ' ' + Math.round(v * 100)).join(', '))"
       - name: Save test report and 360 px screenshots
         if: always()
         uses: actions/upload-artifact@v4
