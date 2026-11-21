@@ -2,6 +2,7 @@
 import '../styles/base.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import UpdateNotice from '../components/UpdateNotice.astro';
 import { lang, m } from '../i18n';
 
 interface Props {
@@ -24,6 +25,8 @@ const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.
     <meta name="theme-color" content="#fffaf2" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <title>{fullTitle}</title>
   </head>
   <body>
@@ -35,6 +38,7 @@ const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.
       <slot />
     </main>
     <SiteFooter />
+    <UpdateNotice />
   </body>
 </html>
 

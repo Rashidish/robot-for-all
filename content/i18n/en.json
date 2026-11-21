@@ -44,7 +44,9 @@
   "lesson_download": "Download for offline",
   "lesson_saved": "Saved for offline",
   "offline_title": "You're offline",
-  "offline_body": "Saved lessons are still available.",
-  "update_available": "Update available — refresh",
+  "offline_body": "This page isn't saved on this phone yet. Pages you have opened before still work without internet.",
+  "offline_retry": "Try again",
+  "update_available": "A new version of Robot For All is ready.",
+  "update_button": "Update now",
   "language_label": "Language"
 }

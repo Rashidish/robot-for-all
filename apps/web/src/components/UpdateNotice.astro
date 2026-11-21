@@ -1,0 +1,84 @@
+---
+// Registers the service worker and shows "Update now" when a new version is waiting (FR-6).
+// Pages never change under a learner's feet: the new version only takes over when they tap.
+import { m } from '../i18n';
+---
+
+<div class="update" role="status" data-update hidden>
+  <p>{m.update_available()}</p>
+  <button type="button" class="button" data-update-button>
+    {m.update_button()}
+  </button>
+</div>
+
+<script>
+  if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    const notice = document.querySelector<HTMLElement>('[data-update]');
+    const button = document.querySelector<HTMLButtonElement>('[data-update-button]');
+
+    const offer = (worker: ServiceWorker) => {
+      if (!notice || !button) return;
+      notice.hidden = false;
+      button.onclick = () => worker.postMessage({ type: 'SKIP_WAITING' });
+    };
+
+    navigator.serviceWorker.register('/sw.js').then((reg) => {
+      if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const incoming = reg.installing;
+        incoming?.addEventListener('statechange', () => {
+          // Only offer an update if a previous version is in control (not on the first visit).
+          if (incoming.state === 'installed' && navigator.serviceWorker.controller) offer(incoming);
+        });
+      });
+    });
+
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloading) return;
+      reloading = true;
+      window.location.reload();
+    });
+  }
+</script>
+
+<style>
+  .update {
+    position: fixed;
+    inset: auto var(--space-2) var(--space-2) var(--space-2);
+    z-index: 20;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.2);
+  }
+
+  .update[hidden] {
+    display: none;
+  }
+
+  .update p {
+    margin: 0;
+  }
+
+  .update .button {
+    border: 0;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media print {
+    .update {
+      display: none !important;
+    }
+  }
+</style>
