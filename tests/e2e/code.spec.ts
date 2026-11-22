@@ -34,23 +34,48 @@ async function importHeart(page: Page) {
   await page.getByRole('button', { name: 'My programs' }).click();
   await page
     .getByLabel('Open a file')
-    .setInputFiles({ name: 'heart.rfa.json', mimeType: 'application/json', buffer: Buffer.from(heartFile) });
+    .setInputFiles({
+      name: 'heart.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(heartFile)
+    });
 }
 
 test.describe('code editor (M3)', () => {
-  test('opens with MakeCode-style categories and an "on start" and "forever" block', async ({ page }) => {
+  test('opens with MakeCode-style categories and an "on start" and "forever" block', async ({
+    page
+  }) => {
     await openEditor(page);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Code editor');
-    for (const category of ['Basic', 'Input', 'Loops', 'Logic', 'Variables', 'Math', 'Pins', 'Motors']) {
-      await expect(page.locator('.blocklyToolboxCategoryLabel', { hasText: category })).toBeVisible();
+    for (const category of [
+      'Basic',
+      'Input',
+      'Loops',
+      'Logic',
+      'Variables',
+      'Math',
+      'Pins',
+      'Motors'
+    ]) {
+      await expect(
+        page.locator('.blocklyToolboxCategoryLabel', { hasText: category })
+      ).toBeVisible();
     }
-    await expect(page.locator('.blocklyWorkspace .blocklyText', { hasText: 'on start' }).first()).toBeVisible();
-    await expect(page.locator('.blocklyWorkspace .blocklyText', { hasText: 'forever' }).first()).toBeVisible();
+    await expect(
+      page.locator('.blocklyWorkspace .blocklyText', { hasText: 'on start' }).first()
+    ).toBeVisible();
+    await expect(
+      page.locator('.blocklyWorkspace .blocklyText', { hasText: 'forever' }).first()
+    ).toBeVisible();
     await page.locator('.blocklyToolboxCategoryLabel', { hasText: 'Basic' }).click();
-    await expect(page.locator('.blocklyFlyout .blocklyText', { hasText: 'show icon' })).toBeVisible();
+    await expect(
+      page.locator('.blocklyFlyout .blocklyText', { hasText: 'show icon' })
+    ).toBeVisible();
   });
 
-  test('a program file opens, shows its Python, and is still there after a reload', async ({ page }) => {
+  test('a program file opens, shows its Python, and is still there after a reload', async ({
+    page
+  }) => {
     await openEditor(page);
     await importHeart(page);
     await expect(page.getByLabel('Program name')).toHaveValue('Heart test');
@@ -69,7 +94,11 @@ test.describe('code editor (M3)', () => {
     await page.getByRole('button', { name: 'My programs' }).click();
     await page
       .getByLabel('Open a file')
-      .setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{"x":1}') });
+      .setInputFiles({
+        name: 'bad.json',
+        mimeType: 'application/json',
+        buffer: Buffer.from('{"x":1}')
+      });
     await expect(page.locator('p.status')).toHaveText("That file isn't a Robot For All program.");
   });
 
@@ -171,7 +200,10 @@ test.describe('code editor (M3)', () => {
     await expect(page.locator('p.status')).toHaveText('Done.');
   });
 
-  test('works offline after the first visit, including Download .hex', async ({ page, context }) => {
+  test('works offline after the first visit, including Download .hex', async ({
+    page,
+    context
+  }) => {
     await page.goto(CODE);
     await waitForServiceWorker(page);
     await page.reload();

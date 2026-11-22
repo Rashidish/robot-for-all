@@ -24,15 +24,22 @@ export function loadStore(storage: Pick<Storage, 'getItem'> | undefined): Progra
     const raw = storage?.getItem(STORAGE_KEY);
     if (!raw) return empty();
     const data = JSON.parse(raw) as ProgramStore;
-    if (typeof data !== 'object' || data === null || typeof data.programs !== 'object') return empty();
-    return { current: typeof data.current === 'string' ? data.current : null, programs: data.programs };
+    if (typeof data !== 'object' || data === null || typeof data.programs !== 'object')
+      return empty();
+    return {
+      current: typeof data.current === 'string' ? data.current : null,
+      programs: data.programs
+    };
   } catch {
     return empty();
   }
 }
 
 /** Saves the store; returns false if the browser refused (full or blocked). */
-export function saveStore(storage: Pick<Storage, 'setItem'> | undefined, store: ProgramStore): boolean {
+export function saveStore(
+  storage: Pick<Storage, 'setItem'> | undefined,
+  store: ProgramStore
+): boolean {
   try {
     storage?.setItem(STORAGE_KEY, JSON.stringify(store));
     return Boolean(storage);

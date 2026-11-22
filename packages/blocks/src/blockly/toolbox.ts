@@ -5,7 +5,11 @@ import { CATEGORY_COLOURS as C } from '../colours';
 const num = (value: number) => ({ shadow: { type: 'rfa_number', fields: { NUM: value } } });
 const text = (value: string) => ({ shadow: { type: 'rfa_text', fields: { TEXT: value } } });
 const bool = () => ({ shadow: { type: 'rfa_bool', fields: { BOOL: 'TRUE' } } });
-const block = (type: string, inputs?: Record<string, unknown>, fields?: Record<string, unknown>) => ({
+const block = (
+  type: string,
+  inputs?: Record<string, unknown>,
+  fields?: Record<string, unknown>
+) => ({
   kind: 'block',
   type,
   ...(inputs ? { inputs } : {}),
@@ -61,7 +65,12 @@ export const TOOLBOX = {
         block('rfa_bool')
       ]
     },
-    { kind: 'category', name: '%{BKY_CATEGORY_VARIABLES}', colour: C.variables, custom: 'RFA_VARIABLES' },
+    {
+      kind: 'category',
+      name: '%{BKY_CATEGORY_VARIABLES}',
+      colour: C.variables,
+      custom: 'RFA_VARIABLES'
+    },
     {
       kind: 'category',
       name: '%{BKY_CATEGORY_MATH}',

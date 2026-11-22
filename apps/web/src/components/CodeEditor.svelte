@@ -75,7 +75,8 @@
 
   function setUpBlockly() {
     for (const [key, value] of Object.entries(labels)) {
-      if (key.startsWith('block_') || key.startsWith('category_')) Blockly.Msg[key.toUpperCase()] = value;
+      if (key.startsWith('block_') || key.startsWith('category_'))
+        Blockly.Msg[key.toUpperCase()] = value;
     }
     Blockly.common.defineBlocksWithJsonArray(BLOCK_DEFINITIONS as unknown as object[]);
   }
@@ -242,9 +243,8 @@
       const hex = await makeHex();
       if (!hex) return;
       const { createUSBConnection } = await import('@microbit/microbit-connection/usb');
-      const { createUniversalHexFlashDataSource } = await import(
-        '@microbit/microbit-connection/universal-hex'
-      );
+      const { createUniversalHexFlashDataSource } =
+        await import('@microbit/microbit-connection/universal-hex');
       const usb = createUSBConnection();
       await usb.connect();
       await usb.flash(createUniversalHexFlashDataSource(hex), { partial: true });
@@ -327,16 +327,20 @@
       id="tab-blocks"
       aria-selected={tab === 'blocks'}
       aria-controls="panel-blocks"
-      onclick={() => showTab('blocks')}>{t('code_tab_blocks')}</button
+      onclick={() => showTab('blocks')}
     >
+      {t('code_tab_blocks')}
+    </button>
     <button
       type="button"
       role="tab"
       id="tab-python"
       aria-selected={tab === 'python'}
       aria-controls="panel-python"
-      onclick={() => showTab('python')}>{t('code_tab_python')}</button
+      onclick={() => showTab('python')}
     >
+      {t('code_tab_python')}
+    </button>
   </div>
 
   <div class="main">
@@ -347,9 +351,20 @@
       aria-labelledby="tab-blocks"
       hidden={tab !== 'blocks'}
     >
-      <div class="blockly" bind:this={host} role="application" aria-label={t('code_workspace')}></div>
+      <div
+        class="blockly"
+        bind:this={host}
+        role="application"
+        aria-label={t('code_workspace')}
+      ></div>
     </div>
-    <div id="panel-python" class="python" role="tabpanel" aria-labelledby="tab-python" hidden={tab !== 'python'}>
+    <div
+      id="panel-python"
+      class="python"
+      role="tabpanel"
+      aria-labelledby="tab-python"
+      hidden={tab !== 'python'}
+    >
       <p>{t('code_python_intro')}</p>
       <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
       <pre tabindex="0"><code>{python}</code></pre>
@@ -383,8 +398,12 @@
     {#each programs as saved (saved.id)}
       <li>
         <span>{saved.name}</span>
-        <button type="button" class="plain" onclick={() => openProgram(saved.id)}>{t('code_open')}</button>
-        <button type="button" class="plain" onclick={() => deleteProgram(saved.id)}>{t('code_delete')}</button>
+        <button type="button" class="plain" onclick={() => openProgram(saved.id)}>
+          {t('code_open')}
+        </button>
+        <button type="button" class="plain" onclick={() => deleteProgram(saved.id)}>
+          {t('code_delete')}
+        </button>
       </li>
     {/each}
   </ul>
@@ -393,7 +412,12 @@
     <button type="button" class="secondary" onclick={exportFile}>{t('code_export')}</button>
     <label class="file plain">
       {t('code_import')}
-      <input type="file" accept=".json,application/json" bind:this={fileInput} onchange={importFile} />
+      <input
+        type="file"
+        accept=".json,application/json"
+        bind:this={fileInput}
+        onchange={importFile}
+      />
     </label>
     <button type="button" class="plain" onclick={closeDialog}>{t('code_close')}</button>
   </div>

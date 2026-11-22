@@ -23,7 +23,11 @@ const iconOptions = ICON_NAMES.map((name) => [
 ]);
 
 const statement = { previousStatement: null, nextStatement: null } as const;
-const value = (name: string, check?: string | string[]) => ({ type: 'input_value', name, ...(check ? { check } : {}) });
+const value = (name: string, check?: string | string[]) => ({
+  type: 'input_value',
+  name,
+  ...(check ? { check } : {})
+});
 const doInput = (name = 'DO') => ({ type: 'input_statement', name });
 const buttons = [
   ['A', 'A'],
@@ -93,7 +97,12 @@ export const BLOCK_DEFINITIONS = [
     output: 'Boolean',
     colour: C.input
   },
-  { type: 'rfa_light_level', message0: '%{BKY_BLOCK_LIGHT_LEVEL}', output: 'Number', colour: C.input },
+  {
+    type: 'rfa_light_level',
+    message0: '%{BKY_BLOCK_LIGHT_LEVEL}',
+    output: 'Number',
+    colour: C.input
+  },
   {
     type: 'rfa_acceleration',
     message0: '%{BKY_BLOCK_ACCELERATION}',
@@ -111,7 +120,12 @@ export const BLOCK_DEFINITIONS = [
     output: 'Number',
     colour: C.input
   },
-  { type: 'rfa_temperature', message0: '%{BKY_BLOCK_TEMPERATURE}', output: 'Number', colour: C.input },
+  {
+    type: 'rfa_temperature',
+    message0: '%{BKY_BLOCK_TEMPERATURE}',
+    output: 'Number',
+    colour: C.input
+  },
   // Loops
   {
     type: 'rfa_repeat',

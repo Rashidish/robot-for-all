@@ -21,7 +21,10 @@ describe('block definitions', () => {
       if (Array.isArray(v)) v.forEach(walk);
       else if (v && typeof v === 'object') {
         const o = v as Record<string, unknown>;
-        if (typeof o['type'] === 'string' && (o['kind'] === 'block' || 'fields' in o || 'shadow' in o || o['type'].startsWith('rfa_'))) {
+        if (
+          typeof o['type'] === 'string' &&
+          (o['kind'] === 'block' || 'fields' in o || 'shadow' in o || o['type'].startsWith('rfa_'))
+        ) {
           used.push(o['type']);
         }
         Object.values(o).forEach(walk);
@@ -67,7 +70,11 @@ describe('Blockly ⇄ program JSON', () => {
         blocks: [
           { type: 'rfa_forever', y: 200, inputs: { DO: { block: { type: 'rfa_clear' } } } },
           { type: 'rfa_show_icon', y: 100, fields: { ICON: 'HEART' } },
-          { type: 'rfa_on_start', y: 10, inputs: { DO: { block: { type: 'rfa_show_icon', fields: { ICON: 'HAPPY' } } } } }
+          {
+            type: 'rfa_on_start',
+            y: 10,
+            inputs: { DO: { block: { type: 'rfa_show_icon', fields: { ICON: 'HAPPY' } } } }
+          }
         ]
       }
     });

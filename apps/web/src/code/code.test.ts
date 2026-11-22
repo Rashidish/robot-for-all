@@ -13,7 +13,13 @@ describe('program files', () => {
     expect(() => fromFile('{"hello": 1}')).toThrow();
     expect(() => fromFile('not json')).toThrow();
     expect(() =>
-      fromFile(JSON.stringify({ format: 'robot-for-all-program', version: 1, program: { version: 1, handlers: [{ type: 'hack' }] } }))
+      fromFile(
+        JSON.stringify({
+          format: 'robot-for-all-program',
+          version: 1,
+          program: { version: 1, handlers: [{ type: 'hack' }] }
+        })
+      )
     ).toThrow();
     expect(() => fromFile(' '.repeat(MAX_FILE_BYTES + 1))).toThrow('too big');
   });
@@ -50,8 +56,23 @@ describe('my programs', () => {
 
   it('treats broken or blocked storage as empty', () => {
     expect(loadStore({ getItem: () => '{broken' })).toEqual({ current: null, programs: {} });
-    expect(loadStore({ getItem: () => { throw new Error('blocked'); } })).toEqual({ current: null, programs: {} });
-    expect(saveStore({ setItem: () => { throw new Error('full'); } }, { current: null, programs: {} })).toBe(false);
+    expect(
+      loadStore({
+        getItem: () => {
+          throw new Error('blocked');
+        }
+      })
+    ).toEqual({ current: null, programs: {} });
+    expect(
+      saveStore(
+        {
+          setItem: () => {
+            throw new Error('full');
+          }
+        },
+        { current: null, programs: {} }
+      )
+    ).toBe(false);
     expect(STORAGE_KEY).toBe('rfa-code-v1');
   });
 });

@@ -68,7 +68,11 @@ export function fromBlockly(workspace: WorkspaceJson): Program {
       case 'rfa_not':
         return { type: 'not', a: expr(input(b, 'A'), { type: 'bool', value: false }) };
       case 'rfa_random':
-        return { type: 'random', from: expr(input(b, 'FROM'), zero), to: expr(input(b, 'TO'), zero) };
+        return {
+          type: 'random',
+          from: expr(input(b, 'FROM'), zero),
+          to: expr(input(b, 'TO'), zero)
+        };
       case 'rfa_button_is_pressed':
         return { type: 'button_pressed', button: field(b, 'BUTTON') as Button };
       case 'rfa_light_level':
@@ -96,9 +100,17 @@ export function fromBlockly(workspace: WorkspaceJson): Program {
       case 'rfa_pause':
         return { type: 'pause', ms: expr(input(b, 'MS'), zero) };
       case 'rfa_repeat':
-        return { type: 'repeat', times: expr(input(b, 'TIMES'), zero), body: stack(input(b, 'DO')) };
+        return {
+          type: 'repeat',
+          times: expr(input(b, 'TIMES'), zero),
+          body: stack(input(b, 'DO'))
+        };
       case 'rfa_while':
-        return { type: 'while', cond: expr(input(b, 'COND'), { type: 'bool', value: false }), body: stack(input(b, 'DO')) };
+        return {
+          type: 'while',
+          cond: expr(input(b, 'COND'), { type: 'bool', value: false }),
+          body: stack(input(b, 'DO'))
+        };
       case 'rfa_if':
       case 'rfa_if_else':
         return {
@@ -134,12 +146,18 @@ export function fromBlockly(workspace: WorkspaceJson): Program {
   };
 
   const handlers: Handler[] = [];
-  const tops = [...(workspace.blocks?.blocks ?? [])].sort((p, q) => (p.y ?? 0) - (q.y ?? 0) || (p.x ?? 0) - (q.x ?? 0));
+  const tops = [...(workspace.blocks?.blocks ?? [])].sort(
+    (p, q) => (p.y ?? 0) - (q.y ?? 0) || (p.x ?? 0) - (q.x ?? 0)
+  );
   for (const b of tops) {
     if (b.type === 'rfa_on_start') handlers.push({ type: 'on_start', body: stack(input(b, 'DO')) });
     if (b.type === 'rfa_forever') handlers.push({ type: 'forever', body: stack(input(b, 'DO')) });
     if (b.type === 'rfa_on_button') {
-      handlers.push({ type: 'on_button', button: field(b, 'BUTTON') as Button, body: stack(input(b, 'DO')) });
+      handlers.push({
+        type: 'on_button',
+        button: field(b, 'BUTTON') as Button,
+        body: stack(input(b, 'DO'))
+      });
     }
   }
   return { version: 1, handlers };
@@ -151,7 +169,9 @@ const varId = (name: string) => `var-${name}`;
 
 export function toBlockly(program: Program): WorkspaceJson {
   const names = new Set<string>();
-  const shadowNumber = (value: number) => ({ shadow: { type: 'rfa_number', fields: { NUM: value } } });
+  const shadowNumber = (value: number) => ({
+    shadow: { type: 'rfa_number', fields: { NUM: value } }
+  });
 
   const exprInput = (e: Expr): { block?: BlockJson; shadow?: BlockJson } => {
     if (e.type === 'number') return shadowNumber(e.value);
@@ -206,24 +226,45 @@ export function toBlockly(program: Program): WorkspaceJson {
       case 'pause':
         return { type: 'rfa_pause', inputs: { MS: exprInput(s.ms) } };
       case 'repeat':
-        return { type: 'rfa_repeat', inputs: { TIMES: exprInput(s.times), ...stackInput('DO', s.body) } };
+        return {
+          type: 'rfa_repeat',
+          inputs: { TIMES: exprInput(s.times), ...stackInput('DO', s.body) }
+        };
       case 'while':
-        return { type: 'rfa_while', inputs: { COND: exprInput(s.cond), ...stackInput('DO', s.body) } };
+        return {
+          type: 'rfa_while',
+          inputs: { COND: exprInput(s.cond), ...stackInput('DO', s.body) }
+        };
       case 'if':
         return s.else.length
           ? {
               type: 'rfa_if_else',
-              inputs: { COND: exprInput(s.cond), ...stackInput('THEN', s.then), ...stackInput('ELSE', s.else) }
+              inputs: {
+                COND: exprInput(s.cond),
+                ...stackInput('THEN', s.then),
+                ...stackInput('ELSE', s.else)
+              }
             }
           : { type: 'rfa_if', inputs: { COND: exprInput(s.cond), ...stackInput('THEN', s.then) } };
       case 'set':
         names.add(s.name);
-        return { type: 'rfa_var_set', fields: { VAR: { id: varId(s.name) } }, inputs: { VALUE: exprInput(s.value) } };
+        return {
+          type: 'rfa_var_set',
+          fields: { VAR: { id: varId(s.name) } },
+          inputs: { VALUE: exprInput(s.value) }
+        };
       case 'change':
         names.add(s.name);
-        return { type: 'rfa_var_change', fields: { VAR: { id: varId(s.name) } }, inputs: { BY: exprInput(s.by) } };
+        return {
+          type: 'rfa_var_change',
+          fields: { VAR: { id: varId(s.name) } },
+          inputs: { BY: exprInput(s.by) }
+        };
       case 'digital_write':
-        return { type: 'rfa_digital_write', fields: { PIN: String(s.pin), VALUE: String(s.value) } };
+        return {
+          type: 'rfa_digital_write',
+          fields: { PIN: String(s.pin), VALUE: String(s.value) }
+        };
       case 'motor':
         return { type: 'rfa_motor', fields: { ACTION: s.action } };
     }
