@@ -3,7 +3,12 @@
 import { defineSheet, shape } from '../../../../packages/templates/src/index';
 
 // Tick marks on the beam: fold-style dashed lines across it, every 20 mm from the centre.
-const ticks = [10, 30, 50, 70, 90, 110, 130, 150, 170].map((x) => ({ x1: x, y1: 4, x2: x, y2: 20 }));
+const ticks = [10, 30, 50, 70, 90, 110, 130, 150, 170].map((x) => ({
+  x1: x,
+  y1: 4,
+  x2: x,
+  y2: 20
+}));
 
 export default defineSheet({
   title: 'Lever bench',
@@ -29,7 +34,9 @@ export default defineSheet({
         { x1: 90, y1: 0, x2: 90, y2: 50 },
         { x1: 135, y1: 0, x2: 135, y2: 50 }
       ],
-      measurements: ['stand: 150 × 50 mm, folded at 45, 90 and 135 mm into a triangle; the last 15 mm is the tab']
+      measurements: [
+        'stand: 150 × 50 mm, folded at 45, 90 and 135 mm into a triangle; the last 15 mm is the tab'
+      ]
     })
   ]
 });

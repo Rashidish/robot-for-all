@@ -7,7 +7,13 @@ export default defineSheet({
   title: 'Bouncing animal box: parts',
   parts: [
     cam({ name: 'Egg cam', base: 40, lift: 15, axleHole: 3 }),
-    disc({ name: 'Round cam (use the off-centre hole)', diameter: 44, axleHole: 3, offsets: [8], pinHole: 3 }),
+    disc({
+      name: 'Round cam (use the off-centre hole)',
+      diameter: 44,
+      axleHole: 3,
+      offsets: [8],
+      pinHole: 3
+    }),
     disc({ name: 'Follower foot', diameter: 26, axleHole: 3 }),
     shape({
       name: 'Frog',
