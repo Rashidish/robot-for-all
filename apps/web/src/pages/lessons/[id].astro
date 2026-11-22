@@ -54,14 +54,18 @@ const { Content } = await render(lesson);
     <h2 id="safety-title">⚠ {m.lesson_safety_title()}</h2>
     {data.safety.adult_help && <p class="adult">{m.lesson_adult_help()}</p>}
     <ul>
-      {data.safety.notes.map((note) => <li>{note}</li>)}
+      {data.safety.notes.map((note) => (
+        <li>{note}</li>
+      ))}
     </ul>
   </section>
 
   <section aria-labelledby="outcomes-title">
     <h2 id="outcomes-title">{m.lesson_outcomes_title()}</h2>
     <ul>
-      {data.outcomes.map((outcome) => <li>{outcome}</li>)}
+      {data.outcomes.map((outcome) => (
+        <li>{outcome}</li>
+      ))}
     </ul>
     {data.concepts.length > 0 && (
       <p class="concepts">
@@ -104,7 +108,9 @@ const { Content } = await render(lesson);
   <section class="assessment" aria-labelledby="assessment-title">
     <h2 id="assessment-title">{m.lesson_assessment_title()}</h2>
     <ul>
-      {data.assessment.map((item) => <li>{item}</li>)}
+      {data.assessment.map((item) => (
+        <li>{item}</li>
+      ))}
     </ul>
   </section>
 

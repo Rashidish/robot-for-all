@@ -90,5 +90,7 @@ export function checkLinks(
   existing: ReadonlySet<string>
 ): string[] {
   const linked = [...lesson.prerequisites, ...(lesson.next ? [lesson.next] : [])];
-  return linked.filter((id) => !existing.has(id)).map((id) => `links to "${id}", which doesn't exist`);
+  return linked
+    .filter((id) => !existing.has(id))
+    .map((id) => `links to "${id}", which doesn't exist`);
 }
