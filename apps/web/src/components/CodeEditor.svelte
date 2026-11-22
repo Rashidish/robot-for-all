@@ -68,7 +68,8 @@
       a.href = url;
       a.download = 'robot-for-all.hex';
       a.click();
-      URL.revokeObjectURL(url);
+      // Revoking straight away can cancel the download in some browsers.
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
       status = labels.done;
     } catch {
       status = labels.failed;

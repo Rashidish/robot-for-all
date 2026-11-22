@@ -16,7 +16,7 @@
 /code/*
   ! Content-Security-Policy
   ! Permissions-Policy
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'sha256-T0FgI68exbsB63wO17aNhklkM8DeXs5ck81H6uODSoM=' 'sha256-wZscWfTKK4+5F6tjmZAMS1HrYQjdzRGUdQL3iJDKWAc='; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(self), serial=(), bluetooth=(), payment=(), browsing-topics=()
 
 # The service worker must always be checked for updates.
