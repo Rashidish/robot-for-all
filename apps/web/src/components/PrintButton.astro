@@ -1,0 +1,35 @@
+---
+// "Print" button that only appears when JavaScript runs (progressive enhancement).
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<p class="print-button">
+  <button type="button" class="button" data-print hidden>
+    {label}
+  </button>
+</p>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-print]')) {
+    button.hidden = false;
+    button.addEventListener('click', () => window.print());
+  }
+</script>
+
+<style>
+  button.button {
+    border: 0;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media print {
+    .print-button {
+      display: none !important;
+    }
+  }
+</style>

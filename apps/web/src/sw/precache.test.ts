@@ -39,6 +39,10 @@ describe('service worker', () => {
     expect(() => new Function(sw)).not.toThrow();
   });
 
+  it('serves saved copies of other same-origin files (templates, images) when offline', () => {
+    expect(template).toContain('caches.match(request).then((cached) => cached || fetch(request))');
+  });
+
   it('only handles same-origin GET requests', () => {
     expect(template).toContain("request.method !== 'GET'");
     expect(template).toContain('url.origin !== self.location.origin');

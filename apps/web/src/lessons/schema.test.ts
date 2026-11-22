@@ -14,7 +14,7 @@ const valid = {
   outcomes: ['Explain what a crank does', 'Build a working crank'],
   safety: { adult_help: false, notes: ['Use safety scissors'] },
   assessment: ['I can point to the crank', 'I can explain the motion', 'I can fix a stuck crank'],
-  templates: ['rhino-body.svg'],
+  templates: ['rhino-parts'],
   status: 'draft',
   ai_generated: true,
   reviewed_by: null
@@ -62,7 +62,7 @@ describe('lesson front matter', () => {
     ['bad id', { id: 'rhino' }],
     ['phase 4', { phase: 4 }],
     ['no parts', { parts: [] }],
-    ['non-SVG template', { templates: ['rhino.pdf'] }],
+    ['template with a file extension', { templates: ['rhino.svg'] }],
     ['unknown status', { status: 'live' }],
     ['one outcome', { outcomes: ['Only one outcome here'] }],
     ['no safety notes', { safety: { adult_help: false, notes: [] } }],

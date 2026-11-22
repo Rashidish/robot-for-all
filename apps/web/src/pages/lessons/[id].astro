@@ -2,6 +2,8 @@
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DownloadLesson from '../../components/DownloadLesson.astro';
+import PrintButton from '../../components/PrintButton.astro';
+import { findTemplate, templateFile, templatePage } from '../../templates/load';
 import { m } from '../../i18n';
 import { getLessons, type LessonEntry } from '../../lessons/load';
 
@@ -22,6 +24,7 @@ const prerequisites = lesson.data.prerequisites.filter((id) => titles[id]);
 const next = lesson.data.next && titles[lesson.data.next] ? lesson.data.next : null;
 const { data } = lesson;
 const { Content } = await render(lesson);
+const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ?? []);
 ---
 
 <BaseLayout title={data.title}>
@@ -101,6 +104,24 @@ const { Content } = await render(lesson);
     </ul>
   </section>
 
+  {sheets.length > 0 && (
+    <section class="templates" aria-labelledby="templates-title">
+      <h2 id="templates-title">{m.lesson_templates_title()}</h2>
+      <ul>
+        {sheets.map((t) => (
+          <li>
+            <a href={templatePage(t.lesson, t.name)} data-offline>
+              {t.sheet.title}
+            </a>
+            <a class="muted" href={templateFile(t.lesson, t.name)} data-offline download>
+              ({m.template_download()})
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
   <div class="lesson-body">
     <Content />
   </div>
@@ -133,20 +154,8 @@ const { Content } = await render(lesson);
     </p>
   )}
 
-  <p>
-    <button type="button" class="button" data-print hidden>
-      {m.lesson_print()}
-    </button>
-  </p>
+  <PrintButton label={m.lesson_print()} />
 </BaseLayout>
-
-<script>
-  // Progressive enhancement: the print button only appears when JavaScript runs.
-  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-print]')) {
-    button.hidden = false;
-    button.addEventListener('click', () => window.print());
-  }
-</script>
 
 <style>
   .back {
@@ -223,8 +232,7 @@ const { Content } = await render(lesson);
   }
 
   @media print {
-    .back,
-    [data-print] {
+    .back {
       display: none !important;
     }
 

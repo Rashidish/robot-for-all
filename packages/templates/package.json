@@ -1,0 +1,10 @@
+{
+  "name": "@robot-for-all/templates",
+  "private": true,
+  "description": "Build-time generator for true-scale A4 cardboard templates (SVG)",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

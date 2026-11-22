@@ -43,7 +43,10 @@ export const lessonSchema = z
       .max(5),
     prerequisites: z.array(lessonId).default([]),
     next: lessonId.nullable().default(null),
-    templates: z.array(z.string().regex(/\.svg$/, 'templates must be SVG files')).default([]),
+    /** Template sheet names: files in content/projects/<lesson id>/templates/<name>.ts */
+    templates: z
+      .array(z.string().regex(/^[a-z0-9-]+$/, 'template names are file names without .ts'))
+      .default([]),
     status: z.enum(['draft', 'in_review', 'published']),
     ai_generated: z.boolean(),
     reviewed_by: z.string().min(2).nullable(),

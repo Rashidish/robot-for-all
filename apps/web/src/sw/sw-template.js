@@ -78,5 +78,9 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(handlePage(event));
   } else if (url.pathname.startsWith('/_astro/') || PRECACHE.includes(url.pathname)) {
     event.respondWith(handleAsset(request));
+  } else {
+    // Anything else from our site (template SVGs, lesson images): use a saved copy if there is
+    // one (e.g. from "Download for offline"), otherwise the network. Not stored automatically.
+    event.respondWith(caches.match(request).then((cached) => cached || fetch(request)));
   }
 });
