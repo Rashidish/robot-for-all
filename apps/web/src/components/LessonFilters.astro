@@ -17,14 +17,18 @@ const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
     {m.lessons_filter_grade()}
     <select name="grade">
       <option value="">{m.lessons_filter_any()}</option>
-      {grades.map((g) => <option value={g}>{g}</option>)}
+      {grades.map((g) => (
+        <option value={g}>{g}</option>
+      ))}
     </select>
   </label>
   <label>
     {m.lessons_filter_mechanism()}
     <select name="mechanism">
       <option value="">{m.lessons_filter_any()}</option>
-      {mechanisms.map((mech) => <option value={mech}>{mech}</option>)}
+      {mechanisms.map((mech) => (
+        <option value={mech}>{mech}</option>
+      ))}
     </select>
   </label>
   <label>

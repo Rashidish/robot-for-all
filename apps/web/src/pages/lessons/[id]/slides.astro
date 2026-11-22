@@ -36,13 +36,14 @@ const total = 3 + steps.length + 1;
     <section class="slide title-slide" aria-label={m.slides_counter({ current: 1, total })}>
       <h1>{data.title}</h1>
       <p class="facts">
-        {m.lesson_grades({ grades: data.grades.join('–') })} · {
-          m.lesson_duration({ minutes: data.duration_minutes })
-        }
+        {m.lesson_grades({ grades: data.grades.join('–') })} ·{' '}
+        {m.lesson_duration({ minutes: data.duration_minutes })}
       </p>
       <h2>{m.lesson_outcomes_title()}</h2>
       <ul>
-        {data.outcomes.map((o) => <li>{o}</li>)}
+        {data.outcomes.map((o) => (
+          <li>{o}</li>
+        ))}
       </ul>
     </section>
 
@@ -61,7 +62,9 @@ const total = 3 + steps.length + 1;
       <h2>⚠ {m.lesson_safety_title()}</h2>
       {data.safety.adult_help && <p class="adult">{m.lesson_adult_help()}</p>}
       <ul>
-        {data.safety.notes.map((n) => <li>{n}</li>)}
+        {data.safety.notes.map((n) => (
+          <li>{n}</li>
+        ))}
       </ul>
     </section>
 
@@ -75,17 +78,25 @@ const total = 3 + steps.length + 1;
     <section class="slide" aria-label={m.slides_counter({ current: total, total })}>
       <h2>{m.lesson_assessment_title()}</h2>
       <ul class="checks">
-        {data.assessment.map((a) => <li>{a}</li>)}
+        {data.assessment.map((a) => (
+          <li>{a}</li>
+        ))}
       </ul>
     </section>
   </div>
 
   <div class="controls" data-controls hidden>
-    <button type="button" class="nav" data-prev aria-label={m.slides_previous()}>←</button>
+    <button type="button" class="nav" data-prev aria-label={m.slides_previous()}>
+      ←
+    </button>
     <p class="counter" aria-live="polite" data-counter></p>
-    <button type="button" class="nav" data-next aria-label={m.slides_next()}>→</button>
+    <button type="button" class="nav" data-next aria-label={m.slides_next()}>
+      →
+    </button>
   </div>
-  <template data-counter-text>{m.slides_counter({ current: '{current}', total: '{total}' })}</template>
+  <template data-counter-text>
+    {m.slides_counter({ current: '{current}', total: '{total}' })}
+  </template>
 </BaseLayout>
 
 <script>
