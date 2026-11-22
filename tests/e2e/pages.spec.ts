@@ -131,6 +131,13 @@ test.describe('pages on a 360 px phone', () => {
     await expect(counter).toHaveText('Slide 3 of 9');
     await page.keyboard.press('ArrowLeft');
     await expect(counter).toHaveText('Slide 2 of 9');
+
+    // The lesson diagram appears on its slide, with its description.
+    const diagram = page.locator('.slide img').first();
+    expect((await diagram.getAttribute('alt'))?.length ?? 0).toBeGreaterThan(20);
+    await expect
+      .poll(() => diagram.evaluate((el: HTMLImageElement) => el.naturalWidth))
+      .toBeGreaterThan(0);
   });
 
   test('lesson filters narrow the list and remember the choice in the address', async ({
