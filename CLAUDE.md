@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.6 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.7 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -83,7 +83,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 | M6 | AI helper | Front-office AI with cost caps and child-safe rules |
 | Later | Live sessions, competitions, kit store, newsletter, back-office AI generation pipeline |
 
-Current milestone: **M1**.
+Current milestone: **M2** (spec: `docs/specs/M2-make-and-learn.md`).
 
 ---
 
@@ -143,13 +143,24 @@ syllabus_links:          # CAPS topic references
     topic: Structures / mechanical systems
 duration_minutes: 45
 cost_estimate_zar: 15
-parts: [{ item: cardboard A4, qty: 2 }, { item: straw, qty: 3 }]
+parts:                   # substitute = a free or cheaper thing that works instead
+  - { item: cardboard A4, qty: 2, substitute: cereal-box card }
+  - { item: straw, qty: 3 }
+outcomes: [...]          # 2–4 things learners will know or do
+concepts: [crank, axle]  # vocabulary
+safety:
+  adult_help: true       # craft knife, skewer points, hot glue
+  notes: [...]           # at least one; never coin/button cells, never mains
+assessment: [...]        # 3–5 items, each starting "I can "
+prerequisites: []        # lesson ids
+next: p1-cam-01          # lesson id or null
 templates: [rhino-body.svg]
-status: draft            # draft | in_review | published (published requires reviewed_by)
+status: draft            # draft | in_review | published
 ai_generated: true
-reviewed_by: null
+reviewed_by: null        # required to publish
+build_tested_by: null    # required to publish: who built it from the printed lesson
 ```
-The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make.
+The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make, optionally followed by `## Teacher notes`. Links to other lessons must point to lessons that exist (build fails otherwise).
 Languages are worked out from the files present, never typed by hand.
 Teachers and content editors must be able to add a lesson without touching code.
 
@@ -244,3 +255,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.4 | 2026-11-21 | Commands filled in (M1 step 2) |
 | 0.5 | 2026-11-22 | Offline: hand-written service worker instead of Workbox (M1 step 6) |
 | 0.6 | 2026-11-22 | Browser tests, accessibility checks, Lighthouse and size budgets run in CI (M1 step 9) |
+| 0.7 | 2026-11-22 | M2: lesson format v2 (outcomes, safety, assessment, substitutes, links, build testing) |

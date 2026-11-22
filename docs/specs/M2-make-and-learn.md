@@ -139,7 +139,7 @@ Lesson 10 is the bridge to Phase 2: it introduces a battery, a switch and one sm
 
 ## 10. Work plan (one pull request each; ⏸ = owner review)
 
-1. Lesson format v2: schema, validation, handbook view updates, docs
+1. ~~Lesson format v2: schema, validation, handbook view updates, docs~~ ✅ Done
 2. `packages/templates`: generators, geometry tests, template pages, print check
 3. Slides view + library filters + learning-path links
 4. Lessons 1–3 (drafts, templates, diagrams) ⏸ review in preview

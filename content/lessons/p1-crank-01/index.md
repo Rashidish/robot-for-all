@@ -10,14 +10,29 @@ syllabus_links:
 duration_minutes: 45
 cost_estimate_zar: 15
 parts:
-  - { item: cardboard (cereal box), qty: 1 }
-  - { item: drinking straw, qty: 2 }
+  - { item: cardboard (cereal box), qty: 1, substitute: any thin card or file folder }
+  - { item: drinking straw, qty: 2, substitute: rolled paper tube }
   - { item: wooden skewer, qty: 1 }
   - { item: glue stick or tape, qty: 1 }
+outcomes:
+  - Explain that a crank turns round-and-round motion into up-and-down motion
+  - Build a working crank that moves a cardboard animal
+concepts: [crank, axle, motion, pivot]
+safety:
+  adult_help: true
+  notes:
+    - An adult cuts the pointed tip off the skewer before learners use it
+    - Use safety scissors for all cardboard cutting
+assessment:
+  - I can point to the crank and the axle on my model
+  - I can explain how turning the handle makes the head move up and down
+  - I can change the crank to make the head move higher
+next: null
 templates: [rhino-body.svg]
 status: draft
 ai_generated: true
 reviewed_by: null
+build_tested_by: null
 ---
 
 <!-- Placeholder lesson for testing the M1 content pipeline. The real lesson is written in M2. -->

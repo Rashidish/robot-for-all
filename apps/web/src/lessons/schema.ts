@@ -3,9 +3,11 @@ import { z } from 'astro/zod';
 
 export const PRIMM_STEPS = ['Predict', 'Run', 'Investigate', 'Modify', 'Make'] as const;
 
+const lessonId = z.string().regex(/^p[1-3]-[a-z]+-\d{2}$/, 'id must look like p1-crank-01');
+
 export const lessonSchema = z
   .object({
-    id: z.string().regex(/^p[1-3]-[a-z]+-\d{2}$/, 'id must look like p1-crank-01'),
+    id: lessonId,
     title: z.string().min(3).max(80),
     phase: z.union([z.literal(1), z.literal(2), z.literal(3)]),
     grades: z.array(z.number().int().min(1).max(12)).min(1),
@@ -15,15 +17,50 @@ export const lessonSchema = z
       .default([]),
     duration_minutes: z.number().int().positive().max(240),
     cost_estimate_zar: z.number().nonnegative(),
-    parts: z.array(z.object({ item: z.string().min(2), qty: z.number().int().positive() })).min(1),
+    parts: z
+      .array(
+        z.object({
+          item: z.string().min(2),
+          qty: z.number().int().positive(),
+          /** A free or cheaper thing that works instead, e.g. "cereal-box card". */
+          substitute: z.string().min(2).optional()
+        })
+      )
+      .min(1),
+    /** What learners will know or be able to do (M2 spec FR-1). */
+    outcomes: z.array(z.string().min(5)).min(2).max(4),
+    /** Vocabulary words introduced in the lesson. */
+    concepts: z.array(z.string().min(2)).default([]),
+    safety: z.object({
+      /** True when a step needs an adult (craft knife, skewer points, hot glue). */
+      adult_help: z.boolean(),
+      notes: z.array(z.string().min(5)).min(1)
+    }),
+    /** "I can…" checks for the end of the lesson. */
+    assessment: z
+      .array(z.string().regex(/^I can /, 'assessment items start with "I can "'))
+      .min(3)
+      .max(5),
+    prerequisites: z.array(lessonId).default([]),
+    next: lessonId.nullable().default(null),
     templates: z.array(z.string().regex(/\.svg$/, 'templates must be SVG files')).default([]),
     status: z.enum(['draft', 'in_review', 'published']),
     ai_generated: z.boolean(),
-    reviewed_by: z.string().min(2).nullable()
+    reviewed_by: z.string().min(2).nullable(),
+    /** Who built the robot by following only the printed lesson (M2 spec §8). */
+    build_tested_by: z.string().min(2).nullable().default(null)
   })
   .refine((l) => l.status !== 'published' || l.reviewed_by !== null, {
     message: 'A published lesson needs reviewed_by (a person must review it first)',
     path: ['reviewed_by']
+  })
+  .refine((l) => l.status !== 'published' || l.build_tested_by !== null, {
+    message: 'A published lesson needs build_tested_by (someone must build it from the lesson)',
+    path: ['build_tested_by']
+  })
+  .refine((l) => l.next !== l.id && !l.prerequisites.includes(l.id), {
+    message: 'A lesson cannot link to itself',
+    path: ['next']
   });
 
 export type Lesson = z.infer<typeof lessonSchema>;
@@ -45,4 +82,15 @@ export function checkPrimm(body: string): string[] {
 /** Drafts and lessons in review appear only when SHOW_DRAFTS is not "false" (production sets it to "false"). */
 export function isVisible(lesson: Pick<Lesson, 'status'>, showDrafts: boolean): boolean {
   return lesson.status === 'published' || showDrafts;
+}
+
+/** Returns problems with links between lessons: every prerequisite and next lesson must exist. */
+export function checkLinks(
+  lesson: Pick<Lesson, 'prerequisites' | 'next'>,
+  existing: ReadonlySet<string>
+): string[] {
+  const linked = [...lesson.prerequisites, ...(lesson.next ? [lesson.next] : [])];
+  return linked
+    .filter((id) => !existing.has(id))
+    .map((id) => `links to "${id}", which doesn't exist`);
 }

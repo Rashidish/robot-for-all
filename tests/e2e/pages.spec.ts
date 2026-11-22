@@ -19,6 +19,10 @@ test.describe('pages on a 360 px phone', () => {
       await expect(page.getByRole('heading', { level: 2, name: step })).toBeVisible();
     }
     await expect(page.getByRole('heading', { name: 'You will need' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '⚠ Safety' })).toBeVisible();
+    await expect(page.getByText('An adult must help with some steps.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'In this lesson you will' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Check your learning' })).toBeVisible();
   });
 
   test('the current section is marked in the menu', async ({ page }) => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkPrimm, isVisible, lessonSchema } from './schema';
+import { checkLinks, checkPrimm, isVisible, lessonSchema } from './schema';
 
 const valid = {
   id: 'p1-crank-01',
@@ -10,7 +10,10 @@ const valid = {
   syllabus_links: [{ subject: 'Natural Sciences and Technology', topic: 'Mechanical systems' }],
   duration_minutes: 45,
   cost_estimate_zar: 15,
-  parts: [{ item: 'cardboard', qty: 1 }],
+  parts: [{ item: 'cardboard', qty: 1, substitute: 'cereal-box card' }],
+  outcomes: ['Explain what a crank does', 'Build a working crank'],
+  safety: { adult_help: false, notes: ['Use safety scissors'] },
+  assessment: ['I can point to the crank', 'I can explain the motion', 'I can fix a stuck crank'],
   templates: ['rhino-body.svg'],
   status: 'draft',
   ai_generated: true,
@@ -29,13 +32,30 @@ describe('lesson front matter', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts a published lesson with a reviewer', () => {
+  it('accepts a published lesson that was reviewed and build-tested', () => {
+    const result = lessonSchema.safeParse({
+      ...valid,
+      status: 'published',
+      reviewed_by: 'T. Mokoena',
+      build_tested_by: 'Robotics club, 22 Nov'
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects a published lesson nobody built from the instructions', () => {
     const result = lessonSchema.safeParse({
       ...valid,
       status: 'published',
       reviewed_by: 'T. Mokoena'
     });
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
+  });
+
+  it('fills sensible defaults for links and build testing', () => {
+    const result = lessonSchema.parse(valid);
+    expect(result.prerequisites).toEqual([]);
+    expect(result.next).toBeNull();
+    expect(result.build_tested_by).toBeNull();
   });
 
   it.each([
@@ -43,7 +63,13 @@ describe('lesson front matter', () => {
     ['phase 4', { phase: 4 }],
     ['no parts', { parts: [] }],
     ['non-SVG template', { templates: ['rhino.pdf'] }],
-    ['unknown status', { status: 'live' }]
+    ['unknown status', { status: 'live' }],
+    ['one outcome', { outcomes: ['Only one outcome here'] }],
+    ['no safety notes', { safety: { adult_help: false, notes: [] } }],
+    ['assessment not "I can"', { assessment: ['Knows cranks', 'Builds', 'Explains'] }],
+    ['two assessment items', { assessment: ['I can a', 'I can b'] }],
+    ['link to itself', { next: 'p1-crank-01' }],
+    ['bad next id', { next: 'gears' }]
   ])('rejects %s', (_name, change) => {
     expect(lessonSchema.safeParse({ ...valid, ...change }).success).toBe(false);
   });
@@ -78,5 +104,20 @@ describe('draft visibility', () => {
 
   it('shows drafts on preview builds', () => {
     expect(isVisible({ status: 'draft' }, true)).toBe(true);
+  });
+});
+
+describe('links between lessons', () => {
+  const existing = new Set(['p1-crank-01', 'p1-lever-01']);
+
+  it('accepts links to lessons that exist', () => {
+    expect(checkLinks({ prerequisites: ['p1-lever-01'], next: null }, existing)).toEqual([]);
+  });
+
+  it('reports links to lessons that do not exist', () => {
+    expect(checkLinks({ prerequisites: ['p1-gear-01'], next: 'p1-cam-01' }, existing)).toEqual([
+      'links to "p1-gear-01", which doesn\'t exist',
+      'links to "p1-cam-01", which doesn\'t exist'
+    ]);
   });
 });
