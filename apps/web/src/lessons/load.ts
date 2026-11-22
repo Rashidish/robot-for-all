@@ -33,10 +33,14 @@ export async function getLessons(): Promise<LessonEntry[]> {
     if (!name) continue;
     try {
       if (!findProgram(lesson.id, name)) {
-        problems.push(`${lesson.id}: starter program "${name}" not found in content/lessons/${lesson.id}/programs/`);
+        problems.push(
+          `${lesson.id}: starter program "${name}" not found in content/lessons/${lesson.id}/programs/`
+        );
       }
     } catch (err) {
-      problems.push(`${lesson.id}: starter program "${name}" is not a valid program (${String(err)})`);
+      problems.push(
+        `${lesson.id}: starter program "${name}" is not a valid program (${String(err)})`
+      );
     }
   }
   if (problems.length > 0) {

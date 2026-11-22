@@ -32,8 +32,11 @@ describe('lesson front matter', () => {
     expect(parsed.starter_program).toBeNull();
     expect(parsed.hardware).toBe('none');
     expect(
-      lessonSchema.safeParse({ ...valid, starter_program: 'blink-heart', hardware: 'microbit-motor' })
-        .success
+      lessonSchema.safeParse({
+        ...valid,
+        starter_program: 'blink-heart',
+        hardware: 'microbit-motor'
+      }).success
     ).toBe(true);
     expect(lessonSchema.safeParse({ ...valid, starter_program: '../x' }).success).toBe(false);
     expect(lessonSchema.safeParse({ ...valid, hardware: 'arduino' }).success).toBe(false);

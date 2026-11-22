@@ -109,7 +109,9 @@ const starter = data.starter_program ? starterLink(lesson.id, data.starter_progr
             : m.lesson_code_microbit_motor()}
       </p>
       <p>
-        <a class="button" href={starter}>{m.lesson_open_in_editor()}</a>
+        <a class="button" href={starter}>
+          {m.lesson_open_in_editor()}
+        </a>
       </p>
     </section>
   )}
