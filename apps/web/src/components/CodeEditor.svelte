@@ -233,7 +233,14 @@
       scheduleSave();
       if (mode === 'blocks') scheduleSimulator();
     });
+    // Save straight away when the learner leaves or reloads the page, not 0.4 s later.
+    const saveNow = () => {
+      clearTimeout(saveTimer);
+      save();
+    };
+    window.addEventListener('pagehide', saveNow);
     return () => {
+      window.removeEventListener('pagehide', saveNow);
       clearTimeout(saveTimer);
       clearTimeout(simTimer);
       save();
