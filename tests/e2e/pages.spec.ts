@@ -1,4 +1,4 @@
-import { expect, LESSON, TEMPLATE, TEMPLATE_SVG, test } from './fixtures';
+import { expect, LESSON, SLIDES, TEMPLATE, TEMPLATE_SVG, test } from './fixtures';
 
 test.describe('pages on a 360 px phone', () => {
   test('home page shows the promise and links to lessons', async ({ page }) => {
@@ -55,7 +55,7 @@ test.describe('pages on a 360 px phone', () => {
   });
 
   test('pages fit a 360 px screen without sideways scrolling', async ({ page }) => {
-    for (const path of ['/', '/lessons/', LESSON, TEMPLATE, '/about/', '/privacy/']) {
+    for (const path of ['/', '/lessons/', LESSON, SLIDES, TEMPLATE, '/about/', '/privacy/']) {
       await page.goto(path);
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth
@@ -111,6 +111,44 @@ test.describe('pages on a 360 px phone', () => {
     expect(svg).toContain('This square must measure 50 mm');
   });
 
+  test('slides view: one PRIMM step per slide, moved with buttons or arrow keys', async ({
+    page
+  }) => {
+    await page.goto(LESSON);
+    await page.getByRole('link', { name: 'Show as slides' }).click();
+    await expect(page).toHaveURL(SLIDES);
+    const slides = page.locator('.slide');
+    await expect(slides).toHaveCount(9); // title, parts, safety, 5 PRIMM steps, checklist
+    for (const step of ['Predict', 'Run', 'Investigate', 'Modify', 'Make']) {
+      await expect(page.locator('.slide h2', { hasText: step })).toHaveCount(1);
+    }
+    const counter = page.locator('[data-counter]');
+    await expect(counter).toHaveText('Slide 1 of 9');
+    await page.getByRole('button', { name: 'Next slide' }).click();
+    await expect(counter).toHaveText('Slide 2 of 9');
+    await page.locator('[data-deck]').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(counter).toHaveText('Slide 3 of 9');
+    await page.keyboard.press('ArrowLeft');
+    await expect(counter).toHaveText('Slide 2 of 9');
+  });
+
+  test('lesson filters narrow the list and remember the choice in the address', async ({
+    page
+  }) => {
+    await page.goto('/lessons/');
+    const card = page.getByRole('link', { name: 'Crank-powered waving rhino' });
+    await page.getByLabel('Grade').selectOption('3');
+    await expect(card).toBeVisible();
+    await expect(page).toHaveURL(/\?grade=3$/);
+    await page.getByLabel('Cost').selectOption('10');
+    await expect(card).toBeHidden();
+    await expect(page.getByText('No lessons match these filters.')).toBeVisible();
+    await page.goto('/lessons/?grade=3');
+    await expect(page.getByLabel('Grade')).toHaveValue('3');
+    await expect(card).toBeVisible();
+  });
+
   test('printing hides menus and buttons', async ({ page }) => {
     await page.goto(LESSON);
     await page.emulateMedia({ media: 'print' });
@@ -124,6 +162,7 @@ test.describe('pages on a 360 px phone', () => {
       ['home', '/'],
       ['lessons', '/lessons/'],
       ['lesson', LESSON],
+      ['slides', SLIDES],
       ['template', TEMPLATE],
       ['about', '/about/'],
       ['privacy', '/privacy/']

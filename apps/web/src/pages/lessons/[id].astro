@@ -48,6 +48,12 @@ const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ??
     <li>{m.lesson_mechanism({ mechanism: data.mechanism })}</li>
   </ul>
 
+  <p>
+    <a class="button" href={`/lessons/${lesson.id}/slides/`} data-offline>
+      {m.lesson_slides_link()}
+    </a>
+  </p>
+
   <DownloadLesson />
 
   <section
