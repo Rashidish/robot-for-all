@@ -232,6 +232,33 @@ test.describe('pages on a 360 px phone', () => {
     }
   });
 
+  test('every lesson has a one-page answer sheet', async ({ page }) => {
+    const ids = [
+      'p1-lever-01', 'p1-wheel-01', 'p1-crank-01', 'p1-linkage-01', 'p1-cam-01', 'p1-lever-02',
+      'p1-linkage-02', 'p1-gear-01', 'p1-pulley-01', 'p1-motor-01', 'p2-display-01',
+      'p2-button-01', 'p2-light-01', 'p2-motor-01', 'p2-motor-02', 'p2-robot-01'
+    ];
+    await page.goto('/lessons/p2-light-01/');
+    // "Code for this lesson" sits just before the syllabus links (owner, 2026-11-23).
+    const headings = await page.locator('main h2').allTextContents();
+    const code = headings.indexOf('Code for this lesson');
+    expect(code).toBeGreaterThan(0);
+    expect(headings[code + 1]).toBe('Links to the school syllabus');
+    await page.getByRole('link', { name: 'Print the answer sheet' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'Answer sheet: Automatic night light'
+    );
+    await expect(page.getByText('Learner or team name (no surnames)')).toBeVisible();
+    await expect(page.getByText('What will the micro:bit show in a bright room?')).toBeVisible();
+    await expect(page.locator('[data-sheet-code^="p2-light-01-"]')).toHaveCount(1);
+    for (const id of ids) {
+      await page.goto(`/lessons/${id}/answer-sheet/`);
+      const pdf = await page.pdf({ preferCSSPageSize: true });
+      const pages = pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) ?? [];
+      expect(pages.length, `${id} answer sheet pages`).toBe(1);
+    }
+  });
+
   test('printing hides menus and buttons', async ({ page }) => {
     await page.goto(LESSON);
     await page.emulateMedia({ media: 'print' });

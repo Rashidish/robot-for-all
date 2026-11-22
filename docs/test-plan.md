@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.7 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
+> **Version:** 0.8 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -58,7 +58,8 @@ How to use this list: add a row whenever a step adds something only a person can
 | B8 | **micro:bit**: on `/code/`, Send to micro:bit from Chrome/Edge on a computer; the heart blinks. Then Download .hex and copy it to the MICROBIT drive. Note the board version (V1/V2, printed on the back) | ✅ Owner, 2026-11-22 (Windows, Chrome): Send and Download both work |
 | B10 | **Your own program**: blocks with button A, sent to the micro:bit | ✅ Owner, 2026-11-22 |
 | B11 | **On-screen micro:bit vs real**: the same program behaves the same on both (LEDs, buttons, motor pins with the motor driver) | |
-| B12 | **Sound on the on-screen micro:bit**: a program with music plays sound on a phone **and** a laptop (Windows Chrome) after tapping Run | |
+| B12 | **Sound on the on-screen micro:bit**: a program with music plays sound on a phone **and** a laptop (Windows Chrome) after tapping Run. If not: tap **Test sound** (a beep means the computer's sound works) and note the browser and whether "Sound is off" shows | |
+| B14 | **Answer sheet**: print two lessons' answer sheets on a school printer; one A4 page each; learners in Grades 3–7 can read the questions and have enough room to write | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -87,3 +88,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.5 | 2026-11-22 | B8 passed |
 | 0.6 | 2026-11-22 | B10 passed; B11 added |
 | 0.7 | 2026-11-22 | Six Phase 2 lessons added; B12 (laptop sound) and B13 (Open in code editor) |
+| 0.8 | 2026-11-23 | B12 adds the Test sound check; B14 answer sheets |

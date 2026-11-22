@@ -54,6 +54,9 @@ const starter = data.starter_program ? starterLink(lesson.id, data.starter_progr
     <a class="button" href={`/lessons/${lesson.id}/slides/`} data-offline>
       {m.lesson_slides_link()}
     </a>
+    <a class="button" href={`/lessons/${lesson.id}/answer-sheet/`} data-offline>
+      {m.lesson_answer_sheet_link()}
+    </a>
   </p>
 
   <DownloadLesson />
@@ -95,24 +98,6 @@ const starter = data.starter_program ? starterLink(lesson.id, data.starter_progr
           </li>
         ))}
       </ul>
-    </section>
-  )}
-
-  {starter && (
-    <section class="code-start" aria-labelledby="code-start-title">
-      <h2 id="code-start-title">{m.lesson_code_title()}</h2>
-      <p>
-        {data.hardware === 'none'
-          ? m.lesson_code_no_hardware()
-          : data.hardware === 'microbit'
-            ? m.lesson_code_microbit()
-            : m.lesson_code_microbit_motor()}
-      </p>
-      <p>
-        <a class="button" href={starter}>
-          {m.lesson_open_in_editor()}
-        </a>
-      </p>
     </section>
   )}
 
@@ -160,6 +145,24 @@ const starter = data.starter_program ? starterLink(lesson.id, data.starter_progr
       ))}
     </ul>
   </section>
+
+  {starter && (
+    <section class="code-start" aria-labelledby="code-start-title">
+      <h2 id="code-start-title">{m.lesson_code_title()}</h2>
+      <p>
+        {data.hardware === 'none'
+          ? m.lesson_code_no_hardware()
+          : data.hardware === 'microbit'
+            ? m.lesson_code_microbit()
+            : m.lesson_code_microbit_motor()}
+      </p>
+      <p>
+        <a class="button" href={starter}>
+          {m.lesson_open_in_editor()}
+        </a>
+      </p>
+    </section>
+  )}
 
   {data.syllabus_links.length > 0 && (
     <section aria-labelledby="syllabus-title">
