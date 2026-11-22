@@ -1,6 +1,6 @@
 # Spec: M3 — Code (block coding and micro:bit)
 
-> **Version:** 0.2 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
+> **Version:** 0.3 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
 > Depends on: M2 (lessons 1–10 built), CLAUDE.md 0.8, ADR-0001, ADR-0004. Proposes ADR-0005. Keep the version line current; log changes at the bottom.
 
 ---
@@ -77,6 +77,12 @@ Typing Python (later milestone, with Pyodide or the micro:bit Python Editor), ES
 - **Offline:** editor, blocks and virtual micro:bit work offline after the first visit to `/code/` (cached on visit, **not** pre-cached for every visitor of the site, to save data). The firmware is cached on first use.
 - **Security headers unchanged:** the strict CSP (`script-src 'self'`, no inline code, no `unsafe-eval`) stays. Blockly is loaded with its CSS injection turned off and its stylesheet served as a file.
 - **Languages:** English at launch; all strings keyed.
+- **Look and feel: like MakeCode for micro:bit** (owner decision 2026-11-22), so learners who also use MakeCode at school aren't confused:
+  - Layout: blocks on the right with category toolbox; on wide screens the on-screen micro:bit and the **purple Download** button on the left; on phones, buttons in a bar under the blocks.
+  - Colours: header blue `#3454D1`, Download purple `#6633CC`, workspace grey `#ECF0F1`, simulator area `#FDFDFF`.
+  - Block categories, colours and wording as in MakeCode: Basic `#1E90FF`, Input `#D400D4`, Loops `#00AA00`, Logic `#00A4A6`, Variables `#DC143C`, Math `#9400D3`, Pins `#B22222`, LED `#5C2D91`; blocks read "on start", "forever", "show icon", "pause (ms)", "on button A pressed" and so on.
+  - Not copied: the MakeCode name, logos or icons. Our editor says it is Robot For All's editor.
+  - Open question for the owner: several MakeCode block colours with white text are below the WCAG AA contrast ratio (non-negotiable §2.7). See §13.
 
 ---
 
@@ -186,6 +192,7 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 | `microbit-connection` changes its API | Flashing breaks on an update | Pin the exact version, wrap it, Download .hex always available |
 | Most learners have no micro:bit | Lessons feel incomplete | Every lesson completes fully in the virtual micro:bit |
 | No WebUSB on iPhone | Can't flash from iPhone | Download .hex with computer steps; Bluetooth flashing considered later |
+| MakeCode block colours fail WCAG AA text contrast (e.g. white on `#00A4A6` about 3:1) | Accessibility non-negotiable at risk | Owner to choose: exact MakeCode colours, slightly darker shades of the same colours, or exact colours plus a high-contrast switch |
 | Block editors are hard for blind learners | Accessibility gap | Keyboard navigation, text announcements, Python view; recorded in the test plan |
 | ESP32 boards are cheaper than micro:bit | Cost barrier | Program JSON is board-neutral; an ESP32 MicroPython target can be added later (flash via Web Serial) |
 
@@ -200,4 +207,5 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft; approved by the owner |
+| 0.3 | 2026-11-22 | MakeCode look and feel (owner decision); desktop layout fix |
 | 0.2 | 2026-11-22 | Step 1 done; ADR-0005 accepted; microbit-connection is stable (1.0.3); owner has a micro:bit |
