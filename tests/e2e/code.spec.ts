@@ -2,6 +2,7 @@
 // and offline use after the first visit. Grows into the full editor journeys in steps 3–5.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { devices } from '@playwright/test';
 import { test, expect, waitForServiceWorker } from './fixtures';
 
 const CODE = '/code/';
@@ -16,21 +17,61 @@ test.describe('code editor (M3)', () => {
       .toBeGreaterThan(0);
   });
 
-  test("Blockly's generated styles are allowed by exact hash", async ({ page }) => {
-    const response = await page.goto(CODE);
-    const policy = (await response?.headerValue('content-security-policy')) ?? '';
-    await expect(page.locator('.blocklySvg').first()).toBeVisible();
-    const styles = await page.evaluate(() =>
-      [...document.querySelectorAll('style')].map((s) => s.textContent ?? '')
-    );
-    const hashes = styles.map(
-      (css) => `'sha256-${createHash('sha256').update(css).digest('base64')}'`
-    );
-    expect(hashes.length, 'Blockly should add its stylesheets').toBeGreaterThan(0);
-    const missing = hashes.filter((h) => !policy.includes(h));
-    // If Blockly changes its CSS (e.g. after an upgrade), copy these into /code/* in _headers.
-    expect(missing, `add to style-src for /code/*: ${missing.join(' ')}`).toEqual([]);
-  });
+  // Blockly's CSS differs slightly between phones/Apple devices and other computers, so check
+  // both: a desktop hash was missing at first and the editor rendered black on Windows.
+  const browsers = [
+    { name: 'phone', options: { ...devices['Galaxy S9+'], viewport: { width: 360, height: 640 } } },
+    {
+      name: 'Windows desktop',
+      options: {
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+        viewport: { width: 1366, height: 768 },
+        isMobile: false,
+        hasTouch: false
+      }
+    }
+  ];
+
+  for (const { name, options } of browsers) {
+    test(`Blockly's generated styles are allowed by exact hash (${name})`, async ({ browser }) => {
+      const context = await browser.newContext(options);
+      const page = await context.newPage();
+      const response = await page.goto(CODE);
+      const policy = (await response?.headerValue('content-security-policy')) ?? '';
+      await expect(page.locator('.blocklySvg').first()).toBeVisible();
+      const styles = await page.evaluate(() =>
+        [...document.querySelectorAll('style')].map((s) => s.textContent ?? '')
+      );
+      const hashes = styles.map(
+        (css) => `'sha256-${createHash('sha256').update(css).digest('base64')}'`
+      );
+      expect(hashes.length, 'Blockly should add its stylesheets').toBeGreaterThan(0);
+      const missing = hashes.filter((h) => !policy.includes(h));
+      // If Blockly changes its CSS (e.g. after an upgrade), copy these into /code/* in _headers.
+      expect(missing, `add to style-src for /code/*: ${missing.join(' ')}`).toEqual([]);
+      await context.close();
+    });
+
+    test(`the blocks never cover the buttons (${name})`, async ({ browser }) => {
+      const context = await browser.newContext(options);
+      const page = await context.newPage();
+      await page.goto(CODE);
+      await expect(page.locator('.blocklyFlyout').first()).toBeVisible();
+      for (const label of ['Download .hex', 'Send to micro:bit']) {
+        const button = page.getByRole('button', { name: label });
+        await button.scrollIntoViewIfNeeded();
+        await expect(button).toBeInViewport({ ratio: 1 });
+        // The button itself must be what a tap at its centre hits.
+        const onTop = await button.evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
+        });
+        expect(onTop, `${label} is covered`).toBe(true);
+      }
+      await context.close();
+    });
+  }
 
   test('WebUSB is allowed on this page only', async ({ page }) => {
     const response = await page.goto(CODE);

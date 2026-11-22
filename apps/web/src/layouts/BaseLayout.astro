@@ -9,9 +9,11 @@ interface Props {
   /** Page title; the site name is added after it. Leave out on the home page. */
   title?: string;
   description?: string;
+  /** Full-width page for apps like the code editor (no reading column). */
+  wide?: boolean;
 }
 
-const { title, description = m.app_description() } = Astro.props;
+const { title, description = m.app_description(), wide = false } = Astro.props;
 const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.app_tagline()}`;
 ---
 
@@ -34,7 +36,7 @@ const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.
       {m.skip_link()}
     </a>
     <SiteHeader />
-    <main id="main" tabindex="-1">
+    <main id="main" tabindex="-1" class:list={[{ wide }]}>
       <slot />
     </main>
     <SiteFooter />
@@ -61,5 +63,10 @@ const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.
 
   main:focus {
     outline: none;
+  }
+
+  main.wide {
+    max-width: none;
+    padding: 0;
   }
 </style>

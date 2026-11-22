@@ -16,13 +16,47 @@ const labels = {
 };
 ---
 
-<BaseLayout title={m.code_title()}>
-  <h1>{m.code_title()}</h1>
-  <p>{m.code_intro()}</p>
+<BaseLayout title={m.code_title()} wide>
+  <div class="app-bar">
+    <h1>{m.code_title()}</h1>
+    <p>{m.code_intro()}</p>
+  </div>
   <div id="code-editor" data-labels={JSON.stringify(labels)}>
     <p class="loading">{m.code_loading()}</p>
   </div>
 </BaseLayout>
+
+<style>
+  /* MakeCode-style colours (owner decision 2026-11-22), so learners who also use MakeCode
+     at school see a familiar editor. Light only, like MakeCode. */
+  .app-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    background: #3454d1;
+    color: #fff;
+    color-scheme: light;
+  }
+  .app-bar h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #fff;
+  }
+  .app-bar p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+  @media (max-width: 47.99rem) {
+    .app-bar p {
+      display: none;
+    }
+  }
+  .loading {
+    padding: var(--space-4);
+  }
+</style>
 
 <script>
   // The editor (about 240 KB compressed) loads after the page itself, while the browser is idle.
