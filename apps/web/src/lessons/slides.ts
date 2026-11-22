@@ -35,3 +35,29 @@ export function splitSections(html: string): Section[] {
     return { heading: headingText(headingHtml), html: part.slice(end + 5).trim() };
   });
 }
+
+const decodeAttr = (v: string) =>
+  v
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+
+const escapeAttr = (v: string) =>
+  v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/**
+ * Astro stores lesson images in rendered HTML as placeholders (`<img __ASTRO_IMAGE_="{...}">`)
+ * that it normally resolves while rendering the page. The slides view uses the raw HTML, so it
+ * swaps each placeholder for a real <img> using the built URL of the image file.
+ * `urlFor` maps the Markdown path (e.g. "./images/cart.svg") to a URL, or returns undefined.
+ */
+export function resolveImages(html: string, urlFor: (src: string) => string | undefined): string {
+  return html.replace(/<img\s+__ASTRO_IMAGE_="([^"]*)"[^>]*>/g, (_, raw: string) => {
+    const { src, alt } = JSON.parse(decodeAttr(raw)) as { src?: string; alt?: string };
+    const url = src ? urlFor(src) : undefined;
+    if (!url) throw new Error(`Slides: no built image for "${src ?? '?'}"`);
+    return `<img src="${escapeAttr(url)}" alt="${escapeAttr(alt ?? '')}" loading="lazy">`;
+  });
+}

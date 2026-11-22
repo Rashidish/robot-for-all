@@ -131,22 +131,59 @@ test.describe('pages on a 360 px phone', () => {
     await expect(counter).toHaveText('Slide 3 of 9');
     await page.keyboard.press('ArrowLeft');
     await expect(counter).toHaveText('Slide 2 of 9');
+
+    // The lesson diagram appears on its slide, with its description.
+    const diagram = page.locator('.slide img').first();
+    expect((await diagram.getAttribute('alt'))?.length ?? 0).toBeGreaterThan(20);
+    await expect
+      .poll(() => diagram.evaluate((el: HTMLImageElement) => el.naturalWidth))
+      .toBeGreaterThan(0);
   });
 
   test('lesson filters narrow the list and remember the choice in the address', async ({
     page
   }) => {
     await page.goto('/lessons/');
-    const card = page.getByRole('link', { name: 'Crank-powered waving rhino' });
-    await page.getByLabel('Grade').selectOption('3');
-    await expect(card).toBeVisible();
-    await expect(page).toHaveURL(/\?grade=3$/);
-    await page.getByLabel('Cost').selectOption('10');
-    await expect(card).toBeHidden();
+    const rhino = page.getByRole('link', { name: 'Crank-powered waving rhino' });
+    const crocodile = page.getByRole('link', { name: 'Snapping crocodile' });
+    await expect(rhino).toBeVisible();
+    await expect(crocodile).toBeVisible();
+
+    await page.getByLabel('Mechanism').selectOption('crank');
+    await expect(rhino).toBeVisible();
+    await expect(crocodile).toBeHidden();
+    await expect(page).toHaveURL(/\?mechanism=crank$/);
+
+    // A shared link keeps the filter.
+    await page.goto('/lessons/?mechanism=lever');
+    await expect(page.getByLabel('Mechanism')).toHaveValue('lever');
+    await expect(crocodile).toBeVisible();
+    await expect(rhino).toBeHidden();
+
+    // No match shows a helpful message.
+    await page.goto('/lessons/?grade=12');
     await expect(page.getByText('No lessons match these filters.')).toBeVisible();
-    await page.goto('/lessons/?grade=3');
-    await expect(page.getByLabel('Grade')).toHaveValue('3');
-    await expect(card).toBeVisible();
+  });
+
+  test('lessons link forward along the learning path', async ({ page }) => {
+    await page.goto('/lessons/p1-lever-01/');
+    await page.getByRole('link', { name: 'Rolling cardboard cart' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Rolling cardboard cart');
+    await page.getByRole('link', { name: 'Crank-powered waving rhino' }).last().click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Crank-powered waving rhino');
+    await expect(page.getByRole('heading', { name: 'Do these lessons first' })).toBeVisible();
+  });
+
+  test('lesson diagrams load and have descriptions', async ({ page }) => {
+    for (const id of ['p1-lever-01', 'p1-wheel-01', 'p1-crank-01']) {
+      await page.goto(`/lessons/${id}/`);
+      const img = page.locator('.lesson-body img').first();
+      await expect(img).toBeVisible();
+      expect((await img.getAttribute('alt'))?.length ?? 0).toBeGreaterThan(20);
+      await expect
+        .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
+        .toBeGreaterThan(0);
+    }
   });
 
   test('printing hides menus and buttons', async ({ page }) => {

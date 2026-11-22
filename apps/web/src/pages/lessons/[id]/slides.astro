@@ -5,7 +5,14 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { m } from '../../../i18n';
 import { getLessons, type LessonEntry } from '../../../lessons/load';
 import { PRIMM_STEPS } from '../../../lessons/schema';
-import { splitSections } from '../../../lessons/slides';
+import { resolveImages, splitSections } from '../../../lessons/slides';
+
+// Built URLs of every lesson image, so slides can show the same diagrams as the handbook.
+const imageUrls = import.meta.glob<string>('../../../../../../content/lessons/*/images/*', {
+  eager: true,
+  query: '?url',
+  import: 'default'
+});
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
@@ -20,7 +27,9 @@ const { lesson } = Astro.props;
 const { data } = lesson;
 const html = lesson.rendered?.html;
 if (!html) throw new Error(`${lesson.id}: no rendered HTML for the slides view`);
-const steps = splitSections(html).filter((s) =>
+const urlFor = (src: string) =>
+  imageUrls[`../../../../../../content/lessons/${lesson.id}/${src.replace(/^\.\//, '')}`];
+const steps = splitSections(resolveImages(html, urlFor)).filter((s) =>
   (PRIMM_STEPS as readonly string[]).includes(s.heading)
 );
 const total = 3 + steps.length + 1;
@@ -168,6 +177,14 @@ const total = 3 + steps.length + 1;
   .slide h2 {
     margin-top: 0;
     font-size: clamp(1.4rem, 5vw, 2rem);
+  }
+
+  .slide :global(img) {
+    display: block;
+    max-width: 100%;
+    max-height: 40vh;
+    height: auto;
+    margin: var(--space-3) auto;
   }
 
   .slide.safety .adult {

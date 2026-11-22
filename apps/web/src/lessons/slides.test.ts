@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { headingText, splitSections } from './slides';
+import { headingText, resolveImages, splitSections } from './slides';
 
 describe('splitting a lesson into slides', () => {
   const html =
@@ -30,5 +30,23 @@ describe('heading text is always safe plain text', () => {
   ])('%s → %s', (input, expected) => {
     expect(headingText(input)).toBe(expected);
     expect(headingText(input)).not.toMatch(/[<>]/);
+  });
+});
+
+describe('lesson images in slides', () => {
+  const placeholder =
+    '<p><img __ASTRO_IMAGE_="{&quot;src&quot;:&quot;./images/cart.svg&quot;,&quot;alt&quot;:&quot;A cart &amp; its \\&quot;wheels\\&quot;&quot;,&quot;index&quot;:0}"></p>';
+
+  it('turns placeholders into real images with their descriptions', () => {
+    const html = resolveImages(placeholder, (src) =>
+      src === './images/cart.svg' ? '/_astro/cart.abc.svg' : undefined
+    );
+    expect(html).toBe(
+      '<p><img src="/_astro/cart.abc.svg" alt="A cart &amp; its &quot;wheels&quot;" loading="lazy"></p>'
+    );
+  });
+
+  it('fails the build when an image is missing', () => {
+    expect(() => resolveImages(placeholder, () => undefined)).toThrow(/no built image/);
   });
 });

@@ -28,7 +28,7 @@ export default defineSheet({
       measurements: ['pivot hole at the back of the head; push-rod hole under the horn']
     }),
     disc({ name: 'Crank disc', diameter: 50, offsets: [8, 14] }),
-    strip({ name: 'Push rod', length: 90, width: 12, holes: 2 }),
+    strip({ name: 'Push rod', length: 72, width: 12, holes: 2 }),
     strip({ name: 'Handle', length: 40, width: 12, holes: 1 })
   ]
 });
