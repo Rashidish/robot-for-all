@@ -35,8 +35,8 @@ const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
     {m.lessons_filter_cost()}
     <select name="cost">
       <option value="">{m.lessons_filter_any()}</option>
-      <option value="10">{m.lessons_filter_cost_10()}</option>
-      <option value="30">{m.lessons_filter_cost_30()}</option>
+      <option value="10">{m.lessons_filter_cost_low()}</option>
+      <option value="30">{m.lessons_filter_cost_mid()}</option>
     </select>
   </label>
 </form>

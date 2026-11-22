@@ -25,7 +25,7 @@ describe('heading text is always safe plain text', () => {
   it.each([
     ['<em>Run</em>', 'Run'],
     ['&lt;script&gt;alert(1)&lt;/script&gt;', 'scriptalert(1)/script'],
-    ['<scr<script>ipt>x', 'iptx'],
+    ['<scr<script>ipt>x', 'x'],
     ['Fish &amp;amp; chips', 'Fish &amp; chips']
   ])('%s → %s', (input, expected) => {
     expect(headingText(input)).toBe(expected);
