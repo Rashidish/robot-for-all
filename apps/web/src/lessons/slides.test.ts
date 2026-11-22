@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { splitSections } from './slides';
+import { headingText, splitSections } from './slides';
 
 describe('splitting a lesson into slides', () => {
   const html =
@@ -18,5 +18,17 @@ describe('splitting a lesson into slides', () => {
 
   it('returns nothing when there are no headings', () => {
     expect(splitSections('<p>just text</p>')).toEqual([]);
+  });
+});
+
+describe('heading text is always safe plain text', () => {
+  it.each([
+    ['<em>Run</em>', 'Run'],
+    ['&lt;script&gt;alert(1)&lt;/script&gt;', 'scriptalert(1)/script'],
+    ['<scr<script>ipt>x', 'iptx'],
+    ['Fish &amp;amp; chips', 'Fish &amp; chips']
+  ])('%s → %s', (input, expected) => {
+    expect(headingText(input)).toBe(expected);
+    expect(headingText(input)).not.toMatch(/[<>]/);
   });
 });

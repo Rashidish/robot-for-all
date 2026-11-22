@@ -1,12 +1,13 @@
 // Automated WCAG 2.2 AA checks with axe-core. Catches about a third of issues; manual
 // TalkBack testing (M1 spec §9) covers the rest.
 import AxeBuilder from '@axe-core/playwright';
-import { expect, LESSON, TEMPLATE, test } from './fixtures';
+import { expect, LESSON, SLIDES, TEMPLATE, test } from './fixtures';
 
 const pages = [
   '/',
   '/lessons/',
   LESSON,
+  SLIDES,
   TEMPLATE,
   '/about/',
   '/privacy/',

@@ -6,15 +6,25 @@ export interface Section {
   html: string;
 }
 
-const stripTags = (html: string) =>
-  html
-    .replace(/<[^>]*>/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+const ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" };
+
+/**
+ * Turns heading HTML into plain text. Safe by construction: tags are removed until none are
+ * left, entities are decoded in a single pass (no double decoding), and any remaining angle
+ * brackets are dropped, so the result can never form a tag. It is also escaped again on output.
+ */
+export function headingText(html: string): string {
+  let text = html;
+  let previous;
+  do {
+    previous = text;
+    text = text.replace(/<[^<>]*>/g, '');
+  } while (text !== previous);
+  return text
+    .replace(/&(amp|lt|gt|quot|#39);/g, (_, name: string) => ENTITIES[name] ?? '')
+    .replace(/[<>]/g, '')
     .trim();
+}
 
 /** Splits HTML at each <h2>. Anything before the first <h2> (e.g. comments) is dropped. */
 export function splitSections(html: string): Section[] {
@@ -22,6 +32,6 @@ export function splitSections(html: string): Section[] {
   return parts.map((part) => {
     const end = part.search(/<\/h2>/i);
     const headingHtml = part.slice(part.indexOf('>') + 1, end);
-    return { heading: stripTags(headingHtml), html: part.slice(end + 5).trim() };
+    return { heading: headingText(headingHtml), html: part.slice(end + 5).trim() };
   });
 }

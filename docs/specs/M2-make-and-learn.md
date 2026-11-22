@@ -141,7 +141,7 @@ Lesson 10 is the bridge to Phase 2: it introduces a battery, a switch and one sm
 
 1. ~~Lesson format v2: schema, validation, handbook view updates, docs~~ ✅ Done
 2. ~~`packages/templates`: generators, geometry tests, template pages, print check~~ ✅ Done. The package is imported by path rather than as an npm workspace (no build step needed)
-3. Slides view + library filters + learning-path links
+3. ~~Slides view + library filters + learning-path links~~ ✅ Done
 4. Lessons 1–3 (drafts, templates, diagrams) ⏸ review in preview
 5. Lessons 4–6 ⏸
 6. Lessons 7–10 ⏸
