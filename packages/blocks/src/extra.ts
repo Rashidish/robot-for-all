@@ -1102,8 +1102,15 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     fields: [{ kind: 'enum', key: 'motor', field: 'MOTOR', options: DRIVE_STOP_MOTORS }],
     py: (node, c) => {
       const which = String(node['motor']);
-      const motors = which === 'both' ? (['A', 'B'] as const) : which === 'B' ? (['B'] as const) : (['A'] as const);
-      return motors.flatMap((m) => DRIVE_PINS[m].map((pin) => `${c.pad}pin${pin}.write_digital(0)`));
+      const motors =
+        which === 'both'
+          ? (['A', 'B'] as const)
+          : which === 'B'
+            ? (['B'] as const)
+            : (['A'] as const);
+      return motors.flatMap((m) =>
+        DRIVE_PINS[m].map((pin) => `${c.pad}pin${pin}.write_digital(0)`)
+      );
     }
   }
 ];

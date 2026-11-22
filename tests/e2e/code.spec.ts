@@ -359,7 +359,9 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
       )
     });
     // The extension's category appears because the program uses its blocks.
-    await expect(page.locator('.blocklyToolboxCategory', { hasText: 'Motor driver' })).toBeVisible();
+    await expect(
+      page.locator('.blocklyToolboxCategory', { hasText: 'Motor driver' })
+    ).toBeVisible();
     await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
     await expect(page.locator('.outputs .speed').first()).toHaveText('75%');
