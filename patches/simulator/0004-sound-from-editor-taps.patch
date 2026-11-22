@@ -1,0 +1,21 @@
+diff --git a/src/simulator.ts b/src/simulator.ts
+index c217be9..8d0955d 100644
+--- a/src/simulator.ts
++++ b/src/simulator.ts
+@@ -21,4 +21,16 @@ declare global {
+ 
+ const fs = new FileSystem();
+ const board = createBoard(new Notifications(window.parent), fs);
++
++// Robot For All: browsers only let sound start after a tap. The editor calls rfaStartAudio()
++// during its own Run tap (same-origin frame), and any tap or key press on the board also
++// switches sound on. rfaAudioState() lets our tests check that sound is running.
++const rfaStartAudio = () => {
++  void board.audio.createAudioContextFromUserInteraction();
++};
++(window as unknown as Record<string, unknown>).rfaStartAudio = rfaStartAudio;
++(window as unknown as Record<string, unknown>).rfaAudioState = () =>
++  (board.audio as unknown as { context?: AudioContext }).context?.state ?? "none";
++document.addEventListener("pointerdown", rfaStartAudio);
++document.addEventListener("keydown", rfaStartAudio);
+ window.addEventListener("message", createMessageListener(board));

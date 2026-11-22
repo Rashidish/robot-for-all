@@ -115,8 +115,9 @@ test.describe('code editor (M3)', () => {
     expect(file.suggestedFilename()).toBe('Heart-test.rfa.json');
     const saved = JSON.parse(readFileSync((await file.path()) ?? '', 'utf8')) as { format: string };
     expect(saved.format).toBe('robot-for-all-program');
+    page.once('dialog', (prompt) => void prompt.accept('Robot dance'));
     await dialog.getByRole('button', { name: 'New' }).click();
-    await expect(page.getByLabel('Program name')).toHaveValue('My program');
+    await expect(page.getByLabel('Program name')).toHaveValue('Robot dance');
     await page.getByRole('button', { name: 'My programs' }).click();
     // The first empty program, the opened file, and the new one.
     await expect(dialog.getByRole('listitem')).toHaveCount(3);
@@ -311,6 +312,28 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
   });
 
+  test('Run switches the sound on (browsers only allow it after a tap)', async ({ page }) => {
+    await openEditor(page);
+    await importHeart(page);
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    const state = () =>
+      page
+        .frameLocator('iframe[title="On-screen micro:bit"]')
+        .locator('body')
+        .evaluate(() => (window as unknown as { rfaAudioState?: () => string }).rfaAudioState?.());
+    await expect.poll(state, { timeout: 15_000 }).toBe('running');
+  });
+
+  test('the search box is never covered by the blocks (phone)', async ({ page }) => {
+    await openEditor(page);
+    const search = page.getByPlaceholder('Search blocks…');
+    const onTop = await search.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
+    });
+    expect(onTop).toBe(true);
+  });
+
   test('the Shake button shakes the on-screen micro:bit', async ({ page }) => {
     await openEditor(page);
     await page.getByRole('button', { name: 'My programs' }).click();
@@ -383,10 +406,15 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(2);
   });
 
-  test('switching back to Blocks runs the blocks, and keeps the Python as a copy', async ({
+  test('switching back to Blocks runs the blocks, and keeps the Python as a named copy', async ({
     page
   }) => {
-    page.on('dialog', (dialog) => void dialog.accept());
+    // Confirm the switch, and name the Python copy when asked.
+    page.on(
+      'dialog',
+      (dialog) =>
+        void (dialog.type() === 'prompt' ? dialog.accept('Square in Python') : dialog.accept())
+    );
     await openEditor(page);
     await page.getByRole('button', { name: 'My programs' }).click();
     const happyFile = JSON.stringify({
@@ -408,7 +436,7 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await page
       .getByLabel('Your MicroPython program')
       .fill('from microbit import *\ndisplay.show(Image.SQUARE)\n');
-    await page.locator('#panel-python').getByRole('button', { name: 'Run' }).click();
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect(page.getByText('Running: your typed Python')).toBeVisible();
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);
     // The Blocks tab switches back to the blocks: the happy face (7 LEDs) runs again.
@@ -417,7 +445,7 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(7);
     // The running simulator keeps the page busy; a direct click event avoids scroll races.
     await page.getByRole('button', { name: 'My programs' }).dispatchEvent('click');
-    await expect(page.getByRole('dialog').getByText('Faces (Python)')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Square in Python')).toBeVisible();
   });
 
   test('runs Python the learner types', async ({ page }) => {
@@ -428,8 +456,7 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await page
       .getByLabel('Your MicroPython program')
       .fill('from microbit import *\npin1.write_digital(1)\ndisplay.show(Image.SQUARE)\n');
-    // The Run button next to the code starts the on-screen micro:bit.
-    await page.locator('#panel-python').getByRole('button', { name: 'Run' }).click();
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect(page.locator('.motor')).toHaveText('backward', { timeout: 15_000 });
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);
     // Typed Python is kept after a reload.

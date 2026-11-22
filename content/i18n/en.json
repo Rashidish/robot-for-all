@@ -323,5 +323,9 @@
   "code_clear_python": "Clear code",
   "code_clear_python_confirm": "Clear all the typed Python and start again?",
   "code_runs_python": "Running: your typed Python",
-  "code_runs_blocks": "Running: your blocks"
+  "code_runs_blocks": "Running: your blocks",
+  "code_new_name": "Name your new program:",
+  "code_python_copy_name": "Your typed Python will be kept as its own program. What should it be called?",
+  "code_name_needed": "Please type a name for the program.",
+  "code_name_taken": "You already have a program with that name. Please choose another name."
 }

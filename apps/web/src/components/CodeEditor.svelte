@@ -183,6 +183,12 @@
     scheduleSimulator();
   }
 
+  /** "New" asks for a name first, so My programs isn't full of "My program". */
+  function startNew() {
+    const chosen = askName(t('code_new_name'));
+    if (chosen) newProgram(NEW_PROGRAM, chosen);
+  }
+
   function newProgram(
     from: Program = NEW_PROGRAM,
     programName = t('code_default_name'),
@@ -385,16 +391,38 @@
   }
 
   /**
+   * Asks for a program name until the learner gives one that isn't already used.
+   * Returns null if they cancel.
+   */
+  function askName(message: string, suggestion = ''): string | null {
+    let question = message;
+    for (;;) {
+      const answer = window.prompt(question, suggestion);
+      if (answer === null) return null;
+      const chosen = answer.trim().slice(0, 60);
+      const taken = Object.values(store.programs).some(
+        (p) => p.name.toLowerCase() === chosen.toLowerCase()
+      );
+      if (chosen && !taken) return chosen;
+      question = chosen ? t('code_name_taken') : t('code_name_needed');
+      suggestion = chosen;
+    }
+  }
+
+  /**
    * Switches back to the blocks. The typed Python is never thrown away: it is kept as its own
    * program in My programs ("… (Python)"). Returns false if the learner cancels.
    */
   function backToBlocks(): boolean {
     if (!window.confirm(t('code_back_to_blocks_confirm'))) return false;
     if (typed.trim() && workspace) {
+      // The Python copy needs its own name, so My programs doesn't fill up with look-alikes.
+      const copyName = askName(t('code_python_copy_name'));
+      if (copyName === null) return false;
       const id = newId();
       store.programs[id] = {
         id,
-        name: `${name.trim() || t('code_default_name')} (${t('code_tab_python')})`,
+        name: copyName,
         updated: Date.now() - 1,
         workspace: Blockly.serialization.workspaces.save(workspace),
         python: typed
@@ -511,30 +539,7 @@
 </script>
 
 <div class="editor">
-  <div class="tabs" role="tablist" aria-label={t('code_title')}>
-    <button
-      type="button"
-      role="tab"
-      id="tab-blocks"
-      aria-selected={tab === 'blocks'}
-      aria-controls="panel-blocks"
-      onclick={() => showTab('blocks')}
-    >
-      {t('code_tab_blocks')}
-    </button>
-    <button
-      type="button"
-      role="tab"
-      id="tab-python"
-      aria-selected={tab === 'python'}
-      aria-controls="panel-python"
-      onclick={() => showTab('python')}
-    >
-      {t('code_tab_python')}
-    </button>
-  </div>
-
-  <div class="main">
+  <div class="tabs">
     <label class="search" hidden={tab !== 'blocks'}>
       <span class="visually-hidden">{t('code_search')}</span>
       <input
@@ -544,6 +549,31 @@
         oninput={onSearch}
       />
     </label>
+    <div class="tablist" role="tablist" aria-label={t('code_title')}>
+      <button
+        type="button"
+        role="tab"
+        id="tab-blocks"
+        aria-selected={tab === 'blocks'}
+        aria-controls="panel-blocks"
+        onclick={() => showTab('blocks')}
+      >
+        {t('code_tab_blocks')}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-python"
+        aria-selected={tab === 'python'}
+        aria-controls="panel-python"
+        onclick={() => showTab('python')}
+      >
+        {t('code_tab_python')}
+      </button>
+    </div>
+  </div>
+
+  <div class="main">
     <div
       id="panel-blocks"
       class="workspace"
@@ -587,9 +617,6 @@
           aria-describedby="python-keys"></textarea>
         <p id="python-keys" class="note">{t('code_python_keys')}</p>
         <div class="actions">
-          <button type="button" class="primary" onclick={() => sim?.flash()}>
-            {t('code_run')}
-          </button>
           <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
           <button type="button" class="plain" onclick={clearPython}>
             {t('code_clear_python')}
@@ -655,7 +682,7 @@
     {/each}
   </ul>
   <div class="actions">
-    <button type="button" class="primary" onclick={() => newProgram()}>{t('code_new')}</button>
+    <button type="button" class="primary" onclick={startNew}>{t('code_new')}</button>
     <button type="button" class="secondary" onclick={exportFile}>{t('code_export')}</button>
     <label class="file plain">
       {t('code_import')}
@@ -703,8 +730,10 @@
   .tabs {
     grid-area: tabs;
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: 0;
+    gap: 0.375rem 0.75rem;
     padding: 0.375rem;
     background: #ecf0f1;
     border-block-end: 1px solid #d5dbdc;
@@ -754,12 +783,14 @@
     inline-size: 100%;
     background: #ecf0f1;
   }
+  /* Search sits in the top bar, beside the Blocks / Python switch, so the blocks can never
+     cover it (it used to float over the toolbox). */
   .search {
-    position: absolute;
-    inset-block-start: 0.25rem;
-    inset-inline-start: 0.25rem;
-    z-index: 2;
-    inline-size: 9.5rem;
+    flex: 0 1 11rem;
+    min-inline-size: 8rem;
+  }
+  .tablist {
+    display: flex;
   }
   .search[hidden] {
     display: none;
@@ -792,7 +823,6 @@
   }
   /* MakeCode-style toolbox: white, a coloured bar, an icon and a coloured name per category. */
   :global(.blocklyToolbox) {
-    padding-block-start: 2.75rem;
     background: #fff;
   }
   :global(.rfaCategory) {
