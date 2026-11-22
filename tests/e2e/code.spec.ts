@@ -50,7 +50,7 @@ test.describe('code editor (M3)', () => {
     const hex = readFileSync((await download.path()) ?? '', 'utf8');
     expect(hex).toMatch(/^:0400000A/m);
     expect(hex.length).toBeGreaterThan(1_000_000);
-    await expect(page.getByRole('status')).toHaveText('Done.');
+    await expect(page.locator('p.status')).toHaveText('Done.');
   });
 
   test('works offline after the first visit, including Download .hex', async ({
@@ -73,6 +73,6 @@ test.describe('code editor (M3)', () => {
       page.waitForEvent('download'),
       page.getByRole('button', { name: 'Download .hex' }).click()
     ]);
-    await expect(page.getByRole('status')).toHaveText('Done.');
+    await expect(page.locator('p.status')).toHaveText('Done.');
   });
 });
