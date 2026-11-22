@@ -59,16 +59,29 @@
     frame?.contentWindow?.postMessage(message, window.location.origin);
   }
 
-  /** Sends the current program to the simulator and (re)starts it. */
-  export function flash(): void {
+  let editorAudio: AudioContext | undefined;
+
+  /**
+   * Sends the current program to the simulator and (re)starts it. When called from a tap on
+   * Run or Restart, also switches the sound on (patch 0004): we make the AudioContext here,
+   * inside the tap, and hand it to the simulator.
+   */
+  export function flash(fromTap = false): void {
     const current = files();
     if (!current) return;
-    // Called during a tap on our Run button: let the simulator switch its sound on now, while
-    // the browser still counts this as the learner's tap (same-origin frame, patch 0004).
     try {
-      (frame?.contentWindow as unknown as { rfaStartAudio?: () => void } | null)?.rfaStartAudio?.();
+      let context: AudioContext | undefined;
+      if (fromTap) {
+        editorAudio ??= new AudioContext({ sampleRate: 44100 });
+        void editorAudio.resume();
+        context = editorAudio;
+      }
+      const sim = frame?.contentWindow as unknown as {
+        rfaStartAudio?: (context?: AudioContext) => void;
+      } | null;
+      sim?.rfaStartAudio?.(context);
     } catch {
-      // The simulator page isn't ready yet; it will ask for the program itself.
+      // No sound on this browser, or the simulator page isn't ready yet; it still runs.
     }
     const encoder = new TextEncoder();
     const filesystem = Object.fromEntries(
@@ -166,9 +179,9 @@
   <div class="controls">
     {#if running}
       <button type="button" class="plain" onclick={stop}>{t('sim_stop')}</button>
-      <button type="button" class="plain" onclick={flash}>{t('sim_restart')}</button>
+      <button type="button" class="plain" onclick={() => flash(true)}>{t('sim_restart')}</button>
     {:else}
-      <button type="button" class="secondary" onclick={flash}>{t('code_run')}</button>
+      <button type="button" class="secondary" onclick={() => flash(true)}>{t('code_run')}</button>
     {/if}
   </div>
 
