@@ -279,7 +279,9 @@
   }
 
   function deleteProgram(id: string) {
-    store.programs = Object.fromEntries(Object.entries(store.programs).filter(([key]) => key !== id));
+    store.programs = Object.fromEntries(
+      Object.entries(store.programs).filter(([key]) => key !== id)
+    );
     if (store.current === id) {
       store.current = null;
       const next = listPrograms(store)[0];
