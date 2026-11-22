@@ -2,6 +2,9 @@
 // own format, so programs can be validated, turned into MicroPython and run on the virtual
 // micro:bit without Blockly. Everything here is pure TypeScript with no dependencies.
 import { ICON_NAMES, type IconName } from './icons';
+import { EXTRA_BY_TYPE, IDENT, type GenericNode } from './extra';
+
+export type { GenericNode };
 
 export const PROGRAM_VERSION = 1;
 
@@ -21,7 +24,8 @@ export type Expr =
   | { type: 'button_pressed'; button: Button }
   | { type: 'light_level' }
   | { type: 'acceleration'; axis: 'x' | 'y' | 'z' }
-  | { type: 'temperature' };
+  | { type: 'temperature' }
+  | GenericNode;
 
 export type Stmt =
   | { type: 'show_icon'; icon: IconName }
@@ -35,12 +39,14 @@ export type Stmt =
   | { type: 'set'; name: string; value: Expr }
   | { type: 'change'; name: string; by: Expr }
   | { type: 'digital_write'; pin: Pin; value: 0 | 1 }
-  | { type: 'motor'; action: 'forward' | 'reverse' | 'stop' };
+  | { type: 'motor'; action: 'forward' | 'reverse' | 'stop' }
+  | GenericNode;
 
 export type Handler =
   | { type: 'on_start'; body: Stmt[] }
   | { type: 'forever'; body: Stmt[] }
-  | { type: 'on_button'; button: Button; body: Stmt[] };
+  | { type: 'on_button'; button: Button; body: Stmt[] }
+  | GenericNode;
 
 export interface Program {
   version: typeof PROGRAM_VERSION;
@@ -92,6 +98,69 @@ export function parseProgram(input: unknown): Program {
       throw new ProgramError('variable names use letters, numbers, spaces or _', path);
     }
     return v;
+  };
+
+  /** Blocks described in extra.ts, validated from their field list. */
+  const generic = (
+    v: unknown,
+    path: string,
+    depth: number,
+    role: string[]
+  ): GenericNode | undefined => {
+    const t = isObject(v) ? v['type'] : undefined;
+    const spec = typeof t === 'string' ? EXTRA_BY_TYPE.get(t as GenericNode['type']) : undefined;
+    if (!spec || !role.includes(spec.role)) return undefined;
+    const o = fields(v, path, ['type', ...spec.fields.map((f) => f.key)]);
+    const out: GenericNode = { type: spec.type };
+    for (const f of spec.fields) {
+      const at = `${path}.${f.key}`;
+      const value = o[f.key];
+      switch (f.kind) {
+        case 'expr':
+          out[f.key] = expr(value, at, depth + 1);
+          break;
+        case 'stmts':
+          out[f.key] = stmts(value ?? [], at, depth + 1);
+          break;
+        case 'enum':
+          out[f.key] = oneOf(
+            value,
+            f.options.map((opt) => opt[1]),
+            at
+          );
+          break;
+        case 'int':
+          if (
+            typeof value !== 'number' ||
+            !Number.isInteger(value) ||
+            value < f.min ||
+            value > f.max
+          ) {
+            throw new ProgramError(`expected a whole number from ${f.min} to ${f.max}`, at);
+          }
+          out[f.key] = value;
+          break;
+        case 'text':
+          if (typeof value !== 'string' || value.length > f.maxLength) {
+            throw new ProgramError(`expected text up to ${f.maxLength} characters`, at);
+          }
+          out[f.key] = value;
+          break;
+        case 'ident':
+          if (typeof value !== 'string' || !IDENT.test(value)) {
+            throw new ProgramError('names use letters, numbers and _, starting with a letter', at);
+          }
+          out[f.key] = value;
+          break;
+        case 'leds':
+          if (typeof value !== 'string' || !/^[01]{25}$/.test(value)) {
+            throw new ProgramError('expected 25 LEDs as 0s and 1s', at);
+          }
+          out[f.key] = value;
+          break;
+      }
+    }
+    return out;
   };
 
   const expr = (v: unknown, path: string, depth: number): Expr => {
@@ -180,8 +249,11 @@ export function parseProgram(input: unknown): Program {
       case 'temperature':
         fields(v, path, ['type']);
         return { type: 'temperature' };
-      default:
+      default: {
+        const g = generic(v, path, depth, ['expr']);
+        if (g) return g;
         throw new ProgramError(`unknown value block "${String(t)}"`, path);
+      }
     }
   };
 
@@ -268,8 +340,11 @@ export function parseProgram(input: unknown): Program {
           action: oneOf(o['action'], ['forward', 'reverse', 'stop'] as const, `${path}.action`)
         };
       }
-      default:
+      default: {
+        const g = generic(v, path, depth, ['stmt']);
+        if (g) return g;
         throw new ProgramError(`unknown block "${String(t)}"`, path);
+      }
     }
   };
 
@@ -287,6 +362,8 @@ export function parseProgram(input: unknown): Program {
         body: stmts(o['body'], `${path}.body`, 1)
       };
     }
+    const g = generic(v, path, 1, ['handler', 'function']);
+    if (g) return g;
     throw new ProgramError(`unknown event block "${String(t)}"`, path);
   };
 
@@ -305,26 +382,21 @@ export function parseProgram(input: unknown): Program {
 /** Every variable name used in a program, in first-use order. */
 export function variableNames(program: Program): string[] {
   const names = new Set<string>();
-  const inExpr = (e: Expr): void => {
-    if (e.type === 'var') names.add(e.name);
-    for (const key of ['a', 'b', 'from', 'to'] as const) {
-      const child = (e as Record<string, unknown>)[key];
-      if (child) inExpr(child as Expr);
+  const walk = (value: unknown): void => {
+    if (Array.isArray(value)) {
+      value.forEach(walk);
+      return;
     }
-  };
-  const inStmts = (list: Stmt[]): void => {
-    for (const s of list) {
-      if (s.type === 'set' || s.type === 'change') names.add(s.name);
-      for (const key of ['value', 'ms', 'times', 'cond', 'by'] as const) {
-        const child = (s as Record<string, unknown>)[key];
-        if (child && typeof child === 'object') inExpr(child as Expr);
-      }
-      for (const key of ['body', 'then', 'else'] as const) {
-        const child = (s as Record<string, unknown>)[key];
-        if (Array.isArray(child)) inStmts(child as Stmt[]);
-      }
+    if (typeof value !== 'object' || value === null) return;
+    const node = value as Record<string, unknown>;
+    if (
+      (node['type'] === 'var' || node['type'] === 'set' || node['type'] === 'change') &&
+      typeof node['name'] === 'string'
+    ) {
+      names.add(node['name']);
     }
+    for (const [key, child] of Object.entries(node)) if (key !== 'type') walk(child);
   };
-  for (const h of program.handlers) inStmts(h.body);
+  walk(program.handlers);
   return [...names];
 }

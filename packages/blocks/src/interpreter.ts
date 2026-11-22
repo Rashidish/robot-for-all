@@ -203,6 +203,9 @@ export async function run(
           device.writeDigital(1, b as 0 | 1);
           break;
         }
+        default:
+          // MakeCode-level blocks (extra.ts) run in the real MicroPython simulator (ADR-0006).
+          throw new Error(`The test interpreter can't run "${s.type}"`);
       }
     }
   };

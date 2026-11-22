@@ -6,7 +6,7 @@ import { BLOCK_DEFINITIONS, iconImage, messageKeys } from './definitions';
 import { fromBlockly, NEW_PROGRAM, toBlockly, type BlockJson } from './serialization';
 import { TOOLBOX, variableBlocks } from './toolbox';
 
-const defined = new Set(BLOCK_DEFINITIONS.map((d) => d.type));
+const defined = new Set(BLOCK_DEFINITIONS.map((d) => (d as { type: string }).type));
 
 describe('block definitions', () => {
   it('have an English message for every %{BKY_...} key', () => {

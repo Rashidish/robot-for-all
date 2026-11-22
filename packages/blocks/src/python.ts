@@ -5,7 +5,8 @@
 // every "forever" block's body in order, then each "on button pressed" block whose button was
 // pressed since the last check, then a 20 ms rest (like MakeCode's forever loop). A press is
 // never missed, but it is handled after the current "forever" body finishes.
-import type { Expr, Handler, Program, Stmt } from './program';
+import type { Expr, GenericNode, Handler, Program, Stmt } from './program';
+import { EXTRA_BY_TYPE, type HandlerSpec, type PyContext } from './extra';
 import { variableNames } from './program';
 
 const INDENT = '    ';
@@ -123,6 +124,26 @@ const COMPARE = { eq: '==', neq: '!=', lt: '<', lte: '<=', gt: '>', gte: '>=' } 
 export function toPython(program: Program): string {
   const names = pythonNames(variableNames(program));
   const uses = { random: false, number: false };
+  const modules = new Set<string>();
+  const counters = new Map<string, number>();
+  const unique = (base: string) => {
+    const i = counters.get(base) ?? 0;
+    counters.set(base, i + 1);
+    return `${base}_${i}`;
+  };
+  const context = (depth: number): PyContext => ({
+    expr: (e) => expr(e),
+    bare: (e) => bare(e),
+    block: (list, d) => block(list, d),
+    pad: INDENT.repeat(depth),
+    use: (name) => {
+      if (name === 'random') uses.random = true;
+      else if (name === 'number') uses.number = true;
+      else modules.add(name);
+    },
+    unique
+  });
+  const specFor = (node: GenericNode) => EXTRA_BY_TYPE.get(node.type);
 
   const expr = (e: Expr): string => {
     switch (e.type) {
@@ -153,6 +174,10 @@ export function toPython(program: Program): string {
         return `accelerometer.get_${e.axis}()`;
       case 'temperature':
         return 'temperature()';
+      default: {
+        const spec = specFor(e);
+        return spec?.role === 'expr' ? spec.py(e, context(0)) : 'None';
+      }
     }
   };
 
@@ -210,41 +235,95 @@ export function toPython(program: Program): string {
         const [a, b] = s.action === 'forward' ? [1, 0] : s.action === 'reverse' ? [0, 1] : [0, 0];
         return [`${pad}pin0.write_digital(${a})`, `${pad}pin1.write_digital(${b})`];
       }
+      default: {
+        const spec = specFor(s);
+        return spec?.role === 'stmt' ? spec.py(s, context(depth)) : [];
+      }
     }
   };
 
   const of = <T extends Handler['type']>(type: T) =>
     program.handlers.filter((h): h is Extract<Handler, { type: T }> => h.type === type);
+  const generics = program.handlers.filter((h): h is GenericNode => h.type.startsWith('x_'));
+
+  // Main-loop parts are generated first, so we know which modules and helpers they use.
+  const loop: string[] = [];
+  const setup: string[] = [];
+  for (const h of of('forever')) loop.push(`${INDENT}# forever`, ...block(h.body, 1));
+  const radioHandlers = generics.filter(
+    (h) => h.type === 'x_on_radio_number' || h.type === 'x_on_radio_string'
+  );
+  if (radioHandlers.length) {
+    loop.push(
+      `${INDENT}# radio`,
+      `${INDENT}_radio_text = radio.receive()`,
+      `${INDENT}_radio_number = None`,
+      `${INDENT}if _radio_text is not None:`,
+      `${INDENT}${INDENT}try:`,
+      `${INDENT}${INDENT}${INDENT}_radio_number = float(_radio_text)`,
+      `${INDENT}${INDENT}${INDENT}receivedNumber = _radio_number`,
+      `${INDENT}${INDENT}${INDENT}_radio_text = None`,
+      `${INDENT}${INDENT}except ValueError:`,
+      `${INDENT}${INDENT}${INDENT}receivedString = _radio_text`
+    );
+  }
+  for (const h of of('on_button')) {
+    loop.push(
+      `${INDENT}# on button ${h.button} pressed`,
+      `${INDENT}if button_${h.button.toLowerCase()}.was_pressed():`,
+      ...block(h.body, 2)
+    );
+  }
+  for (const h of generics) {
+    const spec = specFor(h);
+    if (spec?.role !== 'handler') continue;
+    const parts = (spec as HandlerSpec).loop(h, context(1));
+    setup.push(...(parts.setup ?? []));
+    loop.push(
+      `${INDENT}# ${h.type.slice(2).replace(/_/g, ' ')}`,
+      ...(parts.before ?? []).map((l) => `${INDENT}${l}`),
+      `${INDENT}if ${parts.cond}:`,
+      ...(parts.afterTrue ?? []).map((l) => `${INDENT}${INDENT}${l}`),
+      ...block((h['body'] as Stmt[]) ?? [], 2),
+      ...(parts.after ?? []).map((l) => `${INDENT}${l}`)
+    );
+  }
+
+  const starts: string[] = [];
+  for (const h of of('on_start')) starts.push(...(h.body.length ? block(h.body, 0) : []));
+
+  const functions: { name: string; lines: string[] }[] = generics
+    .filter((h) => h.type === 'x_function')
+    .map((h) => ({ name: String(h['name']), lines: block((h['body'] as Stmt[]) ?? [], 1) }));
+
+  const variables = [...names.values()];
+  const globals = [
+    ...variables,
+    ...(radioHandlers.length ? ['receivedNumber', 'receivedString'] : []),
+    ...(modules.has('neopixel') ? ['strip'] : [])
+  ];
 
   const body: string[] = [];
-  const variables = [...names.values()];
-  if (variables.length) {
+  if (variables.length || radioHandlers.length) {
     body.push('', '# Variables start at 0, like in the blocks.');
     for (const v of variables) body.push(`${v} = 0`);
+    if (radioHandlers.length) body.push('receivedNumber = 0', 'receivedString = ""');
   }
-  const starts = of('on_start');
-  if (starts.length) {
-    body.push('', '# on start');
-    for (const h of starts) body.push(...(h.body.length ? block(h.body, 0) : []));
+  for (const f of functions) {
+    body.push('', '', `def ${f.name}():`);
+    if (globals.length) body.push(`${INDENT}global ${globals.join(', ')}`);
+    body.push(...f.lines);
   }
-  const forevers = of('forever');
-  const buttons = of('on_button');
-  if (forevers.length || buttons.length) {
-    body.push('', 'while True:');
-    for (const h of forevers) {
-      body.push(`${INDENT}# forever`, ...block(h.body, 1));
-    }
-    for (const h of buttons) {
-      body.push(
-        `${INDENT}# on button ${h.button} pressed`,
-        `${INDENT}if button_${h.button.toLowerCase()}.was_pressed():`,
-        ...block(h.body, 2)
-      );
-    }
-    body.push(`${INDENT}sleep(20)`);
+  if (functions.length) body.push('');
+  if (modules.has('radio')) body.push('', 'radio.on()');
+  if (starts.length) body.push('', '# on start', ...starts);
+  if (loop.length) {
+    body.push('', ...setup, 'while True:', ...loop, `${INDENT}sleep(20)`);
   }
 
   const head = ['# Made with the Robot For All block editor', 'from microbit import *'];
+  for (const m of ['music', 'radio', 'math', 'neopixel'])
+    if (modules.has(m)) head.push(`import ${m}`);
   if (uses.random) head.push('import random');
   if (uses.number) {
     head.push(

@@ -4,6 +4,7 @@
 // No Blockly import here, so these can be checked in plain unit tests.
 import { CATEGORY_COLOURS as C } from '../colours';
 import { ICON_NAMES, ICONS, type IconName } from '../icons';
+import { EXTRA_SPECS, type FieldSpec, type NodeSpec } from '../extra';
 
 /** A tiny picture of a micro:bit icon for the "show icon" menu (SVG data URL, our CSP allows data: images). */
 export function iconImage(name: IconName): string {
@@ -34,7 +35,7 @@ const buttons = [
   ['B', 'B']
 ];
 
-export const BLOCK_DEFINITIONS = [
+export const CORE_DEFINITIONS = [
   // Basic
   {
     type: 'rfa_on_start',
@@ -343,6 +344,74 @@ export const BLOCK_DEFINITIONS = [
     tooltip: '%{BKY_BLOCK_MOTOR_TIP}'
   }
 ] as const;
+
+/** Message key for an extra block's text: x_play_tone → BLOCK_PLAY_TONE. */
+export const extraMessageKey = (spec: NodeSpec) => `BLOCK_${spec.type.slice(2).toUpperCase()}`;
+
+function extraArg(f: FieldSpec): object | undefined {
+  switch (f.kind) {
+    case 'expr':
+      return value(f.input, f.check);
+    case 'enum':
+      return { type: 'field_dropdown', name: f.field, options: f.options.map((o) => [o[0], o[1]]) };
+    case 'int':
+      return {
+        type: 'field_number',
+        name: f.field,
+        value: f.value,
+        min: f.min,
+        max: f.max,
+        precision: 1
+      };
+    case 'text':
+    case 'ident':
+      return { type: 'field_input', name: f.field, text: f.value };
+    default:
+      return undefined;
+  }
+}
+
+/** Blockly definitions for the MakeCode-level blocks in extra.ts. */
+function extraDefinition(spec: NodeSpec): Record<string, unknown> {
+  const def: Record<string, unknown> = {
+    type: `rfa_${spec.type}`,
+    message0: `%{BKY_${extraMessageKey(spec)}}`,
+    args0: spec.fields.map(extraArg).filter(Boolean),
+    colour: C[spec.category],
+    ...(spec.v2 ? { tooltip: '%{BKY_NEEDS_NEW_MICROBIT}' } : {})
+  };
+  let line = 1;
+  const leds = spec.fields.find((f) => f.kind === 'leds');
+  if (leds) {
+    for (let row = 0; row < 5; row += 1) {
+      def[`message${line}`] = '%1 %2 %3 %4 %5';
+      def[`args${line}`] = [0, 1, 2, 3, 4].map((col) => ({
+        type: 'field_checkbox',
+        name: `L${row * 5 + col}`,
+        checked: false
+      }));
+      line += 1;
+    }
+  }
+  for (const f of spec.fields) {
+    if (f.kind === 'stmts') {
+      def[`message${line}`] = '%1';
+      def[`args${line}`] = [{ type: 'input_statement', name: f.input }];
+      line += 1;
+    }
+  }
+  if (spec.role === 'stmt') Object.assign(def, statement);
+  if (spec.role === 'expr') def['output'] = spec.output;
+  if (spec.fields.filter((f) => f.kind === 'expr').length > 1 && spec.role === 'expr') {
+    def['inputsInline'] = true;
+  }
+  return def;
+}
+
+export const BLOCK_DEFINITIONS: readonly object[] = [
+  ...CORE_DEFINITIONS,
+  ...EXTRA_SPECS.map(extraDefinition)
+];
 
 /** Every %{BKY_KEY} the blocks use, so tests can check each has an English message. */
 export function messageKeys(): string[] {

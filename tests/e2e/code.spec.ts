@@ -48,12 +48,16 @@ test.describe('code editor (M3)', () => {
     for (const category of [
       'Basic',
       'Input',
+      'Music',
+      'LED',
+      'Radio',
       'Loops',
       'Logic',
       'Variables',
       'Math',
-      'Pins',
-      'Motors'
+      'Motors',
+      'Extensions',
+      'Advanced'
     ]) {
       await expect(
         page.locator('.blocklyToolboxCategoryLabel', { hasText: category })
@@ -191,10 +195,10 @@ test.describe('code editor (M3)', () => {
       page.getByRole('button', { name: 'Download .hex' }).click()
     ]);
     expect(download.suggestedFilename()).toBe('Heart-test.hex');
+    await expect(page.locator('p.status')).toContainText('Downloaded');
     const hex = readFileSync((await download.path()) ?? '', 'utf8');
     expect(hex).toMatch(/^:0400000A/m);
     expect(hex.length).toBeGreaterThan(1_000_000);
-    await expect(page.locator('p.status')).toHaveText('Done.');
   });
 
   test('works offline after the first visit, including Download .hex', async ({
@@ -217,7 +221,43 @@ test.describe('code editor (M3)', () => {
       page.waitForEvent('download'),
       page.getByRole('button', { name: 'Download .hex' }).click()
     ]);
-    await expect(page.locator('p.status')).toHaveText('Done.');
+    await expect(page.locator('p.status')).toContainText('Downloaded');
+  });
+});
+
+test.describe('MakeCode-style toolbox (M3 step 4b)', () => {
+  test('search finds blocks in any category', async ({ page }) => {
+    await openEditor(page);
+    await page.getByPlaceholder('Search blocks…').fill('tone');
+    await expect(
+      page.locator('.blocklyFlyout .blocklyText', { hasText: 'play tone' })
+    ).toBeVisible();
+    await page.getByPlaceholder('Search blocks…').fill('radio send');
+    await expect(
+      page.locator('.blocklyFlyout .blocklyText', { hasText: 'radio send number' })
+    ).toBeVisible();
+  });
+
+  test('Advanced opens Functions, Text, Pins, Serial and Control', async ({ page }) => {
+    await openEditor(page);
+    await page.locator('.blocklyToolboxCategory', { hasText: 'Advanced' }).first().click();
+    for (const category of ['Functions', 'Text', 'Pins', 'Serial', 'Control']) {
+      await expect(
+        page.locator('.blocklyToolboxCategoryLabel', { hasText: category })
+      ).toBeVisible();
+    }
+  });
+
+  test('the RGB LEDs extension adds its blocks', async ({ page }) => {
+    await openEditor(page);
+    await expect(page.locator('.blocklyToolboxCategoryLabel', { hasText: 'RGB LEDs' })).toHaveCount(
+      0
+    );
+    await page.locator('.blocklyToolboxCategory', { hasText: 'Extensions' }).click();
+    await page.locator('.blocklyFlyout .blocklyFlyoutButton', { hasText: 'RGB LEDs' }).click();
+    await expect(
+      page.locator('.blocklyToolboxCategoryLabel', { hasText: 'RGB LEDs' })
+    ).toBeVisible();
   });
 });
 
@@ -266,7 +306,8 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await page
       .getByLabel('Your MicroPython program')
       .fill('from microbit import *\npin1.write_digital(1)\ndisplay.show(Image.SQUARE)\n');
-    await simulator(page).locator('.play-button').click();
+    // The Run button next to the code starts the on-screen micro:bit.
+    await page.locator('#panel-python').getByRole('button', { name: 'Run' }).click();
     await expect(page.locator('.motor')).toHaveText('backward', { timeout: 15_000 });
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);
     // Typed Python is kept after a reload.
