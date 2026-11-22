@@ -137,6 +137,96 @@ test.describe('pages on a 360 px phone', () => {
     page
   }) => {
     await page.goto('/lessons/');
+    const rhino = page.getByRole('link', { name: 'Crank-powered waving rhino' });
+    const crocodile = page.getByRole('link', { name: 'Snapping crocodile' });
+    await expect(rhino).toBeVisible();
+    await expect(crocodile).toBeVisible();
+
+    await page.getByLabel('Mechanism').selectOption('crank');
+    await expect(rhino).toBeVisible();
+    await expect(crocodile).toBeHidden();
+    await expect(page).toHaveURL(/\?mechanism=crank$/);
+
+    // A shared link keeps the filter.
+    await page.goto('/lessons/?mechanism=lever');
+    await expect(page.getByLabel('Mechanism')).toHaveValue('lever');
+    await expect(crocodile).toBeVisible();
+    await expect(rhino).toBeHidden();
+
+    // No match shows a helpful message.
+    await page.goto('/lessons/?grade=12');
+    await expect(page.getByText('No lessons match these filters.')).toBeVisible();
+  });
+
+  test('lessons link forward along the learning path', async ({ page }) => {
+    await page.goto('/lessons/p1-lever-01/');
+    await page.getByRole('link', { name: 'Rolling cardboard cart' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Rolling cardboard cart');
+    await page.getByRole('link', { name: 'Crank-powered waving rhino' }).last().click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Crank-powered waving rhino');
+    await expect(page.getByRole('heading', { name: 'Do these lessons first' })).toBeVisible();
+  });
+
+  test('lesson diagrams load and have descriptions', async ({ page }) => {
+    for (const id of ['p1-lever-01', 'p1-wheel-01', 'p1-crank-01']) {
+      await page.goto(`/lessons/${id}/`);
+      const img = page.locator('.lesson-body img').first();
+      await expect(img).toBeVisible();
+      expect((await img.getAttribute('alt'))?.length ?? 0).toBeGreaterThan(20);
+      await expect
+        .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
+        .toBeGreaterThan(0);
+    }
+  });
+
+  test('a lesson links to its printable template, drawn at true A4 size', async ({
+    page,
+    request
+  }) => {
+    await page.goto(LESSON);
+    await page.getByRole('link', { name: 'Waving rhino: parts' }).click();
+    await expect(page).toHaveURL(TEMPLATE);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Waving rhino: parts');
+    const sheet = page.getByRole('img', { name: 'Waving rhino: parts' });
+    await expect(sheet).toBeVisible();
+    await expect
+      .poll(() => sheet.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    await expect(
+      page.getByRole('heading', { name: 'Measurements for drawing by hand' })
+    ).toBeVisible();
+
+    const svg = await (await request.get(TEMPLATE_SVG)).text();
+    expect(svg).toContain('width="210mm" height="297mm"');
+    expect(svg).toContain('This square must measure 50 mm');
+  });
+
+  test('slides view: one PRIMM step per slide, moved with buttons or arrow keys', async ({
+    page
+  }) => {
+    await page.goto(LESSON);
+    await page.getByRole('link', { name: 'Show as slides' }).click();
+    await expect(page).toHaveURL(SLIDES);
+    const slides = page.locator('.slide');
+    await expect(slides).toHaveCount(9); // title, parts, safety, 5 PRIMM steps, checklist
+    for (const step of ['Predict', 'Run', 'Investigate', 'Modify', 'Make']) {
+      await expect(page.locator('.slide h2', { hasText: step })).toHaveCount(1);
+    }
+    const counter = page.locator('[data-counter]');
+    await expect(counter).toHaveText('Slide 1 of 9');
+    await page.getByRole('button', { name: 'Next slide' }).click();
+    await expect(counter).toHaveText('Slide 2 of 9');
+    await page.locator('[data-deck]').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(counter).toHaveText('Slide 3 of 9');
+    await page.keyboard.press('ArrowLeft');
+    await expect(counter).toHaveText('Slide 2 of 9');
+  });
+
+  test('lesson filters narrow the list and remember the choice in the address', async ({
+    page
+  }) => {
+    await page.goto('/lessons/');
     const card = page.getByRole('link', { name: 'Crank-powered waving rhino' });
     await page.getByLabel('Grade').selectOption('3');
     await expect(card).toBeVisible();

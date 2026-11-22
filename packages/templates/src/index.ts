@@ -9,6 +9,8 @@ export const CHECK_SQUARE = 50;
 const GAP = 9;
 const TITLE_SPACE = 20;
 const FOOTER_SPACE = CHECK_SQUARE + 14;
+/** Room kept at the bottom-left for the two-line print instruction. */
+const INSTRUCTION_SPACE = 14;
 
 export interface Hole {
   x: number;
@@ -237,12 +239,21 @@ export interface Placed {
   y: number;
 }
 
-/** Shelf-packs parts onto one A4 sheet, leaving room for the title and the check square. */
+/** Left edge of the 50 mm check square (bottom-right corner of the sheet). */
+const squareLeft = A4.width - MARGIN - CHECK_SQUARE;
+
+/**
+ * Shelf-packs parts onto one A4 sheet, leaving room for the title, the check square and the
+ * print instruction. Parts fully to the left of the square may use the space beside it.
+ */
 export function layout(parts: Part[]): Placed[] {
   const left = MARGIN;
   const right = A4.width - MARGIN;
   const top = MARGIN + TITLE_SPACE;
-  const bottom = A4.height - MARGIN - FOOTER_SPACE;
+  const bottomFor = (x: number, width: number) =>
+    x + width <= squareLeft - GAP
+      ? A4.height - MARGIN - INSTRUCTION_SPACE
+      : A4.height - MARGIN - FOOTER_SPACE;
   const placed: Placed[] = [];
   let x = left;
   let y = top;
@@ -258,7 +269,10 @@ export function layout(parts: Part[]): Placed[] {
       y += rowHeight + GAP;
       rowHeight = 0;
     }
-    check(y + part.height <= bottom, `Too many parts for one A4 sheet: split them into two sheets`);
+    check(
+      y + part.height <= bottomFor(x, part.width),
+      `Too many parts for one A4 sheet: split them into two sheets`
+    );
     placed.push({ part, x, y });
     x += part.width + GAP;
     rowHeight = Math.max(rowHeight, part.height);
@@ -316,7 +330,7 @@ export function renderSheet(sheet: SheetDefinition, labels: SheetLabels): string
     out.push(`<text x="0" y="-1.8" font-size="3.2" fill="#555">${esc(part.name)}</text>`);
     out.push('</g>');
   }
-  const sx = A4.width - MARGIN - CHECK_SQUARE;
+  const sx = squareLeft;
   const sy = A4.height - MARGIN - CHECK_SQUARE;
   out.push(
     `<rect x="${sx}" y="${sy}" width="${CHECK_SQUARE}" height="${CHECK_SQUARE}" fill="none" stroke="#000" stroke-width="0.5"/>`,

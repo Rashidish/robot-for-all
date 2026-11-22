@@ -74,17 +74,19 @@ describe('parts are drawn to size in millimetres', () => {
 });
 
 describe('layout on A4', () => {
-  it('keeps every part inside the margins and above the check square', () => {
+  it('keeps every part inside the margins, clear of the check square and instruction', () => {
     const parts = [
-      disc({ name: 'Wheel', diameter: 70 }),
-      disc({ name: 'Wheel', diameter: 70 }),
-      strip({ name: 'Axle holder', length: 150, width: 20, holes: 2 }),
-      gear({ name: 'Gear', teeth: 24 })
+      shape({ name: 'Body', width: 150, height: 100, path: 'M0 0H150V100H0Z' }),
+      ...Array.from({ length: 4 }, () => disc({ name: 'Wheel', diameter: 55 }))
     ];
+    const squareX = A4.width - MARGIN - CHECK_SQUARE;
+    const squareY = A4.height - MARGIN - CHECK_SQUARE;
     for (const { part, x, y } of layout(parts)) {
       expect(x).toBeGreaterThanOrEqual(MARGIN);
       expect(x + part.width).toBeLessThanOrEqual(A4.width - MARGIN);
-      expect(y + part.height).toBeLessThanOrEqual(A4.height - MARGIN - CHECK_SQUARE);
+      expect(y + part.height).toBeLessThanOrEqual(A4.height - MARGIN - 14);
+      const overlapsSquare = x + part.width > squareX && y + part.height > squareY;
+      expect(overlapsSquare).toBe(false);
     }
   });
 
