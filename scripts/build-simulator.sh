@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # Builds the micro:bit Foundation's MicroPython simulator (MIT) from source at the pinned
-# version, applies our patches, and puts the result in apps/web/public/simulator/<version>/
+# version, applies our patches, and puts the result in apps/web/public/simulator/<version>-<build>/
 # (ADR-0006). CI caches the output, so this only runs when the version or patches change.
 # Needs: git, Node, Python 3, make, and network access to GitHub and the Emscripten SDK.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION="$(tr -d '[:space:]' < "$ROOT/apps/web/simulator.version")"
-OUT="$ROOT/apps/web/public/simulator/$VERSION"
+# apps/web/simulator.json: the upstream release, and our build number. The build number is part
+# of the served folder name, so browsers never keep an old copy after our patches change.
+VERSION="$(node -p "require('$ROOT/apps/web/simulator.json').upstream")"
+FOLDER="$(node -p "const s = require('$ROOT/apps/web/simulator.json'); s.upstream + '-' + s.build")"
+OUT="$ROOT/apps/web/public/simulator/$FOLDER"
 WORK="${RUNNER_TEMP:-/tmp}/rfa-simulator"
 EMSDK_VERSION="6.0.6" # the version upstream's ci-build.sh uses for this release
 
@@ -39,5 +42,5 @@ npm ci --no-audit --no-fund
 make -C src
 
 rm -rf "$OUT"
-node "$ROOT/scripts/vendor-simulator.mjs" finish "$WORK/src" "$OUT" "$VERSION"
+node "$ROOT/scripts/vendor-simulator.mjs" finish "$WORK/src" "$OUT" "$FOLDER"
 ls -la "$OUT" "$OUT/build"
