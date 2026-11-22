@@ -48,12 +48,16 @@ test.describe('code editor (M3)', () => {
     for (const category of [
       'Basic',
       'Input',
+      'Music',
+      'LED',
+      'Radio',
       'Loops',
       'Logic',
       'Variables',
       'Math',
-      'Pins',
-      'Motors'
+      'Motors',
+      'Extensions',
+      'Advanced'
     ]) {
       await expect(
         page.locator('.blocklyToolboxCategoryLabel', { hasText: category })
