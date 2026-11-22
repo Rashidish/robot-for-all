@@ -406,10 +406,15 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(2);
   });
 
-  test('switching back to Blocks runs the blocks, and keeps the Python as a copy', async ({
+  test('switching back to Blocks runs the blocks, and keeps the Python as a named copy', async ({
     page
   }) => {
-    page.on('dialog', (dialog) => void dialog.accept());
+    // Confirm the switch, and name the Python copy when asked.
+    page.on(
+      'dialog',
+      (dialog) =>
+        void (dialog.type() === 'prompt' ? dialog.accept('Square in Python') : dialog.accept())
+    );
     await openEditor(page);
     await page.getByRole('button', { name: 'My programs' }).click();
     const happyFile = JSON.stringify({
