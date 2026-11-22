@@ -159,6 +159,19 @@ test.describe('code editor (M3)', () => {
       await context.close();
     });
 
+    test(`the editor is never wider than the screen (${name})`, async ({ browser }) => {
+      const context = await browser.newContext(options);
+      const page = await context.newPage();
+      await page.goto(CODE);
+      await expect(page.locator('.blocklySvg').first()).toBeVisible();
+      await page.locator('details.sensors summary').click();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+      await context.close();
+    });
+
     test(`the blocks never cover the buttons (${name})`, async ({ browser }) => {
       const context = await browser.newContext(options);
       const page = await context.newPage();
@@ -368,6 +381,43 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     });
     await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(2);
+  });
+
+  test('switching back to Blocks runs the blocks, and keeps the Python as a copy', async ({
+    page
+  }) => {
+    page.on('dialog', (dialog) => void dialog.accept());
+    await openEditor(page);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    const happyFile = JSON.stringify({
+      format: 'robot-for-all-program',
+      version: 1,
+      name: 'Faces',
+      program: {
+        version: 1,
+        handlers: [{ type: 'on_start', body: [{ type: 'show_icon', icon: 'HAPPY' }] }]
+      }
+    });
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'faces.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(happyFile)
+    });
+    await page.getByRole('tab', { name: 'Python' }).click();
+    await page.getByRole('button', { name: 'Edit as Python' }).click();
+    await page
+      .getByLabel('Your MicroPython program')
+      .fill('from microbit import *\ndisplay.show(Image.SQUARE)\n');
+    await page.locator('#panel-python').getByRole('button', { name: 'Run' }).click();
+    await expect(page.getByText('Running: your typed Python')).toBeVisible();
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);
+    // The Blocks tab switches back to the blocks: the happy face (7 LEDs) runs again.
+    await page.getByRole('tab', { name: 'Blocks' }).click();
+    await expect(page.getByText('Running: your blocks')).toBeVisible();
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(7);
+    // The running simulator keeps the page busy; a direct click event avoids scroll races.
+    await page.getByRole('button', { name: 'My programs' }).dispatchEvent('click');
+    await expect(page.getByRole('dialog').getByText('Faces (Python)')).toBeVisible();
   });
 
   test('runs Python the learner types', async ({ page }) => {

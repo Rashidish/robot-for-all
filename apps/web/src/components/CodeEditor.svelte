@@ -310,6 +310,8 @@
   }
 
   async function showTab(next: 'blocks' | 'python') {
+    // The Blocks tab means "use my blocks": leave Python mode first (keeping a copy).
+    if (next === 'blocks' && mode === 'python' && !backToBlocks()) return;
     tab = next;
     await tick();
     if (next === 'blocks' && workspace) Blockly.svgResize(workspace);
@@ -382,12 +384,35 @@
     save();
   }
 
-  function backToBlocks() {
-    if (!window.confirm(t('code_back_to_blocks_confirm'))) return;
+  /**
+   * Switches back to the blocks. The typed Python is never thrown away: it is kept as its own
+   * program in My programs ("… (Python)"). Returns false if the learner cancels.
+   */
+  function backToBlocks(): boolean {
+    if (!window.confirm(t('code_back_to_blocks_confirm'))) return false;
+    if (typed.trim() && workspace) {
+      const id = newId();
+      store.programs[id] = {
+        id,
+        name: `${name.trim() || t('code_default_name')} (${t('code_tab_python')})`,
+        updated: Date.now() - 1,
+        workspace: Blockly.serialization.workspaces.save(workspace),
+        python: typed
+      };
+    }
     mode = 'blocks';
     typed = '';
     save();
-    scheduleSimulator();
+    // Run the blocks straight away if the on-screen micro:bit is running.
+    sim?.update();
+    return true;
+  }
+
+  /** Empties the typed program, like starting a new Python file. */
+  function clearPython() {
+    if (!window.confirm(t('code_clear_python_confirm'))) return;
+    typed = 'from microbit import *\n\n';
+    onTyping();
   }
 
   function onTyping() {
@@ -529,7 +554,7 @@
       {#if mode === 'python'}
         <p class="notice">
           {t('code_python_mode_note')}
-          <button type="button" class="plain" onclick={backToBlocks}>
+          <button type="button" class="plain" onclick={() => showTab('blocks')}>
             {t('code_back_to_blocks')}
           </button>
         </p>
@@ -566,7 +591,10 @@
             {t('code_run')}
           </button>
           <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
-          <button type="button" class="plain" onclick={backToBlocks}>
+          <button type="button" class="plain" onclick={clearPython}>
+            {t('code_clear_python')}
+          </button>
+          <button type="button" class="plain" onclick={() => showTab('blocks')}>
             {t('code_back_to_blocks')}
           </button>
         </div>
@@ -585,6 +613,9 @@
   </div>
 
   <div class="side">
+    <p class="running-what" aria-live="polite">
+      {mode === 'python' ? t('code_runs_python') : t('code_runs_blocks')}
+    </p>
     <Simulator bind:this={sim} src={simulatorSrc} {labels} files={simulatorFiles} />
     <label class="name">
       <span>{t('code_program_name')}</span>
@@ -780,6 +811,12 @@
   :global(.rfaLabel) {
     font-weight: 600;
   }
+  .running-what {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+  }
   .notice {
     display: flex;
     flex-wrap: wrap;
@@ -830,6 +867,9 @@
   }
   .side {
     grid-area: side;
+    /* Never wider than the screen on small phones. */
+    min-inline-size: 0;
+    max-inline-size: 100vw;
     padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
     border-block-start: 1px solid #e1e1e1;
   }

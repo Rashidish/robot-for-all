@@ -236,6 +236,7 @@
 
 <style>
   .simulator {
+    min-inline-size: 0;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -279,6 +280,7 @@
   }
   .gestures {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     justify-content: center;
   }
@@ -310,7 +312,7 @@
   }
   .sensors label {
     display: grid;
-    grid-template-columns: 7rem 1fr 4.5rem;
+    grid-template-columns: minmax(0, 7rem) minmax(0, 1fr) 4.5rem;
     align-items: center;
     gap: 0.25rem;
     font-size: 0.8rem;
