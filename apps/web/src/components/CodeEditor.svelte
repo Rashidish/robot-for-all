@@ -550,26 +550,26 @@
       />
     </label>
     <div class="tablist" role="tablist" aria-label={t('code_title')}>
-    <button
-      type="button"
-      role="tab"
-      id="tab-blocks"
-      aria-selected={tab === 'blocks'}
-      aria-controls="panel-blocks"
-      onclick={() => showTab('blocks')}
-    >
-      {t('code_tab_blocks')}
-    </button>
-    <button
-      type="button"
-      role="tab"
-      id="tab-python"
-      aria-selected={tab === 'python'}
-      aria-controls="panel-python"
-      onclick={() => showTab('python')}
-    >
-      {t('code_tab_python')}
-    </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-blocks"
+        aria-selected={tab === 'blocks'}
+        aria-controls="panel-blocks"
+        onclick={() => showTab('blocks')}
+      >
+        {t('code_tab_blocks')}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-python"
+        aria-selected={tab === 'python'}
+        aria-controls="panel-python"
+        onclick={() => showTab('python')}
+      >
+        {t('code_tab_python')}
+      </button>
     </div>
   </div>
 
