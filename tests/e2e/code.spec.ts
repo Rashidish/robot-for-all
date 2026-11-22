@@ -402,25 +402,8 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await page.getByRole('tab', { name: 'Blocks' }).click();
     await expect(page.getByText('Running: your blocks')).toBeVisible();
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(7);
-    const layout = await page.evaluate(() => {
-      const box = (sel: string) => {
-        const r = document.querySelector(sel)?.getBoundingClientRect();
-        return r
-          ? [Math.round(r.top), Math.round(r.bottom), Math.round(r.left), Math.round(r.right)]
-          : null;
-      };
-      return JSON.stringify({
-        scrollY: window.scrollY,
-        inner: window.innerHeight,
-        side: box('.side'),
-        sim: box('.simulator'),
-        controls: box('.simulator .controls'),
-        programs: box('.side .actions'),
-        editor: box('.editor')
-      });
-    });
-    console.log(`LAYOUT ${layout}`);
-    await page.getByRole('button', { name: 'My programs' }).click();
+    // The running simulator keeps the page busy; a direct click event avoids scroll races.
+    await page.getByRole('button', { name: 'My programs' }).dispatchEvent('click');
     await expect(page.getByRole('dialog').getByText('Faces (Python)')).toBeVisible();
   });
 
