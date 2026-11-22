@@ -51,7 +51,7 @@ A **micro:bit** is a tiny computer. It follows a **program**: a list of instruct
 3. **Button B**
 4. **Pins**: places to join wires (we use them in the motor lessons)
 
-Tap **Open the starter program in the code editor** (above the parts list). Look at the blocks, then tap the **Python** tab to see the same program written as text. Don't run it yet.
+Tap **Open the starter program in the code editor** (near the end of this page, before the syllabus links). Look at the blocks, then tap the **Python** tab to see the same program written as text. Don't run it yet.
 
 Talk with a partner:
 

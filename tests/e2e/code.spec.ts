@@ -351,6 +351,62 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await context.close();
   });
 
+  test("music plays on a laptop with Chrome's desktop sound rules", async ({
+    playwright,
+    baseURL
+  }) => {
+    // Desktop Chrome only lets a page make sound after a click in that page; Playwright's default
+    // is more relaxed, so launch with the real desktop rule.
+    const desktop = await playwright.chromium.launch({
+      args: ['--autoplay-policy=document-user-activation-required']
+    });
+    const page = await desktop.newPage({ baseURL, viewport: { width: 1366, height: 768 } });
+    // Record the state of the sound engine every time a sound is made, in every frame.
+    await page.addInitScript(() => {
+      const record = (ctx: BaseAudioContext) => {
+        const top = window.top as unknown as { rfaSounds?: string[] };
+        (top.rfaSounds ??= []).push(ctx.state);
+      };
+      const proto = BaseAudioContext.prototype;
+      const source = proto.createBufferSource;
+      const oscillator = proto.createOscillator;
+      proto.createBufferSource = function (this: BaseAudioContext) {
+        record(this);
+        return source.call(this);
+      };
+      proto.createOscillator = function (this: BaseAudioContext) {
+        record(this);
+        return oscillator.call(this);
+      };
+    });
+    await openEditor(page);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'tune.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(
+        JSON.stringify({
+          format: 'robot-for-all-program',
+          version: 1,
+          name: 'Tune',
+          program: { version: 1, handlers: [] },
+          python:
+            'from microbit import *\nimport music\nwhile True:\n    music.play(["C4:4", "E4:4", "G4:4"])\n'
+        })
+      )
+    });
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    const sounds = () =>
+      page.evaluate(() => (window as unknown as { rfaSounds?: string[] }).rfaSounds ?? []);
+    await expect
+      .poll(async () => (await sounds()).includes('running'), { timeout: 15_000 })
+      .toBe(true);
+    // Test sound beeps from this page too.
+    await page.getByRole('button', { name: /Test sound/ }).click();
+    await expect(page.locator('.sound-off')).toHaveCount(0);
+    await desktop.close();
+  });
+
   test('Run switches the sound on (browsers only allow it after a tap)', async ({ page }) => {
     await openEditor(page);
     await importHeart(page);

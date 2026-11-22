@@ -83,6 +83,7 @@
     } catch {
       // No sound on this browser, or the simulator page isn't ready yet; it still runs.
     }
+    if (fromTap) setTimeout(checkSound, 800);
     const encoder = new TextEncoder();
     const filesystem = Object.fromEntries(
       Object.entries(current).map(([name, text]) => [name, encoder.encode(text)])
@@ -97,6 +98,45 @@
   /** Restarts with the latest code, but only once the learner has started the simulator. */
   export function update(): void {
     if (running) flash();
+  }
+
+  /** 'off' when the browser kept the on-screen micro:bit's sound switched off. */
+  let sound = $state<'unknown' | 'on' | 'off'>('unknown');
+
+  function checkSound() {
+    try {
+      const sim = frame?.contentWindow as unknown as { rfaAudioState?: () => string } | null;
+      const state = sim?.rfaAudioState?.();
+      if (state) sound = state === 'running' ? 'on' : 'off';
+    } catch {
+      // Simulator not ready; leave as it is.
+    }
+  }
+
+  /**
+   * Plays a short beep straight from this page and switches the micro:bit's sound on, so a
+   * learner can tell "my speakers are off" apart from "the micro:bit is silent".
+   */
+  function testSound() {
+    try {
+      editorAudio ??= new AudioContext({ sampleRate: 44100 });
+      void editorAudio.resume();
+      const beep = editorAudio.createOscillator();
+      const volume = editorAudio.createGain();
+      volume.gain.value = 0.2;
+      beep.frequency.value = 880;
+      beep.connect(volume).connect(editorAudio.destination);
+      beep.start();
+      beep.stop(editorAudio.currentTime + 0.25);
+      const sim = frame?.contentWindow as unknown as {
+        rfaStartAudio?: (context?: AudioContext) => void;
+      } | null;
+      sim?.rfaStartAudio?.(editorAudio);
+      announce = t('sim_sound_tested');
+    } catch {
+      announce = t('sim_sound_unsupported');
+    }
+    setTimeout(checkSound, 500);
   }
 
   export function stop(): void {
@@ -184,6 +224,13 @@
       <button type="button" class="secondary" onclick={() => flash(true)}>{t('code_run')}</button>
     {/if}
   </div>
+
+  <p class="sound">
+    <button type="button" class="plain" onclick={testSound}>🔊 {t('sim_sound_test')}</button>
+    {#if sound === 'off'}
+      <span class="sound-off" role="status">{t('sim_sound_off')}</span>
+    {/if}
+  </p>
 
   <div class="gestures" role="group" aria-label={t('sim_gesture')}>
     <button type="button" class="shake" onclick={() => gesture('shake')}>
@@ -298,6 +345,19 @@
     outline: 3px solid #000;
     outline-offset: 2px;
   }
+  .sound {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-2) 0;
+  }
+
+  .sound-off {
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+
   .gestures {
     display: flex;
     flex-wrap: wrap;

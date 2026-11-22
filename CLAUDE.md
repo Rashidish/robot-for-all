@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.12 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.13 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -47,7 +47,7 @@ Every change must keep these true. If one can't be met, say so in the PR and pro
 ## 3. Product map
 
 **Front office (public)**
-- Lesson player: handbook (printable PDF) and on-screen slides views of the same lesson
+- Lesson player: handbook (printable PDF) and on-screen slides views of the same lesson, plus a one-page printable answer sheet per lesson (spec: `docs/specs/answer-sheets.md`); recording sheets in the app comes with M5
 - Project library filtered by phase, grade, subject, mechanism, cost and language
 - Printable cutout templates (A4, true scale, fold/cut lines)
 - Block coding editor plus micro:bit flashing from the browser
@@ -266,3 +266,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.10 | 2026-11-22 | ADR-0005 accepted: Blockly + MicroPython + WebUSB instead of MakeCode |
 | 0.11 | 2026-11-22 | Owner reminder: revisit the extension folder format after the front office is complete |
 | 0.12 | 2026-11-22 | Lesson format: `starter_program` and `hardware` for Phase 2 lessons |
+| 0.13 | 2026-11-23 | Answer sheets (printable now; in-app records with M5) |
