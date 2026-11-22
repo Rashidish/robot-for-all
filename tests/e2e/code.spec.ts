@@ -220,3 +220,58 @@ test.describe('code editor (M3)', () => {
     await expect(page.locator('p.status')).toHaveText('Done.');
   });
 });
+
+test.describe('on-screen micro:bit (M3 step 4)', () => {
+  const simulator = (page: Page) => page.frameLocator('iframe[title="On-screen micro:bit"]');
+  const litLeds = (page: Page) =>
+    simulator(page)
+      .locator('#LEDsOn > *')
+      .evaluateAll(
+        (leds) => leds.filter((led) => (led as SVGElement).style.display === 'inline').length
+      );
+
+  test('runs the blocks and lights the LEDs', async ({ page }) => {
+    await openEditor(page);
+    await importHeart(page);
+    await simulator(page).locator('.play-button').click();
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBeGreaterThan(10);
+  });
+
+  test('shows the motor turning when the program drives pins P0 and P1', async ({ page }) => {
+    await openEditor(page);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    const motorFile = JSON.stringify({
+      format: 'robot-for-all-program',
+      version: 1,
+      name: 'Motor test',
+      program: {
+        version: 1,
+        handlers: [{ type: 'on_start', body: [{ type: 'motor', action: 'forward' }] }]
+      }
+    });
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'motor.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(motorFile)
+    });
+    await simulator(page).locator('.play-button').click();
+    await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
+  });
+
+  test('runs Python the learner types', async ({ page }) => {
+    page.on('dialog', (dialog) => void dialog.accept());
+    await openEditor(page);
+    await page.getByRole('tab', { name: 'Python' }).click();
+    await page.getByRole('button', { name: 'Edit as Python' }).click();
+    await page
+      .getByLabel('Your MicroPython program')
+      .fill('from microbit import *\npin1.write_digital(1)\ndisplay.show(Image.SQUARE)\n');
+    await simulator(page).locator('.play-button').click();
+    await expect(page.locator('.motor')).toHaveText('backward', { timeout: 15_000 });
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);
+    // Typed Python is kept after a reload.
+    await page.reload();
+    await page.getByRole('tab', { name: 'Python' }).click();
+    await expect(page.getByLabel('Your MicroPython program')).toHaveValue(/Image\.SQUARE/);
+  });
+});

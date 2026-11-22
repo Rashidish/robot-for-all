@@ -18,6 +18,8 @@
     type Program
   } from '../../../../packages/blocks/src/index';
   import { buildHex, fetchFirmware } from '../code/hex';
+  import Simulator from './Simulator.svelte';
+  import simulatorVersion from '../../simulator.version?raw';
   import { FILE_EXTENSION, fileName, fromFile, toFile } from '../code/files';
   import {
     listPrograms,
@@ -40,6 +42,13 @@
   let workspace: Blockly.WorkspaceSvg | undefined;
 
   let tab = $state<'blocks' | 'python'>('blocks');
+  /** 'python' once the learner chooses to type Python instead of using blocks. */
+  let mode = $state<'blocks' | 'python'>('blocks');
+  let typed = $state('');
+  let sim: Simulator | undefined = $state();
+  let simTimer: ReturnType<typeof setTimeout> | undefined;
+  let escapePressed = false;
+  const simulatorSrc = `/simulator/${simulatorVersion.trim()}/simulator.html?color=%233454D1`;
   let status = $state('');
   let hasUsb = $state(false);
   let name = $state('');
@@ -100,6 +109,24 @@
     if (next) python = toPython(next);
   }
 
+  /** The MicroPython to run: typed Python, or the Python made from the blocks. */
+  function currentCode(): string | null {
+    if (mode === 'python') return typed;
+    const next = currentProgram();
+    return next ? toPython(next) : null;
+  }
+
+  function simulatorFiles(): Record<string, string> | null {
+    const code = currentCode();
+    return code === null ? null : { 'main.py': code };
+  }
+
+  /** Like MakeCode: once running, the on-screen micro:bit restarts with each change. */
+  function scheduleSimulator() {
+    clearTimeout(simTimer);
+    simTimer = setTimeout(() => sim?.update(), 800);
+  }
+
   function save() {
     if (!workspace) return;
     const id = store.current ?? newId();
@@ -108,7 +135,8 @@
       id,
       name: name.trim() || t('code_default_name'),
       updated: Date.now(),
-      workspace: Blockly.serialization.workspaces.save(workspace)
+      workspace: Blockly.serialization.workspaces.save(workspace),
+      ...(mode === 'python' ? { python: typed } : {})
     };
     saveStore(storage(), store);
   }
@@ -133,14 +161,26 @@
       );
     }
     name = saved?.name ?? t('code_default_name');
+    mode = saved?.python === undefined ? 'blocks' : 'python';
+    typed = saved?.python ?? '';
     refresh();
+    scheduleSimulator();
   }
 
-  function newProgram(from: Program = NEW_PROGRAM, programName = t('code_default_name')) {
+  function newProgram(
+    from: Program = NEW_PROGRAM,
+    programName = t('code_default_name'),
+    pythonText?: string
+  ) {
     save();
     store.current = newId();
     load(undefined, from);
     name = programName;
+    if (pythonText !== undefined) {
+      mode = 'python';
+      typed = pythonText;
+      tab = 'python';
+    }
     save();
     closeDialog();
   }
@@ -191,9 +231,18 @@
       if (event.isUiEvent) return;
       refresh();
       scheduleSave();
+      if (mode === 'blocks') scheduleSimulator();
     });
-    return () => {
+    // Save straight away when the learner leaves or reloads the page, not 0.4 s later.
+    const saveNow = () => {
       clearTimeout(saveTimer);
+      save();
+    };
+    window.addEventListener('pagehide', saveNow);
+    return () => {
+      window.removeEventListener('pagehide', saveNow);
+      clearTimeout(saveTimer);
+      clearTimeout(simTimer);
       save();
       ws.dispose();
     };
@@ -220,9 +269,9 @@
   }
 
   async function makeHex(): Promise<string | null> {
-    const current = currentProgram();
-    if (!current) return null;
-    return buildHex(toPython(current), await fetchFirmware());
+    const code = currentCode();
+    if (code === null) return null;
+    return buildHex(code, await fetchFirmware());
   }
 
   async function download() {
@@ -255,9 +304,45 @@
     }
   }
 
+  function editAsPython() {
+    if (!window.confirm(t('code_edit_python_confirm'))) return;
+    typed = python;
+    mode = 'python';
+    save();
+  }
+
+  function backToBlocks() {
+    if (!window.confirm(t('code_back_to_blocks_confirm'))) return;
+    mode = 'blocks';
+    typed = '';
+    save();
+    scheduleSimulator();
+  }
+
+  function onTyping() {
+    scheduleSave();
+    scheduleSimulator();
+  }
+
+  /** Tab indents, as in other code editors; Esc then Tab leaves the editor (WCAG 2.1.2). */
+  function onCodeKey(event: KeyboardEvent) {
+    const area = event.currentTarget as HTMLTextAreaElement;
+    if (event.key === 'Escape') {
+      escapePressed = true;
+      return;
+    }
+    if (event.key === 'Tab' && !event.shiftKey && !escapePressed) {
+      event.preventDefault();
+      area.setRangeText('    ', area.selectionStart, area.selectionEnd, 'end');
+      typed = area.value;
+      onTyping();
+    }
+    escapePressed = false;
+  }
+
   async function copyPython() {
     try {
-      await navigator.clipboard.writeText(python);
+      await navigator.clipboard.writeText(mode === 'python' ? typed : python);
       status = t('code_copied');
     } catch {
       status = t('code_failed');
@@ -303,7 +388,11 @@
   function exportFile() {
     const current = currentProgram();
     if (!current) return;
-    downloadText(toFile(name, current), `${fileName(name)}${FILE_EXTENSION}`, 'application/json');
+    downloadText(
+      toFile(name, current, mode === 'python' ? typed : undefined),
+      `${fileName(name)}${FILE_EXTENSION}`,
+      'application/json'
+    );
   }
 
   async function importFile() {
@@ -311,8 +400,12 @@
     fileInput.value = '';
     if (!file) return;
     try {
-      const { name: fileProgramName, program: imported } = fromFile(await file.text());
-      newProgram(imported, fileProgramName || file.name.replace(/\.rfa\.json$|\.json$/, ''));
+      const opened = fromFile(await file.text());
+      newProgram(
+        opened.program,
+        opened.name || file.name.replace(/\.rfa\.json$|\.json$/, ''),
+        opened.python
+      );
       status = '';
     } catch {
       status = t('code_import_failed');
@@ -353,6 +446,14 @@
       aria-labelledby="tab-blocks"
       hidden={tab !== 'blocks'}
     >
+      {#if mode === 'python'}
+        <p class="notice">
+          {t('code_python_mode_note')}
+          <button type="button" class="plain" onclick={backToBlocks}>
+            {t('code_back_to_blocks')}
+          </button>
+        </p>
+      {/if}
       <div
         class="blockly"
         bind:this={host}
@@ -367,14 +468,41 @@
       aria-labelledby="tab-python"
       hidden={tab !== 'python'}
     >
-      <p>{t('code_python_intro')}</p>
-      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-      <pre tabindex="0"><code>{python}</code></pre>
-      <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
+      {#if mode === 'python'}
+        <label class="code-label" for="python-code">{t('code_python_typing')}</label>
+        <textarea
+          id="python-code"
+          class="code"
+          spellcheck="false"
+          autocapitalize="off"
+          autocomplete="off"
+          bind:value={typed}
+          oninput={onTyping}
+          onkeydown={onCodeKey}
+          aria-describedby="python-keys"></textarea>
+        <p id="python-keys" class="note">{t('code_python_keys')}</p>
+        <div class="actions">
+          <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
+          <button type="button" class="plain" onclick={backToBlocks}>
+            {t('code_back_to_blocks')}
+          </button>
+        </div>
+      {:else}
+        <p>{t('code_python_intro')}</p>
+        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+        <pre tabindex="0"><code>{python}</code></pre>
+        <div class="actions">
+          <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
+          <button type="button" class="plain" onclick={editAsPython}>
+            {t('code_edit_python')}
+          </button>
+        </div>
+      {/if}
     </div>
   </div>
 
   <div class="side">
+    <Simulator bind:this={sim} src={simulatorSrc} {labels} files={simulatorFiles} />
     <label class="name">
       <span>{t('code_program_name')}</span>
       <input type="text" bind:value={name} oninput={rename} maxlength="60" />
@@ -442,7 +570,7 @@
   @media (min-width: 48rem) {
     .editor {
       grid-template-areas: 'side tabs' 'side main';
-      grid-template-columns: 16rem 1fr;
+      grid-template-columns: 19rem 1fr;
       grid-template-rows: auto 1fr;
       block-size: max(32rem, calc(100dvh - 7.5rem));
     }
@@ -450,7 +578,7 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      gap: 0.5rem;
       border-block-start: none !important;
       border-inline-end: 1px solid #e1e1e1;
     }
@@ -499,10 +627,49 @@
   .python[hidden] {
     display: none;
   }
+  .workspace {
+    display: flex;
+    flex-direction: column;
+  }
   .blockly {
+    flex: 1;
+    min-block-size: 0;
     inline-size: 100%;
-    block-size: 100%;
     background: #ecf0f1;
+  }
+  .notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.5rem 1rem;
+    background: #fff8d6;
+    font-size: 0.875rem;
+  }
+  .code-label {
+    display: block;
+    margin-block-end: 0.25rem;
+    font-weight: 600;
+  }
+  .code {
+    inline-size: 100%;
+    min-block-size: 18rem;
+    padding: 0.75rem;
+    border: 1px solid #8a8a8a;
+    border-radius: 6px;
+    font-family: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    tab-size: 4;
+    white-space: pre;
+  }
+  .code:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 2px;
+  }
+  .python .actions {
+    margin-block-start: 0.5rem;
   }
   .python {
     overflow: auto;

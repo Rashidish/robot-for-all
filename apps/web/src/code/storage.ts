@@ -9,6 +9,8 @@ export interface SavedProgram {
   name: string;
   updated: number;
   workspace: unknown;
+  /** Set when the learner switched this program to typed Python. */
+  python?: string;
 }
 
 export interface ProgramStore {

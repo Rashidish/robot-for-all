@@ -15,3 +15,5 @@ apps/web/src/paraglide/
 *.log
 .DS_Store
 .claude/settings.local.json
+# Built from source by scripts/build-simulator.sh (cached in CI)
+apps/web/public/simulator/

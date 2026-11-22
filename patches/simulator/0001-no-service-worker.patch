@@ -1,0 +1,60 @@
+diff --git a/src/simulator.ts b/src/simulator.ts
+index 9a1deda..c217be9 100644
+--- a/src/simulator.ts
++++ b/src/simulator.ts
+@@ -7,7 +7,6 @@ import {
+   createMessageListener,
+   Notifications,
+ } from "./board";
+-import { flags } from "./flags";
+ 
+ declare global {
+   interface Window {
+@@ -16,44 +15,9 @@ declare global {
+   }
+ }
+ 
+-function initServiceWorker() {
+-  window.addEventListener("load", () => {
+-    navigator.serviceWorker.register("sw.js").then(
+-      (registration) => {
+-        console.log("Simulator service worker registration successful");
+-        // Reload the page when a new service worker is installed.
+-        registration.onupdatefound = function () {
+-          const installingWorker = registration.installing;
+-          if (installingWorker) {
+-            installingWorker.onstatechange = function () {
+-              if (
+-                installingWorker.state === "installed" &&
+-                navigator.serviceWorker.controller
+-              ) {
+-                window.location.reload();
+-              }
+-            };
+-          }
+-        };
+-      },
+-      (error) => {
+-        console.error(`Simulator service worker registration failed: ${error}`);
+-      },
+-    );
+-  });
+-}
+-
+-if ("serviceWorker" in navigator) {
+-  if (flags.sw) {
+-    initServiceWorker();
+-  } else {
+-    navigator.serviceWorker.getRegistration().then((registration) => {
+-      registration?.unregister().then(() => {
+-        window.location.reload();
+-      });
+-    });
+-  }
+-}
++// Robot For All: the simulator is served inside our site, whose own service worker keeps it
++// for offline use. The upstream code here registered or *unregistered* a service worker for
++// this scope, which would remove our site's worker, so it is left out.
+ 
+ const fs = new FileSystem();
+ const board = createBoard(new Notifications(window.parent), fs);

@@ -81,6 +81,8 @@ self.addEventListener('fetch', (event) => {
     // Code editor files (M3): firmware names include their version, so a saved copy stays correct.
     url.pathname.startsWith('/firmware/') ||
     url.pathname.startsWith('/blockly-media/') ||
+    // The on-screen micro:bit: each version lives in its own folder.
+    url.pathname.startsWith('/simulator/') ||
     PRECACHE.includes(url.pathname)
   ) {
     event.respondWith(handleAsset(request));

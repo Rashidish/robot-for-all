@@ -1,6 +1,6 @@
 # Spec: M3 — Code (block coding and micro:bit)
 
-> **Version:** 0.5 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
+> **Version:** 0.6 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
 > Depends on: M2 (lessons 1–10 built), CLAUDE.md 0.8, ADR-0001, ADR-0004. Proposes ADR-0005. Keep the version line current; log changes at the bottom.
 
 ---
@@ -27,8 +27,13 @@ Phase 2 is "Control": learners make a robot move forward, stop and reverse, ligh
 7. **Six Phase 2 lessons** (§7), drafts, same lesson format as Phase 1 plus a starter program and wiring diagrams.
 8. **Offline**: editor and virtual micro:bit work offline after first use; the MicroPython firmware is cached the first time a learner downloads or sends a program.
 
+### Added by the owner (2026-11-22)
+9. **Typing Python**: "Edit as Python" switches a program to typed MicroPython. It runs on the on-screen and real micro:bit; typed code does not turn back into blocks (MakeCode can partly do this; we may add it later).
+10. **On-screen micro:bit = the real MicroPython simulator** (ADR-0006), with sensor controls, pin and motor state, NeoPixel (RGB LED) strips and serial output.
+11. **MakeCode-level blocks** and an **extensions loader** ("library loader") for add-on parts: see §15.
+
 ### Out of scope (later)
-Typing Python (later milestone, with Pyodide or the micro:bit Python Editor), ESP32 boards (see §13), Bluetooth flashing (needed for iPhone), 2D robot simulator (M4), accounts and cloud saving (M5), AI help (M6), translations of block text beyond English (wired for i18n now, translated later).
+Python back into blocks, ESP32 boards (see §13), Bluetooth flashing (needed for iPhone), 2D robot simulator (M4), accounts and cloud saving (M5), AI help (M6), translations of block text beyond English (wired for i18n now, translated later).
 
 ---
 
@@ -185,6 +190,12 @@ One PR per step. CI must pass before merging (owner decision 2026-11-22). ⏸ ma
 7. **Phase 2 lessons 4–6**: motor lessons with wiring diagrams; test-plan rows; CLAUDE.md, spec and ADR updates.
 8. **Publishing pass**: after the deferred checks in `docs/test-plan.md` ⏸
 
+**Revised order (owner, 2026-11-22):** step 4 grows into:
+- **4a** On-screen micro:bit (real MicroPython simulator) + typed Python. (this PR)
+- **4b** MakeCode-level blocks (§15).
+- **4c** Extensions loader: RGB LEDs (NeoPixel), servo, motor-driver boards, and more.
+Then steps 5–7 (lessons) as before.
+
 ---
 
 ## 11. AI opportunities
@@ -215,11 +226,42 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 
 ---
 
+## 15. MakeCode parity plan (owner request: everything MakeCode can do, and more)
+
+MicroPython on the micro:bit covers almost everything MakeCode's blocks do. Blocks we add, by category (all generate plain MicroPython):
+
+| MakeCode category | Blocks to add | MicroPython | Notes |
+|---|---|---|---|
+| Basic | show leds (5×5 grid), show arrow, plot bar | `display.show(Image(...))` | |
+| Input | on shake / tilt / logo up… (gestures), on pin pressed, on logo touched (V2), compass heading, sound level (V2), on loud/quiet sound (V2), running time | `accelerometer.was_gesture()`, `pin0.is_touched()`, `pin_logo` | Events follow our polling rules (spec §6) |
+| Music | play tone, rest, melodies, tempo, sound effects (V2), volume (V2) | `music`, `audio`, `speaker` | |
+| LED | plot / unplot / toggle x y, brightness, point is lit | `display.set_pixel` | |
+| Radio | set group, send number / string / value, on received | `radio` | Sim can be tested with two browser tabs later |
+| Loops | for index, for each, every (ms), break / continue | | |
+| Logic | full if / else if / else | | |
+| Variables | (done) | | |
+| Math | remainder, min / max, abs, sqrt, round, map, constrain | | |
+| Text | join, length, letter at, number ↔ text | | |
+| Arrays | lists: create, add, get, set, length | | |
+| Functions | define and call functions | `def` | |
+| Images | create image, scroll image | `Image` | |
+| Pins | analog read / write, servo write, digital read | `pinN.write_analog`, `read_analog` | |
+| Serial | write line / value | `print` | Shown under the on-screen micro:bit |
+| Control | wait, reset, running time | `microbit.reset()` | |
+| Game | sprites | our small `game.py` added to the .hex | Not built into MicroPython |
+| Data logging (V2) | log data | `log` | |
+| **Not possible in MicroPython** | Bluetooth blocks | | MicroPython has no Bluetooth API on the micro:bit; we say so in the editor |
+
+**Extensions loader (4c):** an "Extensions" button lists add-on parts. Choosing one adds a category of blocks and, if needed, a small MicroPython driver file that goes into the .hex next to `main.py`. First set: RGB LEDs (NeoPixel, built into MicroPython), servo, our L9110S motor driver, and popular low-cost micro:bit motor boards. Each extension states which boards it was tested on (test plan).
+
+**Extra for learners with a micro:bit:** MakeCode features beyond it where cheap: read the board's serial output live over WebUSB, and show which micro:bit version is connected.
+
 ## Version history
 
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft; approved by the owner |
+| 0.6 | 2026-11-22 | Owner: typed Python, MakeCode-level blocks, extensions loader; on-screen micro:bit is the real MicroPython simulator (ADR-0006); step 4 split into 4a–4c |
 | 0.5 | 2026-11-22 | Step 3 done: MakeCode-style editor, 30 blocks, Python tab, My programs, program files |
 | 0.4 | 2026-11-22 | Block colours: darker MakeCode shades meeting AA (owner); step 2 done; event rules for buttons and forever |
 | 0.3 | 2026-11-22 | MakeCode look and feel (owner decision); desktop layout fix |

@@ -16,7 +16,8 @@ const types = {
   '.png': 'image/png',
   '.webp': 'image/webp',
   '.json': 'application/json',
-  '.webmanifest': 'application/manifest+json'
+  '.webmanifest': 'application/manifest+json',
+  '.wasm': 'application/wasm'
 };
 
 // Parse _headers: "path" lines followed by indented "Name: value" lines.

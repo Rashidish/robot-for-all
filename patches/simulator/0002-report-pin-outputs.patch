@@ -1,0 +1,106 @@
+diff --git a/src/board/index.ts b/src/board/index.ts
+index 4773b62..788e34b 100644
+--- a/src/board/index.ts
++++ b/src/board/index.ts
+@@ -169,7 +169,7 @@ export class Board {
+   private serialOutputSentAt = 0;
+ 
+   constructor(
+-    private notifications: Notifications,
++    public notifications: Notifications,
+     private fs: FileSystem,
+     private svg: SVGElement,
+   ) {
+@@ -761,6 +761,15 @@ export class Notifications {
+     this.postMessage("request_flash", {});
+   };
+ 
++  // Robot For All: outputs the real board sends to wired parts (motors, LEDs, NeoPixels).
++  onPinOutput = (pin: number, value: number, analog: boolean) => {
++    this.postMessage("pin_output", { pin, value, analog });
++  };
++
++  onNeopixel = (pin: number, data: number[]) => {
++    this.postMessage("neopixel", { pin, data });
++  };
++
+   onStateChange = (change: Partial<State>) => {
+     this.postMessage("state_change", {
+       change,
+diff --git a/src/jshal.h b/src/jshal.h
+index ff2a8c0..c5c4b9b 100644
+--- a/src/jshal.h
++++ b/src/jshal.h
+@@ -53,6 +53,8 @@ bool mp_js_hal_button_is_pressed(int button);
+ bool mp_js_hal_pin_is_touched(int pin);
+ int mp_js_hal_pin_get_analog_period_us(int pin);
+ int mp_js_hal_pin_set_analog_period_us(int pin, int period);
++void mp_js_hal_pin_output(int pin, int value, int analog);
++void mp_js_hal_neopixel(int pin, const uint8_t *buf, size_t len);
+ 
+ int mp_js_hal_display_get_pixel(int x, int y);
+ void mp_js_hal_display_set_pixel(int x, int y, int value);
+diff --git a/src/jshal.js b/src/jshal.js
+index 2bc2e94..ef1a047 100644
+--- a/src/jshal.js
++++ b/src/jshal.js
+@@ -136,6 +136,23 @@ mergeInto(LibraryManager.library, {
+     return Module.board.pins[pin].isTouched();
+   },
+ 
++  // Robot For All: pin outputs and NeoPixel data, passed on to the embedding page.
++  mp_js_hal_pin_output: function (
++    /** @type {number} */ pin,
++    /** @type {number} */ value,
++    /** @type {number} */ analog,
++  ) {
++    Module.board.notifications.onPinOutput(pin, value, analog === 1);
++  },
++
++  mp_js_hal_neopixel: function (
++    /** @type {number} */ pin,
++    /** @type {number} */ buf,
++    /** @type {number} */ len,
++  ) {
++    Module.board.notifications.onNeopixel(pin, Array.from(Module.HEAPU8.subarray(buf, buf + len)));
++  },
++
+   mp_js_hal_pin_get_analog_period_us: function (/** @type {number} */ pin) {
+     return Module.board.pins[pin].getAnalogPeriodUs();
+   },
+diff --git a/src/microbithal_js.c b/src/microbithal_js.c
+index 4d65634..6c08c9a 100644
+--- a/src/microbithal_js.c
++++ b/src/microbithal_js.c
+@@ -130,7 +130,8 @@ int microbit_hal_pin_read(int pin) {
+ }
+ 
+ void microbit_hal_pin_write(int pin, int value) {
+-    //pin_obj[pin]->setDigitalValue(value);
++    // Robot For All: report pin outputs so the editor can show motors and LEDs.
++    mp_js_hal_pin_output(pin, value, 0);
+ }
+ 
+ int microbit_hal_pin_read_analog_u10(int pin) {
+@@ -143,9 +144,8 @@ void microbit_hal_pin_write_analog_u10(int pin, int value) {
+         mp_js_hal_audio_amplitude_u10(value);
+         return;
+     }
+-    /*
+-    pin_obj[pin]->setAnalogValue(value);
+-    */
++    // Robot For All: report analog outputs (e.g. servos, motor speed).
++    mp_js_hal_pin_output(pin, value, 1);
+ }
+ 
+ int microbit_hal_pin_is_touched(int pin) {
+@@ -163,7 +163,8 @@ int microbit_hal_pin_is_touched(int pin) {
+ }
+ 
+ void microbit_hal_pin_write_ws2812(int pin, const uint8_t *buf, size_t len) {
+-    //neopixel_send_buffer(*pin_obj[pin], buf, len);
++    // Robot For All: report NeoPixel (RGB LED) data so the editor can draw the strip.
++    mp_js_hal_neopixel(pin, buf, len);
+ }
+ 
+ int microbit_hal_i2c_init(int scl, int sda, int freq) {
