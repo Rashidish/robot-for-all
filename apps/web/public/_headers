@@ -11,13 +11,14 @@
 
 # Code editor (M3 spec §5, ADR-0005): same policy, except that
 # - style-src also allows Blockly's generated stylesheets, by exact hash (never 'unsafe-inline'):
-#   common CSS for phones/Apple, common CSS for other computers, and the zelos renderer with our theme,
+#   common CSS for phones/Apple, common CSS for other computers, and the zelos renderer CSS
+#   (with our theme and with Blockly's default theme, which the toolbox flyout can use),
 # - WebUSB is allowed for this site only, so learners can send programs to a micro:bit.
 # "! Name" removes the header set by /* above, so the stricter one is replaced, not combined.
 /code/*
   ! Content-Security-Policy
   ! Permissions-Policy
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'sha256-T0FgI68exbsB63wO17aNhklkM8DeXs5ck81H6uODSoM=' 'sha256-vvjIrx5VHZOl8g16hyeT78QMN4qaCvDoERwT8RAeguo=' 'sha256-2zQ+Nc1Xb1pH6DFnGGGzqesb4+faJVAzaURqXNIUbNI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'sha256-T0FgI68exbsB63wO17aNhklkM8DeXs5ck81H6uODSoM=' 'sha256-vvjIrx5VHZOl8g16hyeT78QMN4qaCvDoERwT8RAeguo=' 'sha256-2zQ+Nc1Xb1pH6DFnGGGzqesb4+faJVAzaURqXNIUbNI=' 'sha256-wZscWfTKK4+5F6tjmZAMS1HrYQjdzRGUdQL3iJDKWAc='; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(self), serial=(), bluetooth=(), payment=(), browsing-topics=()
 
 # The service worker must always be checked for updates.
