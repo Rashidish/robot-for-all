@@ -1,6 +1,6 @@
 # Spec: Answer sheets and lesson progress records
 
-> **Version:** 0.1 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail · **Status:** Part A built; Part B draft for review
+> **Version:** 0.2 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail · **Status:** Part A built; Part B approved in principle (owner, 2026-11-23), built with M5
 > Depends on: M2 lesson format (ADR-0004), CLAUDE.md §7 (POPIA). Part B needs M5 (accounts and classes).
 
 ---
@@ -15,7 +15,7 @@ Many classes work from printed lessons with one shared phone or none. Learners n
 2. A learner or team writes a **nickname or team name** (no surnames), the team members' first names or nicknames, and the date.
 3. While doing the lesson they tick each PRIMM step, answer the numbered questions, fill in the tables, describe what they made and tick the "I can" checks (Yes / Not yet).
 4. The teacher or coach checks the sheet, signs it and ticks **Built and working**.
-5. *(Part B, M5)* Later, on any device, the teacher opens their class, picks the learner or team, enters the **sheet code** printed on the sheet and records what was done. Progress and badges update.
+5. *(Part B, M5)* Later, on any device, **each learner** signs in to their own learner profile, enters the **sheet code** printed on the sheet and records what the sheet shows. On a team sheet, every member records it in their own profile: each learner gained the knowledge while working in the team. Progress and badges update.
 
 ## 3. Part A: printable answer sheet ✅ built
 
@@ -34,34 +34,41 @@ Many classes work from printed lessons with one shared phone or none. Learners n
 
 ## 4. Part B: recording a sheet in the app (draft, for review)
 
-**Requirements (proposed)**
-- **FR-B1** A teacher, coach or parent with an account (M5) records a sheet for a learner (nickname) or a **team** (team name plus member nicknames) in their own class.
-- **FR-B2** They enter the sheet code. The app shows the same steps and "I can" checks as the paper, and they tick what the sheet shows.
-- **FR-B3** Stored per learner or team and lesson:
+**Owner decisions (2026-11-23)**
+1. **Learners record their own sheets** in their own learner profile.
+2. **Team sheets:** each team member records the sheet under their own profile, because each learner gained the knowledge while in the team. There is no shared "team record".
+3. **"Not yet" answers do not earn badges.** Badges recognise knowledge gained: only "Yes" answers, completed steps and "Built and working" count.
+
+**Requirements**
+- **FR-B1** A learner with a learner profile (M5; created by a teacher or parent, nickname allowed) records a sheet in their own profile.
+- **FR-B2** They enter the sheet code. The app shows the same steps and "I can" checks as the paper, and they tick what their sheet shows.
+- **FR-B3** Stored per learner and lesson:
   - steps done;
   - "I can" results (yes / not yet);
   - built and working;
   - date;
-  - who recorded it;
-  - the sheet code.
+  - the sheet code;
+  - whether it was a team sheet (yes / no; team members are not stored).
 - **FR-B4** Written answers are **not** typed in or uploaded. Photos of sheets are not stored.
 - **FR-B5** Recording works offline and syncs later (CLAUDE.md non-negotiable 3).
-- **FR-B6** Badges (separate spec) read these records, for example "Completed 5 Phase 1 lessons" or "All I-can checks for a lesson".
-- **FR-B7** A team record counts for each member of the team.
+- **FR-B6** Badges (separate spec) read these records, for example "Completed 5 Phase 1 lessons" or "All I-can checks for a lesson". "Not yet" never counts towards a badge; it shows the learner what to work on next.
+- **FR-B7** A teacher or coach sees their class's records and can mark a record **checked** (matching the signed paper sheet). Checked records show a tick; whether badges need a checked record is decided in the badges spec.
+- **FR-B8** A learner can see and correct only their own records.
 
 **Privacy and child safety (POPIA)**
 - Data is minimal: no learner surnames, photos, handwriting, ID numbers or birthdates.
-- Records belong to the class and are visible only to that class's teachers or coaches and to the learner's parent or guardian.
+- Records belong to the learner. Only the learner, their class's teachers or coaches, and their parent or guardian can see them.
 - Legal basis: parental consent collected at account creation (M5). Records are deleted with the class or on request.
-- Threat notes: only the class owner can write records (row-level security); sheet codes are not secret and grant nothing; no free-text fields, so no personal information can be typed into a record by mistake.
-
-**Open questions for the owner**
-1. Should learners (not only adults) record their own sheets?
-2. Should "Not yet" answers count towards badges for effort?
-3. Should team records count fully for every member?
+- Threat notes:
+  - a learner can write only their own records, and a teacher can only mark records in their own class as checked (row-level security);
+  - sheet codes are not secret and grant nothing;
+  - there are no free-text fields, so no personal information can be typed into a record by mistake;
+  - self-recorded results can be wrong. The teacher's check mark (FR-B7) is the safeguard, and the badges spec decides when it is required.
 
 **Acceptance criteria (Part B, later)**
-- A teacher records a sheet offline on a phone; it syncs when online; the learner's progress shows the lesson as done.
+- A learner records a sheet offline on a phone; it syncs when online; their progress shows the lesson as done.
+- Two members of the same team each record the team sheet; each profile shows the lesson as done.
+- "Not yet" answers never count towards a badge.
 - Entering a sheet code from an older version of a lesson still works and shows that version's steps.
 - No free-text answer is stored.
 
@@ -76,3 +83,4 @@ Many classes work from printed lessons with one shared phone or none. Learners n
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-23 | Part A built (printable one-page sheets); Part B drafted for review |
+| 0.2 | 2026-11-23 | Owner decisions: learners record their own sheets; each team member records the team sheet; "Not yet" earns no badges; teacher check mark |

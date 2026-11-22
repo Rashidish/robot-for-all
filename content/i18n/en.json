@@ -351,5 +351,13 @@
   "sheet_checked_by": "Checked by (teacher or coach)",
   "sheet_working": "Built and working",
   "sheet_code": "Sheet code: {code}",
-  "sheet_keep": "Keep this sheet: your teacher uses it to record your progress."
+  "sheet_keep": "Keep this sheet: your teacher uses it to record your progress.",
+  "block_drive": "motor %1 %2 at speed %3 %",
+  "block_drive_stop": "stop motor %1",
+  "block_drive_both": "both",
+  "block_drive_tip": "Motor A on pins P0 and P1, motor B on pins P2 and P8, through an L9110S motor driver. Speed 0 to 100.",
+  "category_motordriver": "Motor driver",
+  "code_extension_motordriver": "Motor driver: two motors with speed (L9110S)",
+  "sim_motor_a": "Motor A:",
+  "sim_motor_b": "Motor B:"
 }

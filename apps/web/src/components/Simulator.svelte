@@ -47,13 +47,24 @@
   let serial = $state('');
   let announce = $state('');
 
-  const motor = $derived(
-    pins[0] === 1 && !pins[1]
-      ? t('block_motor_forward')
-      : pins[1] === 1 && !pins[0]
-        ? t('block_motor_reverse')
-        : t('block_motor_stop')
-  );
+  /** Which pins last got an analog (PWM) value; their numbers are percentages. */
+  let analog = $state<Record<number, boolean>>({});
+
+  /** A motor on a driver: one pin on means forward or backward; the value is its speed. */
+  function motorState(forward: number, backward: number): { dir: string; speed: number } {
+    const f = pins[forward] ?? 0;
+    const b = pins[backward] ?? 0;
+    const speed = (pin: number, value: number) => (analog[pin] ? value : 100);
+    if (f > 0 && !b) return { dir: t('block_motor_forward'), speed: speed(forward, f) };
+    if (b > 0 && !f) return { dir: t('block_motor_reverse'), speed: speed(backward, b) };
+    return { dir: t('block_motor_stop'), speed: 0 };
+  }
+
+  const motorA = $derived(motorState(0, 1));
+  const motorB = $derived(motorState(2, 8));
+  const motor = $derived(motorA.dir);
+  /** Motor B (P2 and P8) is shown once a program uses pin P8. */
+  const hasMotorB = $derived(pins[8] !== undefined);
 
   function post(message: Record<string, unknown>) {
     frame?.contentWindow?.postMessage(message, window.location.origin);
@@ -89,6 +100,7 @@
       Object.entries(current).map(([name, text]) => [name, encoder.encode(text)])
     );
     pins = {};
+    analog = {};
     pixels = [];
     serial = '';
     post({ kind: 'flash', filesystem });
@@ -184,7 +196,8 @@
       case 'pin_output': {
         const pin = Number(data['pin']);
         const value = Number(data['value']);
-        if (pin >= 0 && pin <= 2) {
+        if ([0, 1, 2, 8].includes(pin)) {
+          analog = { ...analog, [pin]: Boolean(data['analog']) };
           pins = { ...pins, [pin]: data['analog'] ? Math.round(value / 10.23) : value };
           announce = `${t('sim_pin')} P${pin}: ${pins[pin]}`;
         }
@@ -277,10 +290,16 @@
 
   <div class="outputs" aria-label={t('sim_outputs')}>
     <p>
-      <span class="tag">{t('sim_motor')}</span>
+      <span class="tag">{hasMotorB ? t('sim_motor_a') : t('sim_motor')}</span>
       <strong class="motor" data-motor={motor}>{motor}</strong>
+      {#if motorA.speed > 0 && motorA.speed < 100}<span class="speed">{motorA.speed}%</span>{/if}
+      {#if hasMotorB}
+        <span class="tag">{t('sim_motor_b')}</span>
+        <strong class="motor-b">{motorB.dir}</strong>
+        {#if motorB.speed > 0 && motorB.speed < 100}<span class="speed">{motorB.speed}%</span>{/if}
+      {/if}
       <span class="pins">
-        {#each [0, 1, 2] as pin (pin)}
+        {#each hasMotorB ? [0, 1, 2, 8] : [0, 1, 2] as pin (pin)}
           <span class="pin" class:on={(pins[pin] ?? 0) > 0}>P{pin} {pins[pin] ?? 0}</span>
         {/each}
       </span>

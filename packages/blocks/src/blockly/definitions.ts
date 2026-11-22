@@ -378,7 +378,11 @@ function extraDefinition(spec: NodeSpec): Record<string, unknown> {
     message0: `%{BKY_${extraMessageKey(spec)}}`,
     args0: spec.fields.map(extraArg).filter(Boolean),
     colour: C[spec.category],
-    ...(spec.v2 ? { tooltip: '%{BKY_NEEDS_NEW_MICROBIT}' } : {})
+    ...(spec.v2
+      ? { tooltip: '%{BKY_NEEDS_NEW_MICROBIT}' }
+      : spec.tip
+        ? { tooltip: `%{BKY_${spec.tip}}` }
+        : {})
   };
   let line = 1;
   const leds = spec.fields.find((f) => f.kind === 'leds');

@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.8 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
+> **Version:** 0.9 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -60,6 +60,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B11 | **On-screen micro:bit vs real**: the same program behaves the same on both (LEDs, buttons, motor pins with the motor driver) | |
 | B12 | **Sound on the on-screen micro:bit**: a program with music plays sound on a phone **and** a laptop (Windows Chrome) after tapping Run. If not: tap **Test sound** (a beep means the computer's sound works) and note the browser and whether "Sound is off" shows | |
 | B14 | **Answer sheet**: print two lessons' answer sheets on a school printer; one A4 page each; learners in Grades 3–7 can read the questions and have enough room to write | |
+| B15 | **Motor driver extension** on real parts: two motors on an L9110S (A on P0/P1, B on P2/P8, 2 × AA motor supply, adult wiring check); speeds 30%, 60%, 100% forward and backward match the on-screen micro:bit | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -89,3 +90,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.6 | 2026-11-22 | B10 passed; B11 added |
 | 0.7 | 2026-11-22 | Six Phase 2 lessons added; B12 (laptop sound) and B13 (Open in code editor) |
 | 0.8 | 2026-11-23 | B12 adds the Test sound check; B14 answer sheets |
+| 0.9 | 2026-11-23 | B15 motor driver extension |

@@ -75,7 +75,7 @@ const category = (
   ...extra
 });
 
-export const EXTENSIONS = ['neopixel'] as const;
+export const EXTENSIONS = ['neopixel', 'motordriver'] as const;
 export type Extension = (typeof EXTENSIONS)[number];
 
 /** The toolbox, with the categories of any extensions the program has added. */
@@ -145,6 +145,9 @@ export function toolbox(added: readonly Extension[] = []) {
         block('rfa_motor', undefined, { ACTION: 'reverse' })
       ]),
       ...(added.includes('neopixel') ? [category('neopixel', C.neopixel, extras('neopixel'))] : []),
+      ...(added.includes('motordriver')
+        ? [category('motordriver', C.motordriver, extras('motordriver'))]
+        : []),
       category('extensions', C.extensions, undefined, { custom: 'RFA_EXTENSIONS' }),
       category('advanced', C.advanced, [
         category('functions', C.functions, extras('functions')),

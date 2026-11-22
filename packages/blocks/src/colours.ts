@@ -17,6 +17,7 @@ export const CATEGORY_COLOURS = {
   serial: '#002050',
   control: '#333333',
   neopixel: '#1F7E9D', // extension; MakeCode's NeoPixel #2699BF
+  motordriver: '#A04000', // extension; darker shade of our Motors orange
   extensions: '#717171',
   advanced: '#333333',
   arrays: '#B55B00', // MakeCode #FF8000
