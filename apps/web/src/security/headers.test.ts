@@ -98,7 +98,7 @@ describe('security headers', () => {
     const sim = block('/simulator/*');
     const policy = sim['content-security-policy'] ?? '';
 
-    it("differs from the site policy only to run WebAssembly and be shown in our own pages", () => {
+    it('differs from the site policy only to run WebAssembly and be shown in our own pages', () => {
       const expected = (all['content-security-policy'] ?? '')
         .replace("script-src 'self'", "script-src 'self' 'wasm-unsafe-eval'")
         .replace("frame-ancestors 'none'", "frame-ancestors 'self'");

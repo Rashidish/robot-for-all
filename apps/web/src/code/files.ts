@@ -16,7 +16,13 @@ export interface ProgramFile {
 }
 
 export function toFile(name: string, program: Program, python?: string): string {
-  const file = { format: FILE_FORMAT, version: 1, name, program, ...(python === undefined ? {} : { python }) };
+  const file = {
+    format: FILE_FORMAT,
+    version: 1,
+    name,
+    program,
+    ...(python === undefined ? {} : { python })
+  };
   return `${JSON.stringify(file, null, 2)}\n`;
 }
 
@@ -32,7 +38,11 @@ export function fromFile(text: string): ProgramFile {
   if (python !== undefined && (typeof python !== 'string' || python.length > MAX_PYTHON_CHARS)) {
     throw new Error('bad python');
   }
-  return { name, program: parseProgram(file['program']), ...(python === undefined ? {} : { python }) };
+  return {
+    name,
+    program: parseProgram(file['program']),
+    ...(python === undefined ? {} : { python })
+  };
 }
 
 /** A safe file name from a program name. */

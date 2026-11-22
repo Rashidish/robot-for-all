@@ -184,9 +184,9 @@
     {#if pixels.length}
       <div class="pixels" role="img" aria-label={`${t('sim_neopixels')}: ${pixels.length}`}>
         {#each pixels as colour, i (i)}
-          <svg viewBox="0 0 10 10" width="18" height="18" aria-hidden="true"
-            ><circle cx="5" cy="5" r="4.5" fill={colour} stroke="#555" stroke-width="0.5" /></svg
-          >
+          <svg viewBox="0 0 10 10" width="18" height="18" aria-hidden="true">
+            <circle cx="5" cy="5" r="4.5" fill={colour} stroke="#555" stroke-width="0.5" />
+          </svg>
         {/each}
       </div>
     {/if}

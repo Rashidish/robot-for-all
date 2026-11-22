@@ -30,7 +30,8 @@ if (mode === 'svg') {
     }
     return attrs.length ? ` ${attrs.join(' ')}` : '';
   });
-  if (/\sstyle="/.test(out) || /<style/.test(out)) throw new Error('Inline styles remain in the SVG');
+  if (/\sstyle="/.test(out) || /<style/.test(out))
+    throw new Error('Inline styles remain in the SVG');
   writeFileSync(file, out);
   console.log(`SVG styles converted: ${file}`);
 } else if (mode === 'finish') {
@@ -43,7 +44,8 @@ if (mode === 'svg') {
     '<div class="play-button-container" style="display: flex">',
     '<div class="play-button-container rfa-flex">'
   );
-  if (/\sstyle="|<style|<script>/.test(html)) throw new Error('simulator.html still has inline code');
+  if (/\sstyle=|<style|<script(?![^>]*\ssrc=)/i.test(html))
+    throw new Error('simulator.html still has inline code');
   html = html.replace('</head>', '    <link rel="stylesheet" href="simulator.css" />\n  </head>');
   writeFileSync(join(outDir, 'simulator.html'), html);
   writeFileSync(

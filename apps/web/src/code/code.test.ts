@@ -27,7 +27,12 @@ describe('program files', () => {
   it('keep typed Python, and refuse Python that is too long', () => {
     const file = toFile('Typed', SAMPLES.blinkHeart, 'from microbit import *\n');
     expect(fromFile(file).python).toBe('from microbit import *\n');
-    const huge = JSON.stringify({ format: 'robot-for-all-program', version: 1, program: SAMPLES.blinkHeart, python: 'x'.repeat(50_001) });
+    const huge = JSON.stringify({
+      format: 'robot-for-all-program',
+      version: 1,
+      program: SAMPLES.blinkHeart,
+      python: 'x'.repeat(50_001)
+    });
     expect(() => fromFile(huge)).toThrow();
   });
 

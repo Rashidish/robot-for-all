@@ -442,7 +442,9 @@
       {#if mode === 'python'}
         <p class="notice">
           {t('code_python_mode_note')}
-          <button type="button" class="plain" onclick={backToBlocks}>{t('code_back_to_blocks')}</button>
+          <button type="button" class="plain" onclick={backToBlocks}>
+            {t('code_back_to_blocks')}
+          </button>
         </p>
       {/if}
       <div
@@ -470,12 +472,13 @@
           bind:value={typed}
           oninput={onTyping}
           onkeydown={onCodeKey}
-          aria-describedby="python-keys"
-        ></textarea>
+          aria-describedby="python-keys"></textarea>
         <p id="python-keys" class="note">{t('code_python_keys')}</p>
         <div class="actions">
           <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
-          <button type="button" class="plain" onclick={backToBlocks}>{t('code_back_to_blocks')}</button>
+          <button type="button" class="plain" onclick={backToBlocks}>
+            {t('code_back_to_blocks')}
+          </button>
         </div>
       {:else}
         <p>{t('code_python_intro')}</p>
@@ -483,7 +486,9 @@
         <pre tabindex="0"><code>{python}</code></pre>
         <div class="actions">
           <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
-          <button type="button" class="plain" onclick={editAsPython}>{t('code_edit_python')}</button>
+          <button type="button" class="plain" onclick={editAsPython}>
+            {t('code_edit_python')}
+          </button>
         </div>
       {/if}
     </div>

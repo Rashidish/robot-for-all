@@ -226,7 +226,9 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
   const litLeds = (page: Page) =>
     simulator(page)
       .locator('#LEDsOn > *')
-      .evaluateAll((leds) => leds.filter((led) => (led as SVGElement).style.display === 'inline').length);
+      .evaluateAll(
+        (leds) => leds.filter((led) => (led as SVGElement).style.display === 'inline').length
+      );
 
   test('runs the blocks and lights the LEDs', async ({ page }) => {
     await openEditor(page);
@@ -242,7 +244,10 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
       format: 'robot-for-all-program',
       version: 1,
       name: 'Motor test',
-      program: { version: 1, handlers: [{ type: 'on_start', body: [{ type: 'motor', action: 'forward' }] }] }
+      program: {
+        version: 1,
+        handlers: [{ type: 'on_start', body: [{ type: 'motor', action: 'forward' }] }]
+      }
     });
     await page.getByLabel('Open a file').setInputFiles({
       name: 'motor.rfa.json',
