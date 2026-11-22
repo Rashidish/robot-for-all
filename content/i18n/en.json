@@ -168,8 +168,8 @@
   "code_edit_python": "Edit as Python",
   "code_edit_python_confirm": "Switch this program to typing Python? You can keep changing it as Python, but changes won't turn back into blocks.",
   "code_back_to_blocks": "Back to blocks",
-  "code_back_to_blocks_confirm": "Go back to the blocks? Your typed Python changes will be lost.",
-  "code_python_mode_note": "This program is now written in Python. Edit it in the Python tab.",
+  "code_back_to_blocks_confirm": "Use your blocks again? The on-screen micro:bit and Download will use the blocks. Your typed Python is kept as a separate program in My programs.",
+  "code_python_mode_note": "This program is using typed Python. Tap Blocks to use your blocks again.",
   "code_python_typing": "Your MicroPython program",
   "code_python_keys": "Tab adds an indent. To leave the code box with the keyboard, press Esc, then Tab.",
   "sim_title": "On-screen micro:bit",
@@ -319,5 +319,9 @@
   "game_left": "left",
   "category_arrays": "Arrays",
   "category_images": "Images",
-  "category_game": "Game"
+  "category_game": "Game",
+  "code_clear_python": "Clear code",
+  "code_clear_python_confirm": "Clear all the typed Python and start again?",
+  "code_runs_python": "Running: your typed Python",
+  "code_runs_blocks": "Running: your blocks"
 }

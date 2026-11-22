@@ -370,6 +370,37 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(2);
   });
 
+  test('switching back to Blocks runs the blocks, and keeps the Python as a copy', async ({ page }) => {
+    page.on('dialog', (dialog) => void dialog.accept());
+    await openEditor(page);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    const happyFile = JSON.stringify({
+      format: 'robot-for-all-program',
+      version: 1,
+      name: 'Faces',
+      program: { version: 1, handlers: [{ type: 'on_start', body: [{ type: 'show_icon', icon: 'HAPPY' }] }] }
+    });
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'faces.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(happyFile)
+    });
+    await page.getByRole('tab', { name: 'Python' }).click();
+    await page.getByRole('button', { name: 'Edit as Python' }).click();
+    await page
+      .getByLabel('Your MicroPython program')
+      .fill('from microbit import *\ndisplay.show(Image.SQUARE)\n');
+    await page.locator('#panel-python').getByRole('button', { name: 'Run' }).click();
+    await expect(page.getByText('Running: your typed Python')).toBeVisible();
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);
+    // The Blocks tab switches back to the blocks: the happy face (7 LEDs) runs again.
+    await page.getByRole('tab', { name: 'Blocks' }).click();
+    await expect(page.getByText('Running: your blocks')).toBeVisible();
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(7);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    await expect(page.getByRole('dialog').getByText('Faces (Python)')).toBeVisible();
+  });
+
   test('runs Python the learner types', async ({ page }) => {
     page.on('dialog', (dialog) => void dialog.accept());
     await openEditor(page);
