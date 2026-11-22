@@ -25,10 +25,10 @@ function shadowFor(e: Expr | undefined) {
   if (e.type === 'number') return num(e.value);
   if (e.type === 'text') return text(e.value);
   if (e.type === 'x_note')
-    return { shadow: { type: 'rfa_x_note', fields: { NOTE: (e as { note: string }).note } } };
+    return { shadow: { type: 'rfa_x_note', fields: { NOTE: String(e['note']) } } };
   if (e.type === 'x_colour') {
     return {
-      shadow: { type: 'rfa_x_colour', fields: { COLOUR: (e as { colour: string }).colour } }
+      shadow: { type: 'rfa_x_colour', fields: { COLOUR: String(e['colour']) } }
     };
   }
   return undefined;
