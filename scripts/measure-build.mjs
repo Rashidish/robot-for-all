@@ -17,7 +17,9 @@ function add(file) {
   seen.set(file, buf);
   if (file.endsWith('.js')) {
     const src = buf.toString('utf8');
-    for (const m of src.matchAll(/(?:import|from)\s*["']([^"']+\.js)["']/g)) {
+    // Static imports, and dynamic import("...") too: a page that loads code after it opens
+    // still makes the learner download it.
+    for (const m of src.matchAll(/(?:import|from)\s*\(?\s*["']([^"']+\.js)["']/g)) {
       const spec = m[1];
       add(spec.startsWith('/') ? join(root, spec) : resolve(dirname(file), spec));
     }

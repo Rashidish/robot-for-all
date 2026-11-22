@@ -103,5 +103,6 @@
   "code_working": "Working…",
   "code_done": "Done.",
   "code_failed": "That didn't work. Check the micro:bit is plugged in and try again, or use Download .hex.",
-  "code_no_usb": "This browser can't send to a micro:bit directly. Use Download .hex, then copy the file to the MICROBIT drive."
+  "code_no_usb": "This browser can't send to a micro:bit directly. Use Download .hex, then copy the file to the MICROBIT drive.",
+  "code_loading": "Loading the block editor…"
 }

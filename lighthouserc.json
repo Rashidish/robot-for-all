@@ -8,7 +8,7 @@
         "http://localhost:4322/lessons/p1-crank-01/",
         "http://localhost:4322/code/"
       ],
-      "numberOfRuns": 1
+      "numberOfRuns": 3
     },
     "assert": {
       "assertions": {
