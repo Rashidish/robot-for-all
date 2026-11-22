@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.2 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
+> **Version:** 0.3 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -31,6 +31,10 @@ How to use this list: add a row whenever a step adds something only a person can
 | p1-linkage-01 Extending grabber | | | | | | |
 | p1-cam-01 Bouncing animal box | | | | | | |
 | p1-lever-02 Robot arm with three lever types | | | | | | |
+| p1-linkage-02 Waving robot (four-bar linkage) | | | | | | |
+| p1-gear-01 Spinning gear train | | | | | | |
+| p1-pulley-01 Rubber-band pulley lift | | | | | | |
+| p1-motor-01 One-motor scribble robot (**also: an adult checks the 3 V circuit and battery holders**) | | | | | | |
 
 ---
 
@@ -66,3 +70,4 @@ How to use this list: add a row whenever a step adds something only a person can
 |---|---|---|
 | 0.1 | 2026-11-22 | First list: lessons 1–3, devices, launch checks |
 | 0.2 | 2026-11-22 | Lessons 4–6 added |
+| 0.3 | 2026-11-22 | Lessons 7–10 added |
