@@ -4,7 +4,7 @@
 
 Robot For All is a free, low-data STEM and robotics learning platform. Learners start with cardboard, sticks and one motor, move on to coding micro:bit and ESP boards, then design complete robot projects. Teachers, coaches and parents get ready-made lessons linked to the CAPS syllabus, printable templates and parts lists.
 
-**Status:** M1 (offline shell), in progress. See [`docs/specs/M1-offline-shell.md`](docs/specs/M1-offline-shell.md).
+**Status:** M1 (offline shell) complete and deployed. Next: M2 (make & learn). See [`docs/specs/M1-offline-shell.md`](docs/specs/M1-offline-shell.md).
 
 ## Start here
 
