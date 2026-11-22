@@ -99,7 +99,9 @@ test.describe('pages on a 360 px phone', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Waving rhino: parts');
     const sheet = page.getByRole('img', { name: 'Waving rhino: parts' });
     await expect(sheet).toBeVisible();
-    expect(await sheet.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    await expect
+      .poll(() => sheet.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
     await expect(
       page.getByRole('heading', { name: 'Measurements for drawing by hand' })
     ).toBeVisible();

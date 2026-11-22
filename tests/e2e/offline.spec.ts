@@ -59,6 +59,8 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     await page.goto(TEMPLATE);
     const sheet = page.getByRole('img', { name: 'Waving rhino: parts' });
     await expect(sheet).toBeVisible();
-    expect(await sheet.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    await expect
+      .poll(() => sheet.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
   });
 });
