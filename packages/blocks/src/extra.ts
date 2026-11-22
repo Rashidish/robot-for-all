@@ -4,6 +4,7 @@
 // Program types start with "x_" so they never clash with the core blocks in program.ts.
 import type { Category } from './colours';
 import type { Expr, Stmt } from './program';
+import { ICON_NAMES } from './icons';
 
 export type GenericNode = { type: `x_${string}`; [key: string]: unknown };
 
@@ -40,7 +41,7 @@ interface BaseSpec {
 
 export interface ExprSpec extends BaseSpec {
   role: 'expr';
-  output: 'Number' | 'Boolean' | 'String' | 'Colour';
+  output: 'Number' | 'Boolean' | 'String' | 'Colour' | 'Array' | 'Image' | 'Sprite';
   py: (n: GenericNode, c: PyContext) => string;
 }
 export interface StmtSpec extends BaseSpec {
@@ -711,6 +712,224 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     category: 'control',
     fields: [],
     py: (_node, c) => [`${c.pad}reset()`]
+  },
+  // ---- Arrays (Advanced)
+  {
+    type: 'x_list_of',
+    role: 'expr',
+    output: 'Array',
+    category: 'arrays',
+    fields: [e('a', 'A', undefined, n(1)), e('b', 'B', undefined, n(2)), e('c', 'C', undefined, n(3))],
+    py: (node, c) => `[${['a', 'b', 'c'].map((k) => c.bare(node[k] as Expr)).join(', ')}]`
+  },
+  { type: 'x_list_empty', role: 'expr', output: 'Array', category: 'arrays', fields: [], py: () => '[]' },
+  {
+    type: 'x_list_length',
+    role: 'expr',
+    output: 'Number',
+    category: 'arrays',
+    fields: [e('list', 'LIST', 'Array')],
+    py: (node, c) => `len(${c.bare(node['list'] as Expr)})`
+  },
+  {
+    type: 'x_list_get',
+    role: 'expr',
+    output: 'Number',
+    category: 'arrays',
+    fields: [e('list', 'LIST', 'Array'), e('index', 'INDEX', 'Number', n(0))],
+    py: (node, c) => `${c.expr(node['list'] as Expr)}[int(${num(c, node, 'index')})]`
+  },
+  {
+    type: 'x_list_set',
+    role: 'stmt',
+    category: 'arrays',
+    fields: [e('list', 'LIST', 'Array'), e('index', 'INDEX', 'Number', n(0)), e('value', 'VALUE', undefined, n(0))],
+    py: (node, c) => [`${c.pad}${c.expr(node['list'] as Expr)}[int(${num(c, node, 'index')})] = ${num(c, node, 'value')}`]
+  },
+  {
+    type: 'x_list_add',
+    role: 'stmt',
+    category: 'arrays',
+    fields: [e('list', 'LIST', 'Array'), e('value', 'VALUE', undefined, n(0))],
+    py: (node, c) => [`${c.pad}${c.expr(node['list'] as Expr)}.append(${num(c, node, 'value')})`]
+  },
+  {
+    type: 'x_list_remove',
+    role: 'stmt',
+    category: 'arrays',
+    fields: [e('list', 'LIST', 'Array'), e('index', 'INDEX', 'Number', n(0))],
+    py: (node, c) => [`${c.pad}${c.expr(node['list'] as Expr)}.pop(int(${num(c, node, 'index')}))`]
+  },
+  // ---- Images (Advanced)
+  {
+    type: 'x_image',
+    role: 'expr',
+    output: 'Image',
+    category: 'images',
+    fields: [{ kind: 'leds', key: 'leds' }],
+    py: (node) => {
+      const leds = String(node['leds']);
+      const rows = [0, 1, 2, 3, 4].map((r) => leds.slice(r * 5, r * 5 + 5).replace(/1/g, '9'));
+      return `Image("${rows.join(':')}")`;
+    }
+  },
+  {
+    type: 'x_icon_image',
+    role: 'expr',
+    output: 'Image',
+    category: 'images',
+    fields: [
+      {
+        kind: 'enum',
+        key: 'icon',
+        field: 'ICON',
+        options: ICON_NAMES.map((name) => [name.toLowerCase().replace(/_/g, ' '), name] as const)
+      }
+    ],
+    py: (node) => `Image.${String(node['icon'])}`
+  },
+  {
+    type: 'x_show_image',
+    role: 'stmt',
+    category: 'images',
+    fields: [e('image', 'IMAGE', 'Image', { type: 'x_icon_image', icon: 'HEART' } as unknown as Expr)],
+    py: (node, c) => [`${c.pad}display.show(${c.bare(node['image'] as Expr)})`]
+  },
+  {
+    type: 'x_animate',
+    role: 'stmt',
+    category: 'images',
+    fields: [
+      e('a', 'A', 'Image', { type: 'x_icon_image', icon: 'HEART' } as unknown as Expr),
+      e('b', 'B', 'Image', { type: 'x_icon_image', icon: 'HEART_SMALL' } as unknown as Expr),
+      e('ms', 'MS', 'Number', n(400))
+    ],
+    py: (node, c) => [
+      `${c.pad}display.show([${c.bare(node['a'] as Expr)}, ${c.bare(node['b'] as Expr)}], delay=int(${num(c, node, 'ms')}))`
+    ]
+  },
+  // ---- Game (Advanced)
+  {
+    type: 'x_sprite_create',
+    role: 'expr',
+    output: 'Sprite',
+    category: 'game',
+    fields: [e('x', 'X', 'Number', n(2)), e('y', 'Y', 'Number', n(2))],
+    py: (node, c) => {
+      c.use('game');
+      return `game.Sprite(${num(c, node, 'x')}, ${num(c, node, 'y')})`;
+    }
+  },
+  {
+    type: 'x_sprite_move',
+    role: 'stmt',
+    category: 'game',
+    fields: [e('sprite', 'SPRITE', 'Sprite'), e('steps', 'STEPS', 'Number', n(1))],
+    py: (node, c) => {
+      c.use('game');
+      return [`${c.pad}${c.expr(node['sprite'] as Expr)}.move(${num(c, node, 'steps')})`];
+    }
+  },
+  {
+    type: 'x_sprite_turn',
+    role: 'stmt',
+    category: 'game',
+    fields: [
+      e('sprite', 'SPRITE', 'Sprite'),
+      { kind: 'enum', key: 'way', field: 'WAY', options: [['%{BKY_GAME_RIGHT}', '45'], ['%{BKY_GAME_LEFT}', '-45']] }
+    ],
+    py: (node, c) => {
+      c.use('game');
+      return [`${c.pad}${c.expr(node['sprite'] as Expr)}.turn(${String(node['way'])})`];
+    }
+  },
+  {
+    type: 'x_sprite_change',
+    role: 'stmt',
+    category: 'game',
+    fields: [
+      e('sprite', 'SPRITE', 'Sprite'),
+      { kind: 'enum', key: 'axis', field: 'AXIS', options: [['x', 'x'], ['y', 'y']] },
+      e('by', 'BY', 'Number', n(1))
+    ],
+    py: (node, c) => {
+      c.use('game');
+      return [`${c.pad}${c.expr(node['sprite'] as Expr)}.change("${String(node['axis'])}", ${num(c, node, 'by')})`];
+    }
+  },
+  {
+    type: 'x_sprite_bounce',
+    role: 'stmt',
+    category: 'game',
+    fields: [e('sprite', 'SPRITE', 'Sprite')],
+    py: (node, c) => {
+      c.use('game');
+      const s = c.expr(node['sprite'] as Expr);
+      return [`${c.pad}if ${s}.on_edge():`, `${c.pad}    ${s}.bounce()`];
+    }
+  },
+  {
+    type: 'x_sprite_touching',
+    role: 'expr',
+    output: 'Boolean',
+    category: 'game',
+    fields: [e('sprite', 'SPRITE', 'Sprite'), e('other', 'OTHER', 'Sprite')],
+    py: (node, c) => {
+      c.use('game');
+      return `${c.expr(node['sprite'] as Expr)}.touching(${c.bare(node['other'] as Expr)})`;
+    }
+  },
+  {
+    type: 'x_sprite_position',
+    role: 'expr',
+    output: 'Number',
+    category: 'game',
+    fields: [e('sprite', 'SPRITE', 'Sprite'), { kind: 'enum', key: 'axis', field: 'AXIS', options: [['x', 'x'], ['y', 'y']] }],
+    py: (node, c) => {
+      c.use('game');
+      return `${c.expr(node['sprite'] as Expr)}.${String(node['axis'])}`;
+    }
+  },
+  {
+    type: 'x_sprite_delete',
+    role: 'stmt',
+    category: 'game',
+    fields: [e('sprite', 'SPRITE', 'Sprite')],
+    py: (node, c) => {
+      c.use('game');
+      return [`${c.pad}${c.expr(node['sprite'] as Expr)}.delete()`];
+    }
+  },
+  {
+    type: 'x_score_change',
+    role: 'stmt',
+    category: 'game',
+    fields: [e('by', 'BY', 'Number', n(1))],
+    py: (node, c) => {
+      c.use('game');
+      return [`${c.pad}game.add_score(${num(c, node, 'by')})`];
+    }
+  },
+  {
+    type: 'x_score',
+    role: 'expr',
+    output: 'Number',
+    category: 'game',
+    fields: [],
+    py: (_node, c) => {
+      c.use('game');
+      return 'game.score';
+    }
+  },
+  {
+    type: 'x_game_over',
+    role: 'stmt',
+    category: 'game',
+    fields: [],
+    py: (_node, c) => {
+      c.use('game');
+      return [`${c.pad}game.game_over()`];
+    }
   },
   // ---- Extension: NeoPixel (RGB LEDs)
   {

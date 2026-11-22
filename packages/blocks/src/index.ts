@@ -1,6 +1,7 @@
 export * from './program';
 export * from './icons';
-export { toPython, pythonNames, pythonString } from './python';
+export { toPython, pythonNames, pythonString, filesFor } from './python';
+export { MODULES } from './modules';
 export * from './interpreter';
 export { SAMPLES } from './samples';
 export * from './colours';

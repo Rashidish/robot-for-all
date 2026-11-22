@@ -325,6 +325,35 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(7);
   });
 
+  test('Game blocks run on screen (game.py is added for them)', async ({ page }) => {
+    await openEditor(page);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    const gameFile = JSON.stringify({
+      format: 'robot-for-all-program',
+      version: 1,
+      name: 'Game test',
+      program: {
+        version: 1,
+        handlers: [
+          {
+            type: 'on_start',
+            body: [
+              { type: 'set', name: 'player', value: { type: 'x_sprite_create', x: { type: 'number', value: 1 }, y: { type: 'number', value: 1 } } },
+              { type: 'set', name: 'goal', value: { type: 'x_sprite_create', x: { type: 'number', value: 3 }, y: { type: 'number', value: 3 } } }
+            ]
+          }
+        ]
+      }
+    });
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'game.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(gameFile)
+    });
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(2);
+  });
+
   test('runs Python the learner types', async ({ page }) => {
     page.on('dialog', (dialog) => void dialog.accept());
     await openEditor(page);

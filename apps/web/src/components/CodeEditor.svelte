@@ -13,6 +13,7 @@
     allToolboxBlocks,
     toolbox,
     type Extension,
+    filesFor,
     fromBlockly,
     parseProgram,
     toBlockly,
@@ -122,7 +123,7 @@
 
   function simulatorFiles(): Record<string, string> | null {
     const code = currentCode();
-    return code === null ? null : { 'main.py': code };
+    return code === null ? null : filesFor(code);
   }
 
   /** Like MakeCode: once running, the on-screen micro:bit restarts with each change. */
@@ -331,7 +332,7 @@
   async function makeHex(): Promise<string | null> {
     const code = currentCode();
     if (code === null) return null;
-    return buildHex(code, await fetchFirmware());
+    return buildHex(filesFor(code), await fetchFirmware());
   }
 
   async function download() {
