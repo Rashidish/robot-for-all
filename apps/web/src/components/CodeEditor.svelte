@@ -867,6 +867,9 @@
   }
   .side {
     grid-area: side;
+    /* Never wider than the screen on small phones. */
+    min-inline-size: 0;
+    max-inline-size: 100vw;
     padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
     border-block-start: 1px solid #e1e1e1;
   }

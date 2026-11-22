@@ -159,6 +159,19 @@ test.describe('code editor (M3)', () => {
       await context.close();
     });
 
+    test(`the editor is never wider than the screen (${name})`, async ({ browser }) => {
+      const context = await browser.newContext(options);
+      const page = await context.newPage();
+      await page.goto(CODE);
+      await expect(page.locator('.blocklySvg').first()).toBeVisible();
+      await page.locator('details.sensors summary').click();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+      await context.close();
+    });
+
     test(`the blocks never cover the buttons (${name})`, async ({ browser }) => {
       const context = await browser.newContext(options);
       const page = await context.newPage();
