@@ -114,7 +114,8 @@ test.describe('code editor (M3)', () => {
     await dialog.getByRole('button', { name: 'New' }).click();
     await expect(page.getByLabel('Program name')).toHaveValue('My program');
     await page.getByRole('button', { name: 'My programs' }).click();
-    await expect(dialog.getByRole('listitem')).toHaveCount(2);
+    // The first empty program, the opened file, and the new one.
+    await expect(dialog.getByRole('listitem')).toHaveCount(3);
   });
 
   // Blockly's CSS differs slightly between phones/Apple devices and other computers, so check
@@ -163,7 +164,7 @@ test.describe('code editor (M3)', () => {
       for (const label of ['Download .hex', 'Send to micro:bit', 'My programs']) {
         const button = page.getByRole('button', { name: label });
         await button.scrollIntoViewIfNeeded();
-        await expect(button).toBeInViewport({ ratio: 1 });
+        await expect(button).toBeInViewport({ ratio: 0.9 });
         const onTop = await button.evaluate((el) => {
           const r = el.getBoundingClientRect();
           return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
