@@ -1,6 +1,6 @@
 # Spec: M3 — Code (block coding and micro:bit)
 
-> **Version:** 0.3 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
+> **Version:** 0.4 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
 > Depends on: M2 (lessons 1–10 built), CLAUDE.md 0.8, ADR-0001, ADR-0004. Proposes ADR-0005. Keep the version line current; log changes at the bottom.
 
 ---
@@ -80,9 +80,21 @@ Typing Python (later milestone, with Pyodide or the micro:bit Python Editor), ES
 - **Look and feel: like MakeCode for micro:bit** (owner decision 2026-11-22), so learners who also use MakeCode at school aren't confused:
   - Layout: blocks on the right with category toolbox; on wide screens the on-screen micro:bit and the **purple Download** button on the left; on phones, buttons in a bar under the blocks.
   - Colours: header blue `#3454D1`, Download purple `#6633CC`, workspace grey `#ECF0F1`, simulator area `#FDFDFF`.
-  - Block categories, colours and wording as in MakeCode: Basic `#1E90FF`, Input `#D400D4`, Loops `#00AA00`, Logic `#00A4A6`, Variables `#DC143C`, Math `#9400D3`, Pins `#B22222`, LED `#5C2D91`; blocks read "on start", "forever", "show icon", "pause (ms)", "on button A pressed" and so on.
+  - Block categories and wording as in MakeCode: blocks read "on start", "forever", "show icon", "pause (ms)", "on button A pressed" and so on.
+  - Block colours: MakeCode's colours, made **slightly darker only where white text would fail WCAG AA** (owner decision 2026-11-22, option 2). Every block colour gives white text at least 4.5:1:
+
+    | Category | MakeCode | Ours | White-text contrast |
+    |---|---|---|---|
+    | Basic | `#1E90FF` | `#0073E2` | 4.6 |
+    | Input | `#D400D4` | `#CF00CF` | 4.6 |
+    | Loops | `#00AA00` | `#008600` | 4.8 |
+    | Logic | `#00A4A6` | `#008182` | 4.7 |
+    | Variables | `#DC143C` | `#DC143C` (same) | 5.0 |
+    | Math | `#9400D3` | `#9400D3` (same) | 6.6 |
+    | Pins | `#B22222` | `#B22222` (same) | 6.7 |
+    | LED | `#5C2D91` | `#5C2D91` (same) | 9.4 |
+    | Motors (ours) | none | chosen in step 3, same rule | at least 4.5 |
   - Not copied: the MakeCode name, logos or icons. Our editor says it is Robot For All's editor.
-  - Open question for the owner: several MakeCode block colours with white text are below the WCAG AA contrast ratio (non-negotiable §2.7). See §13.
 
 ---
 
@@ -103,6 +115,7 @@ Typing Python (later milestone, with Pyodide or the micro:bit Python Editor), ES
                                          WebUSB (microbit-connection)  or  download
 ```
 
+- **Event rules** (same on the virtual and real micro:bit): "on start" runs first; then one loop repeats: each "forever" body in order, then each "on button pressed" whose button was pressed since the last check, then a 20 ms rest. Presses are never missed but wait for the current "forever" body to finish. MakeCode runs these side by side, so teacher notes mention the difference where it matters.
 - **`packages/blocks`** (new): block definitions, toolbox, program JSON schema (Zod), Blockly ⇄ program JSON conversion, MicroPython generator, interpreter. Pure TypeScript, unit-tested without a browser. The interpreter will be reused by the 2D simulator in M4.
 - **`apps/web/src/pages/code/`**: the editor page, one Svelte island; Blockly imported only here.
 - **Device library choice (ADR-0005)**, proposed:
@@ -164,7 +177,7 @@ Each lesson: PRIMM body with a starter program; Predict uses the blocks and the 
 One PR per step. CI must pass before merging (owner decision 2026-11-22). ⏸ marks a stop for review.
 
 1. ~~**Spike + ADR-0005**~~ ✅ Done (PR #26: 245 KB gzip, CSP by hash, hex + WebUSB): Blockly under the strict CSP at 360 px, measured size; microbit-fs builds a hex from a `main.py`; microbit-connection bundles. Decide and record. ⏸ only if the spike breaks a non-negotiable (CSP, size, licence).
-2. **`packages/blocks` core**: program JSON schema, MicroPython generator, interpreter, sample programs, golden + stub-Python tests.
+2. ~~**`packages/blocks` core**~~ ✅ Done: program JSON schema, MicroPython generator, interpreter, sample programs, golden + stub-Python tests.
 3. **Editor page** `/code/`: Blockly island, toolbox, mobile layout, keyboard navigation, auto-save, My programs, import/export, Python tab, i18n.
 4. **Virtual micro:bit**: LEDs, buttons, light, tilt, motor pins, screen-reader announcements; wired to the interpreter.
 5. **Hex and WebUSB**: Download .hex, Send to micro:bit, firmware served from our domain and cached on first use, offline tests.
@@ -192,7 +205,7 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 | `microbit-connection` changes its API | Flashing breaks on an update | Pin the exact version, wrap it, Download .hex always available |
 | Most learners have no micro:bit | Lessons feel incomplete | Every lesson completes fully in the virtual micro:bit |
 | No WebUSB on iPhone | Can't flash from iPhone | Download .hex with computer steps; Bluetooth flashing considered later |
-| MakeCode block colours fail WCAG AA text contrast (e.g. white on `#00A4A6` about 3:1) | Accessibility non-negotiable at risk | Owner to choose: exact MakeCode colours, slightly darker shades of the same colours, or exact colours plus a high-contrast switch |
+| MakeCode block colours fail WCAG AA text contrast (e.g. white on `#00A4A6` about 3:1) | Accessibility | Resolved: slightly darker shades of the same colours (§5); a unit test checks every block colour |
 | Block editors are hard for blind learners | Accessibility gap | Keyboard navigation, text announcements, Python view; recorded in the test plan |
 | ESP32 boards are cheaper than micro:bit | Cost barrier | Program JSON is board-neutral; an ESP32 MicroPython target can be added later (flash via Web Serial) |
 
@@ -207,5 +220,6 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft; approved by the owner |
+| 0.4 | 2026-11-22 | Block colours: darker MakeCode shades meeting AA (owner); step 2 done; event rules for buttons and forever |
 | 0.3 | 2026-11-22 | MakeCode look and feel (owner decision); desktop layout fix |
 | 0.2 | 2026-11-22 | Step 1 done; ADR-0005 accepted; microbit-connection is stable (1.0.3); owner has a micro:bit |
