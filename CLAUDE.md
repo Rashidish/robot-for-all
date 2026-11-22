@@ -154,7 +154,7 @@ safety:
 assessment: [...]        # 3–5 items, each starting "I can "
 prerequisites: []        # lesson ids
 next: p1-cam-01          # lesson id or null
-templates: [rhino-body.svg]
+templates: [rhino-parts]   # sheets in content/projects/<id>/templates/<name>.ts
 status: draft            # draft | in_review | published
 ai_generated: true
 reviewed_by: null        # required to publish

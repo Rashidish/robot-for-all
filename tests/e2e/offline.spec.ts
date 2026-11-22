@@ -1,4 +1,4 @@
-import { expect, LESSON, test, waitForServiceWorker } from './fixtures';
+import { expect, LESSON, TEMPLATE, test, waitForServiceWorker } from './fixtures';
 
 test.describe('offline (M1 spec journeys B and C)', () => {
   test('the app installs: manifest and icons are valid', async ({ page, request }) => {
@@ -54,5 +54,11 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Make' })).toBeVisible();
     // It remembers the lesson is saved.
     await expect(page.getByRole('button', { name: '✓ Saved for offline' })).toBeVisible();
+
+    // Its template was saved too, so it can be printed or copied with no signal.
+    await page.goto(TEMPLATE);
+    const sheet = page.getByRole('img', { name: 'Waving rhino: parts' });
+    await expect(sheet).toBeVisible();
+    expect(await sheet.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   });
 });

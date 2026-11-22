@@ -31,6 +31,8 @@ export const test = base.extend<{ problems: string[] }>({
 export { expect };
 
 export const LESSON = '/lessons/p1-crank-01/';
+export const TEMPLATE = '/templates/p1-crank-01/rhino-parts/';
+export const TEMPLATE_SVG = '/templates/p1-crank-01/rhino-parts.svg';
 
 /** Waits until the service worker is installed and controlling the page. */
 export async function waitForServiceWorker(page: import('@playwright/test').Page) {

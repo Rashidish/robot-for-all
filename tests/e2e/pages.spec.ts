@@ -1,4 +1,4 @@
-import { expect, LESSON, test } from './fixtures';
+import { expect, LESSON, TEMPLATE, TEMPLATE_SVG, test } from './fixtures';
 
 test.describe('pages on a 360 px phone', () => {
   test('home page shows the promise and links to lessons', async ({ page }) => {
@@ -55,7 +55,7 @@ test.describe('pages on a 360 px phone', () => {
   });
 
   test('pages fit a 360 px screen without sideways scrolling', async ({ page }) => {
-    for (const path of ['/', '/lessons/', LESSON, '/about/', '/privacy/']) {
+    for (const path of ['/', '/lessons/', LESSON, TEMPLATE, '/about/', '/privacy/']) {
       await page.goto(path);
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth
@@ -89,6 +89,26 @@ test.describe('pages on a 360 px phone', () => {
     }
   });
 
+  test('a lesson links to its printable template, drawn at true A4 size', async ({
+    page,
+    request
+  }) => {
+    await page.goto(LESSON);
+    await page.getByRole('link', { name: 'Waving rhino: parts' }).click();
+    await expect(page).toHaveURL(TEMPLATE);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Waving rhino: parts');
+    const sheet = page.getByRole('img', { name: 'Waving rhino: parts' });
+    await expect(sheet).toBeVisible();
+    expect(await sheet.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    await expect(
+      page.getByRole('heading', { name: 'Measurements for drawing by hand' })
+    ).toBeVisible();
+
+    const svg = await (await request.get(TEMPLATE_SVG)).text();
+    expect(svg).toContain('width="210mm" height="297mm"');
+    expect(svg).toContain('This square must measure 50 mm');
+  });
+
   test('printing hides menus and buttons', async ({ page }) => {
     await page.goto(LESSON);
     await page.emulateMedia({ media: 'print' });
@@ -102,6 +122,7 @@ test.describe('pages on a 360 px phone', () => {
       ['home', '/'],
       ['lessons', '/lessons/'],
       ['lesson', LESSON],
+      ['template', TEMPLATE],
       ['about', '/about/'],
       ['privacy', '/privacy/']
     ] as const) {

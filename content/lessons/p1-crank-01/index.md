@@ -28,7 +28,7 @@ assessment:
   - I can explain how turning the handle makes the head move up and down
   - I can change the crank to make the head move higher
 next: null
-templates: [rhino-body.svg]
+templates: [rhino-parts]
 status: draft
 ai_generated: true
 reviewed_by: null

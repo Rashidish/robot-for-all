@@ -29,7 +29,9 @@ import { m } from '../i18n';
     ...[...document.querySelectorAll<HTMLScriptElement>('script[src]')].map((s) => s.src),
     ...[...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].map((l) => l.href),
     ...[...document.querySelectorAll<HTMLImageElement>('img')].map((i) => i.currentSrc || i.src),
-    ...[...document.querySelectorAll<HTMLAnchorElement>('a[href$=".svg"]')].map((a) => a.href)
+    ...[...document.querySelectorAll<HTMLAnchorElement>('a[href$=".svg"], a[data-offline]')].map(
+      (a) => a.href
+    )
   ];
 
   const showSaved = () => {
