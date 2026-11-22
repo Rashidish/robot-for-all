@@ -42,7 +42,7 @@ export const ICONS = {
   COW: ['10001', '10001', '11111', '01110', '00100'],
   MUSIC_QUAVER: ['00100', '00110', '00101', '11100', '11100'],
   PITCHFORK: ['10101', '10101', '11111', '00100', '00100'],
-  SCISSORS: ['11001', '11010', '00100', '11010', '11001'],
+  SCISSORS: ['11001', '11010', '00100', '11010', '11001']
 } as const satisfies Record<string, readonly string[]>;
 
 export type IconName = keyof typeof ICONS;

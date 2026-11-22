@@ -94,7 +94,12 @@ describe('interpreter and MicroPython agree', () => {
           body: [
             {
               type: 'show_number',
-              value: { type: 'arith', op: '/', a: { type: 'number', value: 1 }, b: { type: 'number', value: 0 } }
+              value: {
+                type: 'arith',
+                op: '/',
+                a: { type: 'number', value: 1 },
+                b: { type: 'number', value: 0 }
+              }
             }
           ]
         }
@@ -107,7 +112,12 @@ describe('interpreter and MicroPython agree', () => {
   it('can be stopped, even in a loop that never pauses', async () => {
     const program: Program = {
       version: 1,
-      handlers: [{ type: 'on_start', body: [{ type: 'while', cond: { type: 'bool', value: true }, body: [] }] }]
+      handlers: [
+        {
+          type: 'on_start',
+          body: [{ type: 'while', cond: { type: 'bool', value: true }, body: [] }]
+        }
+      ]
     };
     const controller = new AbortController();
     let breaths = 0;
@@ -119,6 +129,8 @@ describe('interpreter and MicroPython agree', () => {
       }
     };
     const device = new Proxy({} as Device, { get: () => () => false });
-    await expect(run(program, device, clock, { signal: controller.signal })).rejects.toBeInstanceOf(Stopped);
+    await expect(run(program, device, clock, { signal: controller.signal })).rejects.toBeInstanceOf(
+      Stopped
+    );
   });
 });

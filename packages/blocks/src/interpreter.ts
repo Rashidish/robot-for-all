@@ -60,7 +60,12 @@ export interface RunOptions {
 
 const STEPS_BEFORE_BREATHING = 1000;
 
-export async function run(program: Program, device: Device, clock: Clock, options: RunOptions = {}) {
+export async function run(
+  program: Program,
+  device: Device,
+  clock: Clock,
+  options: RunOptions = {}
+) {
   const vars = new Map<string, Value>();
   const random =
     options.random ??

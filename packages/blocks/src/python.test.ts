@@ -48,7 +48,14 @@ describe('MicroPython generator', () => {
 describe('safe Python names and strings', () => {
   it('turns learner variable names into unique Python names', () => {
     const names = pythonNames(['my score', 'my_score', 'display', '2fast', 'ṡpeed', 'if']);
-    expect([...names.values()]).toEqual(['my_score', 'my_score_2', 'v_display', 'v_2fast', 'peed', 'v_if']);
+    expect([...names.values()]).toEqual([
+      'my_score',
+      'my_score_2',
+      'v_display',
+      'v_2fast',
+      'peed',
+      'v_if'
+    ]);
   });
 
   it("never lets a learner's text break out of its string", () => {

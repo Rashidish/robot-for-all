@@ -92,13 +92,26 @@ export const SAMPLES = {
           { type: 'show_text', value: { type: 'text', value: 'Go "robot"!' } },
           {
             type: 'while',
-            cond: { type: 'compare', op: 'lt', a: { type: 'var', name: 'count' }, b: { type: 'number', value: 4 } },
+            cond: {
+              type: 'compare',
+              op: 'lt',
+              a: { type: 'var', name: 'count' },
+              b: { type: 'number', value: 4 }
+            },
             body: [
               { type: 'change', name: 'count', by: { type: 'number', value: 2 } },
               { type: 'digital_write', pin: 2, value: 1 }
             ]
           },
-          { type: 'show_number', value: { type: 'arith', op: '*', a: { type: 'var', name: 'count' }, b: { type: 'number', value: 1.5 } } }
+          {
+            type: 'show_number',
+            value: {
+              type: 'arith',
+              op: '*',
+              a: { type: 'var', name: 'count' },
+              b: { type: 'number', value: 1.5 }
+            }
+          }
         ]
       }
     ]

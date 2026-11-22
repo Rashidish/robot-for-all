@@ -60,7 +60,8 @@ export class ProgramError extends Error {
 }
 
 type Json = Record<string, unknown>;
-const isObject = (v: unknown): v is Json => typeof v === 'object' && v !== null && !Array.isArray(v);
+const isObject = (v: unknown): v is Json =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
 const NAME = new RegExp(`^[\\p{L}\\p{N}_ ]{1,${LIMITS.nameLength}}$`, 'u');
 
 /**
@@ -82,7 +83,8 @@ export function parseProgram(input: unknown): Program {
     return v;
   };
   const oneOf = <T>(v: unknown, options: readonly T[], path: string): T => {
-    if (!options.includes(v as T)) throw new ProgramError(`expected one of ${options.join(', ')}`, path);
+    if (!options.includes(v as T))
+      throw new ProgramError(`expected one of ${options.join(', ')}`, path);
     return v as T;
   };
   const name = (v: unknown, path: string): string => {
@@ -117,7 +119,10 @@ export function parseProgram(input: unknown): Program {
         return { type: 'bool', value: o['value'] };
       }
       case 'var':
-        return { type: 'var', name: name(fields(v, path, ['type', 'name'])['name'], `${path}.name`) };
+        return {
+          type: 'var',
+          name: name(fields(v, path, ['type', 'name'])['name'], `${path}.name`)
+        };
       case 'arith': {
         const o = fields(v, path, ['type', 'op', 'a', 'b']);
         return {
@@ -149,18 +154,28 @@ export function parseProgram(input: unknown): Program {
         return { type: 'not', a: expr(fields(v, path, ['type', 'a'])['a'], `${path}.a`, d) };
       case 'random': {
         const o = fields(v, path, ['type', 'from', 'to']);
-        return { type: 'random', from: expr(o['from'], `${path}.from`, d), to: expr(o['to'], `${path}.to`, d) };
+        return {
+          type: 'random',
+          from: expr(o['from'], `${path}.from`, d),
+          to: expr(o['to'], `${path}.to`, d)
+        };
       }
       case 'button_pressed': {
         const o = fields(v, path, ['type', 'button']);
-        return { type: 'button_pressed', button: oneOf(o['button'], ['A', 'B'] as const, `${path}.button`) };
+        return {
+          type: 'button_pressed',
+          button: oneOf(o['button'], ['A', 'B'] as const, `${path}.button`)
+        };
       }
       case 'light_level':
         fields(v, path, ['type']);
         return { type: 'light_level' };
       case 'acceleration': {
         const o = fields(v, path, ['type', 'axis']);
-        return { type: 'acceleration', axis: oneOf(o['axis'], ['x', 'y', 'z'] as const, `${path}.axis`) };
+        return {
+          type: 'acceleration',
+          axis: oneOf(o['axis'], ['x', 'y', 'z'] as const, `${path}.axis`)
+        };
       }
       case 'temperature':
         fields(v, path, ['type']);
@@ -196,11 +211,19 @@ export function parseProgram(input: unknown): Program {
         return { type: 'pause', ms: expr(fields(v, path, ['type', 'ms'])['ms'], `${path}.ms`, d) };
       case 'repeat': {
         const o = fields(v, path, ['type', 'times', 'body']);
-        return { type: 'repeat', times: expr(o['times'], `${path}.times`, d), body: stmts(o['body'], `${path}.body`, d) };
+        return {
+          type: 'repeat',
+          times: expr(o['times'], `${path}.times`, d),
+          body: stmts(o['body'], `${path}.body`, d)
+        };
       }
       case 'while': {
         const o = fields(v, path, ['type', 'cond', 'body']);
-        return { type: 'while', cond: expr(o['cond'], `${path}.cond`, d), body: stmts(o['body'], `${path}.body`, d) };
+        return {
+          type: 'while',
+          cond: expr(o['cond'], `${path}.cond`, d),
+          body: stmts(o['body'], `${path}.body`, d)
+        };
       }
       case 'if': {
         const o = fields(v, path, ['type', 'cond', 'then', 'else']);
@@ -213,11 +236,19 @@ export function parseProgram(input: unknown): Program {
       }
       case 'set': {
         const o = fields(v, path, ['type', 'name', 'value']);
-        return { type: 'set', name: name(o['name'], `${path}.name`), value: expr(o['value'], `${path}.value`, d) };
+        return {
+          type: 'set',
+          name: name(o['name'], `${path}.name`),
+          value: expr(o['value'], `${path}.value`, d)
+        };
       }
       case 'change': {
         const o = fields(v, path, ['type', 'name', 'by']);
-        return { type: 'change', name: name(o['name'], `${path}.name`), by: expr(o['by'], `${path}.by`, d) };
+        return {
+          type: 'change',
+          name: name(o['name'], `${path}.name`),
+          by: expr(o['by'], `${path}.by`, d)
+        };
       }
       case 'digital_write': {
         const o = fields(v, path, ['type', 'pin', 'value']);
@@ -229,7 +260,10 @@ export function parseProgram(input: unknown): Program {
       }
       case 'motor': {
         const o = fields(v, path, ['type', 'action']);
-        return { type: 'motor', action: oneOf(o['action'], ['forward', 'reverse', 'stop'] as const, `${path}.action`) };
+        return {
+          type: 'motor',
+          action: oneOf(o['action'], ['forward', 'reverse', 'stop'] as const, `${path}.action`)
+        };
       }
       default:
         throw new ProgramError(`unknown block "${String(t)}"`, path);
@@ -257,8 +291,12 @@ export function parseProgram(input: unknown): Program {
   if (root['version'] !== PROGRAM_VERSION) {
     throw new ProgramError(`unsupported version ${String(root['version'])}`, 'program.version');
   }
-  if (!Array.isArray(root['handlers'])) throw new ProgramError('expected a list', 'program.handlers');
-  return { version: PROGRAM_VERSION, handlers: root['handlers'].map((h, i) => handler(h, `handlers[${i}]`)) };
+  if (!Array.isArray(root['handlers']))
+    throw new ProgramError('expected a list', 'program.handlers');
+  return {
+    version: PROGRAM_VERSION,
+    handlers: root['handlers'].map((h, i) => handler(h, `handlers[${i}]`))
+  };
 }
 
 /** Every variable name used in a program, in first-use order. */

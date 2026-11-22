@@ -10,11 +10,14 @@ describe('program validation', () => {
   });
 
   it('rejects unknown blocks and fields, with the path to the problem', () => {
-    expect(() => parseProgram({ version: 1, handlers: [{ type: 'forever', body: [{ type: 'explode' }] }] })).toThrow(
-      /handlers\[0\]\.body\[0\]: unknown block "explode"/
-    );
     expect(() =>
-      parseProgram({ version: 1, handlers: [{ type: 'on_start', body: [{ type: 'clear', extra: 1 }] }] })
+      parseProgram({ version: 1, handlers: [{ type: 'forever', body: [{ type: 'explode' }] }] })
+    ).toThrow(/handlers\[0\]\.body\[0\]: unknown block "explode"/);
+    expect(() =>
+      parseProgram({
+        version: 1,
+        handlers: [{ type: 'on_start', body: [{ type: 'clear', extra: 1 }] }]
+      })
     ).toThrow(ProgramError);
     expect(() => parseProgram({ version: 2, handlers: [] })).toThrow(/unsupported version/);
     expect(() => parseProgram('not a program')).toThrow(ProgramError);
@@ -27,21 +30,34 @@ describe('program validation', () => {
     });
     expect(() => parseProgram(withValue({ type: 'number', value: Infinity }))).toThrow(/number/);
     expect(() => parseProgram(withValue({ type: 'number', value: '5' }))).toThrow(/number/);
-    expect(() => parseProgram(withValue({ type: 'text', value: 'x'.repeat(LIMITS.text + 1) }))).toThrow(/text/);
-    expect(() => parseProgram(withValue({ type: 'var', name: 'a;import os' }))).toThrow(/variable names/);
     expect(() =>
-      parseProgram({ version: 1, handlers: [{ type: 'on_start', body: [{ type: 'show_icon', icon: 'NOPE' }] }] })
+      parseProgram(withValue({ type: 'text', value: 'x'.repeat(LIMITS.text + 1) }))
+    ).toThrow(/text/);
+    expect(() => parseProgram(withValue({ type: 'var', name: 'a;import os' }))).toThrow(
+      /variable names/
+    );
+    expect(() =>
+      parseProgram({
+        version: 1,
+        handlers: [{ type: 'on_start', body: [{ type: 'show_icon', icon: 'NOPE' }] }]
+      })
     ).toThrow(/expected one of/);
   });
 
   it('refuses programs that are too big or nested too deeply', () => {
-    const big = { version: 1, handlers: [{ type: 'on_start', body: Array(LIMITS.nodes + 1).fill({ type: 'clear' }) }] };
+    const big = {
+      version: 1,
+      handlers: [{ type: 'on_start', body: Array(LIMITS.nodes + 1).fill({ type: 'clear' }) }]
+    };
     expect(() => parseProgram(big)).toThrow(/too big/);
     let deep: unknown = { type: 'number', value: 1 };
     for (let i = 0; i < LIMITS.depth + 5; i += 1) deep = { type: 'not', a: deep };
-    expect(() => parseProgram({ version: 1, handlers: [{ type: 'on_start', body: [{ type: 'show_number', value: deep }] }] })).toThrow(
-      /nested too deeply/
-    );
+    expect(() =>
+      parseProgram({
+        version: 1,
+        handlers: [{ type: 'on_start', body: [{ type: 'show_number', value: deep }] }]
+      })
+    ).toThrow(/nested too deeply/);
   });
 
   it('lists variables in first-use order', () => {
