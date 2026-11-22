@@ -21,7 +21,9 @@ export async function getLessons(): Promise<LessonEntry[]> {
     for (const p of checkLinks(lesson.data, ids)) problems.push(`${lesson.id}: ${p}`);
     for (const name of lesson.data.templates) {
       if (!findTemplate(lesson.id, name)) {
-        problems.push(`${lesson.id}: template "${name}" not found in content/projects/${lesson.id}/templates/`);
+        problems.push(
+          `${lesson.id}: template "${name}" not found in content/projects/${lesson.id}/templates/`
+        );
       }
     }
   }

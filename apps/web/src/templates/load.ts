@@ -28,7 +28,10 @@ export function findTemplate(lesson: string, name: string): TemplateEntry | unde
 }
 
 export function templateSvg(entry: TemplateEntry): string {
-  return renderSheet(entry.sheet, { checkSquare: m.template_check_square(), key: m.template_key() });
+  return renderSheet(entry.sheet, {
+    checkSquare: m.template_check_square(),
+    key: m.template_key()
+  });
 }
 
 export function templateMeasurements(entry: TemplateEntry): string[] {

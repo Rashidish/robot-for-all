@@ -84,9 +84,7 @@ export function strip(opts: {
   }));
   const measurements = [`${name}: ${fmt(length)} mm long, ${fmt(width)} mm wide`];
   if (holes > 1) {
-    measurements.push(
-      `${holes} holes, ${fmt(inset)} mm from each end, ${fmt(spacing)} mm apart`
-    );
+    measurements.push(`${holes} holes, ${fmt(inset)} mm from each end, ${fmt(spacing)} mm apart`);
   } else if (holes === 1) {
     measurements.push('1 hole in the middle');
   }
@@ -131,7 +129,12 @@ export function disc(opts: {
  * A simple gear with straight-sided teeth that cut cleanly from card.
  * pitch = distance from one tooth to the next around the gear (mm). Gears that mesh share a pitch.
  */
-export function gear(opts: { name: string; teeth: number; pitch?: number; axleHole?: number }): Part {
+export function gear(opts: {
+  name: string;
+  teeth: number;
+  pitch?: number;
+  axleHole?: number;
+}): Part {
   const { name, teeth, pitch = 9, axleHole = 4 } = opts;
   check(Number.isInteger(teeth) && teeth >= 8 && teeth <= 60, `${name}: use 8–60 teeth`);
   check(pitch >= 8, `${name}: card teeth smaller than 8 mm pitch tear easily`);
@@ -176,7 +179,10 @@ export function gearCentreDistance(teethA: number, teethB: number, pitch = 9): n
 /** An egg-shaped cam: turning it lifts a follower by `lift` mm once per turn. */
 export function cam(opts: { name: string; base: number; lift: number; axleHole?: number }): Part {
   const { name, base, lift, axleHole = 4 } = opts;
-  check(base >= 20 && lift > 0 && lift <= base, `${name}: lift must be between 0 and the base size`);
+  check(
+    base >= 20 && lift > 0 && lift <= base,
+    `${name}: lift must be between 0 and the base size`
+  );
   const r = base / 2;
   const height = base + lift;
   const outline =
@@ -190,7 +196,9 @@ export function cam(opts: { name: string; base: number; lift: number; axleHole?:
     outline,
     holes: [{ x: r, y: r2(r + lift), d: axleHole }],
     folds: [],
-    measurements: [`${name}: egg shape ${fmt(base)} mm wide, ${fmt(height)} mm tall, axle hole near the round end`]
+    measurements: [
+      `${name}: egg shape ${fmt(base)} mm wide, ${fmt(height)} mm tall, axle hole near the round end`
+    ]
   };
 }
 
@@ -207,7 +215,10 @@ export function shape(opts: {
   const { name, width, height, path, holes = [], folds = [], measurements = [] } = opts;
   check(width > 0 && height > 0, `${name}: give the shape a size`);
   for (const h of holes) {
-    check(h.x > 0 && h.x < width && h.y > 0 && h.y < height, `${name}: a hole is outside the shape`);
+    check(
+      h.x > 0 && h.x < width && h.y > 0 && h.y < height,
+      `${name}: a hole is outside the shape`
+    );
   }
   return {
     name,

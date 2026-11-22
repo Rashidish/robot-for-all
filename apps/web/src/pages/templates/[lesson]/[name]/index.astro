@@ -39,7 +39,9 @@ const file = templateFile(entry.lesson, entry.name);
     <p>{m.template_print_hint()}</p>
     <PrintButton label={m.template_print()} />
     <p>
-      <a href={file} download>{m.template_download()}</a>
+      <a href={file} download>
+        {m.template_download()}
+      </a>
     </p>
   </div>
 
@@ -48,7 +50,9 @@ const file = templateFile(entry.lesson, entry.name);
   <section class="template-info" aria-labelledby="measure-title">
     <h2 id="measure-title">{m.template_measurements_title()}</h2>
     <ul>
-      {templateMeasurements(entry).map((line) => <li>{line}</li>)}
+      {templateMeasurements(entry).map((line) => (
+        <li>{line}</li>
+      ))}
     </ul>
   </section>
 </BaseLayout>

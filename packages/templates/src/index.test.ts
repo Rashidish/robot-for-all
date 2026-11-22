@@ -62,7 +62,13 @@ describe('parts are drawn to size in millimetres', () => {
 
   it('shape: refuses holes outside the shape', () => {
     expect(() =>
-      shape({ name: 'Body', width: 50, height: 30, path: 'M0 0H50V30H0Z', holes: [{ x: 60, y: 10, d: 4 }] })
+      shape({
+        name: 'Body',
+        width: 50,
+        height: 30,
+        path: 'M0 0H50V30H0Z',
+        holes: [{ x: 60, y: 10, d: 4 }]
+      })
     ).toThrow(/outside/);
   });
 });
@@ -125,7 +131,11 @@ describe('rendered sheet', () => {
 
 describe('text wrapping', () => {
   it('keeps every line within the width', () => {
-    const lines = wrap('Print at 100% (Actual size). This square must measure 50 mm; if not, change your print settings.', 130, 3.4);
+    const lines = wrap(
+      'Print at 100% (Actual size). This square must measure 50 mm; if not, change your print settings.',
+      130,
+      3.4
+    );
     expect(lines.length).toBeGreaterThan(1);
     for (const line of lines) expect(line.length * 3.4 * 0.55).toBeLessThanOrEqual(130);
   });

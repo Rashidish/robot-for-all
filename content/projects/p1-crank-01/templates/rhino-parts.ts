@@ -9,8 +9,7 @@ export default defineSheet({
       name: 'Rhino body',
       width: 120,
       height: 70,
-      path:
-        'M8 38C8 20 26 12 50 12H92C108 12 116 24 116 38V52H106V68H94V52H36V68H24V52H14C10 52 8 46 8 38Z',
+      path: 'M8 38C8 20 26 12 50 12H92C108 12 116 24 116 38V52H106V68H94V52H36V68H24V52H14C10 52 8 46 8 38Z',
       holes: [
         { x: 100, y: 26, d: 4 },
         { x: 60, y: 40, d: 4 }
