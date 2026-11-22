@@ -1,7 +1,8 @@
 ---
 // M3 code editor (spec docs/specs/M3-code.md). Step 1: spike page.
+// The Svelte editor is mounted from a bundled module script rather than as an Astro island,
+// because island hydration adds an inline <script> and <style> that our CSP blocks.
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import CodeEditor from '../../components/CodeEditor.svelte';
 import { m } from '../../i18n';
 
 const labels = {
@@ -18,5 +19,15 @@ const labels = {
 <BaseLayout title={m.code_title()}>
   <h1>{m.code_title()}</h1>
   <p>{m.code_intro()}</p>
-  <CodeEditor client:load labels={labels} />
+  <div id="code-editor" data-labels={JSON.stringify(labels)}></div>
 </BaseLayout>
+
+<script>
+  import { mount } from 'svelte';
+  import CodeEditor from '../../components/CodeEditor.svelte';
+
+  const target = document.getElementById('code-editor');
+  if (target) {
+    mount(CodeEditor, { target, props: { labels: JSON.parse(target.dataset['labels'] ?? '{}') } });
+  }
+</script>

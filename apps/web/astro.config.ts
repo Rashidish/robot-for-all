@@ -22,7 +22,10 @@ export default defineConfig({
           // The code editor's libraries go in their own file so the service worker can leave
           // them out of the install download: only learners who open /code/ pay for them.
           manualChunks(id: string) {
-            if (/[\\/]node_modules[\\/](blockly|@microbit|nrf-intel-hex)[\\/]/.test(id)) {
+            if (
+              /[\\/]node_modules[\\/](blockly|@microbit|nrf-intel-hex)[\\/]/.test(id) ||
+              /[\\/]src[\\/](code[\\/]|components[\\/]CodeEditor\.svelte)/.test(id)
+            ) {
               return 'editor-vendor';
             }
             return undefined;
