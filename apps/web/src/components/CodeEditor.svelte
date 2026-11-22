@@ -4,6 +4,7 @@
   // for Python, the .hex file and (step 4) the virtual micro:bit.
   import { onMount, tick } from 'svelte';
   import * as Blockly from 'blockly/core';
+  import * as BlocklyEnglish from 'blockly/msg/en';
   import {
     BLOCK_DEFINITIONS,
     NEW_PROGRAM,
@@ -73,6 +74,9 @@
   const VARIABLE_NAME = /^[\p{L}\p{N}_ ]{1,30}$/u;
 
   function setUpBlockly() {
+    // Blockly's own interface text (menus, screen-reader labels), then our block text on top.
+    // Other languages will load Blockly's matching message file here.
+    Blockly.setLocale(BlocklyEnglish as unknown as Record<string, string>);
     for (const [key, value] of Object.entries(labels)) {
       if (key.startsWith('block_') || key.startsWith('category_'))
         Blockly.Msg[key.toUpperCase()] = value;
