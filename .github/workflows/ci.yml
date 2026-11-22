@@ -65,6 +65,15 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm test
+      - name: On-screen micro:bit (cached; built from source when its version or patches change)
+        id: simulator-cache
+        uses: actions/cache@v4
+        with:
+          path: apps/web/public/simulator
+          key: simulator-${{ hashFiles('apps/web/simulator.version', 'patches/simulator/**', 'scripts/build-simulator.sh', 'scripts/vendor-simulator.mjs') }}
+      - name: Build the on-screen micro:bit
+        if: steps.simulator-cache.outputs.cache-hit != 'true'
+        run: bash scripts/build-simulator.sh
       - name: Build
         run: npm run build
       - name: No inline scripts or styles (strict CSP)

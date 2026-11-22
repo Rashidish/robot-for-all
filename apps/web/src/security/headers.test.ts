@@ -93,4 +93,18 @@ describe('security headers', () => {
       expect(perms.replace('usb=(self)', 'usb=()')).toBe(all['permissions-policy']);
     });
   });
+
+  describe('on-screen micro:bit (/simulator/*)', () => {
+    const sim = block('/simulator/*');
+    const policy = sim['content-security-policy'] ?? '';
+
+    it("differs from the site policy only to run WebAssembly and be shown in our own pages", () => {
+      const expected = (all['content-security-policy'] ?? '')
+        .replace("script-src 'self'", "script-src 'self' 'wasm-unsafe-eval'")
+        .replace("frame-ancestors 'none'", "frame-ancestors 'self'");
+      expect(policy).toBe(expected);
+      expect(policy).not.toMatch(/unsafe-inline|'unsafe-eval'|\*|https?:/);
+      expect(sim['x-frame-options']).toBe('SAMEORIGIN');
+    });
+  });
 });

@@ -24,6 +24,13 @@ describe('program files', () => {
     expect(() => fromFile(' '.repeat(MAX_FILE_BYTES + 1))).toThrow('too big');
   });
 
+  it('keep typed Python, and refuse Python that is too long', () => {
+    const file = toFile('Typed', SAMPLES.blinkHeart, 'from microbit import *\n');
+    expect(fromFile(file).python).toBe('from microbit import *\n');
+    const huge = JSON.stringify({ format: 'robot-for-all-program', version: 1, program: SAMPLES.blinkHeart, python: 'x'.repeat(50_001) });
+    expect(() => fromFile(huge)).toThrow();
+  });
+
   it('make safe file names', () => {
     expect(fileName('My robot: go/stop!')).toBe('My-robot-gostop');
     expect(fileName('???')).toBe('program');
