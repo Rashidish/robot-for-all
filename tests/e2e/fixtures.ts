@@ -31,6 +31,7 @@ export const test = base.extend<{ problems: string[] }>({
 export { expect };
 
 export const LESSON = '/lessons/p1-crank-01/';
+export const SLIDES = '/lessons/p1-crank-01/slides/';
 export const TEMPLATE = '/templates/p1-crank-01/rhino-parts/';
 export const TEMPLATE_SVG = '/templates/p1-crank-01/rhino-parts.svg';
 

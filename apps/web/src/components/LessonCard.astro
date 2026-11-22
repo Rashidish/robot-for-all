@@ -9,7 +9,13 @@ interface Props {
 const { data } = Astro.props.lesson;
 ---
 
-<article class="card">
+<article
+  class="card"
+  data-lesson
+  data-grades={data.grades.join(' ')}
+  data-mechanism={data.mechanism}
+  data-cost={data.cost_estimate_zar}
+>
   <h2>
     <a href={`/lessons/${data.id}/`}>{data.title}</a>
   </h2>
