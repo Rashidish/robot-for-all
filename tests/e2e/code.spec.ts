@@ -2,6 +2,7 @@
 // and offline use after the first visit. Grows into the full editor journeys in steps 3–5.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { devices } from '@playwright/test';
 import { test, expect, waitForServiceWorker } from './fixtures';
 
 const CODE = '/code/';
@@ -19,7 +20,7 @@ test.describe('code editor (M3)', () => {
   // Blockly's CSS differs slightly between phones/Apple devices and other computers, so check
   // both: a desktop hash was missing at first and the editor rendered black on Windows.
   const browsers = [
-    { name: 'phone', options: {} },
+    { name: 'phone', options: { ...devices['Galaxy S9+'], viewport: { width: 360, height: 640 } } },
     {
       name: 'Windows desktop',
       options: {
@@ -59,7 +60,8 @@ test.describe('code editor (M3)', () => {
       await expect(page.locator('.blocklyFlyout').first()).toBeVisible();
       for (const label of ['Download .hex', 'Send to micro:bit']) {
         const button = page.getByRole('button', { name: label });
-        await expect(button).toBeInViewport();
+        await button.scrollIntoViewIfNeeded();
+        await expect(button).toBeInViewport({ ratio: 1 });
         // The button itself must be what a tap at its centre hits.
         const onTop = await button.evaluate((el) => {
           const r = el.getBoundingClientRect();
