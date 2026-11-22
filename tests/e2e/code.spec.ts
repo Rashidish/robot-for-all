@@ -91,6 +91,26 @@ test.describe('code editor (M3)', () => {
     await expect(page.locator('#panel-python code')).toContainText('display.show(Image.HEART)');
   });
 
+  test('a Phase 2 lesson opens its starter program in the editor', async ({ page }) => {
+    for (const [id, name, python] of [
+      ['p2-display-01', 'Blink a heart', 'display.show(Image.HEART)'],
+      ['p2-motor-02', 'Forward, stop, reverse', 'pin1.write_digital(1)'],
+      ['p2-robot-01', 'Robot that reacts', 'accelerometer.was_gesture("shake")']
+    ] as const) {
+      await page.goto(`/lessons/${id}/`);
+      await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
+      await expect(page.locator('.blocklySvg').first()).toBeVisible();
+      await expect(page.getByLabel('Program name')).toHaveValue(name);
+      expect(page.url()).not.toContain('#open=');
+      await page.getByRole('tab', { name: 'Python' }).click();
+      await expect(page.locator('#panel-python code')).toContainText(python);
+    }
+    // Opening the same lesson again makes a second copy with its own name.
+    await page.goto('/lessons/p2-display-01/');
+    await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
+    await expect(page.getByLabel('Program name')).toHaveValue('Blink a heart 2');
+  });
+
   test('a file that is not a program is refused', async ({ page }) => {
     await openEditor(page);
     await page.getByRole('button', { name: 'My programs' }).click();

@@ -1,0 +1,154 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Robot that reacts",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "set",
+            "name": "driving",
+            "value": {
+              "type": "number",
+              "value": 0
+            }
+          },
+          {
+            "type": "show_icon",
+            "icon": "ASLEEP"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "A",
+        "body": [
+          {
+            "type": "set",
+            "name": "driving",
+            "value": {
+              "type": "number",
+              "value": 1
+            }
+          },
+          {
+            "type": "show_icon",
+            "icon": "HAPPY"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "B",
+        "body": [
+          {
+            "type": "set",
+            "name": "driving",
+            "value": {
+              "type": "number",
+              "value": 0
+            }
+          },
+          {
+            "type": "motor",
+            "action": "stop"
+          },
+          {
+            "type": "show_icon",
+            "icon": "ASLEEP"
+          }
+        ]
+      },
+      {
+        "type": "x_on_gesture",
+        "gesture": "shake",
+        "body": [
+          {
+            "type": "motor",
+            "action": "reverse"
+          },
+          {
+            "type": "show_icon",
+            "icon": "SURPRISED"
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 500
+            }
+          },
+          {
+            "type": "motor",
+            "action": "stop"
+          },
+          {
+            "type": "set",
+            "name": "driving",
+            "value": {
+              "type": "number",
+              "value": 0
+            }
+          }
+        ]
+      },
+      {
+        "type": "forever",
+        "body": [
+          {
+            "type": "if",
+            "cond": {
+              "type": "logic",
+              "op": "and",
+              "a": {
+                "type": "compare",
+                "op": "eq",
+                "a": {
+                  "type": "var",
+                  "name": "driving"
+                },
+                "b": {
+                  "type": "number",
+                  "value": 1
+                }
+              },
+              "b": {
+                "type": "compare",
+                "op": "gt",
+                "a": {
+                  "type": "light_level"
+                },
+                "b": {
+                  "type": "number",
+                  "value": 50
+                }
+              }
+            },
+            "then": [
+              {
+                "type": "motor",
+                "action": "forward"
+              }
+            ],
+            "else": [
+              {
+                "type": "motor",
+                "action": "stop"
+              }
+            ]
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 100
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

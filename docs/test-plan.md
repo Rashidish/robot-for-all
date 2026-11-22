@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.6 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
+> **Version:** 0.7 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -35,6 +35,12 @@ How to use this list: add a row whenever a step adds something only a person can
 | p1-gear-01 Spinning gear train | | | | | | |
 | p1-pulley-01 Rubber-band pulley lift | | | | | | |
 | p1-motor-01 One-motor scribble robot (**also: an adult checks the 3 V circuit and battery holders**) | | | | | | |
+| p2-display-01 Blink a heart (A2 = run the starter on the on-screen and a real micro:bit; no template, so A5 n/a) | | | | | n/a | |
+| p2-button-01 Button-controlled faces (as above) | | | | | n/a | |
+| p2-light-01 Automatic night light (as above; also check the threshold works in a real classroom) | | | | | n/a | |
+| p2-motor-01 Go and stop (**A3 includes the electrical design check: wiring diagram, L9110S, 2 × AA motor supply, shared GND**) | | | | | n/a | |
+| p2-motor-02 Forward, stop, reverse (as above) | | | | | n/a | |
+| p2-robot-01 Robot that reacts (as above; also: the micro:bit on its own 2 × AA pack, robot tested on the floor) | | | | | n/a | |
 
 ---
 
@@ -52,6 +58,8 @@ How to use this list: add a row whenever a step adds something only a person can
 | B8 | **micro:bit**: on `/code/`, Send to micro:bit from Chrome/Edge on a computer; the heart blinks. Then Download .hex and copy it to the MICROBIT drive. Note the board version (V1/V2, printed on the back) | ✅ Owner, 2026-11-22 (Windows, Chrome): Send and Download both work |
 | B10 | **Your own program**: blocks with button A, sent to the micro:bit | ✅ Owner, 2026-11-22 |
 | B11 | **On-screen micro:bit vs real**: the same program behaves the same on both (LEDs, buttons, motor pins with the motor driver) | |
+| B12 | **Sound on the on-screen micro:bit**: a program with music plays sound on a phone **and** a laptop (Windows Chrome) after tapping Run | |
+| B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
 ---
@@ -78,3 +86,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.4 | 2026-11-22 | micro:bit flashing checks (B8, B9) |
 | 0.5 | 2026-11-22 | B8 passed |
 | 0.6 | 2026-11-22 | B10 passed; B11 added |
+| 0.7 | 2026-11-22 | Six Phase 2 lessons added; B12 (laptop sound) and B13 (Open in code editor) |

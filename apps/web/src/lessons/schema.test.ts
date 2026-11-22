@@ -27,6 +27,21 @@ describe('lesson front matter', () => {
     expect(lessonSchema.safeParse(valid).success).toBe(true);
   });
 
+  it('defaults Phase 2 fields and checks their values', () => {
+    const parsed = lessonSchema.parse(valid);
+    expect(parsed.starter_program).toBeNull();
+    expect(parsed.hardware).toBe('none');
+    expect(
+      lessonSchema.safeParse({
+        ...valid,
+        starter_program: 'blink-heart',
+        hardware: 'microbit-motor'
+      }).success
+    ).toBe(true);
+    expect(lessonSchema.safeParse({ ...valid, starter_program: '../x' }).success).toBe(false);
+    expect(lessonSchema.safeParse({ ...valid, hardware: 'arduino' }).success).toBe(false);
+  });
+
   it('rejects a published lesson nobody reviewed', () => {
     const result = lessonSchema.safeParse({ ...valid, status: 'published' });
     expect(result.success).toBe(false);

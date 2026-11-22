@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import DownloadLesson from '../../components/DownloadLesson.astro';
 import PrintButton from '../../components/PrintButton.astro';
 import { findTemplate, templateFile, templatePage } from '../../templates/load';
+import { starterLink } from '../../lessons/programs';
 import { m } from '../../i18n';
 import { getLessons, type LessonEntry } from '../../lessons/load';
 
@@ -25,6 +26,7 @@ const next = lesson.data.next && titles[lesson.data.next] ? lesson.data.next : n
 const { data } = lesson;
 const { Content } = await render(lesson);
 const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ?? []);
+const starter = data.starter_program ? starterLink(lesson.id, data.starter_program) : undefined;
 ---
 
 <BaseLayout title={data.title}>
@@ -93,6 +95,24 @@ const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ??
           </li>
         ))}
       </ul>
+    </section>
+  )}
+
+  {starter && (
+    <section class="code-start" aria-labelledby="code-start-title">
+      <h2 id="code-start-title">{m.lesson_code_title()}</h2>
+      <p>
+        {data.hardware === 'none'
+          ? m.lesson_code_no_hardware()
+          : data.hardware === 'microbit'
+            ? m.lesson_code_microbit()
+            : m.lesson_code_microbit_motor()}
+      </p>
+      <p>
+        <a class="button" href={starter}>
+          {m.lesson_open_in_editor()}
+        </a>
+      </p>
     </section>
   )}
 
@@ -198,8 +218,16 @@ const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ??
     background: var(--color-surface);
   }
 
-  .parts h2 {
+  .parts h2,
+  .code-start h2 {
     margin-top: 0;
+  }
+
+  .code-start {
+    margin: var(--space-6) 0;
+    padding: var(--space-4);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius);
   }
 
   .safety {
@@ -238,7 +266,8 @@ const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ??
   }
 
   @media print {
-    .back {
+    .back,
+    .code-start .button {
       display: none !important;
     }
 

@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.11 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.12 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -85,7 +85,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
-Current milestone: **M3** (spec: `docs/specs/M3-code.md`). M2 lessons are built and wait for the people checks in `docs/test-plan.md`.
+Current milestone: **M3** (spec: `docs/specs/M3-code.md`). M2 lessons and the six Phase 2 lessons are built and wait for the people checks in `docs/test-plan.md`.
 
 ---
 
@@ -157,6 +157,8 @@ assessment: [...]        # 3–5 items, each starting "I can "
 prerequisites: []        # lesson ids
 next: p1-cam-01          # lesson id or null
 templates: [rhino-parts]   # sheets in content/projects/<id>/templates/<name>.ts
+starter_program: null    # Phase 2+: programs/<name>.rfa.json in the lesson folder
+hardware: none           # none | microbit | microbit-motor
 status: draft            # draft | in_review | published
 ai_generated: true
 reviewed_by: null        # required to publish
@@ -263,3 +265,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.9 | 2026-11-22 | Current milestone M3; M3 spec approved (micro:bit row to be updated by ADR-0005) |
 | 0.10 | 2026-11-22 | ADR-0005 accepted: Blockly + MicroPython + WebUSB instead of MakeCode |
 | 0.11 | 2026-11-22 | Owner reminder: revisit the extension folder format after the front office is complete |
+| 0.12 | 2026-11-22 | Lesson format: `starter_program` and `hardware` for Phase 2 lessons |
