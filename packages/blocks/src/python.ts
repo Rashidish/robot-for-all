@@ -80,10 +80,13 @@ export function pythonNames(names: string[]): Map<string, string> {
   const used = new Set<string>();
   const out = new Map<string, string>();
   for (const name of names) {
-    let base = name
-      .trim()
-      .replace(/[^A-Za-z0-9_]+/g, '_')
-      .replace(/^_+|_+$/g, '');
+    let base = name.trim().replace(/[^A-Za-z0-9_]+/g, '_');
+    // Trim leading and trailing "_" without a backtracking regular expression.
+    let start = 0;
+    let end = base.length;
+    while (start < end && base[start] === '_') start += 1;
+    while (end > start && base[end - 1] === '_') end -= 1;
+    base = base.slice(start, end);
     if (!base) base = 'value';
     if (/^[0-9]/.test(base) || RESERVED.has(base) || base.startsWith('_')) base = `v_${base}`;
     let candidate = base;
