@@ -11,7 +11,9 @@ test.describe('code editor (M3)', () => {
     await page.goto(CODE);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Code editor');
     await expect(page.locator('.blocklySvg').first()).toBeVisible();
-    await expect.poll(() => page.locator('.blocklyFlyout .blocklyDraggable').count()).toBeGreaterThan(0);
+    await expect
+      .poll(() => page.locator('.blocklyFlyout .blocklyDraggable').count())
+      .toBeGreaterThan(0);
   });
 
   test("Blockly's generated styles are allowed by exact hash", async ({ page }) => {
@@ -21,7 +23,9 @@ test.describe('code editor (M3)', () => {
     const styles = await page.evaluate(() =>
       [...document.querySelectorAll('style')].map((s) => s.textContent ?? '')
     );
-    const hashes = styles.map((css) => `'sha256-${createHash('sha256').update(css).digest('base64')}'`);
+    const hashes = styles.map(
+      (css) => `'sha256-${createHash('sha256').update(css).digest('base64')}'`
+    );
     expect(hashes.length, 'Blockly should add its stylesheets').toBeGreaterThan(0);
     const missing = hashes.filter((h) => !policy.includes(h));
     // If Blockly changes its CSS (e.g. after an upgrade), copy these into /code/* in _headers.
@@ -49,7 +53,10 @@ test.describe('code editor (M3)', () => {
     await expect(page.getByRole('status')).toHaveText('Done.');
   });
 
-  test('works offline after the first visit, including Download .hex', async ({ page, context }) => {
+  test('works offline after the first visit, including Download .hex', async ({
+    page,
+    context
+  }) => {
     await page.goto(CODE);
     await waitForServiceWorker(page);
     await page.reload();

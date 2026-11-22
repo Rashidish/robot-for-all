@@ -3,11 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { buildHex, readMainPy, type Firmware } from './hex';
 
 const firmware: Firmware = {
-  v1: readFileSync(new URL('../../public/firmware/microbit-v1-micropython-1.1.1.hex', import.meta.url), 'utf8'),
-  v2: readFileSync(new URL('../../public/firmware/microbit-v2-micropython-2.1.2.hex', import.meta.url), 'utf8')
+  v1: readFileSync(
+    new URL('../../public/firmware/microbit-v1-micropython-1.1.1.hex', import.meta.url),
+    'utf8'
+  ),
+  v2: readFileSync(
+    new URL('../../public/firmware/microbit-v2-micropython-2.1.2.hex', import.meta.url),
+    'utf8'
+  )
 };
 
-const program = 'from microbit import *\n\nwhile True:\n    display.show(Image.HEART)\n    sleep(500)\n';
+const program =
+  'from microbit import *\n\nwhile True:\n    display.show(Image.HEART)\n    sleep(500)\n';
 
 describe('micro:bit hex builder', () => {
   it('builds a universal hex for V1 and V2', () => {

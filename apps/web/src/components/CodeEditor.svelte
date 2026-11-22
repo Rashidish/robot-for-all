@@ -25,7 +25,8 @@
   let hasUsb = $state(false);
 
   // Fixed demo program until the generator exists (step 2).
-  const demo = 'from microbit import *\n\nwhile True:\n    display.show(Image.HEART)\n    sleep(500)\n    display.clear()\n    sleep(500)\n';
+  const demo =
+    'from microbit import *\n\nwhile True:\n    display.show(Image.HEART)\n    sleep(500)\n    display.clear()\n    sleep(500)\n';
 
   const toolbox = {
     kind: 'flyoutToolbox',
@@ -78,9 +79,8 @@
     status = labels.working;
     try {
       const { createUSBConnection } = await import('@microbit/microbit-connection/usb');
-      const { createUniversalHexFlashDataSource } = await import(
-        '@microbit/microbit-connection/universal-hex'
-      );
+      const { createUniversalHexFlashDataSource } =
+        await import('@microbit/microbit-connection/universal-hex');
       const usb = createUSBConnection();
       await usb.connect();
       await usb.flash(createUniversalHexFlashDataSource(await makeHex()), { partial: true });

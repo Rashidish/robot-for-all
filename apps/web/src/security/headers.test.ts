@@ -73,7 +73,9 @@ describe('security headers', () => {
     ) as Record<string, string[]>;
 
     it('replaces the site-wide policy instead of adding a second one', () => {
-      expect(headersFile).toMatch(/\/code\/\*\n\s+! Content-Security-Policy\n\s+! Permissions-Policy/);
+      expect(headersFile).toMatch(
+        /\/code\/\*\n\s+! Content-Security-Policy\n\s+! Permissions-Policy/
+      );
     });
 
     it('keeps the same policy as every other page, apart from style hashes', () => {
