@@ -1,0 +1,41 @@
+---
+// M3 code editor (spec docs/specs/M3-code.md). Step 1: spike page.
+// The Svelte editor is started from a bundled module script rather than as an Astro island,
+// because island hydration adds inline script and style tags that our CSP blocks.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { m } from '../../i18n';
+
+const labels = {
+  workspace: m.code_workspace(),
+  download: m.code_download_hex(),
+  send: m.code_send(),
+  working: m.code_working(),
+  done: m.code_done(),
+  failed: m.code_failed(),
+  noUsb: m.code_no_usb()
+};
+---
+
+<BaseLayout title={m.code_title()}>
+  <h1>{m.code_title()}</h1>
+  <p>{m.code_intro()}</p>
+  <div id="code-editor" data-labels={JSON.stringify(labels)}>
+    <p class="loading">{m.code_loading()}</p>
+  </div>
+</BaseLayout>
+
+<script>
+  // The editor (about 240 KB compressed) loads after the page itself, while the browser is idle.
+  const target = document.getElementById('code-editor');
+  const load = () => {
+    if (!target) return;
+    const labels = JSON.parse(target.dataset['labels'] ?? '{}') as Record<string, string>;
+    void import('../../code/start').then(({ start }) => start(target, labels));
+  };
+  const whenIdle = () =>
+    'requestIdleCallback' in window
+      ? requestIdleCallback(load, { timeout: 1500 })
+      : setTimeout(load, 0);
+  if (document.readyState === 'complete') whenIdle();
+  else window.addEventListener('load', whenIdle, { once: true });
+</script>

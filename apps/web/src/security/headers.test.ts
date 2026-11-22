@@ -61,4 +61,36 @@ describe('security headers', () => {
     expect(block('/sw.js')['cache-control']).toBe('no-cache');
     expect(block('/_astro/*')['cache-control']).toContain('immutable');
   });
+
+  describe('code editor (/code/*)', () => {
+    const code = block('/code/*');
+    const policy = code['content-security-policy'] ?? '';
+    const directives = Object.fromEntries(
+      policy
+        .split(';')
+        .map((d) => d.trim().split(/\s+/))
+        .map(([name, ...values]) => [name, values])
+    ) as Record<string, string[]>;
+
+    it('replaces the site-wide policy instead of adding a second one', () => {
+      expect(headersFile).toMatch(
+        /\/code\/\*\n\s+! Content-Security-Policy\n\s+! Permissions-Policy/
+      );
+    });
+
+    it('keeps the same policy as every other page, apart from style hashes', () => {
+      const strip = (p: string) => p.replace(/ 'sha256-[A-Za-z0-9+/=]+'/g, '');
+      expect(strip(policy)).toBe(all['content-security-policy']);
+      expect(policy).not.toMatch(/unsafe-inline|unsafe-eval|unsafe-hashes|\*|https?:/);
+      for (const value of directives['style-src'] ?? []) {
+        expect(value).toMatch(/^'self'$|^'sha256-[A-Za-z0-9+/=]+'$/);
+      }
+    });
+
+    it('allows WebUSB for our own site only, and nothing else new', () => {
+      const perms = code['permissions-policy'] ?? '';
+      expect(perms).toContain('usb=(self)');
+      expect(perms.replace('usb=(self)', 'usb=()')).toBe(all['permissions-policy']);
+    });
+  });
 });

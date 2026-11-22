@@ -76,7 +76,13 @@ self.addEventListener('fetch', (event) => {
 
   if (request.mode === 'navigate') {
     event.respondWith(handlePage(event));
-  } else if (url.pathname.startsWith('/_astro/') || PRECACHE.includes(url.pathname)) {
+  } else if (
+    url.pathname.startsWith('/_astro/') ||
+    // Code editor files (M3): firmware names include their version, so a saved copy stays correct.
+    url.pathname.startsWith('/firmware/') ||
+    url.pathname.startsWith('/blockly-media/') ||
+    PRECACHE.includes(url.pathname)
+  ) {
     event.respondWith(handleAsset(request));
   } else {
     // Anything else from our site (template SVGs, lesson images): use a saved copy if there is

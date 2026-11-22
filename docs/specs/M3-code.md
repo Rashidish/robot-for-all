@@ -1,6 +1,6 @@
 # Spec: M3 — Code (block coding and micro:bit)
 
-> **Version:** 0.1 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
+> **Version:** 0.2 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
 > Depends on: M2 (lessons 1–10 built), CLAUDE.md 0.8, ADR-0001, ADR-0004. Proposes ADR-0005. Keep the version line current; log changes at the bottom.
 
 ---
@@ -102,7 +102,7 @@ Typing Python (later milestone, with Pyodide or the micro:bit Python Editor), ES
 - **Device library choice (ADR-0005)**, proposed:
   - Blockly (Apache-2.0) for blocks.
   - `@microbit/microbit-fs` (MIT, micro:bit Educational Foundation) to put `main.py` into the MicroPython hex.
-  - `@microbit/microbit-connection` (MIT) for WebUSB flashing. It is still an **alpha** release, so it is pinned to an exact version and wrapped behind our own small interface. Download .hex always works without it.
+  - `@microbit/microbit-connection` (MIT) for WebUSB flashing, pinned to an exact version (1.0.3) and wrapped behind our own small interface. Download .hex always works without it.
   - MicroPython firmware hex (MIT) served from our own domain.
 - **Why not embed MakeCode** (the CLAUDE.md plan said "MakeCode, self-hosted if needed"): MakeCode is excellent but is a whole separate app of many megabytes, loads from makecode.org by default (a third-party domain, which breaks the zero-rating rule), has its own interface that can't follow our lessons or i18n, and is heavy on low-end phones. Our own small editor costs more to build but fits the lesson flow, the data budget and the offline rule. Learners who outgrow it can move straight to MakeCode or the micro:bit Python Editor; the Python view prepares them. ADR-0005 records this and CLAUDE.md §5 is updated.
 - **Hardware for Phase 2 lessons:** micro:bit (V1 or V2), a 2-channel **L9110S-type motor driver** module, 2 × AA battery holder for the motors (separate from the micro:bit's supply), crocodile leads on pins P0, P1 and GND, and the motor from p1-motor-01. The motor is never powered from the micro:bit's pins.
@@ -157,7 +157,7 @@ Each lesson: PRIMM body with a starter program; Predict uses the blocks and the 
 
 One PR per step. CI must pass before merging (owner decision 2026-11-22). ⏸ marks a stop for review.
 
-1. **Spike + ADR-0005**: Blockly under the strict CSP at 360 px, measured size; microbit-fs builds a hex from a `main.py`; microbit-connection bundles. Decide and record. ⏸ only if the spike breaks a non-negotiable (CSP, size, licence).
+1. ~~**Spike + ADR-0005**~~ ✅ Done (PR #26: 245 KB gzip, CSP by hash, hex + WebUSB): Blockly under the strict CSP at 360 px, measured size; microbit-fs builds a hex from a `main.py`; microbit-connection bundles. Decide and record. ⏸ only if the spike breaks a non-negotiable (CSP, size, licence).
 2. **`packages/blocks` core**: program JSON schema, MicroPython generator, interpreter, sample programs, golden + stub-Python tests.
 3. **Editor page** `/code/`: Blockly island, toolbox, mobile layout, keyboard navigation, auto-save, My programs, import/export, Python tab, i18n.
 4. **Virtual micro:bit**: LEDs, buttons, light, tilt, motor pins, screen-reader announcements; wired to the interpreter.
@@ -183,7 +183,7 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 |---|---|---|
 | Blockly too heavy or slow on low-end phones | Misses size/Lighthouse targets | Measure in the spike; trim blocks and plugins; lazy-load; record numbers in ADR-0005 |
 | Blockly needs inline styles that break the CSP | Security regression | Turn off CSS injection; serve its CSS as a file; test for CSP violations in e2e |
-| `microbit-connection` is alpha | Flashing breaks on an update | Pin the exact version, wrap it, Download .hex always available |
+| `microbit-connection` changes its API | Flashing breaks on an update | Pin the exact version, wrap it, Download .hex always available |
 | Most learners have no micro:bit | Lessons feel incomplete | Every lesson completes fully in the virtual micro:bit |
 | No WebUSB on iPhone | Can't flash from iPhone | Download .hex with computer steps; Bluetooth flashing considered later |
 | Block editors are hard for blind learners | Accessibility gap | Keyboard navigation, text announcements, Python view; recorded in the test plan |
@@ -191,7 +191,7 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 
 ## 14. Owner actions
 
-- None to start. Later (test plan): borrow or buy one micro:bit V2, one L9110S motor driver and crocodile leads for the real-device checks; confirm local prices for the kit list.
+- The owner has a micro:bit (2026-11-22) for the real-device checks. Later (test plan): get one one L9110S motor driver and crocodile leads for the real-device checks; confirm local prices for the kit list.
 
 ---
 
@@ -200,3 +200,4 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft; approved by the owner |
+| 0.2 | 2026-11-22 | Step 1 done; ADR-0005 accepted; microbit-connection is stable (1.0.3); owner has a micro:bit |

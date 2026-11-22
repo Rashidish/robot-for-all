@@ -94,5 +94,15 @@
   "offline_retry": "Try again",
   "update_available": "A new version of Robot For All is ready.",
   "update_button": "Update now",
-  "language_label": "Language"
+  "language_label": "Language",
+  "code_title": "Code editor",
+  "code_intro": "Snap blocks together to make a program. Try it on the screen, then send it to a micro:bit.",
+  "code_workspace": "Block coding area",
+  "code_download_hex": "Download .hex",
+  "code_send": "Send to micro:bit",
+  "code_working": "Working…",
+  "code_done": "Done.",
+  "code_failed": "That didn't work. Check the micro:bit is plugged in and try again, or use Download .hex.",
+  "code_no_usb": "This browser can't send to a micro:bit directly. Use Download .hex, then copy the file to the MICROBIT drive.",
+  "code_loading": "Loading the block editor…"
 }
