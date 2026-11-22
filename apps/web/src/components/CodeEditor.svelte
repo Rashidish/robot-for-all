@@ -9,7 +9,10 @@
     BLOCK_DEFINITIONS,
     NEW_PROGRAM,
     ProgramError,
-    TOOLBOX,
+    EXTENSIONS,
+    allToolboxBlocks,
+    toolbox,
+    type Extension,
     fromBlockly,
     parseProgram,
     toBlockly,
@@ -20,6 +23,7 @@
   import { buildHex, fetchFirmware } from '../code/hex';
   import Simulator from './Simulator.svelte';
   import simulatorVersion from '../../simulator.version?raw';
+  import '../code/toolbox.css';
   import { FILE_EXTENSION, fileName, fromFile, toFile } from '../code/files';
   import {
     listPrograms,
@@ -48,6 +52,9 @@
   let sim: Simulator | undefined = $state();
   let simTimer: ReturnType<typeof setTimeout> | undefined;
   let escapePressed = false;
+  let extensions = $state<Extension[]>([]);
+  let search = $state('');
+  let progress = $state<number | null>(null);
   const simulatorSrc = `/simulator/${simulatorVersion.trim()}/simulator.html?color=%233454D1`;
   let status = $state('');
   let hasUsb = $state(false);
@@ -86,10 +93,7 @@
     // Blockly's own interface text (menus, screen-reader labels), then our block text on top.
     // Other languages will load Blockly's matching message file here.
     Blockly.setLocale(BlocklyEnglish as unknown as Record<string, string>);
-    for (const [key, value] of Object.entries(labels)) {
-      if (key.startsWith('block_') || key.startsWith('category_'))
-        Blockly.Msg[key.toUpperCase()] = value;
-    }
+    for (const [key, value] of Object.entries(labels)) Blockly.Msg[key.toUpperCase()] = value;
     Blockly.common.defineBlocksWithJsonArray(BLOCK_DEFINITIONS as unknown as object[]);
   }
 
@@ -136,7 +140,8 @@
       name: name.trim() || t('code_default_name'),
       updated: Date.now(),
       workspace: Blockly.serialization.workspaces.save(workspace),
-      ...(mode === 'python' ? { python: typed } : {})
+      ...(mode === 'python' ? { python: typed } : {}),
+      ...(extensions.length ? { extensions: [...extensions] } : {})
     };
     saveStore(storage(), store);
   }
@@ -161,6 +166,16 @@
       );
     }
     name = saved?.name ?? t('code_default_name');
+    // Extensions this program uses: saved ones, plus any whose blocks are in the program.
+    const used = JSON.stringify(saved?.workspace ?? toBlockly(fallback));
+    extensions = EXTENSIONS.filter(
+      (x) =>
+        (saved?.extensions ?? []).includes(x) ||
+        (x === 'neopixel' && /rfa_x_(strip|colour|rgb)/.test(used))
+    );
+    workspace.updateToolbox(
+      toolbox(extensions) as unknown as Blockly.utils.toolbox.ToolboxDefinition
+    );
     mode = saved?.python === undefined ? 'blocks' : 'python';
     typed = saved?.python ?? '';
     refresh();
@@ -189,7 +204,7 @@
     setUpBlockly();
     hasUsb = 'usb' in navigator;
     workspace = Blockly.inject(host, {
-      toolbox: TOOLBOX as unknown as Blockly.utils.toolbox.ToolboxDefinition,
+      toolbox: toolbox() as unknown as Blockly.utils.toolbox.ToolboxDefinition,
       renderer: 'zelos',
       theme,
       media: '/blockly-media/',
@@ -224,6 +239,28 @@
         ] as unknown as Blockly.utils.toolbox.FlyoutItemInfoArray
     );
 
+    ws.registerToolboxCategoryCallback(
+      'RFA_EXTENSIONS',
+      () =>
+        [
+          { kind: 'label', text: t('code_extensions_intro') },
+          ...EXTENSIONS.map((x) => ({
+            kind: 'button',
+            text: extensions.includes(x)
+              ? `✓ ${t(`code_extension_${x}`)} (${t('code_extension_added')})`
+              : `+ ${t(`code_extension_${x}`)}`,
+            callbackkey: `RFA_ADD_${x}`
+          }))
+        ] as unknown as Blockly.utils.toolbox.FlyoutItemInfoArray
+    );
+    for (const x of EXTENSIONS) {
+      ws.registerButtonCallback(`RFA_ADD_${x}`, () => {
+        if (!extensions.includes(x)) extensions = [...extensions, x];
+        ws.updateToolbox(toolbox(extensions) as unknown as Blockly.utils.toolbox.ToolboxDefinition);
+        save();
+      });
+    }
+
     store = loadStore(storage());
     load(store.current ? store.programs[store.current] : undefined);
     if (!store.current) save();
@@ -247,6 +284,30 @@
       ws.dispose();
     };
   });
+
+  /** Searches every block's words, like MakeCode's toolbox search. */
+  const searchable = allToolboxBlocks().map((item) => {
+    const def = BLOCK_DEFINITIONS.find((d) => (d as { type: string }).type === item.type) as
+      | Record<string, unknown>
+      | undefined;
+    const keys = [...JSON.stringify(def ?? {}).matchAll(/%\{BKY_([A-Z0-9_]+)\}/g)].map((m) => m[1]);
+    const words = keys.map((k) => labels[(k ?? '').toLowerCase()] ?? '').join(' ');
+    return { item, words: words.replace(/%\d/g, ' ').toLowerCase() };
+  });
+
+  function onSearch() {
+    if (!workspace) return;
+    const query = search.trim().toLowerCase();
+    const box = workspace.getToolbox() as Blockly.Toolbox | null;
+    if (!query) {
+      box?.clearSelection();
+      box?.getFlyout()?.hide();
+      return;
+    }
+    const found = searchable.filter((s) => s.words.includes(query)).map((s) => s.item);
+    const contents = found.length ? found : [{ kind: 'label', text: t('code_search_none') }];
+    box?.getFlyout()?.show(contents as unknown as Blockly.utils.toolbox.FlyoutItemInfoArray);
+  }
 
   async function showTab(next: 'blocks' | 'python') {
     tab = next;
@@ -280,7 +341,7 @@
       const hex = await makeHex();
       if (!hex) return;
       downloadText(hex, `${fileName(name)}.hex`, 'application/octet-stream');
-      status = t('code_done');
+      status = t('code_downloaded');
     } catch {
       status = t('code_failed');
     }
@@ -296,10 +357,19 @@
         await import('@microbit/microbit-connection/universal-hex');
       const usb = createUSBConnection();
       await usb.connect();
-      await usb.flash(createUniversalHexFlashDataSource(hex), { partial: true });
+      status = t('code_sending');
+      progress = 0;
+      await usb.flash(createUniversalHexFlashDataSource(hex), {
+        partial: true,
+        progress: (_stage: unknown, percentage?: number) => {
+          if (typeof percentage === 'number') progress = Math.round(percentage * (percentage <= 1 ? 100 : 1));
+        }
+      });
       await usb.disconnect();
-      status = t('code_done');
+      progress = null;
+      status = t('code_sent');
     } catch {
+      progress = null;
       status = t('code_failed');
     }
   }
@@ -439,6 +509,10 @@
   </div>
 
   <div class="main">
+    <label class="search" hidden={tab !== 'blocks'}>
+      <span class="visually-hidden">{t('code_search')}</span>
+      <input type="search" placeholder={`${t('code_search')}…`} bind:value={search} oninput={onSearch} />
+    </label>
     <div
       id="panel-blocks"
       class="workspace"
@@ -482,6 +556,7 @@
           aria-describedby="python-keys"></textarea>
         <p id="python-keys" class="note">{t('code_python_keys')}</p>
         <div class="actions">
+          <button type="button" class="primary" onclick={() => sim?.flash()}>{t('code_run')}</button>
           <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
           <button type="button" class="plain" onclick={backToBlocks}>
             {t('code_back_to_blocks')}
@@ -517,7 +592,10 @@
     {#if !hasUsb}
       <p class="note">{t('code_no_usb')}</p>
     {/if}
-    <p class="status" role="status">{status}</p>
+    {#if progress !== null}
+      <progress max="100" value={progress} aria-label={t('code_progress')}>{progress}%</progress>
+    {/if}
+    <p class="status" role="status">{status}{progress !== null ? ` ${progress}%` : ''}</p>
   </div>
 </div>
 
@@ -636,6 +714,63 @@
     min-block-size: 0;
     inline-size: 100%;
     background: #ecf0f1;
+  }
+  .search {
+    position: absolute;
+    inset-block-start: 0.25rem;
+    inset-inline-start: 0.25rem;
+    z-index: 2;
+    inline-size: 9.5rem;
+  }
+  .search[hidden] {
+    display: none;
+  }
+  .search input {
+    inline-size: 100%;
+    min-block-size: 36px;
+    padding-inline: 0.5rem;
+    border: 1px solid #8a8a8a;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.875rem;
+  }
+  .search input:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 1px;
+  }
+  progress {
+    inline-size: 100%;
+    block-size: 0.75rem;
+    margin-block-start: 0.5rem;
+    accent-color: #6633cc;
+  }
+  .visually-hidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  /* MakeCode-style toolbox: white, a coloured bar, an icon and a coloured name per category. */
+  :global(.blocklyToolbox) {
+    padding-block-start: 2.75rem;
+    background: #fff;
+  }
+  :global(.rfaCategory) {
+    min-block-size: 2.5rem;
+  }
+  :global(.rfaIcon) {
+    display: inline-block;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin-inline: 0.25rem 0.5rem;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+  }
+  :global(.rfaLabel) {
+    font-weight: 600;
   }
   .notice {
     display: flex;

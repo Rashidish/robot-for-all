@@ -11,6 +11,8 @@ export interface SavedProgram {
   workspace: unknown;
   /** Set when the learner switched this program to typed Python. */
   python?: string;
+  /** Extensions added to this program, e.g. "neopixel". */
+  extensions?: string[];
 }
 
 export interface ProgramStore {

@@ -1,0 +1,14 @@
+diff --git a/src/board/index.ts b/src/board/index.ts
+index 4773b62..9200cb7 100644
+--- a/src/board/index.ts
++++ b/src/board/index.ts
+@@ -841,6 +841,9 @@ export const createMessageListener = (board: Board) => (e: MessageEvent) => {
+         if (!isFileSystem(filesystem)) {
+           throw new Error("Invalid flash filesystem field.");
+         }
++        // Robot For All: allow starting from the editor's own Run button. The page that embeds
++        // us passes on the tap (iframe allow="autoplay"), so sound can start without a tap here.
++        void board.audio.createAudioContextFromUserInteraction();
+         board.flash(filesystem);
+         break;
+       }

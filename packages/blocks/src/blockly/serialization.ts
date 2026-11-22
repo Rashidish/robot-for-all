@@ -2,7 +2,8 @@
 // Pure functions on plain objects, so they're tested without a browser.
 // Blocks that aren't inside an event block ("on start", "forever", "on button") are left out,
 // like MakeCode, which greys them out and doesn't run them.
-import type { Button, Expr, Handler, Program, Stmt } from '../program';
+import type { Button, Expr, GenericNode, Handler, Program, Stmt } from '../program';
+import { EXTRA_BY_TYPE } from '../extra';
 import type { IconName } from '../icons';
 
 export interface BlockJson {
@@ -31,6 +32,48 @@ export function fromBlockly(workspace: WorkspaceJson): Program {
   };
   const input = (b: BlockJson, name: string): BlockJson | undefined =>
     b.inputs?.[name]?.block ?? b.inputs?.[name]?.shadow;
+
+  /** Blocks described in extra.ts, read field by field. */
+  const generic = (b: BlockJson, roles: string[]): GenericNode | undefined => {
+    const spec = b.type.startsWith('rfa_x_')
+      ? EXTRA_BY_TYPE.get(b.type.slice(4) as GenericNode['type'])
+      : undefined;
+    if (!spec || !roles.includes(spec.role)) return undefined;
+    const out: GenericNode = { type: spec.type };
+    for (const f of spec.fields) {
+      switch (f.kind) {
+        case 'expr':
+          out[f.key] = expr(input(b, f.input), f.shadow ?? { type: 'number', value: 0 });
+          break;
+        case 'stmts':
+          out[f.key] = stack(input(b, f.input));
+          break;
+        case 'enum': {
+          const v = String(field(b, f.field) ?? '');
+          out[f.key] = f.options.some((o) => o[1] === v) ? v : f.options[0]?.[1];
+          break;
+        }
+        case 'int': {
+          const v = Math.round(Number(field(b, f.field) ?? f.value));
+          out[f.key] = Number.isFinite(v) ? Math.min(f.max, Math.max(f.min, v)) : f.value;
+          break;
+        }
+        case 'text':
+          out[f.key] = String(field(b, f.field) ?? f.value).slice(0, f.maxLength);
+          break;
+        case 'ident':
+          out[f.key] = String(field(b, f.field) ?? f.value);
+          break;
+        case 'leds':
+          out[f.key] = Array.from({ length: 25 }, (_, i) => {
+            const v = field(b, `L${i}`);
+            return v === true || v === 'TRUE' ? '1' : '0';
+          }).join('');
+          break;
+      }
+    }
+    return out;
+  };
 
   const expr = (b: BlockJson | undefined, fallback: Expr): Expr => {
     if (!b) return fallback;
@@ -82,7 +125,7 @@ export function fromBlockly(workspace: WorkspaceJson): Program {
       case 'rfa_temperature':
         return { type: 'temperature' };
       default:
-        return fallback;
+        return generic(b, ['expr']) ?? fallback;
     }
   };
 
@@ -132,7 +175,7 @@ export function fromBlockly(workspace: WorkspaceJson): Program {
       case 'rfa_motor':
         return { type: 'motor', action: field(b, 'ACTION') as 'forward' };
       default:
-        return undefined;
+        return generic(b, ['stmt']);
     }
   };
 
@@ -159,6 +202,8 @@ export function fromBlockly(workspace: WorkspaceJson): Program {
         body: stack(input(b, 'DO'))
       });
     }
+    const g = generic(b, ['handler', 'function']);
+    if (g) handlers.push(g);
   }
   return { version: 1, handlers };
 }
@@ -177,6 +222,32 @@ export function toBlockly(program: Program): WorkspaceJson {
     if (e.type === 'number') return shadowNumber(e.value);
     if (e.type === 'text') return { shadow: { type: 'rfa_text', fields: { TEXT: e.value } } };
     return { block: exprBlock(e) };
+  };
+
+  const genericBlock = (node: GenericNode): BlockJson => {
+    const spec = EXTRA_BY_TYPE.get(node.type);
+    const b: BlockJson = { type: `rfa_${node.type}` };
+    const fields: Record<string, unknown> = {};
+    let inputs: Record<string, { block?: BlockJson; shadow?: BlockJson }> = {};
+    for (const f of spec?.fields ?? []) {
+      const value = node[f.key];
+      switch (f.kind) {
+        case 'expr':
+          inputs[f.input] = exprInput(value as Expr);
+          break;
+        case 'stmts':
+          inputs = { ...inputs, ...stackInput(f.input, (value as Stmt[]) ?? []) };
+          break;
+        case 'leds':
+          [...String(value)].forEach((bit, i) => (fields[`L${i}`] = bit === '1' ? 'TRUE' : 'FALSE'));
+          break;
+        default:
+          fields[f.field] = value;
+      }
+    }
+    if (Object.keys(fields).length) b.fields = fields;
+    if (Object.keys(inputs).length) b.inputs = inputs;
+    return b;
   };
 
   const exprBlock = (e: Expr): BlockJson => {
@@ -210,6 +281,8 @@ export function toBlockly(program: Program): WorkspaceJson {
         return { type: 'rfa_acceleration', fields: { AXIS: e.axis } };
       case 'temperature':
         return { type: 'rfa_temperature' };
+      default:
+        return genericBlock(e);
     }
   };
 
@@ -267,6 +340,8 @@ export function toBlockly(program: Program): WorkspaceJson {
         };
       case 'motor':
         return { type: 'rfa_motor', fields: { ACTION: s.action } };
+      default:
+        return genericBlock(s);
     }
   };
 
@@ -292,10 +367,12 @@ export function toBlockly(program: Program): WorkspaceJson {
     const top: BlockJson =
       h.type === 'on_button'
         ? { type: 'rfa_on_button', fields: { BUTTON: h.button }, inputs: stackInput('DO', h.body) }
-        : { type: `rfa_${h.type}`, inputs: stackInput('DO', h.body) };
+        : h.type.startsWith('x_')
+          ? genericBlock(h as GenericNode)
+          : { type: `rfa_${h.type}`, inputs: stackInput('DO', (h as { body: Stmt[] }).body) };
     top.x = 20;
     top.y = y;
-    y += 60 + 40 * countStmts(h.body);
+    y += 60 + 40 * countStmts((h as { body?: Stmt[] }).body ?? []);
     return top;
   });
 
@@ -309,7 +386,8 @@ function countStmts(list: Stmt[]): number {
   let n = 0;
   for (const s of list) {
     n += 1;
-    if ('body' in s) n += countStmts(s.body);
+    const inner = (s as { body?: unknown }).body;
+    if (Array.isArray(inner)) n += countStmts(inner as Stmt[]);
     if (s.type === 'if') n += countStmts(s.then) + countStmts(s.else) + 1;
   }
   return n;

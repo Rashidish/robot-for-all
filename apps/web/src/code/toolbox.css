@@ -1,0 +1,109 @@
+/* Toolbox category icons and name colours, like MakeCode (generated; see M3 spec §5). */
+.rfaIcon-basic {
+  background-image: url('/blockly-media/icons/basic.svg');
+}
+.rfaCategory-basic .rfaLabel {
+  color: #0073E2;
+}
+.rfaIcon-input {
+  background-image: url('/blockly-media/icons/input.svg');
+}
+.rfaCategory-input .rfaLabel {
+  color: #CF00CF;
+}
+.rfaIcon-music {
+  background-image: url('/blockly-media/icons/music.svg');
+}
+.rfaCategory-music .rfaLabel {
+  color: #E2281A;
+}
+.rfaIcon-led {
+  background-image: url('/blockly-media/icons/led.svg');
+}
+.rfaCategory-led .rfaLabel {
+  color: #5C2D91;
+}
+.rfaIcon-radio {
+  background-image: url('/blockly-media/icons/radio.svg');
+}
+.rfaCategory-radio .rfaLabel {
+  color: #E0008A;
+}
+.rfaIcon-loops {
+  background-image: url('/blockly-media/icons/loops.svg');
+}
+.rfaCategory-loops .rfaLabel {
+  color: #008600;
+}
+.rfaIcon-logic {
+  background-image: url('/blockly-media/icons/logic.svg');
+}
+.rfaCategory-logic .rfaLabel {
+  color: #008182;
+}
+.rfaIcon-variables {
+  background-image: url('/blockly-media/icons/variables.svg');
+}
+.rfaCategory-variables .rfaLabel {
+  color: #DC143C;
+}
+.rfaIcon-math {
+  background-image: url('/blockly-media/icons/math.svg');
+}
+.rfaCategory-math .rfaLabel {
+  color: #9400D3;
+}
+.rfaIcon-motors {
+  background-image: url('/blockly-media/icons/motors.svg');
+}
+.rfaCategory-motors .rfaLabel {
+  color: #B35400;
+}
+.rfaIcon-neopixel {
+  background-image: url('/blockly-media/icons/neopixel.svg');
+}
+.rfaCategory-neopixel .rfaLabel {
+  color: #1F7E9D;
+}
+.rfaIcon-extensions {
+  background-image: url('/blockly-media/icons/extensions.svg');
+}
+.rfaCategory-extensions .rfaLabel {
+  color: #717171;
+}
+.rfaIcon-advanced {
+  background-image: url('/blockly-media/icons/advanced.svg');
+}
+.rfaCategory-advanced .rfaLabel {
+  color: #333333;
+}
+.rfaIcon-functions {
+  background-image: url('/blockly-media/icons/functions.svg');
+}
+.rfaCategory-functions .rfaLabel {
+  color: #3455DB;
+}
+.rfaIcon-text {
+  background-image: url('/blockly-media/icons/text.svg');
+}
+.rfaCategory-text .rfaLabel {
+  color: #966D09;
+}
+.rfaIcon-pins {
+  background-image: url('/blockly-media/icons/pins.svg');
+}
+.rfaCategory-pins .rfaLabel {
+  color: #B22222;
+}
+.rfaIcon-serial {
+  background-image: url('/blockly-media/icons/serial.svg');
+}
+.rfaCategory-serial .rfaLabel {
+  color: #002050;
+}
+.rfaIcon-control {
+  background-image: url('/blockly-media/icons/control.svg');
+}
+.rfaCategory-control .rfaLabel {
+  color: #333333;
+}

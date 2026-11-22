@@ -9,7 +9,16 @@ export const CATEGORY_COLOURS = {
   math: '#9400D3',
   pins: '#B22222',
   led: '#5C2D91',
-  motors: '#B35400' // ours; MakeCode has no motor blocks in its core set
+  motors: '#B35400', // ours; MakeCode has no motor blocks in its core set
+  music: '#E2281A', // MakeCode #E63022
+  radio: '#E0008A', // MakeCode #E3008C
+  text: '#966D09', // MakeCode #B8860B
+  functions: '#3455DB',
+  serial: '#002050',
+  control: '#333333',
+  neopixel: '#1F7E9D', // extension; MakeCode's NeoPixel #2699BF
+  extensions: '#717171',
+  advanced: '#333333'
 } as const;
 
 export type Category = keyof typeof CATEGORY_COLOURS;
