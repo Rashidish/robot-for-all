@@ -1,6 +1,6 @@
 # Spec: M2 — Make & Learn
 
-> **Version:** 0.3 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved
+> **Version:** 0.4 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved
 > Depends on: M1 (done), CLAUDE.md 0.6, ADR-0004. Keep the version line current; log changes at the bottom.
 
 ---
@@ -144,7 +144,7 @@ Lesson 10 is the bridge to Phase 2: it introduces a battery, a switch and one sm
 3. ~~Slides view + library filters + learning-path links~~ ✅ Done
 4. ~~Lessons 1–3 (drafts, templates, diagrams)~~ ✅ Merged as drafts (PR #21)
 5. ~~Lessons 4–6 (drafts, templates, diagrams)~~ ✅ Merged as drafts
-6. Lessons 7–10
+6. ~~Lessons 7–10 (drafts, templates, diagrams)~~ ✅ Merged as drafts
 7. Publishing pass: after the deferred checks in `docs/test-plan.md`, apply feedback and mark lessons `published` ⏸
 
 **Owner decision (2026-11-22):** to save time, people-based checks (content review, build tests, CAPS confirmation, print and device checks) are **deferred** to `docs/test-plan.md` and run when the full application is done. Until then only automated tests gate merging, and the live site keeps hiding unreviewed lessons.
@@ -189,3 +189,4 @@ Lesson 10 is the bridge to Phase 2: it introduces a battery, a switch and one sm
 | 0.1 | 2026-11-22 | First draft |
 | 0.2 | 2026-11-22 | Approved; people-based checks deferred to `docs/test-plan.md`; CAPS Coding and Robotics links |
 | 0.3 | 2026-11-22 | Step 5 done: lessons 4–6 |
+| 0.4 | 2026-11-22 | Step 6 done: lessons 7–10; build steps complete, publishing waits for the test plan |

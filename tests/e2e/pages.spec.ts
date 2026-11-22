@@ -175,17 +175,27 @@ test.describe('pages on a 360 px phone', () => {
     await page.getByRole('link', { name: 'Extending grabber' }).last().click();
     await page.getByRole('link', { name: 'Bouncing animal box' }).last().click();
     await page.getByRole('link', { name: 'Robot arm with three lever types' }).last().click();
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-      'Robot arm with three lever types'
-    );
+    for (const title of [
+      'Waving robot (four-bar linkage)',
+      'Spinning gear train',
+      'Rubber-band pulley lift',
+      'One-motor scribble robot'
+    ]) {
+      await page.getByRole('link', { name: title }).last().click();
+    }
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('One-motor scribble robot');
   });
 
-  test('every new template sheet renders', async ({ request }) => {
+  test('every lesson template sheet renders', async ({ request }) => {
     for (const path of [
       '/templates/p1-linkage-01/grabber-parts.svg',
       '/templates/p1-cam-01/cam-parts.svg',
       '/templates/p1-lever-02/lever-bench.svg',
-      '/templates/p1-lever-02/robot-arm.svg'
+      '/templates/p1-lever-02/robot-arm.svg',
+      '/templates/p1-linkage-02/waving-robot.svg',
+      '/templates/p1-gear-01/gear-train.svg',
+      '/templates/p1-pulley-01/pulley-parts.svg',
+      '/templates/p1-motor-01/scribble-bot.svg'
     ]) {
       const res = await request.get(path);
       expect(res.status(), path).toBe(200);
@@ -200,7 +210,11 @@ test.describe('pages on a 360 px phone', () => {
       'p1-crank-01',
       'p1-linkage-01',
       'p1-cam-01',
-      'p1-lever-02'
+      'p1-lever-02',
+      'p1-linkage-02',
+      'p1-gear-01',
+      'p1-pulley-01',
+      'p1-motor-01'
     ]) {
       await page.goto(`/lessons/${id}/`);
       const img = page.locator('.lesson-body img').first();

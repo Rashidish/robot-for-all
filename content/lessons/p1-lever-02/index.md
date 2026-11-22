@@ -37,7 +37,7 @@ assessment:
   - I can predict where to put coins to balance a load, then test it
   - I can explain which type of lever my robot arm uses
 prerequisites: [p1-lever-01]
-next: null
+next: p1-linkage-02
 templates: [lever-bench, robot-arm]
 status: in_review
 ai_generated: true
