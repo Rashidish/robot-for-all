@@ -199,10 +199,13 @@ export function parseProgram(input: unknown): Program {
         const o = fields(v, path, ['type', 'icon']);
         return { type: 'show_icon', icon: oneOf(o['icon'], ICON_NAMES, `${path}.icon`) };
       }
-      case 'show_number':
+      case 'show_number': {
+        const o = fields(v, path, ['type', 'value']);
+        return { type: 'show_number', value: expr(o['value'], `${path}.value`, d) };
+      }
       case 'show_text': {
         const o = fields(v, path, ['type', 'value']);
-        return { type: t, value: expr(o['value'], `${path}.value`, d) };
+        return { type: 'show_text', value: expr(o['value'], `${path}.value`, d) };
       }
       case 'clear':
         fields(v, path, ['type']);
