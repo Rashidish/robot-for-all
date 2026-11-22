@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.8 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.9 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -83,7 +83,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 | M6 | AI helper | Front-office AI with cost caps and child-safe rules |
 | Later | Live sessions, competitions, kit store, newsletter, back-office AI generation pipeline |
 
-Current milestone: **M2** (spec: `docs/specs/M2-make-and-learn.md`).
+Current milestone: **M3** (spec: `docs/specs/M3-code.md`). M2 lessons are built and wait for the people checks in `docs/test-plan.md`.
 
 ---
 
@@ -258,3 +258,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.6 | 2026-11-22 | Browser tests, accessibility checks, Lighthouse and size budgets run in CI (M1 step 9) |
 | 0.7 | 2026-11-22 | M2: lesson format v2 (outcomes, safety, assessment, substitutes, links, build testing) |
 | 0.8 | 2026-11-22 | People-based checks deferred to `docs/test-plan.md` (owner decision) |
+| 0.9 | 2026-11-22 | Current milestone M3; M3 spec approved (micro:bit row to be updated by ADR-0005) |
