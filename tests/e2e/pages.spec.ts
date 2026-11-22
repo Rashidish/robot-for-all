@@ -214,7 +214,13 @@ test.describe('pages on a 360 px phone', () => {
       'p1-linkage-02',
       'p1-gear-01',
       'p1-pulley-01',
-      'p1-motor-01'
+      'p1-motor-01',
+      'p2-display-01',
+      'p2-button-01',
+      'p2-light-01',
+      'p2-motor-01',
+      'p2-motor-02',
+      'p2-robot-01'
     ]) {
       await page.goto(`/lessons/${id}/`);
       const img = page.locator('.lesson-body img').first();

@@ -1,0 +1,51 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Go and stop",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "motor",
+            "action": "stop"
+          },
+          {
+            "type": "show_icon",
+            "icon": "NO"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "A",
+        "body": [
+          {
+            "type": "motor",
+            "action": "forward"
+          },
+          {
+            "type": "show_icon",
+            "icon": "YES"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "B",
+        "body": [
+          {
+            "type": "motor",
+            "action": "stop"
+          },
+          {
+            "type": "show_icon",
+            "icon": "NO"
+          }
+        ]
+      }
+    ]
+  }
+}

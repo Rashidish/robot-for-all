@@ -1,0 +1,39 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Button faces",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "ASLEEP"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "A",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "HAPPY"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "B",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "SAD"
+          }
+        ]
+      }
+    ]
+  }
+}

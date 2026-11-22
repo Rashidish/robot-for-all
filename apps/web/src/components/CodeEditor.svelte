@@ -271,6 +271,7 @@
     store = loadStore(storage());
     load(store.current ? store.programs[store.current] : undefined);
     if (!store.current) save();
+    openFromLink();
     ws.addChangeListener((event: Blockly.Events.Abstract) => {
       if (event.isUiEvent) return;
       refresh();
@@ -517,6 +518,36 @@
       `${fileName(name)}${FILE_EXTENSION}`,
       'application/json'
     );
+  }
+
+  /** A unique name: "Blink a heart", then "Blink a heart 2", "Blink a heart 3"... */
+  function uniqueName(wanted: string): string {
+    const taken = new Set(Object.values(store.programs).map((p) => p.name.toLowerCase()));
+    if (!taken.has(wanted.toLowerCase())) return wanted;
+    for (let n = 2; ; n++) {
+      const candidate = `${wanted} ${n}`;
+      if (!taken.has(candidate.toLowerCase())) return candidate;
+    }
+  }
+
+  /**
+   * "Open in code editor" on a lesson links here with the starter program in the link
+   * (#open=<base64url file>), so it works offline. It opens as a new program in My programs,
+   * checked like any imported file.
+   */
+  function openFromLink() {
+    const match = /^#open=([A-Za-z0-9_-]+)$/.exec(window.location.hash);
+    if (!match?.[1]) return;
+    history.replaceState(null, '', window.location.pathname);
+    try {
+      const b64 = match[1].replace(/-/g, '+').replace(/_/g, '/');
+      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      const opened = fromFile(new TextDecoder().decode(bytes));
+      newProgram(opened.program, uniqueName(opened.name || t('code_default_name')), opened.python);
+      status = '';
+    } catch {
+      status = t('code_import_failed');
+    }
   }
 
   async function importFile() {

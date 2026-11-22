@@ -1,0 +1,66 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Forward, stop, reverse",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_button",
+        "button": "A",
+        "body": [
+          {
+            "type": "motor",
+            "action": "forward"
+          },
+          {
+            "type": "show_icon",
+            "icon": "ARROW_N"
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 1000
+            }
+          },
+          {
+            "type": "motor",
+            "action": "stop"
+          },
+          {
+            "type": "clear"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "B",
+        "body": [
+          {
+            "type": "motor",
+            "action": "reverse"
+          },
+          {
+            "type": "show_icon",
+            "icon": "ARROW_S"
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 1000
+            }
+          },
+          {
+            "type": "motor",
+            "action": "stop"
+          },
+          {
+            "type": "clear"
+          }
+        ]
+      }
+    ]
+  }
+}

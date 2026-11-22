@@ -1,0 +1,47 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Night light",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "forever",
+        "body": [
+          {
+            "type": "if",
+            "cond": {
+              "type": "compare",
+              "op": "lt",
+              "a": {
+                "type": "light_level"
+              },
+              "b": {
+                "type": "number",
+                "value": 50
+              }
+            },
+            "then": [
+              {
+                "type": "show_icon",
+                "icon": "SQUARE"
+              }
+            ],
+            "else": [
+              {
+                "type": "clear"
+              }
+            ]
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 100
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

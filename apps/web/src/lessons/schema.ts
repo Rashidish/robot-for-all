@@ -47,6 +47,14 @@ export const lessonSchema = z
     templates: z
       .array(z.string().regex(/^[a-z0-9-]+$/, 'template names are file names without .ts'))
       .default([]),
+    /** Phase 2+: a starter program in content/lessons/<id>/programs/<name>.rfa.json (M3 FR-10). */
+    starter_program: z
+      .string()
+      .regex(/^[a-z0-9-]+$/, 'starter program names are file names without .rfa.json')
+      .nullable()
+      .default(null),
+    /** What a learner needs: every Phase 2 lesson also works on the on-screen micro:bit. */
+    hardware: z.enum(['none', 'microbit', 'microbit-motor']).default('none'),
     status: z.enum(['draft', 'in_review', 'published']),
     ai_generated: z.boolean(),
     reviewed_by: z.string().min(2).nullable(),

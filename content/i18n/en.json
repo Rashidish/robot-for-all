@@ -327,5 +327,10 @@
   "code_new_name": "Name your new program:",
   "code_python_copy_name": "Your typed Python will be kept as its own program. What should it be called?",
   "code_name_needed": "Please type a name for the program.",
-  "code_name_taken": "You already have a program with that name. Please choose another name."
+  "code_name_taken": "You already have a program with that name. Please choose another name.",
+  "lesson_code_title": "Code for this lesson",
+  "lesson_code_no_hardware": "You only need the on-screen micro:bit in the code editor.",
+  "lesson_code_microbit": "Try it on the on-screen micro:bit first, then send it to a real micro:bit if you have one.",
+  "lesson_code_microbit_motor": "Try it on the on-screen micro:bit first. To make a real robot move you need a micro:bit, a motor driver board and a battery pack for the motor.",
+  "lesson_open_in_editor": "Open the starter program in the code editor"
 }

@@ -1,0 +1,36 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Blink a heart",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "forever",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "HEART"
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 500
+            }
+          },
+          {
+            "type": "clear"
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 500
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

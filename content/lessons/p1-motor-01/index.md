@@ -42,7 +42,7 @@ assessment:
   - I can change one thing and describe how the drawing changes
   - I can explain how energy goes from the battery to the moving robot
 prerequisites: [p1-cam-01]
-next: null
+next: p2-display-01
 templates: [scribble-bot]
 status: in_review
 ai_generated: true

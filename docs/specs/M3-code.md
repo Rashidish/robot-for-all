@@ -1,6 +1,6 @@
 # Spec: M3 — Code (block coding and micro:bit)
 
-> **Version:** 0.8 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
+> **Version:** 0.9 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
 > Depends on: M2 (lessons 1–10 built), CLAUDE.md 0.8, ADR-0001, ADR-0004. Proposes ADR-0005. Keep the version line current; log changes at the bottom.
 
 ---
@@ -138,12 +138,16 @@ Python back into blocks, ESP32 boards (see §13), Bluetooth flashing (needed for
 
 | # | Id | Lesson | Grades | Big idea (CAPS Coding and Robotics, to confirm) | Hardware |
 |---|---|---|---|---|---|
-| 1 | `p2-display-01` | Blink a heart | 4–5 | Sequence, output, loops | Optional micro:bit |
-| 2 | `p2-button-01` | Button-controlled faces | 4–5 | Input, events, selection (if/else) | Optional micro:bit |
-| 3 | `p2-light-01` | Automatic night light | 5–6 | Sensors, comparing values, decisions | Optional micro:bit |
-| 4 | `p2-motor-01` | Go and stop | 5–6 | Actuators, digital output, pins | micro:bit + motor driver (virtual first) |
-| 5 | `p2-motor-02` | Forward, stop, reverse | 5–6 | Two-pin motor control, algorithms | micro:bit + motor driver (virtual first) |
+| 1 | `p2-display-01` | Blink a heart | 5–6 | Sequence, output, loops | Optional micro:bit |
+| 2 | `p2-button-01` | Button-controlled faces | 5–6 | Input, events, selection (if/else) | Optional micro:bit |
+| 3 | `p2-light-01` | Automatic night light | 6 | Sensors, comparing values, decisions | Optional micro:bit |
+| 4 | `p2-motor-01` | Go and stop | 6 | Actuators, digital output, pins | micro:bit + motor driver (virtual first) |
+| 5 | `p2-motor-02` | Forward, stop, reverse | 6–7 | Two-pin motor control, algorithms | micro:bit + motor driver (virtual first) |
 | 6 | `p2-robot-01` | Robot that reacts | 6–7 | Combining sensors, loops and motors | micro:bit + motor driver (virtual first) |
+
+**Grades** follow the CAPS Intermediate Phase document: the virtual microcontroller in Grade 5, the physical micro:bit, blinking LEDs and the light sensor with IF-THEN-ELSE in Grade 6 Term 1, one variable in Grade 6 Term 4.
+
+**Built (steps 6–7):** front matter `starter_program: <name>` points to `content/lessons/<id>/programs/<name>.rfa.json` (the same file format as Save to file; the build fails if it is missing or invalid) and `hardware: none | microbit | microbit-motor`. The lesson page shows **Open the starter program in the code editor**: a link to `/code/#open=<file, base64url>`, so it works offline with no extra download; the editor opens it as a new program in My programs ("Blink a heart", then "Blink a heart 2"…). Motor lessons share one wiring diagram (micro:bit P0 → A-IA, P1 → A-IB, GND → GND; motor on motor A; 2 × AA on VCC/GND). Phase 1's last lesson (p1-motor-01) now links on to p2-display-01.
 
 Each lesson: PRIMM body with a starter program; Predict uses the blocks and the Python view; numbered diagrams; wiring diagram for 4–6 (battery-only, 3 V motor supply, checked as an electrical design per CLAUDE.md §8); `status: in_review` until the test plan is done.
 
@@ -172,7 +176,7 @@ Each lesson: PRIMM body with a starter program; Predict uses the blocks and the 
 - [ ] `/code/` works offline after one visit; Download .hex works offline after one use (e2e).
 - [ ] Page budget and Lighthouse targets in §5 pass in CI; lesson pages still pass their M2 budgets.
 - [ ] No CSP violations on `/code/` (e2e console check).
-- [ ] Six Phase 2 lessons build, link starter programs, and pass the lesson checks; rows added to `docs/test-plan.md`.
+- [x] Six Phase 2 lessons build, link starter programs, and pass the lesson checks; rows added to `docs/test-plan.md`.
 - [ ] Deferred to `docs/test-plan.md`: flashing real micro:bit V1 and V2 from Windows Chrome and Android Chrome (USB-OTG), TalkBack on `/code/`, the wiring checks, and classroom trials.
 
 ---
@@ -186,8 +190,8 @@ One PR per step. CI must pass before merging (owner decision 2026-11-22). ⏸ ma
 3. ~~**Editor page** `/code/`~~ ✅ Done (245 KB gzip; Lighthouse accessibility 100, performance 80–97): Blockly island, toolbox, mobile layout, keyboard navigation, auto-save, My programs, import/export, Python tab, i18n.
 4. **Virtual micro:bit**: LEDs, buttons, light, tilt, motor pins, screen-reader announcements; wired to the interpreter.
 5. **Hex and WebUSB**: Download .hex, Send to micro:bit, firmware served from our domain and cached on first use, offline tests.
-6. **Lesson integration + Phase 2 lessons 1–3**: schema fields, Open in code editor, three drafts with starter programs.
-7. **Phase 2 lessons 4–6**: motor lessons with wiring diagrams; test-plan rows; CLAUDE.md, spec and ADR updates.
+6. ~~**Lesson integration + Phase 2 lessons 1–3**~~ ✅ Done: schema fields, Open in code editor, three drafts with starter programs.
+7. ~~**Phase 2 lessons 4–6**~~ ✅ Done: motor lessons with wiring diagrams; test-plan rows (0.7); spec and CLAUDE.md updated.
 8. **Publishing pass**: after the deferred checks in `docs/test-plan.md` ⏸
 
 **Revised order (owner, 2026-11-22):** step 4 grows into:
@@ -264,6 +268,7 @@ MicroPython on the micro:bit covers almost everything MakeCode's blocks do. Bloc
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft; approved by the owner |
 | 0.8 | 2026-11-22 | Arrays, Images, Game blocks; Shake and move buttons; owner reminder on extension folder format |
+| 0.9 | 2026-11-22 | Steps 6–7: six Phase 2 lessons, starter programs, Open in code editor; grades aligned with CAPS; laptop sound fix |
 | 0.7 | 2026-11-22 | 4b/4c: 56 MakeCode-level blocks, toolbox like MakeCode (icons, Advanced, search), RGB LEDs extension, Run button, send progress |
 | 0.6 | 2026-11-22 | Owner: typed Python, MakeCode-level blocks, extensions loader; on-screen micro:bit is the real MicroPython simulator (ADR-0006); step 4 split into 4a–4c |
 | 0.5 | 2026-11-22 | Step 3 done: MakeCode-style editor, 30 blocks, Python tab, My programs, program files |

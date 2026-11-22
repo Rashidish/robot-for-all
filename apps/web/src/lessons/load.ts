@@ -1,6 +1,7 @@
 // Loads visible lessons and enforces the rules that need the lesson body or folder name.
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { findTemplate } from '../templates/load';
+import { findProgram } from './programs';
 import { checkLinks, checkPrimm, isVisible } from './schema';
 
 export type LessonEntry = CollectionEntry<'lessons'>;
@@ -25,6 +26,17 @@ export async function getLessons(): Promise<LessonEntry[]> {
           `${lesson.id}: template "${name}" not found in content/projects/${lesson.id}/templates/`
         );
       }
+    }
+  }
+  for (const lesson of all) {
+    const name = lesson.data.starter_program;
+    if (!name) continue;
+    try {
+      if (!findProgram(lesson.id, name)) {
+        problems.push(`${lesson.id}: starter program "${name}" not found in content/lessons/${lesson.id}/programs/`);
+      }
+    } catch (err) {
+      problems.push(`${lesson.id}: starter program "${name}" is not a valid program (${String(err)})`);
     }
   }
   if (problems.length > 0) {
