@@ -44,7 +44,6 @@
   let name = $state('');
   let python = $state('');
   let programs = $state<SavedProgram[]>([]);
-  let program: Program = NEW_PROGRAM;
   let store: ProgramStore = { current: null, programs: {} };
   let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -94,10 +93,7 @@
 
   function refresh() {
     const next = currentProgram();
-    if (next) {
-      program = next;
-      python = toPython(next);
-    }
+    if (next) python = toPython(next);
   }
 
   function save() {
@@ -283,7 +279,7 @@
   }
 
   function deleteProgram(id: string) {
-    delete store.programs[id];
+    store.programs = Object.fromEntries(Object.entries(store.programs).filter(([key]) => key !== id));
     if (store.current === id) {
       store.current = null;
       const next = listPrograms(store)[0];
