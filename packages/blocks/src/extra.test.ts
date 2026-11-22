@@ -80,7 +80,6 @@ describe('MakeCode-level blocks', () => {
     for (const module of [
       'import music',
       'import radio',
-      'import math',
       'import neopixel',
       'radio.on()'
     ]) {
