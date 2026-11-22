@@ -63,6 +63,13 @@
   export function flash(): void {
     const current = files();
     if (!current) return;
+    // Called during a tap on our Run button: let the simulator switch its sound on now, while
+    // the browser still counts this as the learner's tap (same-origin frame, patch 0004).
+    try {
+      (frame?.contentWindow as unknown as { rfaStartAudio?: () => void } | null)?.rfaStartAudio?.();
+    } catch {
+      // The simulator page isn't ready yet; it will ask for the program itself.
+    }
     const encoder = new TextEncoder();
     const filesystem = Object.fromEntries(
       Object.entries(current).map(([name, text]) => [name, encoder.encode(text)])
