@@ -26,6 +26,9 @@ function shadowFor(e: Expr | undefined) {
   if (e.type === 'text') return text(e.value);
   if (e.type === 'x_note')
     return { shadow: { type: 'rfa_x_note', fields: { NOTE: String(e['note']) } } };
+  if (e.type === 'x_icon_image') {
+    return { shadow: { type: 'rfa_x_icon_image', fields: { ICON: String(e['icon']) } } };
+  }
   if (e.type === 'x_colour') {
     return {
       shadow: { type: 'rfa_x_colour', fields: { COLOUR: String(e['colour']) } }
@@ -145,7 +148,10 @@ export function toolbox(added: readonly Extension[] = []) {
       category('extensions', C.extensions, undefined, { custom: 'RFA_EXTENSIONS' }),
       category('advanced', C.advanced, [
         category('functions', C.functions, extras('functions')),
+        category('arrays', C.arrays, extras('arrays')),
         category('text', C.text, extras('text')),
+        category('game', C.game, extras('game')),
+        category('images', C.images, extras('images')),
         category('pins', C.pins, [block('rfa_digital_write'), ...extras('pins')]),
         category('serial', C.serial, extras('serial')),
         category('control', C.control, [byType('x_reset'), byType('x_running_time')])

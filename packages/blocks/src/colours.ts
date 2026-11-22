@@ -18,7 +18,10 @@ export const CATEGORY_COLOURS = {
   control: '#333333',
   neopixel: '#1F7E9D', // extension; MakeCode's NeoPixel #2699BF
   extensions: '#717171',
-  advanced: '#333333'
+  advanced: '#333333',
+  arrays: '#B55B00', // MakeCode #FF8000
+  images: '#7600A8',
+  game: '#007A4B'
 } as const;
 
 export type Category = keyof typeof CATEGORY_COLOURS;

@@ -1,6 +1,6 @@
 # Spec: M3 — Code (block coding and micro:bit)
 
-> **Version:** 0.7 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
+> **Version:** 0.8 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
 > Depends on: M2 (lessons 1–10 built), CLAUDE.md 0.8, ADR-0001, ADR-0004. Proposes ADR-0005. Keep the version line current; log changes at the bottom.
 
 ---
@@ -192,7 +192,7 @@ One PR per step. CI must pass before merging (owner decision 2026-11-22). ⏸ ma
 
 **Revised order (owner, 2026-11-22):** step 4 grows into:
 - **4a** On-screen micro:bit (real MicroPython simulator) + typed Python. ✅ Done; Run button and send progress added in 4b.
-- **4b** MakeCode-level blocks (§15). ✅ Done except Arrays, Images and Game (next).
+- **4b** MakeCode-level blocks (§15). ✅ Done, including Arrays, Images and Game (our `game.py`, added to the micro:bit's files when used), and Shake / move buttons on the on-screen micro:bit.
 - **4c** Extensions loader: RGB LEDs (NeoPixel) ✅; more boards next (motor-driver boards, sensors).
 Then steps 5–7 (lessons) as before.
 
@@ -263,6 +263,7 @@ MicroPython on the micro:bit covers almost everything MakeCode's blocks do. Bloc
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft; approved by the owner |
+| 0.8 | 2026-11-22 | Arrays, Images, Game blocks; Shake and move buttons; owner reminder on extension folder format |
 | 0.7 | 2026-11-22 | 4b/4c: 56 MakeCode-level blocks, toolbox like MakeCode (icons, Advanced, search), RGB LEDs extension, Run button, send progress |
 | 0.6 | 2026-11-22 | Owner: typed Python, MakeCode-level blocks, extensions loader; on-screen micro:bit is the real MicroPython simulator (ADR-0006); step 4 split into 4a–4c |
 | 0.5 | 2026-11-22 | Step 3 done: MakeCode-style editor, 30 blocks, Python tab, My programs, program files |

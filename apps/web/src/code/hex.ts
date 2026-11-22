@@ -22,10 +22,11 @@ function fileSystem(firmware: Firmware): MicropythonFsHex {
   ]);
 }
 
-/** Builds a universal .hex containing `main.py`. */
-export function buildHex(mainPy: string, firmware: Firmware): string {
+/** Builds a universal .hex containing `main.py`, or several files (main.py plus modules). */
+export function buildHex(code: string | Record<string, string>, firmware: Firmware): string {
   const fs = fileSystem(firmware);
-  fs.write('main.py', mainPy);
+  const files = typeof code === 'string' ? { 'main.py': code } : code;
+  for (const [name, text] of Object.entries(files)) fs.write(name, text);
   return fs.getUniversalHex();
 }
 

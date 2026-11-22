@@ -5,7 +5,8 @@ import { describe, expect, it } from 'vitest';
 import en from '../../../content/i18n/en.json';
 import { EXTRA_SPECS, type GenericNode, type NodeSpec } from './extra';
 import { parseProgram, type Expr, type Program, type Stmt } from './program';
-import { toPython } from './python';
+import { filesFor, toPython } from './python';
+import { GAME_PY } from './modules';
 import { fromBlockly, toBlockly } from './blockly/serialization';
 import { extraMessageKey } from './blockly/definitions';
 import { toolbox, EXTENSIONS } from './blockly/toolbox';
@@ -16,7 +17,7 @@ const messages = en as Record<string, string>;
 function sample(spec: NodeSpec): GenericNode {
   const node: GenericNode = { type: spec.type };
   for (const f of spec.fields) {
-    if (f.kind === 'expr') node[f.key] = f.shadow ?? { type: 'number', value: 1 };
+    if (f.kind === 'expr') node[f.key] = f.shadow ?? { type: 'var', name: 'thing' };
     if (f.kind === 'stmts') node[f.key] = [{ type: 'clear' }];
     if (f.kind === 'enum') node[f.key] = f.options[0]?.[1];
     if (f.kind === 'int' || f.kind === 'text' || f.kind === 'ident') node[f.key] = f.value;
@@ -81,11 +82,29 @@ describe('MakeCode-level blocks', () => {
       expect(python).toContain(module);
     }
     expect(python).toContain('def doSomething():\n    global score');
+    expect(python).toContain('import game');
     const check = spawnSync('python3', ['-c', 'import ast, sys; ast.parse(sys.stdin.read())'], {
       input: python,
       encoding: 'utf8'
     });
     expect(check.stderr).toBe('');
+    expect(check.status).toBe(0);
+  });
+
+  it('add game.py when a program uses the Game blocks, for blocks and typed Python', () => {
+    expect(Object.keys(filesFor(toPython(everything())))).toEqual(['main.py', 'game.py']);
+    expect(Object.keys(filesFor('from microbit import *\nimport game\n'))).toEqual([
+      'main.py',
+      'game.py'
+    ]);
+    expect(Object.keys(filesFor('from microbit import *\n# no game here\n'))).toEqual(['main.py']);
+  });
+
+  it('game.py compiles', () => {
+    const check = spawnSync('python3', ['-c', 'import ast, sys; ast.parse(sys.stdin.read())'], {
+      input: GAME_PY,
+      encoding: 'utf8'
+    });
     expect(check.status).toBe(0);
   });
 

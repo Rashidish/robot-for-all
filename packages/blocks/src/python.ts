@@ -7,6 +7,7 @@
 // never missed, but it is handled after the current "forever" body finishes.
 import type { Expr, GenericNode, Handler, Program, Stmt } from './program';
 import { EXTRA_BY_TYPE, type HandlerSpec, type PyContext } from './extra';
+import { MODULES } from './modules';
 import { variableNames } from './program';
 
 const INDENT = '    ';
@@ -322,7 +323,7 @@ export function toPython(program: Program): string {
   }
 
   const head = ['# Made with the Robot For All block editor', 'from microbit import *'];
-  for (const m of ['music', 'radio', 'math', 'neopixel'])
+  for (const m of ['music', 'radio', 'math', 'neopixel', 'game'])
     if (modules.has(m)) head.push(`import ${m}`);
   if (uses.random) head.push('import random');
   if (uses.number) {
@@ -337,4 +338,18 @@ export function toPython(program: Program): string {
   }
   // Variables can be changed inside loops at the top level, so no "global" is needed.
   return `${[...head, ...body].join('\n')}\n`;
+}
+
+/**
+ * Every file the micro:bit needs for a program: main.py, plus our own modules it imports
+ * (e.g. game.py for the Game blocks). Works for typed Python too.
+ */
+export function filesFor(mainPy: string): Record<string, string> {
+  const files: Record<string, string> = { 'main.py': mainPy };
+  for (const [name, source] of Object.entries(MODULES)) {
+    if (new RegExp(`^\\s*(import ${name}\\b|from ${name} import)`, 'm').test(mainPy)) {
+      files[`${name}.py`] = source;
+    }
+  }
+  return files;
 }
