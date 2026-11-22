@@ -76,6 +76,7 @@ jobs:
           node scripts/measure-build.mjs apps/web/dist . home 150
           node scripts/measure-build.mjs apps/web/dist lessons lesson-list 250
           node scripts/measure-build.mjs apps/web/dist lessons/p1-crank-01 lesson 250
+          node scripts/measure-build.mjs apps/web/dist code code-editor 450
       - name: Install browser for tests
         run: npx playwright install --with-deps chromium
       - name: Browser tests (360 px phone, offline, accessibility)

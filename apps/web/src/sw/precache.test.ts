@@ -10,6 +10,9 @@ describe('precache list', () => {
     'lessons/p1-crank-01/index.html',
     'offline/index.html',
     '_astro/app.abc123.css',
+    '_astro/editor-vendor.def456.js',
+    '_astro/CodeEditor.789abc.js',
+    'firmware/microbit-v2-micropython-2.1.2.hex',
     'icons/icon-192.png',
     'favicon.svg',
     'manifest.webmanifest',
@@ -23,6 +26,12 @@ describe('precache list', () => {
     expect(list).toContain('/_astro/app.abc123.css');
     expect(list).toContain('/icons/icon-192.png');
     expect(list).toContain('/manifest.webmanifest');
+  });
+
+  it('leaves out the code editor and firmware (cached when first used)', () => {
+    expect(list).not.toContain('/_astro/editor-vendor.def456.js');
+    expect(list).not.toContain('/_astro/CodeEditor.789abc.js');
+    expect(list.some((u) => u.startsWith('/firmware/'))).toBe(false);
   });
 
   it('leaves out lesson pages (cached on visit or download) and the worker itself', () => {

@@ -1,0 +1,22 @@
+---
+// M3 code editor (spec docs/specs/M3-code.md). Step 1: spike page.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CodeEditor from '../../components/CodeEditor.svelte';
+import { m } from '../../i18n';
+
+const labels = {
+  workspace: m.code_workspace(),
+  download: m.code_download_hex(),
+  send: m.code_send(),
+  working: m.code_working(),
+  done: m.code_done(),
+  failed: m.code_failed(),
+  noUsb: m.code_no_usb()
+};
+---
+
+<BaseLayout title={m.code_title()}>
+  <h1>{m.code_title()}</h1>
+  <p>{m.code_intro()}</p>
+  <CodeEditor client:load labels={labels} />
+</BaseLayout>

@@ -3,7 +3,11 @@
     "collect": {
       "startServerCommand": "node tests/serve.mjs 4322",
       "startServerReadyPattern": "Serving",
-      "url": ["http://localhost:4322/", "http://localhost:4322/lessons/p1-crank-01/"],
+      "url": [
+        "http://localhost:4322/",
+        "http://localhost:4322/lessons/p1-crank-01/",
+        "http://localhost:4322/code/"
+      ],
       "numberOfRuns": 1
     },
     "assert": {

@@ -9,6 +9,16 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
 
+# Code editor (M3 spec §5, ADR-0005): same policy, except that
+# - style-src also allows Blockly's two generated stylesheets, by exact hash (never 'unsafe-inline'),
+# - WebUSB is allowed for this site only, so learners can send programs to a micro:bit.
+# "! Name" removes the header set by /* above, so the stricter one is replaced, not combined.
+/code/*
+  ! Content-Security-Policy
+  ! Permissions-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(self), serial=(), bluetooth=(), payment=(), browsing-topics=()
+
 # The service worker must always be checked for updates.
 /sw.js
   Cache-Control: no-cache

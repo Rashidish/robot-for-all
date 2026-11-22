@@ -24,7 +24,10 @@ const rules = [];
 for (const line of readFileSync(join(root, '_headers'), 'utf8').split('\n')) {
   if (!line.trim() || line.trim().startsWith('#')) continue;
   if (!/^\s/.test(line)) rules.push({ pattern: line.trim(), headers: {} });
-  else {
+  else if (line.trim().startsWith('!')) {
+    // "! Name" removes a header set by an earlier rule (Cloudflare Pages syntax).
+    rules.at(-1).headers[line.trim().slice(1).trim()] = null;
+  } else {
     const i = line.indexOf(':');
     rules.at(-1).headers[line.slice(0, i).trim()] = line.slice(i + 1).trim();
   }
@@ -49,7 +52,10 @@ createServer((req, res) => {
   }
   for (const rule of rules) {
     if (matches(rule.pattern, path)) {
-      for (const [name, value] of Object.entries(rule.headers)) res.setHeader(name, value);
+      for (const [name, value] of Object.entries(rule.headers)) {
+        if (value === null) res.removeHeader(name);
+        else res.setHeader(name, value);
+      }
     }
   }
   res.setHeader('Content-Type', types[extname(file)] ?? 'application/octet-stream');
