@@ -5,8 +5,10 @@ phase: 1
 grades: [3, 4]
 mechanism: crank
 syllabus_links:
-  - subject: Natural Sciences and Technology
-    topic: Systems and control - mechanisms that change the direction of movement (to confirm against CAPS)
+  - subject: Coding and Robotics (CAPS, Intermediate Phase)
+    topic: Motion - linear, rotational and combined motion (a crank turns rotational into up-and-down motion)
+  - subject: Coding and Robotics (CAPS, Intermediate Phase)
+    topic: R.5 Design a simple artefact based on design specifications; R.6 Mimic the operations of a robot
   - subject: Mathematics
     topic: Measurement and doubling - comparing distances in millimetres (to confirm against CAPS)
 duration_minutes: 60

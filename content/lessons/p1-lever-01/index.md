@@ -5,10 +5,12 @@ phase: 1
 grades: [3, 4]
 mechanism: lever
 syllabus_links:
-  - subject: Natural Sciences and Technology
-    topic: Forces and simple machines - pushes, pulls and levers (to confirm against CAPS)
+  - subject: Coding and Robotics (CAPS, Intermediate Phase)
+    topic: R.3 Components of a robot - grippers and attachments (Grade 5); Motion - rotational movement about a pivot
+  - subject: Coding and Robotics (CAPS, Intermediate Phase)
+    topic: R.5 Design a simple artefact based on design specifications - design and construction, testing and reconfiguration
   - subject: Mathematics
-    topic: Measurement - measuring length in centimetres (to confirm against CAPS)
+    topic: Measurement - length in centimetres (to confirm against CAPS)
 duration_minutes: 40
 cost_estimate_zar: 2
 parts:
