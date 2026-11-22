@@ -1,6 +1,6 @@
 // Loads visible lessons and enforces the rules that need the lesson body or folder name.
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { checkPrimm, isVisible } from './schema';
+import { checkLinks, checkPrimm, isVisible } from './schema';
 
 export type LessonEntry = CollectionEntry<'lessons'>;
 
@@ -10,12 +10,14 @@ export const showDrafts = process.env['SHOW_DRAFTS'] !== 'false';
 
 export async function getLessons(): Promise<LessonEntry[]> {
   const all = await getCollection('lessons');
+  const ids = new Set(all.map((l) => l.id));
   const problems: string[] = [];
   for (const lesson of all) {
     if (lesson.data.id !== lesson.id) {
       problems.push(`${lesson.id}: front matter id "${lesson.data.id}" must match the folder name`);
     }
     for (const p of checkPrimm(lesson.body ?? '')) problems.push(`${lesson.id}: ${p}`);
+    for (const p of checkLinks(lesson.data, ids)) problems.push(`${lesson.id}: ${p}`);
   }
   if (problems.length > 0) {
     throw new Error(`Lesson problems:\n- ${problems.join('\n- ')}`);

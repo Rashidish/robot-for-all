@@ -7,14 +7,19 @@ import { getLessons, type LessonEntry } from '../../lessons/load';
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
-  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson } }));
+  const titles = Object.fromEntries(lessons.map((l) => [l.id, l.data.title]));
+  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson, titles } }));
 }
 
 interface Props {
   lesson: LessonEntry;
+  /** Titles of the lessons visible in this build, for prerequisite and next links. */
+  titles: Record<string, string>;
 }
 
-const { lesson } = Astro.props;
+const { lesson, titles } = Astro.props;
+const prerequisites = lesson.data.prerequisites.filter((id) => titles[id]);
+const next = lesson.data.next && titles[lesson.data.next] ? lesson.data.next : null;
 const { data } = lesson;
 const { Content } = await render(lesson);
 ---
@@ -42,12 +47,51 @@ const { Content } = await render(lesson);
 
   <DownloadLesson />
 
+  <section
+    class:list={['safety', { 'adult-help': data.safety.adult_help }]}
+    aria-labelledby="safety-title"
+  >
+    <h2 id="safety-title">⚠ {m.lesson_safety_title()}</h2>
+    {data.safety.adult_help && <p class="adult">{m.lesson_adult_help()}</p>}
+    <ul>
+      {data.safety.notes.map((note) => <li>{note}</li>)}
+    </ul>
+  </section>
+
+  <section aria-labelledby="outcomes-title">
+    <h2 id="outcomes-title">{m.lesson_outcomes_title()}</h2>
+    <ul>
+      {data.outcomes.map((outcome) => <li>{outcome}</li>)}
+    </ul>
+    {data.concepts.length > 0 && (
+      <p class="concepts">
+        <strong>{m.lesson_concepts_title()}:</strong> {data.concepts.join(', ')}
+      </p>
+    )}
+  </section>
+
+  {prerequisites.length > 0 && (
+    <section aria-labelledby="prereq-title">
+      <h2 id="prereq-title">{m.lesson_prerequisites_title()}</h2>
+      <ul>
+        {prerequisites.map((id) => (
+          <li>
+            <a href={`/lessons/${id}/`}>{titles[id]}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
   <section class="parts" aria-labelledby="parts-title">
     <h2 id="parts-title">{m.lesson_parts_title()}</h2>
     <ul>
       {data.parts.map((part) => (
         <li>
           {part.qty} × {part.item}
+          {part.substitute && (
+            <span class="muted"> ({m.lesson_substitute({ substitute: part.substitute })})</span>
+          )}
         </li>
       ))}
     </ul>
@@ -56,6 +100,13 @@ const { Content } = await render(lesson);
   <div class="lesson-body">
     <Content />
   </div>
+
+  <section class="assessment" aria-labelledby="assessment-title">
+    <h2 id="assessment-title">{m.lesson_assessment_title()}</h2>
+    <ul>
+      {data.assessment.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
 
   {data.syllabus_links.length > 0 && (
     <section aria-labelledby="syllabus-title">
@@ -68,6 +119,12 @@ const { Content } = await render(lesson);
         ))}
       </ul>
     </section>
+  )}
+
+  {next && (
+    <p class="next">
+      <strong>{m.lesson_next_title()}:</strong> <a href={`/lessons/${next}/`}>{titles[next]}</a>
+    </p>
   )}
 
   <p>
@@ -122,6 +179,35 @@ const { Content } = await render(lesson);
 
   .parts h2 {
     margin-top: 0;
+  }
+
+  .safety {
+    margin: var(--space-6) 0;
+    padding: var(--space-3) var(--space-4);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .safety.adult-help {
+    border-color: var(--color-accent);
+  }
+
+  .safety h2 {
+    margin-top: 0;
+  }
+
+  .safety .adult {
+    font-weight: 700;
+  }
+
+  .assessment ul {
+    list-style: '☐  ';
+  }
+
+  .next {
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
   }
 
   button.button {
