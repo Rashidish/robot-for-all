@@ -1,6 +1,6 @@
 # Spec: M2 — Make & Learn
 
-> **Version:** 0.1 (draft) · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Draft, awaiting approval
+> **Version:** 0.2 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved
 > Depends on: M1 (done), CLAUDE.md 0.6, ADR-0004. Keep the version line current; log changes at the bottom.
 
 ---
@@ -94,7 +94,7 @@ apps/web/src/pages/lessons/[id]/slides.astro   slides view
 
 ## 7. The ten Phase 1 lessons
 
-A path from Grade 3 to Grade 7. Syllabus links are **proposals to be confirmed by a teacher** against CAPS before publishing.
+A path from Grade 3 to Grade 7. Lessons link to the **CAPS Coding and Robotics** outcomes (Intermediate Phase, Oct 2025: Motion; R.3 components such as grippers; R.5–R.7 design, build and test; actuators and power sources). Maths, NST and History links stay marked "to confirm" until a teacher checks them.
 
 | # | Id | Lesson | Mechanism | Grades | Big idea (syllabus link to confirm) | Approx. cost |
 |---|---|---|---|---|---|---|
@@ -142,12 +142,12 @@ Lesson 10 is the bridge to Phase 2: it introduces a battery, a switch and one sm
 1. ~~Lesson format v2: schema, validation, handbook view updates, docs~~ ✅ Done
 2. ~~`packages/templates`: generators, geometry tests, template pages, print check~~ ✅ Done. The package is imported by path rather than as an npm workspace (no build step needed)
 3. ~~Slides view + library filters + learning-path links~~ ✅ Done
-4. Lessons 1–3 (drafts, templates, diagrams) ⏸ review in preview
-5. Lessons 4–6 ⏸
-6. Lessons 7–10 ⏸
-7. Publishing pass: apply review and build-test feedback, mark lessons `published` ⏸
+4. ~~Lessons 1–3 (drafts, templates, diagrams)~~ ✅ Merged as drafts (PR #21)
+5. Lessons 4–6
+6. Lessons 7–10
+7. Publishing pass: after the deferred checks in `docs/test-plan.md`, apply feedback and mark lessons `published` ⏸
 
-Steps 1–3 need no input from you; Claude builds and merges them when checks pass.
+**Owner decision (2026-11-22):** to save time, people-based checks (content review, build tests, CAPS confirmation, print and device checks) are **deferred** to `docs/test-plan.md` and run when the full application is done. Until then only automated tests gate merging, and the live site keeps hiding unreviewed lessons.
 
 ---
 
@@ -187,3 +187,4 @@ Steps 1–3 need no input from you; Claude builds and merges them when checks pa
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft |
+| 0.2 | 2026-11-22 | Approved; people-based checks deferred to `docs/test-plan.md`; CAPS Coding and Robotics links |

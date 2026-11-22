@@ -5,10 +5,12 @@ phase: 1
 grades: [3, 4]
 mechanism: wheel and axle
 syllabus_links:
-  - subject: Natural Sciences and Technology
-    topic: Forces - friction and movement; simple machines - wheel and axle (to confirm against CAPS)
+  - subject: Coding and Robotics (CAPS, Intermediate Phase)
+    topic: R.5-R.7 (Grade 4, Term 4) - wheels and axles in movement; design and build a simple wheeled robot
+  - subject: Coding and Robotics (CAPS, Intermediate Phase)
+    topic: Motion - locomotion with wheels
   - subject: Mathematics
-    topic: Measurement - length in centimetres and metres; recording data in a table (to confirm against CAPS)
+    topic: Measurement - length in centimetres; recording data in a table (to confirm against CAPS)
   - subject: Social Sciences (History)
     topic: How the wheel changed transport and work (to confirm against CAPS)
 duration_minutes: 50

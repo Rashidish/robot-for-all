@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.7 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.8 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -139,8 +139,8 @@ phase: 1                 # 1 Build | 2 Control | 3 Integrate
 grades: [3, 4]
 mechanism: crank         # crank | gear | lever | linkage | ...
 syllabus_links:          # CAPS topic references
-  - subject: Natural Sciences and Technology
-    topic: Structures / mechanical systems
+  - subject: Coding and Robotics (CAPS, Intermediate Phase)
+    topic: R.5 Design a simple artefact based on design specifications
 duration_minutes: 45
 cost_estimate_zar: 15
 parts:                   # substitute = a free or cheaper thing that works instead
@@ -205,6 +205,7 @@ Teachers and content editors must be able to add a lesson without touching code.
 7. **i18n:** every new string gets a translation key.
 8. **Update docs** (spec, ADR, this file) in the same PR when behaviour or decisions change.
 9. **Ask, don't guess,** when a requirement is unclear or touches money, children's data or safety.
+10. **Deferred people checks:** anything only a person or real device can check (lesson review, build tests, printing, screen readers) goes into `docs/test-plan.md`, to be run when the full application is done. Automated tests still gate every merge.
 
 ### Commands
 Node 24 (see `.nvmrc`; minimum 22.17). Run from the repo root:
@@ -256,3 +257,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.5 | 2026-11-22 | Offline: hand-written service worker instead of Workbox (M1 step 6) |
 | 0.6 | 2026-11-22 | Browser tests, accessibility checks, Lighthouse and size budgets run in CI (M1 step 9) |
 | 0.7 | 2026-11-22 | M2: lesson format v2 (outcomes, safety, assessment, substitutes, links, build testing) |
+| 0.8 | 2026-11-22 | People-based checks deferred to `docs/test-plan.md` (owner decision) |
