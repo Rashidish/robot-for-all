@@ -351,7 +351,10 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await context.close();
   });
 
-  test('music plays on a laptop with Chrome\'s desktop sound rules', async ({ playwright, baseURL }) => {
+  test("music plays on a laptop with Chrome's desktop sound rules", async ({
+    playwright,
+    baseURL
+  }) => {
     // Desktop Chrome only lets a page make sound after a click in that page; Playwright's default
     // is more relaxed, so launch with the real desktop rule.
     const desktop = await playwright.chromium.launch({
@@ -387,14 +390,17 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
           version: 1,
           name: 'Tune',
           program: { version: 1, handlers: [] },
-          python: 'from microbit import *\nimport music\nwhile True:\n    music.play(["C4:4", "E4:4", "G4:4"])\n'
+          python:
+            'from microbit import *\nimport music\nwhile True:\n    music.play(["C4:4", "E4:4", "G4:4"])\n'
         })
       )
     });
     await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     const sounds = () =>
       page.evaluate(() => (window as unknown as { rfaSounds?: string[] }).rfaSounds ?? []);
-    await expect.poll(async () => (await sounds()).includes('running'), { timeout: 15_000 }).toBe(true);
+    await expect
+      .poll(async () => (await sounds()).includes('running'), { timeout: 15_000 })
+      .toBe(true);
     // Test sound beeps from this page too.
     await page.getByRole('button', { name: /Test sound/ }).click();
     await expect(page.locator('.sound-off')).toHaveCount(0);

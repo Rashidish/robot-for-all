@@ -234,9 +234,22 @@ test.describe('pages on a 360 px phone', () => {
 
   test('every lesson has a one-page answer sheet', async ({ page }) => {
     const ids = [
-      'p1-lever-01', 'p1-wheel-01', 'p1-crank-01', 'p1-linkage-01', 'p1-cam-01', 'p1-lever-02',
-      'p1-linkage-02', 'p1-gear-01', 'p1-pulley-01', 'p1-motor-01', 'p2-display-01',
-      'p2-button-01', 'p2-light-01', 'p2-motor-01', 'p2-motor-02', 'p2-robot-01'
+      'p1-lever-01',
+      'p1-wheel-01',
+      'p1-crank-01',
+      'p1-linkage-01',
+      'p1-cam-01',
+      'p1-lever-02',
+      'p1-linkage-02',
+      'p1-gear-01',
+      'p1-pulley-01',
+      'p1-motor-01',
+      'p2-display-01',
+      'p2-button-01',
+      'p2-light-01',
+      'p2-motor-01',
+      'p2-motor-02',
+      'p2-robot-01'
     ];
     await page.goto('/lessons/p2-light-01/');
     // "Code for this lesson" sits just before the syllabus links (owner, 2026-11-23).

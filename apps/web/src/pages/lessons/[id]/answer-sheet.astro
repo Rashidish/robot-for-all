@@ -47,69 +47,65 @@ let number = 0;
       <div>{m.sheet_date()}</div>
     </div>
 
-    {
-      sections.map((section) => {
-        const steps = section.items.find((item) => item.kind === 'steps');
-        return (
-          <section>
-            <h2>
-              <span aria-hidden="true">☐</span> {section.step}
-              {steps && steps.kind === 'steps' && (
-                <span class="steps">
-                  {m.sheet_steps_done()}{' '}
-                  {Array.from({ length: steps.count }, (_, i) => `☐ ${i + 1}`).join('  ')}
-                </span>
-              )}
-            </h2>
-            {section.step === 'Make' && <div class="box">{m.sheet_make_box()}</div>}
-            {section.items.map((item) =>
-              item.kind === 'question' ? (
-                <div class="question">
-                  <p>
-                    <strong>{++number}.</strong> {item.text}
-                  </p>
-                  <div class="line" />
-                  <div class="line extra" />
-                </div>
-              ) : item.kind === 'table' ? (
-                <table>
-                  <thead>
+    {sections.map((section) => {
+      const steps = section.items.find((item) => item.kind === 'steps');
+      return (
+        <section>
+          <h2>
+            <span aria-hidden="true">☐</span> {section.step}
+            {steps && steps.kind === 'steps' && (
+              <span class="steps">
+                {m.sheet_steps_done()}{' '}
+                {Array.from({ length: steps.count }, (_, i) => `☐ ${i + 1}`).join('  ')}
+              </span>
+            )}
+          </h2>
+          {section.step === 'Make' && <div class="box">{m.sheet_make_box()}</div>}
+          {section.items.map((item) =>
+            item.kind === 'question' ? (
+              <div class="question">
+                <p>
+                  <strong>{++number}.</strong> {item.text}
+                </p>
+                <div class="line" />
+                <div class="line extra" />
+              </div>
+            ) : item.kind === 'table' ? (
+              <table>
+                <thead>
+                  <tr>
+                    {item.head.map((cell) => (
+                      <th scope="col">{cell}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {item.rows.map((row) => (
                     <tr>
-                      {item.head.map((cell) => (
-                        <th scope="col">{cell}</th>
+                      {row.map((cell) => (
+                        <td>{cell}</td>
                       ))}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {item.rows.map((row) => (
-                      <tr>
-                        {row.map((cell) => (
-                          <td>{cell}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : null
-            )}
-          </section>
-        );
-      })
-    }
+                  ))}
+                </tbody>
+              </table>
+            ) : null
+          )}
+        </section>
+      );
+    })}
 
     <section>
       <h2>{m.lesson_assessment_title()}</h2>
       <table class="check">
         <tbody>
-          {
-            data.assessment.map((item) => (
-              <tr>
-                <td>{item}</td>
-                <td>☐ {m.sheet_yes()}</td>
-                <td>☐ {m.sheet_not_yet()}</td>
-              </tr>
-            ))
-          }
+          {data.assessment.map((item) => (
+            <tr>
+              <td>{item}</td>
+              <td>☐ {m.sheet_yes()}</td>
+              <td>☐ {m.sheet_not_yet()}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </section>
@@ -118,7 +114,9 @@ let number = 0;
       <div>{m.sheet_checked_by()}</div>
       <div>{m.sheet_working()} ☐</div>
     </div>
-    <p class="code">{m.sheet_code({ code })} · {m.sheet_keep()}</p>
+    <p class="code">
+      {m.sheet_code({ code })} · {m.sheet_keep()}
+    </p>
   </article>
 </BaseLayout>
 
