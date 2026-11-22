@@ -1,6 +1,6 @@
 # Spec: M3 — Code (block coding and micro:bit)
 
-> **Version:** 0.4 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
+> **Version:** 0.5 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-22)
 > Depends on: M2 (lessons 1–10 built), CLAUDE.md 0.8, ADR-0001, ADR-0004. Proposes ADR-0005. Keep the version line current; log changes at the bottom.
 
 ---
@@ -178,7 +178,7 @@ One PR per step. CI must pass before merging (owner decision 2026-11-22). ⏸ ma
 
 1. ~~**Spike + ADR-0005**~~ ✅ Done (PR #26: 245 KB gzip, CSP by hash, hex + WebUSB): Blockly under the strict CSP at 360 px, measured size; microbit-fs builds a hex from a `main.py`; microbit-connection bundles. Decide and record. ⏸ only if the spike breaks a non-negotiable (CSP, size, licence).
 2. ~~**`packages/blocks` core**~~ ✅ Done: program JSON schema, MicroPython generator, interpreter, sample programs, golden + stub-Python tests.
-3. **Editor page** `/code/`: Blockly island, toolbox, mobile layout, keyboard navigation, auto-save, My programs, import/export, Python tab, i18n.
+3. ~~**Editor page** `/code/`~~ ✅ Done (245 KB gzip; Lighthouse accessibility 100, performance 80–97): Blockly island, toolbox, mobile layout, keyboard navigation, auto-save, My programs, import/export, Python tab, i18n.
 4. **Virtual micro:bit**: LEDs, buttons, light, tilt, motor pins, screen-reader announcements; wired to the interpreter.
 5. **Hex and WebUSB**: Download .hex, Send to micro:bit, firmware served from our domain and cached on first use, offline tests.
 6. **Lesson integration + Phase 2 lessons 1–3**: schema fields, Open in code editor, three drafts with starter programs.
@@ -220,6 +220,7 @@ Core editor and virtual micro:bit stay free. A low-cost **Phase 2 kit** (micro:b
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft; approved by the owner |
+| 0.5 | 2026-11-22 | Step 3 done: MakeCode-style editor, 30 blocks, Python tab, My programs, program files |
 | 0.4 | 2026-11-22 | Block colours: darker MakeCode shades meeting AA (owner); step 2 done; event rules for buttons and forever |
 | 0.3 | 2026-11-22 | MakeCode look and feel (owner decision); desktop layout fix |
 | 0.2 | 2026-11-22 | Step 1 done; ADR-0005 accepted; microbit-connection is stable (1.0.3); owner has a micro:bit |

@@ -8,7 +8,8 @@ export const CATEGORY_COLOURS = {
   variables: '#DC143C',
   math: '#9400D3',
   pins: '#B22222',
-  led: '#5C2D91'
+  led: '#5C2D91',
+  motors: '#B35400' // ours; MakeCode has no motor blocks in its core set
 } as const;
 
 export type Category = keyof typeof CATEGORY_COLOURS;

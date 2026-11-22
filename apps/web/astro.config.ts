@@ -24,7 +24,8 @@ export default defineConfig({
           manualChunks(id: string) {
             if (
               /[\\/]node_modules[\\/](blockly|@microbit|nrf-intel-hex)[\\/]/.test(id) ||
-              /[\\/]src[\\/](code[\\/]|components[\\/]CodeEditor\.svelte)/.test(id)
+              /[\\/]src[\\/](code[\\/]|components[\\/]CodeEditor\.svelte)/.test(id) ||
+              /[\\/]packages[\\/]blocks[\\/]/.test(id)
             ) {
               return 'editor-vendor';
             }
