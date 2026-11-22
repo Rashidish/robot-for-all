@@ -77,12 +77,7 @@ describe('MakeCode-level blocks', () => {
 
   it('turn into MicroPython that compiles', () => {
     const python = toPython(everything());
-    for (const module of [
-      'import music',
-      'import radio',
-      'import neopixel',
-      'radio.on()'
-    ]) {
+    for (const module of ['import music', 'import radio', 'import neopixel', 'radio.on()']) {
       expect(python).toContain(module);
     }
     expect(python).toContain('def doSomething():\n    global score');
