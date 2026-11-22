@@ -8,7 +8,11 @@ import type { Expr } from '../program';
 const num = (value: number) => ({ shadow: { type: 'rfa_number', fields: { NUM: value } } });
 const text = (value: string) => ({ shadow: { type: 'rfa_text', fields: { TEXT: value } } });
 const bool = () => ({ shadow: { type: 'rfa_bool', fields: { BOOL: 'TRUE' } } });
-const block = (type: string, inputs?: Record<string, unknown>, fields?: Record<string, unknown>) => ({
+const block = (
+  type: string,
+  inputs?: Record<string, unknown>,
+  fields?: Record<string, unknown>
+) => ({
   kind: 'block',
   type,
   ...(inputs ? { inputs } : {}),
@@ -20,9 +24,12 @@ function shadowFor(e: Expr | undefined) {
   if (!e) return undefined;
   if (e.type === 'number') return num(e.value);
   if (e.type === 'text') return text(e.value);
-  if (e.type === 'x_note') return { shadow: { type: 'rfa_x_note', fields: { NOTE: (e as { note: string }).note } } };
+  if (e.type === 'x_note')
+    return { shadow: { type: 'rfa_x_note', fields: { NOTE: (e as { note: string }).note } } };
   if (e.type === 'x_colour') {
-    return { shadow: { type: 'rfa_x_colour', fields: { COLOUR: (e as { colour: string }).colour } } };
+    return {
+      shadow: { type: 'rfa_x_colour', fields: { COLOUR: (e as { colour: string }).colour } }
+    };
   }
   return undefined;
 }
@@ -38,7 +45,8 @@ function extraBlock(spec: NodeSpec) {
   return block(`rfa_${spec.type}`, Object.keys(inputs).length ? inputs : undefined);
 }
 
-const extras = (category: Category) => EXTRA_SPECS.filter((s) => s.category === category).map(extraBlock);
+const extras = (category: Category) =>
+  EXTRA_SPECS.filter((s) => s.category === category).map(extraBlock);
 const byType = (type: string) => {
   const spec = EXTRA_SPECS.find((s) => s.type === type);
   if (!spec) throw new Error(`No block ${type}`);
@@ -46,7 +54,12 @@ const byType = (type: string) => {
 };
 
 /** Category label and icon classes, styled in the editor's stylesheet (no inline styles). */
-const category = (id: string, colour: string, contents: unknown[] | undefined, extra: Record<string, unknown> = {}) => ({
+const category = (
+  id: string,
+  colour: string,
+  contents: unknown[] | undefined,
+  extra: Record<string, unknown> = {}
+) => ({
   kind: 'category',
   name: `%{BKY_CATEGORY_${id.toUpperCase()}}`,
   colour,

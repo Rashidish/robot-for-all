@@ -244,15 +244,15 @@ export function toPython(program: Program): string {
 
   const of = <T extends Handler['type']>(type: T) =>
     program.handlers.filter((h): h is Extract<Handler, { type: T }> => h.type === type);
-  const generics = program.handlers.filter(
-    (h): h is GenericNode => h.type.startsWith('x_')
-  );
+  const generics = program.handlers.filter((h): h is GenericNode => h.type.startsWith('x_'));
 
   // Main-loop parts are generated first, so we know which modules and helpers they use.
   const loop: string[] = [];
   const setup: string[] = [];
   for (const h of of('forever')) loop.push(`${INDENT}# forever`, ...block(h.body, 1));
-  const radioHandlers = generics.filter((h) => h.type === 'x_on_radio_number' || h.type === 'x_on_radio_string');
+  const radioHandlers = generics.filter(
+    (h) => h.type === 'x_on_radio_number' || h.type === 'x_on_radio_string'
+  );
   if (radioHandlers.length) {
     loop.push(
       `${INDENT}# radio`,
@@ -322,7 +322,8 @@ export function toPython(program: Program): string {
   }
 
   const head = ['# Made with the Robot For All block editor', 'from microbit import *'];
-  for (const m of ['music', 'radio', 'math', 'neopixel']) if (modules.has(m)) head.push(`import ${m}`);
+  for (const m of ['music', 'radio', 'math', 'neopixel'])
+    if (modules.has(m)) head.push(`import ${m}`);
   if (uses.random) head.push('import random');
   if (uses.number) {
     head.push(

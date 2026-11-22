@@ -101,19 +101,59 @@ const GESTURES: readonly Option[] = [
   ['%{BKY_GESTURE_FREE_FALL}', 'freefall']
 ];
 const MELODIES = [
-  'DADADADUM', 'ENTERTAINER', 'PRELUDE', 'ODE', 'NYAN', 'RINGTONE', 'FUNK', 'BLUES', 'BIRTHDAY',
-  'WEDDING', 'FUNERAL', 'PUNCHLINE', 'PYTHON', 'BADDY', 'CHASE', 'BA_DING', 'WAWAWAWAA',
-  'JUMP_UP', 'JUMP_DOWN', 'POWER_UP', 'POWER_DOWN'
+  'DADADADUM',
+  'ENTERTAINER',
+  'PRELUDE',
+  'ODE',
+  'NYAN',
+  'RINGTONE',
+  'FUNK',
+  'BLUES',
+  'BIRTHDAY',
+  'WEDDING',
+  'FUNERAL',
+  'PUNCHLINE',
+  'PYTHON',
+  'BADDY',
+  'CHASE',
+  'BA_DING',
+  'WAWAWAWAA',
+  'JUMP_UP',
+  'JUMP_DOWN',
+  'POWER_UP',
+  'POWER_DOWN'
 ].map((m) => [m.toLowerCase().replace(/_/g, ' '), m] as const);
-const SOUNDS = ['GIGGLE', 'HAPPY', 'HELLO', 'MYSTERIOUS', 'SAD', 'SLIDE', 'SOARING', 'SPRING', 'TWINKLE', 'YAWN'].map(
-  (s) => [s.toLowerCase(), s] as const
-);
+const SOUNDS = [
+  'GIGGLE',
+  'HAPPY',
+  'HELLO',
+  'MYSTERIOUS',
+  'SAD',
+  'SLIDE',
+  'SOARING',
+  'SPRING',
+  'TWINKLE',
+  'YAWN'
+].map((s) => [s.toLowerCase(), s] as const);
 const NOTES: readonly Option[] = [
-  ['C 262', '262'], ['D 294', '294'], ['E 330', '330'], ['F 349', '349'], ['G 392', '392'],
-  ['A 440', '440'], ['B 494', '494'], ['C5 523', '523']
+  ['C 262', '262'],
+  ['D 294', '294'],
+  ['E 330', '330'],
+  ['F 349', '349'],
+  ['G 392', '392'],
+  ['A 440', '440'],
+  ['B 494', '494'],
+  ['C5 523', '523']
 ];
 const ARROWS: readonly Option[] = [
-  ['↑ N', 'N'], ['↗ NE', 'NE'], ['→ E', 'E'], ['↘ SE', 'SE'], ['↓ S', 'S'], ['↙ SW', 'SW'], ['← W', 'W'], ['↖ NW', 'NW']
+  ['↑ N', 'N'],
+  ['↗ NE', 'NE'],
+  ['→ E', 'E'],
+  ['↘ SE', 'SE'],
+  ['↓ S', 'S'],
+  ['↙ SW', 'SW'],
+  ['← W', 'W'],
+  ['↖ NW', 'NW']
 ];
 const COLOURS: readonly Option[] = [
   ['%{BKY_COLOUR_RED}', '255,0,0'],
@@ -196,9 +236,31 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     fields: [body],
     loop: () => ({ cond: 'microphone.was_event(SoundEvent.LOUD)' })
   },
-  { type: 'x_compass_heading', role: 'expr', output: 'Number', category: 'input', fields: [], py: () => 'compass.heading()' },
-  { type: 'x_sound_level', role: 'expr', output: 'Number', category: 'input', v2: true, fields: [], py: () => 'microphone.sound_level()' },
-  { type: 'x_running_time', role: 'expr', output: 'Number', category: 'input', fields: [], py: () => 'running_time()' },
+  {
+    type: 'x_compass_heading',
+    role: 'expr',
+    output: 'Number',
+    category: 'input',
+    fields: [],
+    py: () => 'compass.heading()'
+  },
+  {
+    type: 'x_sound_level',
+    role: 'expr',
+    output: 'Number',
+    category: 'input',
+    v2: true,
+    fields: [],
+    py: () => 'microphone.sound_level()'
+  },
+  {
+    type: 'x_running_time',
+    role: 'expr',
+    output: 'Number',
+    category: 'input',
+    fields: [],
+    py: () => 'running_time()'
+  },
   {
     type: 'x_logo_is_pressed',
     role: 'expr',
@@ -307,14 +369,18 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     role: 'stmt',
     category: 'led',
     fields: [e('x', 'X', 'Number', n(0)), e('y', 'Y', 'Number', n(0))],
-    py: (node, c) => [`${c.pad}display.set_pixel(int(${num(c, node, 'x')}), int(${num(c, node, 'y')}), 9)`]
+    py: (node, c) => [
+      `${c.pad}display.set_pixel(int(${num(c, node, 'x')}), int(${num(c, node, 'y')}), 9)`
+    ]
   },
   {
     type: 'x_unplot',
     role: 'stmt',
     category: 'led',
     fields: [e('x', 'X', 'Number', n(0)), e('y', 'Y', 'Number', n(0))],
-    py: (node, c) => [`${c.pad}display.set_pixel(int(${num(c, node, 'x')}), int(${num(c, node, 'y')}), 0)`]
+    py: (node, c) => [
+      `${c.pad}display.set_pixel(int(${num(c, node, 'x')}), int(${num(c, node, 'y')}), 0)`
+    ]
   },
   {
     type: 'x_toggle',
@@ -331,7 +397,11 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     type: 'x_plot_brightness',
     role: 'stmt',
     category: 'led',
-    fields: [e('x', 'X', 'Number', n(0)), e('y', 'Y', 'Number', n(0)), e('b', 'B', 'Number', n(255))],
+    fields: [
+      e('x', 'X', 'Number', n(0)),
+      e('y', 'Y', 'Number', n(0)),
+      e('b', 'B', 'Number', n(255))
+    ],
     py: (node, c) => [
       `${c.pad}display.set_pixel(int(${num(c, node, 'x')}), int(${num(c, node, 'y')}), max(0, min(9, int(${num(c, node, 'b')}) * 9 // 255)))`
     ]
@@ -396,14 +466,32 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
       return { cond: '_radio_text is not None' };
     }
   },
-  { type: 'x_received_number', role: 'expr', output: 'Number', category: 'radio', fields: [], py: () => 'receivedNumber' },
-  { type: 'x_received_string', role: 'expr', output: 'String', category: 'radio', fields: [], py: () => 'receivedString' },
+  {
+    type: 'x_received_number',
+    role: 'expr',
+    output: 'Number',
+    category: 'radio',
+    fields: [],
+    py: () => 'receivedNumber'
+  },
+  {
+    type: 'x_received_string',
+    role: 'expr',
+    output: 'String',
+    category: 'radio',
+    fields: [],
+    py: () => 'receivedString'
+  },
   // ---- Loops
   {
     type: 'x_for_range',
     role: 'stmt',
     category: 'loops',
-    fields: [{ kind: 'ident', key: 'var', field: 'VAR', value: 'index' }, e('to', 'TO', 'Number', n(4)), body],
+    fields: [
+      { kind: 'ident', key: 'var', field: 'VAR', value: 'index' },
+      e('to', 'TO', 'Number', n(4)),
+      body
+    ],
     py: (node, c) => [
       `${c.pad}for ${String(node['var'])} in range(int(${num(c, node, 'to')}) + 1):`,
       ...c.block(node['body'] as Stmt[], c.pad.length / 4 + 1)
@@ -423,8 +511,20 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
       };
     }
   },
-  { type: 'x_break', role: 'stmt', category: 'loops', fields: [], py: (_node, c) => [`${c.pad}break`] },
-  { type: 'x_continue', role: 'stmt', category: 'loops', fields: [], py: (_node, c) => [`${c.pad}continue`] },
+  {
+    type: 'x_break',
+    role: 'stmt',
+    category: 'loops',
+    fields: [],
+    py: (_node, c) => [`${c.pad}break`]
+  },
+  {
+    type: 'x_continue',
+    role: 'stmt',
+    category: 'loops',
+    fields: [],
+    py: (_node, c) => [`${c.pad}continue`]
+  },
   // ---- Math
   {
     type: 'x_remainder',
@@ -440,11 +540,20 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     output: 'Number',
     category: 'math',
     fields: [
-      { kind: 'enum', key: 'op', field: 'OP', options: [['%{BKY_MATH_MIN}', 'min'], ['%{BKY_MATH_MAX}', 'max']] },
+      {
+        kind: 'enum',
+        key: 'op',
+        field: 'OP',
+        options: [
+          ['%{BKY_MATH_MIN}', 'min'],
+          ['%{BKY_MATH_MAX}', 'max']
+        ]
+      },
       e('a', 'A', 'Number', n(0)),
       e('b', 'B', 'Number', n(0))
     ],
-    py: (node, c) => `${String(node['op'])}(${c.bare(node['a'] as Expr)}, ${c.bare(node['b'] as Expr)})`
+    py: (node, c) =>
+      `${String(node['op'])}(${c.bare(node['a'] as Expr)}, ${c.bare(node['b'] as Expr)})`
   },
   {
     type: 'x_math_op',
@@ -456,7 +565,12 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
         kind: 'enum',
         key: 'op',
         field: 'OP',
-        options: [['%{BKY_MATH_ABS}', 'abs'], ['%{BKY_MATH_SQRT}', 'sqrt'], ['%{BKY_MATH_ROUND}', 'round'], ['%{BKY_MATH_FLOOR}', 'floor']]
+        options: [
+          ['%{BKY_MATH_ABS}', 'abs'],
+          ['%{BKY_MATH_SQRT}', 'sqrt'],
+          ['%{BKY_MATH_ROUND}', 'round'],
+          ['%{BKY_MATH_FLOOR}', 'floor']
+        ]
       },
       e('a', 'A', 'Number', n(0))
     ],
@@ -485,7 +599,10 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     role: 'expr',
     output: 'String',
     category: 'text',
-    fields: [e('a', 'A', ['String', 'Number'], t('Hello')), e('b', 'B', ['String', 'Number'], t('World'))],
+    fields: [
+      e('a', 'A', ['String', 'Number'], t('Hello')),
+      e('b', 'B', ['String', 'Number'], t('World'))
+    ],
     py: (node, c) => `(str(${c.bare(node['a'] as Expr)}) + str(${c.bare(node['b'] as Expr)}))`
   },
   {
@@ -504,9 +621,21 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     fields: [e('a', 'A', ['String', 'Number'], t('123'))],
     py: (node, c) => `float(${c.bare(node['a'] as Expr)})`
   },
-  { type: 'x_text', role: 'expr', output: 'String', category: 'text', fields: [{ kind: 'text', key: 'value', field: 'TEXT', value: '', maxLength: 200 }], py: (node, c) => c.expr({ type: 'text', value: String(node['value']) }) },
+  {
+    type: 'x_text',
+    role: 'expr',
+    output: 'String',
+    category: 'text',
+    fields: [{ kind: 'text', key: 'value', field: 'TEXT', value: '', maxLength: 200 }],
+    py: (node, c) => c.expr({ type: 'text', value: String(node['value']) })
+  },
   // ---- Functions (Advanced)
-  { type: 'x_function', role: 'function', category: 'functions', fields: [{ kind: 'ident', key: 'name', field: 'NAME', value: 'doSomething' }, body] },
+  {
+    type: 'x_function',
+    role: 'function',
+    category: 'functions',
+    fields: [{ kind: 'ident', key: 'name', field: 'NAME', value: 'doSomething' }, body]
+  },
   {
     type: 'x_call',
     role: 'stmt',
@@ -536,7 +665,9 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     role: 'stmt',
     category: 'pins',
     fields: [pinField, e('value', 'VALUE', 'Number', n(1023))],
-    py: (node, c) => [`${c.pad}pin${String(node['pin'])}.write_analog(int(${num(c, node, 'value')}))`]
+    py: (node, c) => [
+      `${c.pad}pin${String(node['pin'])}.write_analog(int(${num(c, node, 'value')}))`
+    ]
   },
   {
     type: 'x_servo_write',
@@ -563,7 +694,10 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     type: 'x_serial_value',
     role: 'stmt',
     category: 'serial',
-    fields: [{ kind: 'text', key: 'label', field: 'LABEL', value: 'x', maxLength: 30 }, e('value', 'VALUE', 'Number', n(0))],
+    fields: [
+      { kind: 'text', key: 'label', field: 'LABEL', value: 'x', maxLength: 30 },
+      e('value', 'VALUE', 'Number', n(0))
+    ],
     py: (node, c) => {
       c.use('number');
       const label = c.expr({ type: 'text', value: `${String(node['label'])}:` });
@@ -571,7 +705,13 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     }
   },
   // ---- Control (Advanced)
-  { type: 'x_reset', role: 'stmt', category: 'control', fields: [], py: (_node, c) => [`${c.pad}reset()`] },
+  {
+    type: 'x_reset',
+    role: 'stmt',
+    category: 'control',
+    fields: [],
+    py: (_node, c) => [`${c.pad}reset()`]
+  },
   // ---- Extension: NeoPixel (RGB LEDs)
   {
     type: 'x_strip_init',
@@ -580,7 +720,9 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     fields: [pinField, { kind: 'int', key: 'count', field: 'COUNT', min: 1, max: 64, value: 8 }],
     py: (node, c) => {
       c.use('neopixel');
-      return [`${c.pad}strip = neopixel.NeoPixel(pin${String(node['pin'])}, ${Number(node['count'])})`];
+      return [
+        `${c.pad}strip = neopixel.NeoPixel(pin${String(node['pin'])}, ${Number(node['count'])})`
+      ];
     }
   },
   {
@@ -640,7 +782,11 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     role: 'expr',
     output: 'Colour',
     category: 'neopixel',
-    fields: [e('r', 'R', 'Number', n(255)), e('g', 'G', 'Number', n(0)), e('b', 'B', 'Number', n(0))],
+    fields: [
+      e('r', 'R', 'Number', n(255)),
+      e('g', 'G', 'Number', n(0)),
+      e('b', 'B', 'Number', n(0))
+    ],
     py: (node, c) => {
       const v = (k: string) => `max(0, min(255, int(${num(c, node, k)})))`;
       return `(${v('r')}, ${v('g')}, ${v('b')})`;

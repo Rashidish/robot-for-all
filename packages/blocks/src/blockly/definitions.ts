@@ -355,7 +355,14 @@ function extraArg(f: FieldSpec): object | undefined {
     case 'enum':
       return { type: 'field_dropdown', name: f.field, options: f.options.map((o) => [o[0], o[1]]) };
     case 'int':
-      return { type: 'field_number', name: f.field, value: f.value, min: f.min, max: f.max, precision: 1 };
+      return {
+        type: 'field_number',
+        name: f.field,
+        value: f.value,
+        min: f.min,
+        max: f.max,
+        precision: 1
+      };
     case 'text':
     case 'ident':
       return { type: 'field_input', name: f.field, text: f.value };
@@ -401,7 +408,10 @@ function extraDefinition(spec: NodeSpec): Record<string, unknown> {
   return def;
 }
 
-export const BLOCK_DEFINITIONS: readonly object[] = [...CORE_DEFINITIONS, ...EXTRA_SPECS.map(extraDefinition)];
+export const BLOCK_DEFINITIONS: readonly object[] = [
+  ...CORE_DEFINITIONS,
+  ...EXTRA_SPECS.map(extraDefinition)
+];
 
 /** Every %{BKY_KEY} the blocks use, so tests can check each has an English message. */
 export function messageKeys(): string[] {

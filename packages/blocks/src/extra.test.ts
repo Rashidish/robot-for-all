@@ -28,18 +28,25 @@ function sample(spec: NodeSpec): GenericNode {
 function everything(): Program {
   const stmts: Stmt[] = [];
   for (const spec of EXTRA_SPECS) {
-    if (spec.role === 'stmt' && !['x_break', 'x_continue'].includes(spec.type)) stmts.push(sample(spec));
+    if (spec.role === 'stmt' && !['x_break', 'x_continue'].includes(spec.type))
+      stmts.push(sample(spec));
     if (spec.role === 'expr') stmts.push({ type: 'show_text', value: sample(spec) as Expr });
   }
   stmts.push({
     type: 'repeat',
     times: { type: 'number', value: 2 },
-    body: [sample(EXTRA_SPECS.find((s) => s.type === 'x_break')!), sample(EXTRA_SPECS.find((s) => s.type === 'x_continue')!)]
+    body: [
+      sample(EXTRA_SPECS.find((s) => s.type === 'x_break')!),
+      sample(EXTRA_SPECS.find((s) => s.type === 'x_continue')!)
+    ]
   });
   return {
     version: 1,
     handlers: [
-      { type: 'on_start', body: [{ type: 'set', name: 'score', value: { type: 'number', value: 0 } }] },
+      {
+        type: 'on_start',
+        body: [{ type: 'set', name: 'score', value: { type: 'number', value: 0 } }]
+      },
       { type: 'forever', body: stmts },
       ...EXTRA_SPECS.filter((s) => s.role === 'handler' || s.role === 'function').map(sample)
     ]
@@ -57,19 +64,29 @@ describe('MakeCode-level blocks', () => {
   });
 
   it('every toolbox category has a name', () => {
-    const keys = [...JSON.stringify(toolbox([...EXTENSIONS])).matchAll(/%\{BKY_([A-Z_]+)\}/g)].map((m) => m[1] ?? '');
+    const keys = [...JSON.stringify(toolbox([...EXTENSIONS])).matchAll(/%\{BKY_([A-Z_]+)\}/g)].map(
+      (m) => m[1] ?? ''
+    );
     expect(keys.filter((k) => !messages[k.toLowerCase()])).toEqual([]);
   });
 
   it('are valid program JSON and survive a trip through Blockly', () => {
     const program = everything();
     expect(parseProgram(JSON.parse(JSON.stringify(program)))).toEqual(program);
-    expect(parseProgram(fromBlockly(JSON.parse(JSON.stringify(toBlockly(program)))))).toEqual(program);
+    expect(parseProgram(fromBlockly(JSON.parse(JSON.stringify(toBlockly(program)))))).toEqual(
+      program
+    );
   });
 
   it('turn into MicroPython that compiles', () => {
     const python = toPython(everything());
-    for (const module of ['import music', 'import radio', 'import math', 'import neopixel', 'radio.on()']) {
+    for (const module of [
+      'import music',
+      'import radio',
+      'import math',
+      'import neopixel',
+      'radio.on()'
+    ]) {
       expect(python).toContain(module);
     }
     expect(python).toContain('def doSomething():\n    global score');
@@ -82,7 +99,8 @@ describe('MakeCode-level blocks', () => {
   });
 
   it('reject bad values', () => {
-    const bad = (node: Record<string, unknown>) => () => parseProgram({ version: 1, handlers: [{ type: 'on_start', body: [node] }] });
+    const bad = (node: Record<string, unknown>) => () =>
+      parseProgram({ version: 1, handlers: [{ type: 'on_start', body: [node] }] });
     expect(bad({ type: 'x_show_leds', leds: '2'.repeat(25) })).toThrow(/25 LEDs/);
     expect(bad({ type: 'x_call', name: 'os.system' })).toThrow(/names/);
     expect(bad({ type: 'x_radio_group', group: 300 })).toThrow(/whole number/);

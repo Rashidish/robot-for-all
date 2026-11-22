@@ -225,25 +225,35 @@ test.describe('MakeCode-style toolbox (M3 step 4b)', () => {
   test('search finds blocks in any category', async ({ page }) => {
     await openEditor(page);
     await page.getByPlaceholder('Search blocks…').fill('tone');
-    await expect(page.locator('.blocklyFlyout .blocklyText', { hasText: 'play tone' })).toBeVisible();
+    await expect(
+      page.locator('.blocklyFlyout .blocklyText', { hasText: 'play tone' })
+    ).toBeVisible();
     await page.getByPlaceholder('Search blocks…').fill('radio send');
-    await expect(page.locator('.blocklyFlyout .blocklyText', { hasText: 'radio send number' })).toBeVisible();
+    await expect(
+      page.locator('.blocklyFlyout .blocklyText', { hasText: 'radio send number' })
+    ).toBeVisible();
   });
 
   test('Advanced opens Functions, Text, Pins, Serial and Control', async ({ page }) => {
     await openEditor(page);
     await page.locator('.blocklyToolboxCategory', { hasText: 'Advanced' }).first().click();
     for (const category of ['Functions', 'Text', 'Pins', 'Serial', 'Control']) {
-      await expect(page.locator('.blocklyToolboxCategoryLabel', { hasText: category })).toBeVisible();
+      await expect(
+        page.locator('.blocklyToolboxCategoryLabel', { hasText: category })
+      ).toBeVisible();
     }
   });
 
   test('the RGB LEDs extension adds its blocks', async ({ page }) => {
     await openEditor(page);
-    await expect(page.locator('.blocklyToolboxCategoryLabel', { hasText: 'RGB LEDs' })).toHaveCount(0);
+    await expect(page.locator('.blocklyToolboxCategoryLabel', { hasText: 'RGB LEDs' })).toHaveCount(
+      0
+    );
     await page.locator('.blocklyToolboxCategory', { hasText: 'Extensions' }).click();
     await page.locator('.blocklyFlyout .blocklyFlyoutButton', { hasText: 'RGB LEDs' }).click();
-    await expect(page.locator('.blocklyToolboxCategoryLabel', { hasText: 'RGB LEDs' })).toBeVisible();
+    await expect(
+      page.locator('.blocklyToolboxCategoryLabel', { hasText: 'RGB LEDs' })
+    ).toBeVisible();
   });
 });
 

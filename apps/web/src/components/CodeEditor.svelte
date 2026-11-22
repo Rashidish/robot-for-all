@@ -288,8 +288,7 @@
   /** Searches every block's words, like MakeCode's toolbox search. */
   const searchable = allToolboxBlocks().map((item) => {
     const def = BLOCK_DEFINITIONS.find((d) => (d as { type: string }).type === item.type) as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     const keys = [...JSON.stringify(def ?? {}).matchAll(/%\{BKY_([A-Z0-9_]+)\}/g)].map((m) => m[1]);
     const words = keys.map((k) => labels[(k ?? '').toLowerCase()] ?? '').join(' ');
     return { item, words: words.replace(/%\d/g, ' ').toLowerCase() };
@@ -362,7 +361,8 @@
       await usb.flash(createUniversalHexFlashDataSource(hex), {
         partial: true,
         progress: (_stage: unknown, percentage?: number) => {
-          if (typeof percentage === 'number') progress = Math.round(percentage * (percentage <= 1 ? 100 : 1));
+          if (typeof percentage === 'number')
+            progress = Math.round(percentage * (percentage <= 1 ? 100 : 1));
         }
       });
       await usb.disconnect();
@@ -511,7 +511,12 @@
   <div class="main">
     <label class="search" hidden={tab !== 'blocks'}>
       <span class="visually-hidden">{t('code_search')}</span>
-      <input type="search" placeholder={`${t('code_search')}…`} bind:value={search} oninput={onSearch} />
+      <input
+        type="search"
+        placeholder={`${t('code_search')}…`}
+        bind:value={search}
+        oninput={onSearch}
+      />
     </label>
     <div
       id="panel-blocks"
@@ -556,7 +561,9 @@
           aria-describedby="python-keys"></textarea>
         <p id="python-keys" class="note">{t('code_python_keys')}</p>
         <div class="actions">
-          <button type="button" class="primary" onclick={() => sim?.flash()}>{t('code_run')}</button>
+          <button type="button" class="primary" onclick={() => sim?.flash()}>
+            {t('code_run')}
+          </button>
           <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
           <button type="button" class="plain" onclick={backToBlocks}>
             {t('code_back_to_blocks')}

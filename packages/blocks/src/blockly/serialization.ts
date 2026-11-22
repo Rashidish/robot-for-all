@@ -239,7 +239,9 @@ export function toBlockly(program: Program): WorkspaceJson {
           inputs = { ...inputs, ...stackInput(f.input, (value as Stmt[]) ?? []) };
           break;
         case 'leds':
-          [...String(value)].forEach((bit, i) => (fields[`L${i}`] = bit === '1' ? 'TRUE' : 'FALSE'));
+          [...String(value)].forEach(
+            (bit, i) => (fields[`L${i}`] = bit === '1' ? 'TRUE' : 'FALSE')
+          );
           break;
         default:
           fields[f.field] = value;

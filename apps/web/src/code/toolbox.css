@@ -3,31 +3,31 @@
   background-image: url('/blockly-media/icons/basic.svg');
 }
 .rfaCategory-basic .rfaLabel {
-  color: #0073E2;
+  color: #0073e2;
 }
 .rfaIcon-input {
   background-image: url('/blockly-media/icons/input.svg');
 }
 .rfaCategory-input .rfaLabel {
-  color: #CF00CF;
+  color: #cf00cf;
 }
 .rfaIcon-music {
   background-image: url('/blockly-media/icons/music.svg');
 }
 .rfaCategory-music .rfaLabel {
-  color: #E2281A;
+  color: #e2281a;
 }
 .rfaIcon-led {
   background-image: url('/blockly-media/icons/led.svg');
 }
 .rfaCategory-led .rfaLabel {
-  color: #5C2D91;
+  color: #5c2d91;
 }
 .rfaIcon-radio {
   background-image: url('/blockly-media/icons/radio.svg');
 }
 .rfaCategory-radio .rfaLabel {
-  color: #E0008A;
+  color: #e0008a;
 }
 .rfaIcon-loops {
   background-image: url('/blockly-media/icons/loops.svg');
@@ -45,25 +45,25 @@
   background-image: url('/blockly-media/icons/variables.svg');
 }
 .rfaCategory-variables .rfaLabel {
-  color: #DC143C;
+  color: #dc143c;
 }
 .rfaIcon-math {
   background-image: url('/blockly-media/icons/math.svg');
 }
 .rfaCategory-math .rfaLabel {
-  color: #9400D3;
+  color: #9400d3;
 }
 .rfaIcon-motors {
   background-image: url('/blockly-media/icons/motors.svg');
 }
 .rfaCategory-motors .rfaLabel {
-  color: #B35400;
+  color: #b35400;
 }
 .rfaIcon-neopixel {
   background-image: url('/blockly-media/icons/neopixel.svg');
 }
 .rfaCategory-neopixel .rfaLabel {
-  color: #1F7E9D;
+  color: #1f7e9d;
 }
 .rfaIcon-extensions {
   background-image: url('/blockly-media/icons/extensions.svg');
@@ -81,19 +81,19 @@
   background-image: url('/blockly-media/icons/functions.svg');
 }
 .rfaCategory-functions .rfaLabel {
-  color: #3455DB;
+  color: #3455db;
 }
 .rfaIcon-text {
   background-image: url('/blockly-media/icons/text.svg');
 }
 .rfaCategory-text .rfaLabel {
-  color: #966D09;
+  color: #966d09;
 }
 .rfaIcon-pins {
   background-image: url('/blockly-media/icons/pins.svg');
 }
 .rfaCategory-pins .rfaLabel {
-  color: #B22222;
+  color: #b22222;
 }
 .rfaIcon-serial {
   background-image: url('/blockly-media/icons/serial.svg');

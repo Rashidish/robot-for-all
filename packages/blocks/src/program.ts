@@ -101,7 +101,12 @@ export function parseProgram(input: unknown): Program {
   };
 
   /** Blocks described in extra.ts, validated from their field list. */
-  const generic = (v: unknown, path: string, depth: number, role: string[]): GenericNode | undefined => {
+  const generic = (
+    v: unknown,
+    path: string,
+    depth: number,
+    role: string[]
+  ): GenericNode | undefined => {
     const t = isObject(v) ? v['type'] : undefined;
     const spec = typeof t === 'string' ? EXTRA_BY_TYPE.get(t as GenericNode['type']) : undefined;
     if (!spec || !role.includes(spec.role)) return undefined;
@@ -118,10 +123,19 @@ export function parseProgram(input: unknown): Program {
           out[f.key] = stmts(value ?? [], at, depth + 1);
           break;
         case 'enum':
-          out[f.key] = oneOf(value, f.options.map((opt) => opt[1]), at);
+          out[f.key] = oneOf(
+            value,
+            f.options.map((opt) => opt[1]),
+            at
+          );
           break;
         case 'int':
-          if (typeof value !== 'number' || !Number.isInteger(value) || value < f.min || value > f.max) {
+          if (
+            typeof value !== 'number' ||
+            !Number.isInteger(value) ||
+            value < f.min ||
+            value > f.max
+          ) {
             throw new ProgramError(`expected a whole number from ${f.min} to ${f.max}`, at);
           }
           out[f.key] = value;
@@ -375,7 +389,10 @@ export function variableNames(program: Program): string[] {
     }
     if (typeof value !== 'object' || value === null) return;
     const node = value as Record<string, unknown>;
-    if ((node['type'] === 'var' || node['type'] === 'set' || node['type'] === 'change') && typeof node['name'] === 'string') {
+    if (
+      (node['type'] === 'var' || node['type'] === 'set' || node['type'] === 'change') &&
+      typeof node['name'] === 'string'
+    ) {
       names.add(node['name']);
     }
     for (const [key, child] of Object.entries(node)) if (key !== 'type') walk(child);
