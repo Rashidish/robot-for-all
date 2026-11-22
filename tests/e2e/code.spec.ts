@@ -298,6 +298,31 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
   });
 
+  test('the Shake button shakes the on-screen micro:bit', async ({ page }) => {
+    await openEditor(page);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    const shakeFile = JSON.stringify({
+      format: 'robot-for-all-program',
+      version: 1,
+      name: 'Shake test',
+      program: {
+        version: 1,
+        handlers: [{ type: 'x_on_gesture', gesture: 'shake', body: [{ type: 'show_icon', icon: 'HAPPY' }] }]
+      }
+    });
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'shake.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(shakeFile)
+    });
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await page.waitForTimeout(500);
+    expect(await litLeds(page)).toBe(0);
+    await page.getByRole('button', { name: 'shake', exact: true }).click();
+    // HAPPY lights 7 LEDs.
+    await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(7);
+  });
+
   test('runs Python the learner types', async ({ page }) => {
     page.on('dialog', (dialog) => void dialog.accept());
     await openEditor(page);

@@ -33,7 +33,6 @@
     ['lightLevel', 'sim_light'],
     ['temperature', 'sim_temperature'],
     ['soundLevel', 'sim_sound'],
-    ['gesture', 'sim_gesture'],
     ['accelerometerX', 'sim_tilt_x'],
     ['accelerometerY', 'sim_tilt_y'],
     ['accelerometerZ', 'sim_tilt_z'],
@@ -83,6 +82,26 @@
   export function stop(): void {
     post({ kind: 'stop' });
     running = false;
+  }
+
+  /** Gesture buttons, like MakeCode's SHAKE button: the gesture happens, then ends. */
+  const GESTURES: [string, string][] = [
+    ['shake', 'gesture_shake'],
+    ['up', 'gesture_logo_up'],
+    ['down', 'gesture_logo_down'],
+    ['face up', 'gesture_face_up'],
+    ['face down', 'gesture_face_down'],
+    ['left', 'gesture_tilt_left'],
+    ['right', 'gesture_tilt_right'],
+    ['freefall', 'gesture_free_fall']
+  ];
+  let gestureTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function gesture(name: string) {
+    clearTimeout(gestureTimer);
+    post({ kind: 'set_value', id: 'gesture', value: name });
+    announce = `${t('sim_gesture')}: ${t(GESTURES.find(([g]) => g === name)?.[1] ?? name)}`;
+    gestureTimer = setTimeout(() => post({ kind: 'set_value', id: 'gesture', value: 'none' }), 600);
   }
 
   function setValue(id: string, value: number | string) {
@@ -144,6 +163,22 @@
     {:else}
       <button type="button" class="secondary" onclick={flash}>{t('code_run')}</button>
     {/if}
+  </div>
+
+  <div class="gestures" role="group" aria-label={t('sim_gesture')}>
+    <button type="button" class="shake" onclick={() => gesture('shake')}>{t('gesture_shake')}</button>
+    <select
+      aria-label={t('sim_more_gestures')}
+      onchange={(e) => {
+        if (e.currentTarget.value) gesture(e.currentTarget.value);
+        e.currentTarget.value = '';
+      }}
+    >
+      <option value="">{t('sim_more_gestures')}</option>
+      {#each GESTURES.slice(1) as [value, key] (value)}
+        <option {value}>{t(key)}</option>
+      {/each}
+    </select>
   </div>
 
   <details class="sensors">
@@ -239,6 +274,31 @@
   summary:focus-visible {
     outline: 3px solid #000;
     outline-offset: 2px;
+  }
+  .gestures {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .gestures button,
+  .gestures select {
+    min-block-size: 40px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.875rem;
+  }
+  .shake {
+    padding-inline: 1rem;
+    border: none;
+    background: #cf00cf;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .gestures select {
+    border: 1px solid #8a8a8a;
+    background: #fff;
+    padding-inline: 0.25rem;
   }
   .sensors summary {
     cursor: pointer;
