@@ -35,10 +35,7 @@ function everything(): Program {
   stmts.push({
     type: 'repeat',
     times: { type: 'number', value: 2 },
-    body: [
-      sample(EXTRA_SPECS.find((s) => s.type === 'x_break')!),
-      sample(EXTRA_SPECS.find((s) => s.type === 'x_continue')!)
-    ]
+    body: [{ type: 'x_break' }, { type: 'x_continue' }]
   });
   return {
     version: 1,
