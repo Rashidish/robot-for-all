@@ -591,7 +591,9 @@
             {t('code_run')}
           </button>
           <button type="button" class="secondary" onclick={copyPython}>{t('code_copy')}</button>
-          <button type="button" class="plain" onclick={clearPython}>{t('code_clear_python')}</button>
+          <button type="button" class="plain" onclick={clearPython}>
+            {t('code_clear_python')}
+          </button>
           <button type="button" class="plain" onclick={() => showTab('blocks')}>
             {t('code_back_to_blocks')}
           </button>

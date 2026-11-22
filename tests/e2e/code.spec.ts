@@ -370,7 +370,9 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(2);
   });
 
-  test('switching back to Blocks runs the blocks, and keeps the Python as a copy', async ({ page }) => {
+  test('switching back to Blocks runs the blocks, and keeps the Python as a copy', async ({
+    page
+  }) => {
     page.on('dialog', (dialog) => void dialog.accept());
     await openEditor(page);
     await page.getByRole('button', { name: 'My programs' }).click();
@@ -378,7 +380,10 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
       format: 'robot-for-all-program',
       version: 1,
       name: 'Faces',
-      program: { version: 1, handlers: [{ type: 'on_start', body: [{ type: 'show_icon', icon: 'HAPPY' }] }] }
+      program: {
+        version: 1,
+        handlers: [{ type: 'on_start', body: [{ type: 'show_icon', icon: 'HAPPY' }] }]
+      }
     });
     await page.getByLabel('Open a file').setInputFiles({
       name: 'faces.rfa.json',
