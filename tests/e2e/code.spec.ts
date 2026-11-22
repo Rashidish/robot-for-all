@@ -32,13 +32,11 @@ async function openEditor(page: Page) {
 
 async function importHeart(page: Page) {
   await page.getByRole('button', { name: 'My programs' }).click();
-  await page
-    .getByLabel('Open a file')
-    .setInputFiles({
-      name: 'heart.rfa.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(heartFile)
-    });
+  await page.getByLabel('Open a file').setInputFiles({
+    name: 'heart.rfa.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(heartFile)
+  });
 }
 
 test.describe('code editor (M3)', () => {
@@ -92,13 +90,11 @@ test.describe('code editor (M3)', () => {
   test('a file that is not a program is refused', async ({ page }) => {
     await openEditor(page);
     await page.getByRole('button', { name: 'My programs' }).click();
-    await page
-      .getByLabel('Open a file')
-      .setInputFiles({
-        name: 'bad.json',
-        mimeType: 'application/json',
-        buffer: Buffer.from('{"x":1}')
-      });
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'bad.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from('{"x":1}')
+    });
     await expect(page.locator('p.status')).toHaveText("That file isn't a Robot For All program.");
   });
 
