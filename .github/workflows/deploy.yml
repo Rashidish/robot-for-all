@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: apps/web/public/simulator
-          key: simulator-${{ hashFiles('apps/web/simulator.version', 'patches/simulator/**', 'scripts/build-simulator.sh', 'scripts/vendor-simulator.mjs') }}
+          key: simulator-${{ hashFiles('apps/web/simulator.json', 'patches/simulator/**', 'scripts/build-simulator.sh', 'scripts/vendor-simulator.mjs') }}
       - name: Build the on-screen micro:bit
         if: env.HAS_TOKEN == 'true' && steps.simulator-cache.outputs.cache-hit != 'true'
         run: bash scripts/build-simulator.sh
@@ -100,3 +100,15 @@ jobs:
             echo "::error::The home page must keep the strict policy"; exit 1
           fi
           echo "Live headers are as expected."
+      - name: On-screen micro:bit works on the live site
+        if: env.HAS_TOKEN == 'true'
+        # Same browser tests as CI, but against Cloudflare itself (real headers, redirects, caching).
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            base="https://robot-for-all.pages.dev"
+          else
+            alias=$(echo "${{ github.head_ref }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | cut -c1-28 | sed 's/-*$//')
+            base="https://${alias}.robot-for-all.pages.dev"
+          fi
+          npx playwright install --with-deps chromium > /dev/null
+          LIVE_URL="$base" npx playwright test tests/e2e/code.spec.ts --grep "on-screen micro:bit" --retries=1

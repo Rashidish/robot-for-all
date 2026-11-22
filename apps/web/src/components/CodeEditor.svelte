@@ -22,7 +22,7 @@
   } from '../../../../packages/blocks/src/index';
   import { buildHex, fetchFirmware } from '../code/hex';
   import Simulator from './Simulator.svelte';
-  import simulatorVersion from '../../simulator.version?raw';
+  import simulatorBuild from '../../simulator.json';
   import '../code/toolbox.css';
   import { FILE_EXTENSION, fileName, fromFile, toFile } from '../code/files';
   import {
@@ -55,7 +55,7 @@
   let extensions = $state<Extension[]>([]);
   let search = $state('');
   let progress = $state<number | null>(null);
-  const simulatorSrc = `/simulator/${simulatorVersion.trim()}/simulator.html?color=%233454D1`;
+  const simulatorSrc = `/simulator/${simulatorBuild.upstream}-${simulatorBuild.build}/simulator.html?color=%233454D1`;
   let status = $state('');
   let hasUsb = $state(false);
   let name = $state('');
