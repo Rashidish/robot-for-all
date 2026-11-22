@@ -142,7 +142,9 @@
       <button type="button" class="plain" onclick={stop}>{t('sim_stop')}</button>
       <button type="button" class="plain" onclick={flash}>{t('sim_restart')}</button>
     {:else}
-      <button type="button" class="secondary" onclick={flash}>{t('sim_run')}</button>
+      <!-- The first start must be a tap on the simulator's own play button: browsers only allow
+           its sound to start from a tap inside it. -->
+      <p class="hint">{t('sim_start_hint')}</p>
     {/if}
   </div>
 
@@ -223,10 +225,10 @@
     font-weight: 600;
     cursor: pointer;
   }
-  .secondary {
-    border: none;
-    background: #3454d1;
-    color: #fff;
+  .hint {
+    margin: 0;
+    font-size: 0.8rem;
+    text-align: center;
   }
   .plain {
     border: 1px solid #3454d1;

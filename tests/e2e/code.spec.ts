@@ -233,7 +233,7 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
   test('runs the blocks and lights the LEDs', async ({ page }) => {
     await openEditor(page);
     await importHeart(page);
-    await page.getByRole('button', { name: 'Run', exact: true }).click();
+    await simulator(page).locator('.play-button').click();
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBeGreaterThan(10);
   });
 
@@ -254,7 +254,7 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
       mimeType: 'application/json',
       buffer: Buffer.from(motorFile)
     });
-    await page.getByRole('button', { name: 'Run', exact: true }).click();
+    await simulator(page).locator('.play-button').click();
     await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
   });
 
@@ -266,7 +266,7 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await page
       .getByLabel('Your MicroPython program')
       .fill('from microbit import *\npin1.write_digital(1)\ndisplay.show(Image.SQUARE)\n');
-    await page.getByRole('button', { name: 'Run', exact: true }).click();
+    await simulator(page).locator('.play-button').click();
     await expect(page.locator('.motor')).toHaveText('backward', { timeout: 15_000 });
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);
     // Typed Python is kept after a reload.

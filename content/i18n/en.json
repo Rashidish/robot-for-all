@@ -173,7 +173,6 @@
   "code_python_typing": "Your MicroPython program",
   "code_python_keys": "Tab adds an indent. To leave the code box with the keyboard, press Esc, then Tab.",
   "sim_title": "On-screen micro:bit",
-  "sim_run": "Run",
   "sim_stop": "Stop",
   "sim_restart": "Restart",
   "sim_sensors": "Sensors",
@@ -189,5 +188,6 @@
   "sim_motor": "Motor:",
   "sim_pin": "Pin",
   "sim_neopixels": "RGB lights",
-  "sim_serial": "Serial output"
+  "sim_serial": "Serial output",
+  "sim_start_hint": "Press ▶ on the micro:bit to start it."
 }
