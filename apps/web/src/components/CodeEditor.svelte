@@ -433,8 +433,8 @@
     display: grid;
     grid-template-areas: 'tabs' 'main' 'side';
     grid-template-rows: auto minmax(22rem, 1fr) auto;
-    block-size: calc(100dvh - 7.5rem);
-    min-block-size: 32rem;
+    /* Grows on phones so the buttons under the blocks never spill over the page footer. */
+    min-block-size: max(32rem, calc(100dvh - 7.5rem));
     background: #fdfdff;
     color: #000;
     color-scheme: light;
@@ -444,8 +444,10 @@
       grid-template-areas: 'side tabs' 'side main';
       grid-template-columns: 16rem 1fr;
       grid-template-rows: auto 1fr;
+      block-size: max(32rem, calc(100dvh - 7.5rem));
     }
     .side {
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;

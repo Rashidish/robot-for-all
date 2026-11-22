@@ -65,7 +65,7 @@ test.describe('code editor (M3)', () => {
     await expect(
       page.locator('.blocklyWorkspace .blocklyText', { hasText: 'forever' }).first()
     ).toBeVisible();
-    await page.locator('.blocklyToolboxCategoryLabel', { hasText: 'Basic' }).click();
+    await page.locator('.blocklyToolboxCategory', { hasText: 'Basic' }).click();
     await expect(
       page.locator('.blocklyFlyout .blocklyText', { hasText: 'show icon' })
     ).toBeVisible();
@@ -140,7 +140,7 @@ test.describe('code editor (M3)', () => {
       const response = await page.goto(CODE);
       const policy = (await response?.headerValue('content-security-policy')) ?? '';
       await expect(page.locator('.blocklySvg').first()).toBeVisible();
-      await page.locator('.blocklyToolboxCategoryLabel', { hasText: 'Basic' }).click();
+      await page.locator('.blocklyToolboxCategory', { hasText: 'Basic' }).click();
       const styles = await page.evaluate(() =>
         [...document.querySelectorAll('style')].map((s) => s.textContent ?? '')
       );
@@ -159,7 +159,7 @@ test.describe('code editor (M3)', () => {
       const page = await context.newPage();
       await page.goto(CODE);
       await expect(page.locator('.blocklySvg').first()).toBeVisible();
-      await page.locator('.blocklyToolboxCategoryLabel', { hasText: 'Basic' }).click();
+      await page.locator('.blocklyToolboxCategory', { hasText: 'Basic' }).click();
       for (const label of ['Download .hex', 'Send to micro:bit', 'My programs']) {
         const button = page.getByRole('button', { name: label });
         await button.scrollIntoViewIfNeeded();
