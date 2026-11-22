@@ -312,6 +312,25 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
   });
 
+  test('Run switches the sound on for a laptop too (Windows Chrome)', async ({ browser }) => {
+    const context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+      viewport: { width: 1366, height: 768 }
+    });
+    const page = await context.newPage();
+    await openEditor(page);
+    await importHeart(page);
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    const state = () =>
+      page
+        .frameLocator('iframe[title="On-screen micro:bit"]')
+        .locator('body')
+        .evaluate(() => (window as unknown as { rfaAudioState?: () => string }).rfaAudioState?.());
+    await expect.poll(state, { timeout: 15_000 }).toBe('running');
+    await context.close();
+  });
+
   test('Run switches the sound on (browsers only allow it after a tap)', async ({ page }) => {
     await openEditor(page);
     await importHeart(page);
