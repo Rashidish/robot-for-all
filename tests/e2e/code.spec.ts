@@ -405,7 +405,9 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     const layout = await page.evaluate(() => {
       const box = (sel: string) => {
         const r = document.querySelector(sel)?.getBoundingClientRect();
-        return r ? [Math.round(r.top), Math.round(r.bottom), Math.round(r.left), Math.round(r.right)] : null;
+        return r
+          ? [Math.round(r.top), Math.round(r.bottom), Math.round(r.left), Math.round(r.right)]
+          : null;
       };
       return JSON.stringify({
         scrollY: window.scrollY,
