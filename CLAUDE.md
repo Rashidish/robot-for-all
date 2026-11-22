@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.9 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
+> **Version:** 0.10 (draft) · **Date:** 2026-11-21 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -98,8 +98,8 @@ Reuse proven open source before writing our own.
 | Offline | Small hand-written service worker, generated at build (`apps/web/src/sw/`); IndexedDB for progress later | No dependency; every line auditable |
 | Translations | **Paraglide JS 2**; English only at launch (ADR-0003) | Missing strings fail the build; tiny downloads |
 | Lesson content | **Markdown + front matter, Zod-validated** (ADR-0004) | Free, reviewable, offline-friendly |
-| Block coding | Blockly | Industry standard, open source |
-| micro:bit | MakeCode (self-hosted if needed for zero-rating) + WebUSB flashing | Free, proven, has simulator |
+| Block coding | **Blockly**, our own small block set (ADR-0005) | Industry standard, open source |
+| micro:bit | **MicroPython** .hex built in the browser (microbit-fs) + WebUSB (microbit-connection); firmware served from our domain (ADR-0005) | No third-party domain; fits our lessons and i18n |
 | Python in browser | Pyodide (lazy-loaded, later milestones only) | No server cost |
 | Simulator | Canvas 2D + small physics lib | 2D before 3D |
 | Database / auth | Postgres (e.g. Supabase) | Free tier, row-level security |
@@ -259,3 +259,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.7 | 2026-11-22 | M2: lesson format v2 (outcomes, safety, assessment, substitutes, links, build testing) |
 | 0.8 | 2026-11-22 | People-based checks deferred to `docs/test-plan.md` (owner decision) |
 | 0.9 | 2026-11-22 | Current milestone M3; M3 spec approved (micro:bit row to be updated by ADR-0005) |
+| 0.10 | 2026-11-22 | ADR-0005 accepted: Blockly + MicroPython + WebUSB instead of MakeCode |
