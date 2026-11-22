@@ -37,7 +37,7 @@ assessment:
   - I can change the crank pin hole to make the head nod further
   - I can name something at home that uses a crank
 prerequisites: [p1-wheel-01]
-next: null
+next: p1-linkage-01
 templates: [rhino-parts]
 status: in_review
 ai_generated: true
