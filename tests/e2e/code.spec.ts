@@ -307,7 +307,9 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
       name: 'Shake test',
       program: {
         version: 1,
-        handlers: [{ type: 'x_on_gesture', gesture: 'shake', body: [{ type: 'show_icon', icon: 'HAPPY' }] }]
+        handlers: [
+          { type: 'x_on_gesture', gesture: 'shake', body: [{ type: 'show_icon', icon: 'HAPPY' }] }
+        ]
       }
     });
     await page.getByLabel('Open a file').setInputFiles({

@@ -166,7 +166,9 @@
   </div>
 
   <div class="gestures" role="group" aria-label={t('sim_gesture')}>
-    <button type="button" class="shake" onclick={() => gesture('shake')}>{t('gesture_shake')}</button>
+    <button type="button" class="shake" onclick={() => gesture('shake')}>
+      {t('gesture_shake')}
+    </button>
     <select
       aria-label={t('sim_more_gestures')}
       onchange={(e) => {
