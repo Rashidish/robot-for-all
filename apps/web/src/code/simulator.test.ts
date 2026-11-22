@@ -16,7 +16,11 @@ describe('on-screen micro:bit build', () => {
       .sort()
       .map((f) => read(`patches/simulator/${f}`));
     const hash = createHash('sha256');
-    for (const part of [...patches, read('scripts/build-simulator.sh'), read('scripts/vendor-simulator.mjs')]) {
+    for (const part of [
+      ...patches,
+      read('scripts/build-simulator.sh'),
+      read('scripts/vendor-simulator.mjs')
+    ]) {
       hash.update(part);
     }
     const now = hash.digest('hex').slice(0, 16);
