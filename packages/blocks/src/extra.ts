@@ -719,10 +719,21 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     role: 'expr',
     output: 'Array',
     category: 'arrays',
-    fields: [e('a', 'A', undefined, n(1)), e('b', 'B', undefined, n(2)), e('c', 'C', undefined, n(3))],
+    fields: [
+      e('a', 'A', undefined, n(1)),
+      e('b', 'B', undefined, n(2)),
+      e('c', 'C', undefined, n(3))
+    ],
     py: (node, c) => `[${['a', 'b', 'c'].map((k) => c.bare(node[k] as Expr)).join(', ')}]`
   },
-  { type: 'x_list_empty', role: 'expr', output: 'Array', category: 'arrays', fields: [], py: () => '[]' },
+  {
+    type: 'x_list_empty',
+    role: 'expr',
+    output: 'Array',
+    category: 'arrays',
+    fields: [],
+    py: () => '[]'
+  },
   {
     type: 'x_list_length',
     role: 'expr',
@@ -743,8 +754,14 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     type: 'x_list_set',
     role: 'stmt',
     category: 'arrays',
-    fields: [e('list', 'LIST', 'Array'), e('index', 'INDEX', 'Number', n(0)), e('value', 'VALUE', undefined, n(0))],
-    py: (node, c) => [`${c.pad}${c.expr(node['list'] as Expr)}[int(${num(c, node, 'index')})] = ${num(c, node, 'value')}`]
+    fields: [
+      e('list', 'LIST', 'Array'),
+      e('index', 'INDEX', 'Number', n(0)),
+      e('value', 'VALUE', undefined, n(0))
+    ],
+    py: (node, c) => [
+      `${c.pad}${c.expr(node['list'] as Expr)}[int(${num(c, node, 'index')})] = ${num(c, node, 'value')}`
+    ]
   },
   {
     type: 'x_list_add',
@@ -792,7 +809,9 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     type: 'x_show_image',
     role: 'stmt',
     category: 'images',
-    fields: [e('image', 'IMAGE', 'Image', { type: 'x_icon_image', icon: 'HEART' } as unknown as Expr)],
+    fields: [
+      e('image', 'IMAGE', 'Image', { type: 'x_icon_image', icon: 'HEART' } as unknown as Expr)
+    ],
     py: (node, c) => [`${c.pad}display.show(${c.bare(node['image'] as Expr)})`]
   },
   {
@@ -836,7 +855,15 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     category: 'game',
     fields: [
       e('sprite', 'SPRITE', 'Sprite'),
-      { kind: 'enum', key: 'way', field: 'WAY', options: [['%{BKY_GAME_RIGHT}', '45'], ['%{BKY_GAME_LEFT}', '-45']] }
+      {
+        kind: 'enum',
+        key: 'way',
+        field: 'WAY',
+        options: [
+          ['%{BKY_GAME_RIGHT}', '45'],
+          ['%{BKY_GAME_LEFT}', '-45']
+        ]
+      }
     ],
     py: (node, c) => {
       c.use('game');
@@ -849,12 +876,22 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     category: 'game',
     fields: [
       e('sprite', 'SPRITE', 'Sprite'),
-      { kind: 'enum', key: 'axis', field: 'AXIS', options: [['x', 'x'], ['y', 'y']] },
+      {
+        kind: 'enum',
+        key: 'axis',
+        field: 'AXIS',
+        options: [
+          ['x', 'x'],
+          ['y', 'y']
+        ]
+      },
       e('by', 'BY', 'Number', n(1))
     ],
     py: (node, c) => {
       c.use('game');
-      return [`${c.pad}${c.expr(node['sprite'] as Expr)}.change("${String(node['axis'])}", ${num(c, node, 'by')})`];
+      return [
+        `${c.pad}${c.expr(node['sprite'] as Expr)}.change("${String(node['axis'])}", ${num(c, node, 'by')})`
+      ];
     }
   },
   {
@@ -884,7 +921,18 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     role: 'expr',
     output: 'Number',
     category: 'game',
-    fields: [e('sprite', 'SPRITE', 'Sprite'), { kind: 'enum', key: 'axis', field: 'AXIS', options: [['x', 'x'], ['y', 'y']] }],
+    fields: [
+      e('sprite', 'SPRITE', 'Sprite'),
+      {
+        kind: 'enum',
+        key: 'axis',
+        field: 'AXIS',
+        options: [
+          ['x', 'x'],
+          ['y', 'y']
+        ]
+      }
+    ],
     py: (node, c) => {
       c.use('game');
       return `${c.expr(node['sprite'] as Expr)}.${String(node['axis'])}`;

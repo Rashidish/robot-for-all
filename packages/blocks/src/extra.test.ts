@@ -93,7 +93,10 @@ describe('MakeCode-level blocks', () => {
 
   it('add game.py when a program uses the Game blocks, for blocks and typed Python', () => {
     expect(Object.keys(filesFor(toPython(everything())))).toEqual(['main.py', 'game.py']);
-    expect(Object.keys(filesFor('from microbit import *\nimport game\n'))).toEqual(['main.py', 'game.py']);
+    expect(Object.keys(filesFor('from microbit import *\nimport game\n'))).toEqual([
+      'main.py',
+      'game.py'
+    ]);
     expect(Object.keys(filesFor('from microbit import *\n# no game here\n'))).toEqual(['main.py']);
   });
 

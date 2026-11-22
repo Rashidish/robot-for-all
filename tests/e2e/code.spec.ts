@@ -338,8 +338,24 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
           {
             type: 'on_start',
             body: [
-              { type: 'set', name: 'player', value: { type: 'x_sprite_create', x: { type: 'number', value: 1 }, y: { type: 'number', value: 1 } } },
-              { type: 'set', name: 'goal', value: { type: 'x_sprite_create', x: { type: 'number', value: 3 }, y: { type: 'number', value: 3 } } }
+              {
+                type: 'set',
+                name: 'player',
+                value: {
+                  type: 'x_sprite_create',
+                  x: { type: 'number', value: 1 },
+                  y: { type: 'number', value: 1 }
+                }
+              },
+              {
+                type: 'set',
+                name: 'goal',
+                value: {
+                  type: 'x_sprite_create',
+                  x: { type: 'number', value: 3 },
+                  y: { type: 'number', value: 3 }
+                }
+              }
             ]
           }
         ]
