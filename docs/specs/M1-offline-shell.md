@@ -160,7 +160,7 @@ Each item is one PR. Stop for review where marked ⏸.
 7. ~~"Download for offline" for lessons~~ ✅ Done
 8. ~~Security headers, privacy page~~ ✅ Done. CSP allows only our own files (no inline code, checked in CI)
 9. ~~Playwright e2e (incl. offline and no-third-party checks), Lighthouse CI, size budgets~~ ✅ Done. Pseudo-locale is a browser test that lengthens every text by 40% and checks pages still fit 360 px
-10. Deploy to hosting on the domain ⏸ Pipeline done (`.github/workflows/deploy.yml`, `docs/deploy.md`); waiting for the owner to add Cloudflare secrets and the domain
+10. ~~Deploy to hosting~~ ✅ Live on Cloudflare Pages (`robot-for-all.pages.dev`). Custom domain: owner to connect (`docs/deploy.md` §4)
 
 ---
 
