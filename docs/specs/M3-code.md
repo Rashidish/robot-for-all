@@ -252,6 +252,8 @@ MicroPython on the micro:bit covers almost everything MakeCode's blocks do. Bloc
 | Data logging (V2) | log data | `log` | |
 | **Not possible in MicroPython** | Bluetooth blocks | | MicroPython has no Bluetooth API on the micro:bit; we say so in the editor |
 
+**Owner reminder (2026-11-22):** revisit this extension folder format once all front-office functionality is complete, before adding many extensions.
+
 **Extensions loader (4c):** an "Extensions" button lists add-on parts. Choosing one adds a category of blocks and, if needed, a small MicroPython driver file that goes into the .hex next to `main.py`. First set: RGB LEDs (NeoPixel, built into MicroPython), servo, our L9110S motor driver, and popular low-cost micro:bit motor boards. Each extension states which boards it was tested on (test plan).
 
 **Extra for learners with a micro:bit:** MakeCode features beyond it where cheap: read the board's serial output live over WebUSB, and show which micro:bit version is connected.

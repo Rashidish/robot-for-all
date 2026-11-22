@@ -291,5 +291,6 @@
   "code_sending": "Sending to the micro:bit…",
   "code_sent": "✓ Sent. Your program is running on the micro:bit.",
   "code_downloaded": "✓ Downloaded. Now copy the file to the MICROBIT drive.",
-  "code_progress": "Progress"
+  "code_progress": "Progress",
+  "sim_more_gestures": "More moves…"
 }
