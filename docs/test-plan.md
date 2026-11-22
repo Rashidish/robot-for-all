@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.4 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
+> **Version:** 0.5 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -49,7 +49,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B5 | Print a template from **Chrome on Android** and from **Chrome/Edge on Windows**; 50 mm square correct | |
 | B6 | Slides on a **projector** or large TV in a classroom; readable from the back | |
 | B7 | Samsung Internet browser: install and offline | |
-| B8 | **micro:bit**: on `/code/`, Send to micro:bit from Chrome/Edge on a computer; the heart blinks. Then Download .hex and copy it to the MICROBIT drive. Note the board version (V1/V2, printed on the back) | (owner has a micro:bit) |
+| B8 | **micro:bit**: on `/code/`, Send to micro:bit from Chrome/Edge on a computer; the heart blinks. Then Download .hex and copy it to the MICROBIT drive. Note the board version (V1/V2, printed on the back) | ✅ Owner, 2026-11-22 (Windows, Chrome): Send and Download both work |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
 ---
@@ -74,3 +74,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.2 | 2026-11-22 | Lessons 4–6 added |
 | 0.3 | 2026-11-22 | Lessons 7–10 added |
 | 0.4 | 2026-11-22 | micro:bit flashing checks (B8, B9) |
+| 0.5 | 2026-11-22 | B8 passed |
