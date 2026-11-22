@@ -332,6 +332,43 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
   });
 
+  test('motor driver extension: two motors with speed', async ({ page }) => {
+    await openEditor(page);
+    await page.getByRole('button', { name: 'My programs' }).click();
+    const drive = (motor: string, dir: string, speed: number) => ({
+      type: 'x_drive',
+      motor,
+      dir,
+      speed: { type: 'number', value: speed }
+    });
+    await page.getByLabel('Open a file').setInputFiles({
+      name: 'drive.rfa.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(
+        JSON.stringify({
+          format: 'robot-for-all-program',
+          version: 1,
+          name: 'Two motors',
+          program: {
+            version: 1,
+            handlers: [
+              { type: 'on_start', body: [drive('A', 'forward', 75), drive('B', 'backward', 40)] }
+            ]
+          }
+        })
+      )
+    });
+    // The extension's category appears because the program uses its blocks.
+    await expect(
+      page.locator('.blocklyToolboxCategory', { hasText: 'Motor driver' })
+    ).toBeVisible();
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
+    await expect(page.locator('.outputs .speed').first()).toHaveText('75%');
+    await expect(page.locator('.motor-b')).toHaveText('backward');
+    await expect(page.locator('.outputs .speed').nth(1)).toHaveText('40%');
+  });
+
   test('Run switches the sound on for a laptop too (Windows Chrome)', async ({ browser }) => {
     const context = await browser.newContext({
       userAgent:

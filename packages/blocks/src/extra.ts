@@ -37,6 +37,8 @@ interface BaseSpec {
   fields: readonly FieldSpec[];
   /** Needs a micro:bit V2 (sound, logo, microphone); shown in the block's tooltip. */
   v2?: boolean;
+  /** Message key of a tooltip, e.g. BLOCK_DRIVE_TIP. */
+  tip?: string;
 }
 
 export interface ExprSpec extends BaseSpec {
@@ -146,6 +148,18 @@ const NOTES: readonly Option[] = [
   ['B 494', '494'],
   ['C5 523', '523']
 ];
+const DRIVE_MOTORS: readonly Option[] = [
+  ['A', 'A'],
+  ['B', 'B']
+];
+const DRIVE_STOP_MOTORS: readonly Option[] = [...DRIVE_MOTORS, ['%{BKY_BLOCK_DRIVE_BOTH}', 'both']];
+const DRIVE_DIRECTIONS: readonly Option[] = [
+  ['%{BKY_BLOCK_MOTOR_FORWARD}', 'forward'],
+  ['%{BKY_BLOCK_MOTOR_REVERSE}', 'backward']
+];
+/** Driver inputs for each motor: [forward pin, backward pin]. */
+export const DRIVE_PINS = { A: [0, 1], B: [2, 8] } as const;
+
 const ARROWS: readonly Option[] = [
   ['↑ N', 'N'],
   ['↗ NE', 'NE'],
@@ -1057,6 +1071,46 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     py: (node, c) => {
       const v = (k: string) => `max(0, min(255, int(${num(c, node, k)})))`;
       return `(${v('r')}, ${v('g')}, ${v('b')})`;
+    }
+  },
+  // ---- Extension: motor driver (L9110S, two motors with speed). Motor A on P0/P1 like the
+  // Motors blocks; motor B on P2/P8. Speed is PWM on the "forward" or "backward" pin.
+  {
+    type: 'x_drive',
+    role: 'stmt',
+    category: 'motordriver',
+    tip: 'BLOCK_DRIVE_TIP',
+    fields: [
+      { kind: 'enum', key: 'motor', field: 'MOTOR', options: DRIVE_MOTORS },
+      { kind: 'enum', key: 'dir', field: 'DIR', options: DRIVE_DIRECTIONS },
+      e('speed', 'SPEED', 'Number', n(100))
+    ],
+    py: (node, c) => {
+      const [a, b] = DRIVE_PINS[String(node['motor']) === 'B' ? 'B' : 'A'];
+      const [on, off] = node['dir'] === 'backward' ? [b, a] : [a, b];
+      return [
+        `${c.pad}pin${off}.write_digital(0)`,
+        `${c.pad}pin${on}.write_analog(int(max(0, min(100, ${num(c, node, 'speed')})) * 1023 / 100))`
+      ];
+    }
+  },
+  {
+    type: 'x_drive_stop',
+    role: 'stmt',
+    category: 'motordriver',
+    tip: 'BLOCK_DRIVE_TIP',
+    fields: [{ kind: 'enum', key: 'motor', field: 'MOTOR', options: DRIVE_STOP_MOTORS }],
+    py: (node, c) => {
+      const which = String(node['motor']);
+      const motors =
+        which === 'both'
+          ? (['A', 'B'] as const)
+          : which === 'B'
+            ? (['B'] as const)
+            : (['A'] as const);
+      return motors.flatMap((m) =>
+        DRIVE_PINS[m].map((pin) => `${c.pad}pin${pin}.write_digital(0)`)
+      );
     }
   }
 ];

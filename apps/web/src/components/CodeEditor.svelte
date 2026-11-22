@@ -172,7 +172,8 @@
     extensions = EXTENSIONS.filter(
       (x) =>
         (saved?.extensions ?? []).includes(x) ||
-        (x === 'neopixel' && /rfa_x_(strip|colour|rgb)/.test(used))
+        (x === 'neopixel' && /rfa_x_(strip|colour|rgb)/.test(used)) ||
+        (x === 'motordriver' && /rfa_x_drive/.test(used))
     );
     workspace.updateToolbox(
       toolbox(extensions) as unknown as Blockly.utils.toolbox.ToolboxDefinition

@@ -91,6 +91,33 @@ describe('MakeCode-level blocks', () => {
     expect(check.status).toBe(0);
   });
 
+  it('drive two motors with speed through the L9110S driver', () => {
+    const drive = (motor: string, dir: string, speed: number) =>
+      ({ type: 'x_drive', motor, dir, speed: { type: 'number', value: speed } }) as unknown as Stmt;
+    const python = toPython({
+      version: 1,
+      handlers: [
+        {
+          type: 'on_start',
+          body: [
+            drive('A', 'forward', 75),
+            drive('B', 'backward', 50),
+            { type: 'x_drive_stop', motor: 'both' } as unknown as Stmt
+          ]
+        }
+      ]
+    });
+    expect(python).toContain(
+      'pin1.write_digital(0)\npin0.write_analog(int(max(0, min(100, 75)) * 1023 / 100))'
+    );
+    expect(python).toContain(
+      'pin2.write_digital(0)\npin8.write_analog(int(max(0, min(100, 50)) * 1023 / 100))'
+    );
+    expect(python).toContain(
+      'pin0.write_digital(0)\npin1.write_digital(0)\npin2.write_digital(0)\npin8.write_digital(0)'
+    );
+  });
+
   it('add game.py when a program uses the Game blocks, for blocks and typed Python', () => {
     expect(Object.keys(filesFor(toPython(everything())))).toEqual(['main.py', 'game.py']);
     expect(Object.keys(filesFor('from microbit import *\nimport game\n'))).toEqual([
