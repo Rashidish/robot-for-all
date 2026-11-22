@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.1 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
+> **Version:** 0.2 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -28,6 +28,9 @@ How to use this list: add a row whenever a step adds something only a person can
 | p1-lever-01 Snapping crocodile | | | | | | |
 | p1-wheel-01 Rolling cardboard cart | | | | | | |
 | p1-crank-01 Crank-powered waving rhino | | | | | | |
+| p1-linkage-01 Extending grabber | | | | | | |
+| p1-cam-01 Bouncing animal box | | | | | | |
+| p1-lever-02 Robot arm with three lever types | | | | | | |
 
 ---
 
@@ -62,3 +65,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-22 | First list: lessons 1–3, devices, launch checks |
+| 0.2 | 2026-11-22 | Lessons 4–6 added |

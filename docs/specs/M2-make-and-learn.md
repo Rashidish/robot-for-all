@@ -1,6 +1,6 @@
 # Spec: M2 — Make & Learn
 
-> **Version:** 0.2 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved
+> **Version:** 0.3 · **Date:** 2026-11-22 · **Owner:** Rashid Ishmail · **Status:** Approved
 > Depends on: M1 (done), CLAUDE.md 0.6, ADR-0004. Keep the version line current; log changes at the bottom.
 
 ---
@@ -143,7 +143,7 @@ Lesson 10 is the bridge to Phase 2: it introduces a battery, a switch and one sm
 2. ~~`packages/templates`: generators, geometry tests, template pages, print check~~ ✅ Done. The package is imported by path rather than as an npm workspace (no build step needed)
 3. ~~Slides view + library filters + learning-path links~~ ✅ Done
 4. ~~Lessons 1–3 (drafts, templates, diagrams)~~ ✅ Merged as drafts (PR #21)
-5. Lessons 4–6
+5. ~~Lessons 4–6 (drafts, templates, diagrams)~~ ✅ Merged as drafts
 6. Lessons 7–10
 7. Publishing pass: after the deferred checks in `docs/test-plan.md`, apply feedback and mark lessons `published` ⏸
 
@@ -188,3 +188,4 @@ Lesson 10 is the bridge to Phase 2: it introduces a battery, a switch and one sm
 |---|---|---|
 | 0.1 | 2026-11-22 | First draft |
 | 0.2 | 2026-11-22 | Approved; people-based checks deferred to `docs/test-plan.md`; CAPS Coding and Robotics links |
+| 0.3 | 2026-11-22 | Step 5 done: lessons 4–6 |

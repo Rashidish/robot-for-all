@@ -172,10 +172,36 @@ test.describe('pages on a 360 px phone', () => {
     await page.getByRole('link', { name: 'Crank-powered waving rhino' }).last().click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Crank-powered waving rhino');
     await expect(page.getByRole('heading', { name: 'Do these lessons first' })).toBeVisible();
+    await page.getByRole('link', { name: 'Extending grabber' }).last().click();
+    await page.getByRole('link', { name: 'Bouncing animal box' }).last().click();
+    await page.getByRole('link', { name: 'Robot arm with three lever types' }).last().click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'Robot arm with three lever types'
+    );
+  });
+
+  test('every new template sheet renders', async ({ request }) => {
+    for (const path of [
+      '/templates/p1-linkage-01/grabber-parts.svg',
+      '/templates/p1-cam-01/cam-parts.svg',
+      '/templates/p1-lever-02/lever-bench.svg',
+      '/templates/p1-lever-02/robot-arm.svg'
+    ]) {
+      const res = await request.get(path);
+      expect(res.status(), path).toBe(200);
+      expect(await res.text()).toContain('50 mm');
+    }
   });
 
   test('lesson diagrams load and have descriptions', async ({ page }) => {
-    for (const id of ['p1-lever-01', 'p1-wheel-01', 'p1-crank-01']) {
+    for (const id of [
+      'p1-lever-01',
+      'p1-wheel-01',
+      'p1-crank-01',
+      'p1-linkage-01',
+      'p1-cam-01',
+      'p1-lever-02'
+    ]) {
       await page.goto(`/lessons/${id}/`);
       const img = page.locator('.lesson-body img').first();
       await expect(img).toBeVisible();

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" width="320" height="160" font-family="system-ui, sans-serif">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#1f1a14" stroke-width="7">
+      <path d="M40 50L100 110M40 110L100 50"/>
+      <path d="M100 50L160 110M100 110L160 50"/>
+      <path d="M160 50L220 110M160 110L220 50"/>
+    </g>
+    <g stroke="#f5e6cf" stroke-width="3">
+      <path d="M40 50L100 110M40 110L100 50"/>
+      <path d="M100 50L160 110M100 110L160 50"/>
+      <path d="M160 50L220 110M160 110L220 50"/>
+    </g>
+    <path d="M220 50L262 70L270 78M220 110L262 90L270 82" stroke="#8a4b14" stroke-width="7"/>
+    <path d="M20 40L40 50M20 120L40 110" stroke="#1f1a14" stroke-width="7"/>
+    <path d="M14 24V36M10 32L14 36L18 32" stroke="#1d5fbf" stroke-width="3"/>
+    <path d="M14 136V124M10 128L14 124L18 128" stroke="#1d5fbf" stroke-width="3"/>
+  </g>
+  <g fill="#8a4b14">
+    <circle cx="70" cy="80" r="5"/><circle cx="130" cy="80" r="5"/><circle cx="190" cy="80" r="5"/>
+    <circle cx="100" cy="50" r="5"/><circle cx="100" cy="110" r="5"/>
+    <circle cx="160" cy="50" r="5"/><circle cx="160" cy="110" r="5"/>
+    <circle cx="220" cy="50" r="5"/><circle cx="220" cy="110" r="5"/>
+  </g>
+  <g font-size="16" font-weight="700" text-anchor="middle" fill="#1f1a14">
+    <circle cx="130" cy="20" r="13" fill="#fff" stroke="#1f1a14" stroke-width="2"/>
+    <text x="130" y="26">1</text>
+    <circle cx="190" cy="140" r="13" fill="#fff" stroke="#1f1a14" stroke-width="2"/>
+    <text x="190" y="146">2</text>
+    <circle cx="48" cy="140" r="13" fill="#fff" stroke="#1f1a14" stroke-width="2"/>
+    <text x="48" y="146">3</text>
+  </g>
+  <g stroke="#1f1a14" stroke-width="2" stroke-dasharray="4 3">
+    <path d="M136 32L148 64"/>
+    <path d="M190 127V86"/>
+    <path d="M40 127L30 120"/>
+  </g>
+</svg>
