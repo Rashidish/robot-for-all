@@ -5,15 +5,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { m } from '../../i18n';
 
-const labels = {
-  workspace: m.code_workspace(),
-  download: m.code_download_hex(),
-  send: m.code_send(),
-  working: m.code_working(),
-  done: m.code_done(),
-  failed: m.code_failed(),
-  noUsb: m.code_no_usb()
-};
+// Every editor, block and category message, passed to the editor as data (no inline script).
+const labels = Object.fromEntries(
+  Object.entries(m)
+    .filter(([key]) => /^(code|block|category)_/.test(key))
+    .map(([key, message]) => [key, (message as () => string)()])
+);
 ---
 
 <BaseLayout title={m.code_title()} wide>
