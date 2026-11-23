@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.14 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
+> **Version:** 0.15 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -82,6 +82,8 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 | M5 | Teach | Accounts, classes, progress, offline sync, teacher/coach/parent views |
 | M6 | AI helper | Front-office AI with cost caps and child-safe rules |
 | Later | Live sessions, competitions, kit store, newsletter, back-office AI generation pipeline |
+
+**Owner decision (2026-11-23):** the product's name is **Robots For All** (plural). Change every user-facing "Robot For All" to it as part of the UI work (Lite UI and CI), together with the move to the robotsforall domains. The repo is already `robots-for-all`.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
@@ -269,3 +271,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.12 | 2026-11-22 | Lesson format: `starter_program` and `hardware` for Phase 2 lessons |
 | 0.13 | 2026-11-23 | Answer sheets (printable now; in-app records with M5) |
 | 0.14 | 2026-11-23 | Current milestone M4; simulator row from ADR-0007 and ADR-0008 (robot calls, not pins); `content/worlds` |
+| 0.15 | 2026-11-23 | Owner decision: rename the product to Robots For All during the UI work |

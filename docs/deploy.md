@@ -17,6 +17,8 @@ Deployment stays switched off until the two secrets below exist; until then the 
 
 You don't need to create the Pages project: the first deploy creates `robot-for-all` automatically.
 
+The GitHub repo is `robots-for-all` (renamed 2026-11-23). The Cloudflare Pages project, and so the address robot-for-all.pages.dev, keeps its old name until the site moves to the robotsforall domains; renaming it would create a new, empty site.
+
 ### 2. API token for GitHub
 1. Profile icon (top right) → **Profile → API Tokens → Create Token → Create Custom Token → Get started**.
 2. Name: `GitHub deploy`. Permissions: **Account → Cloudflare Pages → Edit**. Nothing else.
@@ -24,7 +26,7 @@ You don't need to create the Pages project: the first deploy creates `robot-for-
 4. **Continue to summary → Create Token**, then copy it (shown once).
 
 ### 3. Add the secrets to GitHub
-**github.com/Rashidish/robot-for-all → Settings → Secrets and variables → Actions → New repository secret**:
+**github.com/Rashidish/robots-for-all → Settings → Secrets and variables → Actions → New repository secret**:
 - `CLOUDFLARE_API_TOKEN`: the token from step 2
 - `CLOUDFLARE_ACCOUNT_ID`: the Account ID from step 1
 
