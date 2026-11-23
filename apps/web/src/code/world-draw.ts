@@ -15,6 +15,8 @@ import {
 export const WORLD_COLOURS = {
   floor: '#fbfaf5',
   grid: '#d8d4c6',
+  gridOverlay: '#767676',
+  gridLabel: '#333333',
   dark: '#5a5a5a',
   tunnel: '#3d3550',
   zone: '#1f6f8b',
@@ -70,6 +72,10 @@ export interface DrawOptions {
   /** Canvas pixels per millimetre. */
   scale: number;
   trail: { x: number; y: number }[] | null;
+  /** The grid overlay with its labels (FR-12), or null. Courses always show their own grid lines. */
+  grid: { cols: number; rows: number; cell: number } | null;
+  /** Device pixels per CSS pixel, so labels stay readable on sharp screens. */
+  dpr?: number;
 }
 
 export function drawWorld(ctx: CanvasRenderingContext2D, sim: Sim, opts: DrawOptions): void {
@@ -81,19 +87,20 @@ export function drawWorld(ctx: CanvasRenderingContext2D, sim: Sim, opts: DrawOpt
   ctx.fillStyle = C.floor;
   ctx.fillRect(0, 0, w.width, w.height);
 
-  if (w.grid) {
-    ctx.strokeStyle = C.grid;
-    ctx.lineWidth = 1 / s;
-    for (let c = 0; c <= w.grid.cols; c++) {
+  const grid = opts.grid ?? w.grid;
+  if (grid) {
+    ctx.strokeStyle = opts.grid ? C.gridOverlay : C.grid;
+    ctx.lineWidth = (opts.grid ? 1.5 : 1) / s;
+    for (let c = 0; c <= grid.cols; c++) {
       ctx.beginPath();
-      ctx.moveTo(c * w.grid.cell, 0);
-      ctx.lineTo(c * w.grid.cell, w.height);
+      ctx.moveTo(c * grid.cell, 0);
+      ctx.lineTo(c * grid.cell, w.height);
       ctx.stroke();
     }
-    for (let r = 0; r <= w.grid.rows; r++) {
+    for (let r = 0; r <= grid.rows; r++) {
       ctx.beginPath();
-      ctx.moveTo(0, r * w.grid.cell);
-      ctx.lineTo(w.width, r * w.grid.cell);
+      ctx.moveTo(0, r * grid.cell);
+      ctx.lineTo(w.width, r * grid.cell);
       ctx.stroke();
     }
   }
@@ -169,5 +176,28 @@ export function drawWorld(ctx: CanvasRenderingContext2D, sim: Sim, opts: DrawOpt
     ctx.fillStyle = sim.line(side) ? C.sensorOn : '#ffffff';
     ctx.fillRect(lp.x - 6, lp.y - 6, 12, 12);
   }
+  if (opts.grid) drawGridLabels(ctx, opts.grid, s / (opts.dpr ?? 1));
   ctx.restore();
+}
+
+/** Column letters along the top and row numbers down the left, 12 CSS px high (`s`: CSS px per mm). */
+function drawGridLabels(
+  ctx: CanvasRenderingContext2D,
+  grid: { cols: number; rows: number; cell: number },
+  s: number
+) {
+  const size = 12 / s;
+  ctx.font = `600 ${size}px system-ui, sans-serif`;
+  ctx.textBaseline = 'top';
+  ctx.lineWidth = 3 / s;
+  ctx.strokeStyle = C.floor;
+  ctx.fillStyle = C.gridLabel;
+  const label = (text: string, x: number, y: number) => {
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
+  };
+  for (let c = 0; c < grid.cols; c++) {
+    label(String.fromCharCode(65 + c), c * grid.cell + 4 / s, 3 / s);
+  }
+  for (let r = 0; r < grid.rows; r++) label(String(r + 1), 3 / s, r * grid.cell + size + 6 / s);
 }

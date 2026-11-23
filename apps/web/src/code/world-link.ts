@@ -134,3 +134,65 @@ export function loadReports(
     return {};
   }
 }
+
+// --- Monitor and grid (M4 spec FR-11, FR-12) ------------------------------------------------
+
+/** The values the Monitor lists, in order; each can also be drawn on the graph. */
+export const MONITOR_VALUES = [
+  'motor_left',
+  'motor_right',
+  'light',
+  'line_left',
+  'line_right',
+  'whisker_left',
+  'whisker_right',
+  'pen'
+] as const;
+export type MonitorValue = (typeof MONITOR_VALUES)[number];
+
+/** The Monitor redraws at most this often (spec §5: 5 times a second). */
+export const MONITOR_EVERY_MS = 200;
+/** The graph shows the last 10 seconds. */
+export const GRAPH_SAMPLES = 10_000 / MONITOR_EVERY_MS;
+
+/** A snapshot of the robot for the Monitor: speeds −100…100, light 0–255, sensors 0 or 1. */
+export function monitorSample(sim: Sim): Record<MonitorValue, number> {
+  const m = sim.motorSpeeds;
+  const yes = (b: boolean) => (b ? 1 : 0);
+  return {
+    motor_left: m.left,
+    motor_right: m.right,
+    light: sim.lightLevel(),
+    line_left: yes(sim.line('left')),
+    line_right: yes(sim.line('right')),
+    whisker_left: yes(sim.whisker('left')),
+    whisker_right: yes(sim.whisker('right')),
+    pen: yes(sim.pen)
+  };
+}
+
+/** The range each value is drawn over on the graph. */
+export function graphRange(v: MonitorValue): [number, number] {
+  if (v === 'motor_left' || v === 'motor_right') return [-100, 100];
+  if (v === 'light') return [0, 255];
+  return [0, 1];
+}
+
+/** A world's grid, or 200 mm squares over the whole floor for worlds without one (FR-12). */
+export function gridFor(world: World): { cols: number; rows: number; cell: number } {
+  return (
+    world.grid ?? {
+      cols: Math.ceil(world.width / 200),
+      rows: Math.ceil(world.height / 200),
+      cell: 200
+    }
+  );
+}
+
+/** The grid square under a point, e.g. "C4": columns are letters, rows numbers from the top. */
+export function squareAt(world: World, x: number, y: number): string {
+  const g = gridFor(world);
+  const col = Math.min(g.cols - 1, Math.max(0, Math.floor(x / g.cell)));
+  const row = Math.min(g.rows - 1, Math.max(0, Math.floor(y / g.cell)));
+  return `${String.fromCharCode(65 + col)}${row + 1}`;
+}
