@@ -444,5 +444,9 @@
   "sim_maze_new": "New maze",
   "sim_missions": "Missions",
   "sim_done": "done",
-  "sim_not_yet": "not done yet"
+  "sim_not_yet": "not done yet",
+  "world_grid_map_name": "Grid map",
+  "world_grid_map_challenge": "Drive from A1 to square C4 and stop there. Plan your moves on the grid first: each square is 200 mm.",
+  "world_art_floor_name": "Art floor",
+  "world_art_floor_challenge": "Put the pen down and draw a square, a triangle or the first letter of your name."
 }

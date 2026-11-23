@@ -17,14 +17,16 @@ const messages = en as Record<string, string>;
 const key = (id: unknown) => String(id).replaceAll('-', '_');
 
 describe('content/worlds', () => {
-  it('has the five launch worlds and the five first courses', () => {
+  it('has the seven launch worlds and the five first courses', () => {
     expect(files.sort()).toEqual(
       [
+        'art-floor',
         'box-and-back',
         'bump-maze',
         'dark-tunnel',
         'follow-the-line',
         'grid-delivery',
+        'grid-map',
         'line-junction',
         'line-maze',
         'open-floor',
