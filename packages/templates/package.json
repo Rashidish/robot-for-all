@@ -1,5 +1,5 @@
 {
-  "name": "@robot-for-all/templates",
+  "name": "@robots-for-all/templates",
   "private": true,
   "description": "Build-time generator for true-scale A4 cardboard templates (SVG)",
   "license": "MIT",
