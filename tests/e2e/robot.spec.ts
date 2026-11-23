@@ -24,11 +24,20 @@ test.describe('Robot tab (M4 step 2)', () => {
     await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect(simulator(page).locator('#ButtonA')).toBeAttached({ timeout: 15_000 });
     // The program waits for button A, then drives while the light level is above 50.
+    // The Monitor (FR-11) shows the light level as a table too, for screen readers.
+    await page.locator('.monitor summary').click();
+    const light = page.locator('.monitor tr[data-value="light"] td');
     await page.waitForTimeout(1500);
     await pressA(page);
+    await expect(light).toHaveText('200', { timeout: 10_000 });
+    await expect(page.locator('.monitor tr[data-value="motor_left"] td')).toHaveText('100%');
     await expect(page.locator('.robot-world .result')).toHaveText(/Challenge done!/, {
       timeout: 20_000
     });
+    // The light level fell as the robot went into the tunnel, and the readout names the square.
+    await expect(light).toHaveText('20');
+    await expect(page.locator('.robot-world .readout')).toContainText('square F3');
+    await page.getByLabel('Show the grid').check();
     // The run report is kept on the device, with no personal data.
     const report = await page.evaluate(() =>
       JSON.parse(localStorage.getItem('rfa-run-reports-v1') ?? '{}')

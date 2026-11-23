@@ -4,7 +4,12 @@ import darkTunnel from '../../../../content/worlds/dark-tunnel.json';
 import simpleMaze from '../../../../content/worlds/simple-maze.json';
 import { buildWorld } from '../../../../packages/sim/src/index';
 import {
+  GRAPH_SAMPLES,
+  graphRange,
+  gridFor,
   loadReports,
+  monitorSample,
+  squareAt,
   loadWorlds,
   PUSH_EVERY_MS,
   REPORTS_KEY,
@@ -87,5 +92,38 @@ describe('world link (M4 step 2)', () => {
       'simple-maze'
     ]);
     expect(ids).toHaveLength(Object.keys(specs).length);
+  });
+});
+
+describe('Monitor and grid (FR-11, FR-12)', () => {
+  it('samples motor speeds, light, sensors and pen', () => {
+    const link = new WorldLink(buildWorld(darkTunnel), TWO_MOTORS);
+    link.call({ call: 'motor_left', value: 60 });
+    link.call({ call: 'motor_right', value: -30 });
+    link.call({ call: 'pen', value: 1 });
+    link.tick(20);
+    expect(monitorSample(link.sim)).toEqual({
+      motor_left: 60,
+      motor_right: -30,
+      light: 200,
+      line_left: 0,
+      line_right: 0,
+      whisker_left: 0,
+      whisker_right: 0,
+      pen: 1
+    });
+    expect(graphRange('light')).toEqual([0, 255]);
+    expect(GRAPH_SAMPLES).toBe(50);
+  });
+
+  it('names the right square at each corner and the centre', () => {
+    const world = buildWorld(darkTunnel); // 2000 × 800 mm, no grid of its own: 10 × 4 squares
+    expect(gridFor(world)).toEqual({ cols: 10, rows: 4, cell: 200 });
+    expect(squareAt(world, 0, 0)).toBe('A1');
+    expect(squareAt(world, 1999, 0)).toBe('J1');
+    expect(squareAt(world, 0, 799)).toBe('A4');
+    expect(squareAt(world, 1999, 799)).toBe('J4');
+    expect(squareAt(world, 1000, 400)).toBe('F3');
+    expect(squareAt(world, 2000, 800)).toBe('J4'); // the far edge belongs to the last square
   });
 });

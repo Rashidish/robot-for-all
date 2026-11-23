@@ -422,5 +422,21 @@
   "sim_heading": "heading",
   "sim_light_level": "light",
   "sim_run_first": "Press Run to start the robot.",
-  "sim_score": "Score"
+  "sim_score": "Score",
+  "sim_grid": "Show the grid",
+  "sim_square": "square",
+  "sim_monitor": "Monitor",
+  "sim_graph": "Graph",
+  "sim_graph_last": "The last 10 seconds",
+  "sim_yes": "yes",
+  "sim_no": "no",
+  "sim_value_motor_left": "Left motor speed",
+  "sim_value_motor_right": "Right motor speed",
+  "sim_value_light": "Light level",
+  "sim_value_line_left": "Line under left sensor",
+  "sim_value_line_right": "Line under right sensor",
+  "sim_value_whisker_left": "Left whisker pressed",
+  "sim_value_whisker_right": "Right whisker pressed",
+  "sim_value_pen": "Pen",
+  "sim_value_gesture": "Last gesture"
 }
