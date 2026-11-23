@@ -111,4 +111,4 @@ Design a robot for a real problem, for example a **rhino patrol robot** that res
 - **Real micro:bit**: power it from its own 2 × AA pack so the robot is free to move; the motor keeps its separate 2 × AA pack through the driver. The light sensor is the LED display, so the display must face up and not be covered by tape.
 - **Electrical design check**: two separate 2 × AA (3 V) packs, L9110S driver, micro:bit logic only, shared GND, no coin cells, no mains.
 - **Common problems**: robot never starts (it's too dark: lower the threshold); robot stops and starts in daylight (the threshold is too close to the room's light level); shake doesn't work on the real robot (the motor shaking isn't enough: tap the cart firmly).
-- **Extension**: a second motor and a second channel on the driver (B-IA, B-IB on pins P2 and P8) make a robot that can turn. Phase 3 projects build on this.
+- **Extension**: a second motor on the driver's B channel (on the basic board: B-IA and B-IB to P2 and P8) and the **Robot** blocks (left and right motor) make a robot that can turn. Phase 3 projects build on this.

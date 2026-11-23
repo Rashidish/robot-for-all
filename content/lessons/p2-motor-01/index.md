@@ -43,7 +43,7 @@ assessment:
   - I can point to the micro:bit, the motor driver, the motor and the motor batteries in the wiring diagram
   - I can explain why the motor has its own batteries
   - I can make the motor start with button A and stop with button B
-  - I can say what pin P0 does in my program
+  - I can explain how the motor block's signal reaches the motor through the wires, the motor driver and the batteries
 prerequisites: [p2-light-01, p1-motor-01]
 next: p2-motor-02
 templates: []
@@ -75,15 +75,15 @@ Talk with a partner:
 
 ## Run
 
-1. Tap **Run** under the on-screen micro:bit. Press **A**, then **B**. Watch the **Motor** line and pins P0 and P1 under the on-screen micro:bit.
-2. **With real parts:** build the circuit from the diagram with the motor batteries **out**. Use crocodile clips on the big P0, P1 and GND rings of the micro:bit.
+1. Tap **Run** under the on-screen micro:bit. Press **A**, then **B**. Watch the **Motor** line under the on-screen micro:bit, and the cart in the **Robot** view.
+2. **With real parts:** build the circuit from the diagram with the motor batteries **out**. Use crocodile clips on the big P0, P1 and GND rings of the micro:bit. (This is the wiring for the basic L9110S board. Another board has its own wiring diagram.)
 3. Ask an adult to check every wire against the diagram. Then send the program to the micro:bit and put the motor batteries in.
 4. Press A and B. Was your prediction right?
 
 ## Investigate
 
-1. Under the on-screen micro:bit, what are pins P0 and P1 set to when the motor goes forward? When it stops?
-2. Look at the Python tab. Which two lines make the motor go? What do the numbers 1 and 0 mean?
+1. Under the on-screen micro:bit, what does the **Motor** line say when the motor goes forward? When it stops?
+2. Look at the Python tab. Which line makes the motor go? What does the number 100 mean? What does `rfa_robot.stop()` do?
 3. What happens if you press A twice? Why?
 4. With real parts: take out one motor battery. What happens? What does that tell you about where the motor's power comes from?
 
@@ -100,7 +100,8 @@ Make a **fan** or a **spinning sign** for a cardboard model. Fix a card propelle
 ## Teacher notes
 
 - **Timing**: 10 min predict, 25 min wiring and run (with the adult check), 15 min investigate and modify, 10 min share. Pre-make the leads before class if possible.
-- **No hardware?** The full lesson works on the on-screen micro:bit: the motor state and pins show under it. One wired set per class or group is enough to show the real thing.
+- **No hardware?** The full lesson works on the on-screen micro:bit: the motor state shows under it, and the **Robot** view shows the cart moving on an open floor. One wired set per class or group is enough to show the real thing.
+- **Pins belong to the wiring, not the program** (ADR-0008): the program says what the robot should do (`rfa_robot.motor("left", 100)`), and the board's wiring decides which pins carry it. P0 and P1 here are the basic L9110S board's wiring; on another board the same program works with that board's wiring diagram.
 - **Electrical design check (CLAUDE.md §8)**: battery-only, low voltage. The motor runs from its own 2 × AA (3 V) holder through the L9110S driver (rated about 2.5-12 V, 800 mA per channel); the micro:bit only sends 3 V logic signals from P0 and P1, and GND is shared so the signals have a return path. The micro:bit is powered by USB or its own battery pack. No coin cells, no mains.
 - **Common problems**: motor doesn't run (motor batteries in the wrong way, GND lead missing, or the leads on the wrong driver pins); motor runs the wrong way (swap the two motor wires; next lesson explains why); micro:bit resets when the motor starts (the motor is on the micro:bit's power: check the wiring).
 - **Big idea**: a controller sends **signals**; a driver switches the **power**. Robots, washing machines and cars all work this way.
