@@ -9,6 +9,13 @@
     SENSOR_NAMES,
     type SensorName
   } from '../../../../packages/robots/src/simulator';
+  import RobotWorld from './RobotWorld.svelte';
+  import { loadWorlds, type Pushes } from '../code/world-link';
+
+  // Worlds and courses from content/worlds, checked when the page is built (M4 spec FR-4).
+  const worlds = loadWorlds(
+    import.meta.glob('../../../../content/worlds/*.json', { eager: true, import: 'default' })
+  );
 
   interface Props {
     src: string;
@@ -17,6 +24,18 @@
     files: () => Record<string, string> | null;
   }
   let { src, labels, files }: Props = $props();
+
+  /** micro:bit or Robot (M4 spec FR-1). The micro:bit keeps running behind the Robot view. */
+  let view = $state<'microbit' | 'robot'>('microbit');
+  let robotWorld: RobotWorld | undefined = $state();
+
+  /** While the Robot view is open, the world answers the robot's sensors (spec §6.2). */
+  function worldPush(p: Pushes) {
+    if (view !== 'robot') return;
+    if (p.sensors) post({ kind: 'robot_sensors', values: p.sensors });
+    if (p.light !== undefined) post({ kind: 'set_value', id: 'lightLevel', value: p.light });
+    if (p.shake) gesture('shake');
+  }
   const t = (key: string) => labels[key] ?? key;
 
   interface RangeSensor {
@@ -136,6 +155,7 @@
     pushSensors();
     post({ kind: 'flash', filesystem });
     running = true;
+    robotWorld?.start(current['main.py'] ?? '');
   }
 
   /** Restarts with the latest code, but only once the learner has started the simulator. */
@@ -185,6 +205,7 @@
   export function stop(): void {
     post({ kind: 'stop' });
     running = false;
+    robotWorld?.stop();
   }
 
   /** Gesture buttons, like MakeCode's SHAKE button: the gesture happens, then ends. */
@@ -237,6 +258,7 @@
       case 'robot_call': {
         const call = parseRobotCall(data);
         if (!call) break;
+        robotWorld?.call(call);
         if (call.call === 'motor_left') robot.left = call.value;
         else if (call.call === 'motor_right')
           robot = { ...robot, right: call.value, usesRight: true };
@@ -274,7 +296,43 @@
 <svelte:window onmessage={onMessage} />
 
 <div class="simulator">
-  <iframe bind:this={frame} {src} title={t('sim_title')} allow="autoplay"></iframe>
+  <div class="views" role="group" aria-label={t('sim_title')}>
+    <button
+      type="button"
+      class="view"
+      aria-pressed={view === 'microbit'}
+      onclick={() => {
+        view = 'microbit';
+        pushSensors();
+      }}
+    >
+      {t('sim_tab_microbit')}
+    </button>
+    <button
+      type="button"
+      class="view"
+      aria-pressed={view === 'robot'}
+      onclick={() => (view = 'robot')}
+    >
+      {t('sim_tab_robot')}
+    </button>
+  </div>
+  <div class="robot-view" hidden={view !== 'robot'}>
+    <RobotWorld
+      bind:this={robotWorld}
+      {worlds}
+      {labels}
+      visible={view === 'robot'}
+      push={worldPush}
+    />
+  </div>
+  <iframe
+    bind:this={frame}
+    {src}
+    title={t('sim_title')}
+    allow="autoplay"
+    class:behind={view === 'robot'}
+  ></iframe>
   <div class="controls">
     {#if running}
       <button type="button" class="plain" onclick={stop}>{t('sim_stop')}</button>
@@ -334,7 +392,7 @@
     {/each}
   </details>
 
-  <details class="sensors robot-sensors">
+  <details class="sensors robot-sensors" hidden={view === 'robot'}>
     <summary>{t('sim_robot_sensors')}</summary>
     {#each SENSOR_NAMES as name (name)}
       <label class="check">
@@ -392,6 +450,31 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+  }
+  .views {
+    display: flex;
+    gap: 0.25rem;
+  }
+  .view {
+    flex: 1;
+    min-height: 2.75rem;
+    border: 1px solid #5a5a5a;
+    background: #ffffff;
+    color: #1a1a1a;
+    border-radius: 4px;
+    font: inherit;
+  }
+  .view[aria-pressed='true'] {
+    background: #0b5394;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  /* The micro:bit keeps running behind the Robot view: moved off screen, not removed. */
+  iframe.behind {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
   }
   iframe {
     inline-size: 100%;
