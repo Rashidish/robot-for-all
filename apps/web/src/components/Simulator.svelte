@@ -10,12 +10,15 @@
     type SensorName
   } from '../../../../packages/robots/src/simulator';
   import RobotWorld from './RobotWorld.svelte';
-  import { loadWorlds, type Pushes } from '../code/world-link';
+  import { loadWorlds, type Pushes, specsById } from '../code/world-link';
 
   // Worlds and courses from content/worlds, checked when the page is built (M4 spec FR-4).
-  const worlds = loadWorlds(
-    import.meta.glob('../../../../content/worlds/*.json', { eager: true, import: 'default' })
-  );
+  const worldFiles = import.meta.glob('../../../../content/worlds/*.json', {
+    eager: true,
+    import: 'default'
+  });
+  const worlds = loadWorlds(worldFiles);
+  const worldSpecs = specsById(worldFiles);
 
   interface Props {
     src: string;
@@ -321,6 +324,7 @@
     <RobotWorld
       bind:this={robotWorld}
       {worlds}
+      specs={worldSpecs}
       {labels}
       visible={view === 'robot'}
       push={worldPush}

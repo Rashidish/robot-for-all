@@ -196,3 +196,30 @@ export function squareAt(world: World, x: number, y: number): string {
   const row = Math.min(g.rows - 1, Math.max(0, Math.floor(y / g.cell)));
   return `${String.fromCharCode(65 + col)}${row + 1}`;
 }
+
+// --- Missions and maze numbers (M4 spec FR-17, FR-18) ----------------------------------------
+
+/** Each world's spec by id, so a maze course can be rebuilt with another maze number. */
+export function specsById(specs: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.values(specs).map((spec) => [buildWorld(spec).id, spec] as const)
+  );
+}
+
+/** Highest maze number a learner can type (six digits, easy to read out on a competition day). */
+export const MAZE_NUMBER_MAX = 999_999;
+
+/** A maze course with this maze number and size (3–6); the same number gives the same maze. */
+export function withMaze(spec: unknown, mazeNumber: number, size: number): World {
+  const seed = Math.max(0, Math.min(MAZE_NUMBER_MAX, Math.floor(mazeNumber)));
+  return buildWorld(spec, { seed, mazeSize: Math.max(3, Math.min(6, Math.floor(size))) });
+}
+
+/** The course's missions and whether each is done, for the checklist. */
+export function missionList(sim: Sim): { id: string; points: number; done: boolean }[] {
+  return sim.world.missions.map((m) => ({
+    id: m.id,
+    points: m.points,
+    done: sim.missionDone(m.id)
+  }));
+}

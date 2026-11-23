@@ -11,6 +11,9 @@ import {
   monitorSample,
   squareAt,
   loadWorlds,
+  missionList,
+  specsById,
+  withMaze,
   PUSH_EVERY_MS,
   REPORTS_KEY,
   saveReport,
@@ -125,5 +128,28 @@ describe('Monitor and grid (FR-11, FR-12)', () => {
     expect(squareAt(world, 1999, 799)).toBe('J4');
     expect(squareAt(world, 1000, 400)).toBe('F3');
     expect(squareAt(world, 2000, 800)).toBe('J4'); // the far edge belongs to the last square
+  });
+});
+
+describe('missions and maze numbers (FR-17, FR-18)', () => {
+  const dir = new URL('../../../../content/worlds/', import.meta.url);
+  const specs = Object.fromEntries(
+    readdirSync(dir).map((f) => [f, JSON.parse(readFileSync(new URL(f, dir), 'utf8')) as unknown])
+  );
+
+  it('a maze course rebuilt with a maze number gives the same maze every time', () => {
+    const spec = specsById(specs)['bump-maze'];
+    const a = withMaze(spec, 4817, 5);
+    expect(a.maze).toEqual({ kind: 'walls', size: 5, seed: 4817 });
+    expect(withMaze(spec, 4817, 5)).toEqual(a);
+    expect(withMaze(spec, 4818, 5)).not.toEqual(a);
+    // Out-of-range input is clamped, never an error for the learner.
+    expect(withMaze(spec, -3, 9).maze).toEqual({ kind: 'walls', size: 6, seed: 0 });
+  });
+
+  it('lists the missions and ticks them off as they are done', () => {
+    const link = new WorldLink(buildWorld(specsById(specs)['line-maze']), TWO_MOTORS);
+    expect(missionList(link.sim)).toEqual([{ id: 'finish', points: 100, done: false }]);
+    expect(missionList(new WorldLink(buildWorld(darkTunnel), LEFT_ONLY).sim)).toEqual([]);
   });
 });

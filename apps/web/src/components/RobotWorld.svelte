@@ -12,27 +12,42 @@
     MONITOR_EVERY_MS,
     MONITOR_VALUES,
     type MonitorValue,
+    MAZE_NUMBER_MAX,
+    missionList,
     monitorSample,
     type Pushes,
     saveReport,
     squareAt,
+    withMaze,
     WorldLink
   } from '../code/world-link';
 
   interface Props {
     worlds: World[];
+    /** Each world's spec by id, so a maze course can be rebuilt with another maze number. */
+    specs: Record<string, unknown>;
     labels: Record<string, string>;
     /** Shown or hidden; the world keeps running either way. */
     visible: boolean;
     /** Sends the world's sensor answers into the on-screen micro:bit. */
     push: (pushes: Pushes) => void;
   }
-  let { worlds, labels, visible, push }: Props = $props();
+  let { worlds, specs, labels, visible, push }: Props = $props();
   const t = (key: string) => labels[key] ?? key;
   const key = (id: string) => id.replaceAll('-', '_');
 
   let worldId = $state(worlds[0]?.id ?? '');
-  const world = $derived(worlds.find((w) => w.id === worldId) ?? worlds[0]);
+  const baseWorld = $derived(worlds.find((w) => w.id === worldId) ?? worlds[0]);
+
+  // Maze courses (FR-18): a maze number and size give one exact maze, the same on every device.
+  let mazeNumber = $state(1);
+  let mazeSize = $state(4);
+  const world = $derived(
+    baseWorld?.maze ? withMaze(specs[baseWorld.id], mazeNumber, mazeSize) : baseWorld
+  );
+
+  /** The mission checklist (FR-17), updated with the Monitor. */
+  let missions = $state<{ id: string; points: number; done: boolean }[]>([]);
   let link: WorldLink | null = null;
   let status = $state<'idle' | 'running' | 'done' | 'failed'>('idle');
   let reason = $state<string | null>(null);
@@ -70,6 +85,7 @@
     score = null;
     history = [];
     lastGesture = null;
+    missions = missionList(link.sim);
     sinceSample = MONITOR_EVERY_MS;
     last = performance.now();
     frame = requestAnimationFrame(loop);
@@ -125,6 +141,7 @@
     if (!link || !world) return;
     sinceSample = 0;
     sample = monitorSample(link.sim);
+    missions = missionList(link.sim);
     history = [...history, sample].slice(-GRAPH_SAMPLES);
     const p = link.sim.pose;
     readout = {
@@ -214,6 +231,17 @@
       `${world ? squareAt(world, p.x, p.y) : ''}, ${t('sim_light_level')} ${link.sim.lightLevel()}`;
   }
 
+  /** A new maze number or size: a different maze, so any run on the old one ends. */
+  function setMaze(n: number, size: number) {
+    stop();
+    link = null;
+    status = 'idle';
+    readout = null;
+    mazeNumber = Number.isFinite(n) ? Math.max(0, Math.min(MAZE_NUMBER_MAX, Math.floor(n))) : 0;
+    mazeSize = size;
+    requestAnimationFrame(draw);
+  }
+
   function chooseWorld(id: string) {
     stop();
     link = null;
@@ -227,7 +255,7 @@
 
   $effect(() => {
     // Redraw when shown, resized or the world changes.
-    void [visible, width, worldId, showTrail, showGrid];
+    void [visible, width, worldId, showTrail, showGrid, mazeNumber, mazeSize];
     if (visible) requestAnimationFrame(draw);
   });
 
@@ -251,6 +279,38 @@
     <p class="challenge">{t(world.challenge)}</p>
   {/if}
 
+  {#if baseWorld?.maze}
+    <div class="maze">
+      <label for="robot-maze-number">{t('sim_maze_number')}</label>
+      <input
+        id="robot-maze-number"
+        type="number"
+        inputmode="numeric"
+        min="0"
+        max={MAZE_NUMBER_MAX}
+        value={mazeNumber}
+        onchange={(e) => setMaze(Number(e.currentTarget.value), mazeSize)}
+      />
+      <label for="robot-maze-size">{t('sim_maze_size')}</label>
+      <select
+        id="robot-maze-size"
+        value={mazeSize}
+        onchange={(e) => setMaze(mazeNumber, Number(e.currentTarget.value))}
+      >
+        {#each [3, 4, 5, 6] as n (n)}
+          <option value={n}>{n} × {n}</option>
+        {/each}
+      </select>
+      <button
+        type="button"
+        class="plain"
+        onclick={() => setMaze(Math.floor(Math.random() * (MAZE_NUMBER_MAX + 1)), mazeSize)}
+      >
+        {t('sim_maze_new')}
+      </button>
+    </div>
+  {/if}
+
   <div class="stage" bind:clientWidth={width}>
     <canvas
       bind:this={canvas}
@@ -266,6 +326,23 @@
       x {readout.x} mm · y {readout.y} mm · {readout.heading}° ·
       {t('sim_square')} <strong>{readout.square}</strong>
     </p>
+  {/if}
+
+  {#if world && world.missions.length > 0}
+    <div class="missions">
+      <p class="missions-title">{t('sim_missions')}</p>
+      <ul>
+        {#each world.missions as m (m.id)}
+          {@const done = missions.find((x) => x.id === m.id)?.done ?? false}
+          <li data-mission={m.id} data-done={done}>
+            <span aria-hidden="true">{done ? '✓' : '○'}</span>
+            <span>{t(`mission_${key(world.id)}_${key(m.id)}`)}</span>
+            <span class="points">{m.points}</span>
+            <span class="visually-hidden">{t(done ? 'sim_done' : 'sim_not_yet')}</span>
+          </li>
+        {/each}
+      </ul>
+    </div>
   {/if}
 
   <p class="run-status" data-status={status}>
@@ -373,6 +450,47 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     align-items: center;
+  }
+  .maze {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.25rem 0.5rem;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+  .maze input,
+  .maze select,
+  .maze button {
+    min-height: 2.75rem;
+  }
+  .maze button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .missions-title {
+    margin: 0;
+    font-weight: 600;
+  }
+  .missions ul {
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.25rem;
+  }
+  .missions li {
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+  }
+  .missions li[data-done='true'] {
+    color: #1b5e20;
+    font-weight: 600;
+  }
+  .points {
+    font-variant-numeric: tabular-nums;
+    color: #555555;
   }
   .readout {
     margin: 0;
