@@ -1,0 +1,10 @@
+{
+  "name": "@robots-for-all/robots",
+  "private": true,
+  "description": "Robot profiles (ADR-0008): checked board data, automatic sensor pins, and the rfa_robot MicroPython module for each board",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

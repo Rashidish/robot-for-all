@@ -380,5 +380,6 @@
   "mission_rhino_patrol_thicket": "Pass through the dark thicket",
   "mission_rhino_patrol_gate": "Open the gate",
   "mission_rhino_patrol_waterhole": "Check the waterhole: stop inside it",
-  "mission_rhino_patrol_home": "Return to the ranger station"
+  "mission_rhino_patrol_home": "Return to the ranger station",
+  "robot_basic_two_motor_name": "Basic two-motor module (L9110S) with crocodile clips"
 }
