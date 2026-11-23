@@ -1,0 +1,17 @@
+{
+  "id": "l9110s-basic",
+  "version": 1,
+  "name": "robot_basic_two_motor_name",
+  "picture": null,
+  "motors": {
+    "method": "pins",
+    "left": { "forward": 0, "backward": 1 },
+    "right": { "forward": 2, "backward": 8 }
+  },
+  "usedPins": [0, 1, 2, 8],
+  "freePins": [13, 14, 12, 15, 16],
+  "lineDark": 1,
+  "detect": [],
+  "status": "draft",
+  "testedBy": null
+}
