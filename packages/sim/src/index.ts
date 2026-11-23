@@ -1,4 +1,4 @@
-// @robot-for-all/sim: the 2D robot world (M4). Pure TypeScript, no DOM, no dependencies.
+// @robots-for-all/sim: the 2D robot world (M4). Pure TypeScript, no DOM, no dependencies.
 export * from './maze';
 export * from './robot';
 export * from './sim';
