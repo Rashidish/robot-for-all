@@ -8,8 +8,11 @@ import {
   type SensorName
 } from '../../../../packages/robots/src/index';
 import {
+  applyCall,
   buildWorld,
+  type CallRecord,
   hashText,
+  MAX_RECORDED_CALLS,
   type RunReport,
   Sim,
   type World
@@ -45,12 +48,15 @@ export class WorldLink {
     this.programHash = hashText(mainPy);
   }
 
+  /** Every robot call and the step it arrived before, so the run can be replayed (FR-14). */
+  readonly calls: CallRecord[] = [];
+
   /** A robot call from the on-screen micro:bit. */
   call(c: RobotCall): void {
-    if (c.call === 'motor_left') this.sim.setMotor('left', c.value);
-    else if (c.call === 'motor_right') this.sim.setMotor('right', c.value);
-    else if (c.call === 'stop') this.sim.stopMotors();
-    else this.sim.setPen(c.value === 1);
+    applyCall(this.sim, c);
+    if (this.calls.length < MAX_RECORDED_CALLS) {
+      this.calls.push({ step: this.sim.timeMs / 20, call: c.call, value: c.value });
+    }
   }
 
   /** Moves the world on by real time `ms` and returns what to push into the micro:bit. */
@@ -101,6 +107,8 @@ const ORDER = [
   'box-and-back',
   'follow-the-line',
   'simple-maze',
+  'grid-map',
+  'art-floor',
   'grid-delivery',
   'line-junction',
   'bump-maze',

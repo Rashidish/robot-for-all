@@ -1,0 +1,10 @@
+{
+  "id": "grid-map",
+  "version": 1,
+  "challenge": "world_grid_map_challenge",
+  "grid": { "cols": 6, "rows": 5 },
+  "areas": [{ "id": "target", "cell": "C4", "pattern": "hatch" }],
+  "start": { "cell": "A1", "heading": 0 },
+  "goal": { "stopInside": "target" },
+  "timeLimitMs": 60000
+}
