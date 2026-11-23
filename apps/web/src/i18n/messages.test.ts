@@ -19,6 +19,6 @@ describe('English messages', () => {
     const messages = m as unknown as Record<string, () => string>;
     const missing = keys.filter((k) => typeof messages[k] !== 'function');
     expect(missing).toEqual([]);
-    expect(m.app_name()).toBe('Robot For All');
+    expect(m.app_name()).toBe('Robots For All');
   });
 });

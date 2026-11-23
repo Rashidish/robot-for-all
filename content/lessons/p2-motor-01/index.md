@@ -14,7 +14,7 @@ syllabus_links:
 duration_minutes: 60
 cost_estimate_zar: 45
 parts:
-  - { item: phone, tablet or computer with the Robot For All code editor, qty: 1 }
+  - { item: phone, tablet or computer with the Robots For All code editor, qty: 1 }
   - { item: BBC micro:bit with USB cable or 2 × AA battery pack, qty: 1, substitute: the on-screen micro:bit (no motor needed) }
   - { item: L9110S motor driver board, qty: 1 }
   - { item: small 3 V DC hobby motor from the scribble robot, qty: 1 }

@@ -7,7 +7,7 @@ describe('MicroPython generator', () => {
   it('writes readable MicroPython for the blinking heart', () => {
     expect(toPython(SAMPLES.blinkHeart)).toBe(
       [
-        '# Made with the Robot For All block editor',
+        '# Made with the Robots For All block editor',
         'from microbit import *',
         '',
         'while True:',

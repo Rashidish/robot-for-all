@@ -1,4 +1,4 @@
-// Web app manifest (M1 spec FR-2): makes Robot For All installable on Android.
+// Web app manifest (M1 spec FR-2): makes Robots For All installable on Android.
 // Built at build time so the name and description come from the translation file.
 import type { APIRoute } from 'astro';
 import { m } from '../i18n';

@@ -326,7 +326,7 @@ export function toPython(program: Program): string {
     body.push('', ...setup, 'while True:', ...loop, `${INDENT}sleep(20)`);
   }
 
-  const head = ['# Made with the Robot For All block editor', 'from microbit import *'];
+  const head = ['# Made with the Robots For All block editor', 'from microbit import *'];
   for (const m of ['music', 'radio', 'math', 'neopixel', 'game', 'rfa_robot'])
     if (modules.has(m)) head.push(`import ${m}`);
   if (uses.random) head.push('import random');

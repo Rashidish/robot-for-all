@@ -14,7 +14,7 @@ syllabus_links:
 duration_minutes: 90
 cost_estimate_zar: 50
 parts:
-  - { item: phone, tablet or computer with the Robot For All code editor, qty: 1 }
+  - { item: phone, tablet or computer with the Robots For All code editor, qty: 1 }
   - { item: BBC micro:bit with its 2 × AA battery pack, qty: 1, substitute: the on-screen micro:bit (no motor needed) }
   - { item: the motor, motor driver and wiring from Go and stop, qty: 1 }
   - { item: AA batteries, qty: 4, substitute: rechargeable AA batteries }
