@@ -1,0 +1,91 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import darkTunnel from '../../../../content/worlds/dark-tunnel.json';
+import simpleMaze from '../../../../content/worlds/simple-maze.json';
+import { buildWorld } from '../../../../packages/sim/src/index';
+import {
+  loadReports,
+  loadWorlds,
+  PUSH_EVERY_MS,
+  REPORTS_KEY,
+  saveReport,
+  usesRightMotor,
+  WorldLink
+} from './world-link';
+
+const LEFT_ONLY = 'import rfa_robot\nrfa_robot.motor("left", 100)\n';
+const TWO_MOTORS = 'import rfa_robot\nrfa_robot.motor("left", 100)\nrfa_robot.motor("right", 50)\n';
+
+describe('world link (M4 step 2)', () => {
+  it('a program that never drives the right motor is a one-motor cart', () => {
+    expect(usesRightMotor(LEFT_ONLY)).toBe(false);
+    expect(usesRightMotor(TWO_MOTORS)).toBe(true);
+    // One motor: both wheels follow it, so the cart drives straight.
+    const one = new WorldLink(buildWorld(darkTunnel), LEFT_ONLY);
+    one.call({ call: 'motor_left', value: 100 });
+    for (let i = 0; i < 50; i++) one.tick(20);
+    expect(one.sim.pose.y).toBeCloseTo(400, 6);
+    expect(one.report().oneMotor).toBe(true);
+  });
+
+  it('robot calls drive the world; "Robot that reacts" stops in the tunnel', () => {
+    const link = new WorldLink(buildWorld(darkTunnel), LEFT_ONLY);
+    let light = 255;
+    for (let t = 0; t < 10_000 && link.sim.status === 'running'; t += 20) {
+      // The program on the micro:bit sees the light level the world pushed (every 100 ms).
+      if (t % 100 === 0)
+        link.call(light > 50 ? { call: 'motor_left', value: 100 } : { call: 'stop', value: 0 });
+      const p = link.tick(20);
+      if (p.light !== undefined) light = p.light;
+    }
+    expect(link.report().status).toBe('done');
+  });
+
+  it('pushes sensors when they change and at least every 100 ms', () => {
+    const link = new WorldLink(buildWorld(darkTunnel), LEFT_ONLY);
+    const pushed: number[] = [];
+    for (let t = 0; t < 1000; t += 20) if (link.tick(20).sensors) pushed.push(t);
+    expect(pushed[0]).toBe(0);
+    const gaps = pushed.slice(1).map((t, i) => t - (pushed[i] ?? 0));
+    expect(Math.max(...gaps)).toBeLessThanOrEqual(PUSH_EVERY_MS);
+  });
+
+  it('a bump in a "shake" world becomes a shake for the micro:bit', () => {
+    const link = new WorldLink(buildWorld(simpleMaze), LEFT_ONLY);
+    link.call({ call: 'motor_left', value: 100 });
+    let shakes = 0;
+    for (let t = 0; t < 10_000; t += 20) if (link.tick(20).shake) shakes++;
+    expect(shakes).toBe(1);
+  });
+
+  it('keeps the latest run report per world on this device only', () => {
+    const data = new Map<string, string>();
+    const storage = {
+      getItem: (k: string) => data.get(k) ?? null,
+      setItem: (k: string, v: string) => void data.set(k, v)
+    };
+    const link = new WorldLink(buildWorld(darkTunnel), LEFT_ONLY);
+    saveReport(storage, link.report());
+    expect(Object.keys(loadReports(storage))).toEqual(['dark-tunnel']);
+    expect(loadReports(storage)['dark-tunnel']?.programHash).toMatch(/^[0-9a-f]{8}$/);
+    data.set(REPORTS_KEY, 'not json');
+    expect(loadReports(storage)).toEqual({});
+    expect(() => saveReport(undefined, link.report())).not.toThrow();
+  });
+
+  it('loads every world in content/worlds, launch worlds first', () => {
+    const dir = new URL('../../../../content/worlds/', import.meta.url);
+    const specs = Object.fromEntries(
+      readdirSync(dir).map((f) => [f, JSON.parse(readFileSync(new URL(f, dir), 'utf8')) as unknown])
+    );
+    const ids = loadWorlds(specs).map((w) => w.id);
+    expect(ids.slice(0, 5)).toEqual([
+      'open-floor',
+      'dark-tunnel',
+      'box-and-back',
+      'follow-the-line',
+      'simple-maze'
+    ]);
+    expect(ids).toHaveLength(Object.keys(specs).length);
+  });
+});
