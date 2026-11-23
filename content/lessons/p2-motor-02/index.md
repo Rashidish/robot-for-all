@@ -34,7 +34,7 @@ starter_program: forward-stop-reverse
 world: box-and-back
 hardware: microbit-motor
 assessment:
-  - I can fill in the table of P0 and P1 values for forward, stop and backward
+  - I can fill in the table of motor speeds for forward, stop and backward
   - I can write an algorithm for a motor as numbered steps
   - I can find and fix a bug in a motor program
   - I can make my model go forward and come back
@@ -49,7 +49,7 @@ build_tested_by: null
 
 ## Predict
 
-A motor spins one way when the electricity goes through it one way, and the other way when the electricity goes through it the other way. The motor driver does this for us. The micro:bit tells it which way with two signals: pin **P0** and pin **P1**.
+A motor spins one way when the electricity goes through it one way, and the other way when the electricity goes through it the other way. The motor driver does this for us. Our program only says **forward**, **stop** or **backward**. The micro:bit then tells the driver which way with signals on two wires; on the basic board they are joined to **P0** and **P1**.
 
 ![Wiring: the micro:bit (1) joined by leads (2) to the motor driver (3); the motor (4) on the driver's motor A terminals; the 2 × AA motor batteries (5) on the driver's VCC and GND.](./images/motor-wiring.svg)
 
@@ -59,21 +59,21 @@ A motor spins one way when the electricity goes through it one way, and the othe
 4. **Motor**
 5. **Motor batteries**
 
-Open the starter program and the Python tab. Find the `pin0` and `pin1` lines.
+Open the starter program and the Python tab. Find the `rfa_robot.motor` lines.
 
 Talk with a partner and fill in your prediction:
 
-   | Motor | P0 | P1 |
-   |---|---|---|
-   | forward | | |
-   | stop | | |
-   | backward | | |
+   | Motor | Number in `rfa_robot.motor` |
+   |---|---|
+   | forward | |
+   | stop | |
+   | backward | |
 
-What do you think happens if P0 and P1 are **both** 1?
+What do you think happens if the number is **50** instead of 100?
 
 ## Run
 
-1. Tap **Run**. Press **A**, then **B**. Watch the arrows, the **Motor** line and pins P0 and P1. Check your table.
+1. Tap **Run**. Press **A**, then **B**. Watch the arrows, the **Motor** line and the cart in the **Robot** view. Check your table.
 2. **With real parts:** use the wiring from **Go and stop**. Ask an adult to check it, send the program, then put the motor batteries in.
 3. Put the motor in the cart (or put a card disc with a marked edge on the shaft). Press A and B and watch which way it turns.
 
@@ -82,7 +82,7 @@ What do you think happens if P0 and P1 are **both** 1?
 1. Swap the two **motor** wires on the driver (batteries out first). What happens now when you press A? Why?
 2. Which blocks make the motor stop by itself after 1 second?
 3. Press A, then quickly press B. What happens? Why does it wait?
-4. In Python, both pins are written in every motor block. Why must the program set **both** pins every time?
+4. The program gives the motor one number, but the driver has **two** wires for each motor. What do you think the two wires carry for forward, stop and backward?
 
 ## Modify
 
@@ -103,7 +103,7 @@ Make a **delivery cart** that carries a small item (a sweet, an eraser) to a par
 ## Teacher notes
 
 - **Timing**: 10 min predict, 15 min run, 15 min investigate, 20 min modify and make.
-- **Big idea**: **two signals → three states**. P0=1, P1=0 forward; P0=0, P1=1 backward; both 0 stop. Both 1 is also stop (brake) on the L9110S, but our blocks never use it.
+- **Big idea**: **two signals → three states**. The program says one number (`rfa_robot.motor("left", 100)`, `-100` or `0`); on the basic L9110S board the micro:bit turns that into two signals: P0 on and P1 off is forward, P0 off and P1 on is backward, both off is stop. Both on is also stop (brake), but the robot calls never use it. The program never names pins: the board's wiring decides them (ADR-0008), so the same program runs on other boards and in the Robot view.
 - **Algorithms**: writing numbered steps before coding is the CAPS habit to build. The "never comes back" bug is the missing pause after going backward: the motor stops before it has moved.
 - **Coming back exactly** doesn't work with time alone (batteries, friction and the floor all change it). This is a good discussion of why real robots use **sensors**: the next lesson.
 - **Electrical design check**: same circuit as Go and stop: 2 × AA (3 V) through the L9110S, micro:bit logic only, shared GND, no coin cells, no mains.
