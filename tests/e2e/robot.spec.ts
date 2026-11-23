@@ -18,8 +18,12 @@ test.describe('Robot tab (M4 step 2)', () => {
     await page.goto('/lessons/p2-robot-01/');
     await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
     await expect(page.locator('.blocklySvg').first()).toBeVisible();
-    await page.getByRole('button', { name: 'Robot', exact: true }).click();
-    await page.getByLabel('World', { exact: true }).selectOption('dark-tunnel');
+    // The lesson names its world (FR-8): the editor opens in the Robot view with it chosen.
+    await expect(page.getByRole('button', { name: 'Robot', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    await expect(page.getByLabel('World', { exact: true })).toHaveValue('dark-tunnel');
     await expect(page.getByText('Drive into the dark tunnel and stop inside it.')).toBeVisible();
     await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect(simulator(page).locator('#ButtonA')).toBeAttached({ timeout: 15_000 });

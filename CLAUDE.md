@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.16 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
+> **Version:** 0.17 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -161,6 +161,7 @@ prerequisites: []        # lesson ids
 next: p1-cam-01          # lesson id or null
 templates: [rhino-parts]   # sheets in content/projects/<id>/templates/<name>.ts
 starter_program: null    # Phase 2+: programs/<name>.rfa.json in the lesson folder
+world: null              # Phase 2+: robot world it opens in: content/worlds/<id>.json
 hardware: none           # none | microbit | microbit-motor
 status: draft            # draft | in_review | published
 ai_generated: true
@@ -273,3 +274,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.14 | 2026-11-23 | Current milestone M4; simulator row from ADR-0007 and ADR-0008 (robot calls, not pins); `content/worlds` |
 | 0.15 | 2026-11-23 | Owner decision: rename the product to Robots For All during the UI work |
 | 0.16 | 2026-11-23 | Renamed to Robots For All in user-facing text; hostname `robotsforall.org.za`, other domains redirect |
+| 0.17 | 2026-11-23 | Lesson format: `world` (the robot world a starter program opens in, M4) |

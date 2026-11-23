@@ -37,6 +37,7 @@ safety:
     - Run the robot on the floor, away from stairs, table edges and water
     - Tap the robot gently to test the shake sensor; never drop or throw it
 starter_program: robot-reacts
+world: dark-tunnel
 hardware: microbit-motor
 assessment:
   - I can explain sense, decide and act using my robot as the example

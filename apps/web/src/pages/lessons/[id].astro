@@ -26,7 +26,9 @@ const next = lesson.data.next && titles[lesson.data.next] ? lesson.data.next : n
 const { data } = lesson;
 const { Content } = await render(lesson);
 const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ?? []);
-const starter = data.starter_program ? starterLink(lesson.id, data.starter_program) : undefined;
+const starter = data.starter_program
+  ? starterLink(lesson.id, data.starter_program, data.world)
+  : undefined;
 ---
 
 <BaseLayout title={data.title}>

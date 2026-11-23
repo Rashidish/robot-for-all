@@ -205,6 +205,13 @@
     setTimeout(checkSound, 500);
   }
 
+  /** Shows the Robot view with this world, e.g. when a lesson opens its starter program. */
+  export function showWorld(id: string): void {
+    if (!worlds.some((w) => w.id === id)) return;
+    view = 'robot';
+    robotWorld?.select(id);
+  }
+
   export function stop(): void {
     post({ kind: 'stop' });
     running = false;

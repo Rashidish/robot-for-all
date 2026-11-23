@@ -242,6 +242,11 @@
     requestAnimationFrame(draw);
   }
 
+  /** Chooses a world from outside, e.g. a lesson's world (FR-8). */
+  export function select(id: string): void {
+    chooseWorld(id);
+  }
+
   function chooseWorld(id: string) {
     stop();
     link = null;

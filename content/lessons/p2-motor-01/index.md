@@ -37,6 +37,7 @@ safety:
     - Take a battery out at once if anything gets hot, smells or smokes, and tell an adult
     - Keep fingers and hair away from the spinning motor shaft
 starter_program: go-and-stop
+world: open-floor
 hardware: microbit-motor
 assessment:
   - I can point to the micro:bit, the motor driver, the motor and the motor batteries in the wiring diagram
