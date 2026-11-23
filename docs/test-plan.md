@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.11 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
+> **Version:** 0.12 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -72,8 +72,8 @@ How to use this list: add a row whenever a step adds something only a person can
 
 | # | Check | Done |
 |---|---|---|
-| C1 | Custom domain connected; HTTPS works; security headers present on the live domain | |
-| C2 | Vodacom ConnectU zero-rating applied for (then MTN, Telkom, Cell C) | |
+| C1 | `robotsforall.org.za` connected (`docs/deploy.md` §4); HTTPS works; security headers present; `SITE_URL` variable set; `www.`, `robotsforall.co.za` and `robotsforall.africa` redirect to it with the path kept; the app installs and works offline from the new address | |
+| C2 | Vodacom ConnectU zero-rating applied for `robotsforall.org.za` (then MTN, Telkom, Cell C) | |
 | C3 | Privacy page reviewed by the owner against POPIA | |
 | C4 | Licence of `@inlang/plugin-message-format` confirmed (build-time tool) | |
 | C5 | A short pilot: one class or club uses 2–3 lessons and gives feedback | |
@@ -95,3 +95,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.9 | 2026-11-23 | B15 motor driver extension |
 | 0.10 | 2026-11-23 | B16 robot profile `l9110s-basic` on a real board (ADR-0008) |
 | 0.11 | 2026-11-23 | B17 Robot sensors panel with TalkBack |
+| 0.12 | 2026-11-23 | C1, C2 name the hostname `robotsforall.org.za` and the redirects |

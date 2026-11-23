@@ -119,7 +119,7 @@ test.describe('code editor (M3)', () => {
       mimeType: 'application/json',
       buffer: Buffer.from('{"x":1}')
     });
-    await expect(page.locator('p.status')).toHaveText("That file isn't a Robot For All program.");
+    await expect(page.locator('p.status')).toHaveText("That file isn't a Robots For All program.");
   });
 
   test('My programs lists, saves to file and starts new programs', async ({ page }) => {

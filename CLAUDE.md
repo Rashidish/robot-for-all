@@ -1,6 +1,6 @@
-# CLAUDE.md — Robot For All
+# CLAUDE.md — Robots For All
 
-> **Version:** 0.15 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
+> **Version:** 0.16 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -9,7 +9,7 @@ Read this file before every task. It is the source of truth for what we build, t
 
 ## 1. What we are building
 
-**Robot For All** is a free or ultra-low-cost STEM and robotics learning platform.
+**Robots For All** is a free or ultra-low-cost STEM and robotics learning platform.
 Tagline: *"From Cardboard to Innovation: Robotics Education for Everyone."*
 
 Learners start with cardboard, popsicle sticks, straws and one motor. They move on to controlling robots with micro:bit/ESP boards, then to designing integrated robot projects. Teachers, robotics coaches and parents get ready-made lessons, templates, parts lists and AI help.
@@ -83,7 +83,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 | M6 | AI helper | Front-office AI with cost caps and child-safe rules |
 | Later | Live sessions, competitions, kit store, newsletter, back-office AI generation pipeline |
 
-**Owner decision (2026-11-23):** the product's name is **Robots For All** (plural). Change every user-facing "Robot For All" to it as part of the UI work (Lite UI and CI), together with the move to the robotsforall domains. The repo is already `robots-for-all`.
+**Owner decision (2026-11-23):** the product's name is **Robots For All** (plural); user-facing text uses it (done 2026-11-23). The site lives on one hostname, **`robotsforall.org.za`**; `robotsforall.co.za`, `robotsforall.africa` and `www.` redirect to it (`docs/deploy.md` §4). Internal identifiers (the Cloudflare Pages project `robot-for-all`, the program file format `robot-for-all-program`) keep their old names so nothing breaks.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
@@ -107,7 +107,7 @@ Reuse proven open source before writing our own.
 | Python in browser | Pyodide (lazy-loaded, later milestones only) | No server cost |
 | Simulator | **On-screen micro:bit + our 2D robot world** in `packages/sim` (ADR-0007); programs use robot calls through robot profiles, never pins (ADR-0008) | One engine for screen and real robot; no physics library; 2D before 3D |
 | Database / auth | Postgres (e.g. Supabase) | Free tier, row-level security |
-| Hosting | **Cloudflare Pages**, one hostname for everything (ADR-0002) | Free unlimited static traffic; zero-rating friendly |
+| Hosting | **Cloudflare Pages**, one hostname for everything: `robotsforall.org.za` (ADR-0002) | Free unlimited static traffic; zero-rating friendly |
 | AI | Claude API via our own server only | Keys never reach the browser |
 | Offline platform option | Evaluate Kolibri for schools with no internet | Built for this case |
 
@@ -272,3 +272,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.13 | 2026-11-23 | Answer sheets (printable now; in-app records with M5) |
 | 0.14 | 2026-11-23 | Current milestone M4; simulator row from ADR-0007 and ADR-0008 (robot calls, not pins); `content/worlds` |
 | 0.15 | 2026-11-23 | Owner decision: rename the product to Robots For All during the UI work |
+| 0.16 | 2026-11-23 | Renamed to Robots For All in user-facing text; hostname `robotsforall.org.za`, other domains redirect |

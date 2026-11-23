@@ -82,7 +82,8 @@ jobs:
         # The local test server copies Cloudflare's _headers rules; this checks Cloudflare agrees.
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            base="https://robot-for-all.pages.dev"
+            # The production address: SITE_URL (repo variable) once the domain is connected.
+            base="${{ vars.SITE_URL || 'https://robot-for-all.pages.dev' }}"
           else
             alias=$(echo "${{ github.head_ref }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | cut -c1-28 | sed 's/-*$//')
             base="https://${alias}.robot-for-all.pages.dev"
@@ -105,7 +106,8 @@ jobs:
         # Same browser tests as CI, but against Cloudflare itself (real headers, redirects, caching).
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            base="https://robot-for-all.pages.dev"
+            # The production address: SITE_URL (repo variable) once the domain is connected.
+            base="${{ vars.SITE_URL || 'https://robot-for-all.pages.dev' }}"
           else
             alias=$(echo "${{ github.head_ref }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | cut -c1-28 | sed 's/-*$//')
             base="https://${alias}.robot-for-all.pages.dev"

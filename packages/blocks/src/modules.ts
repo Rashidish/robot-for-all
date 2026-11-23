@@ -2,7 +2,7 @@
 // micro:bit's file system next to main.py (on screen and in the .hex).
 
 /** MakeCode-style game sprites on the 5 × 5 LEDs (MakeCode's "Game" category). */
-export const GAME_PY = `# game.py - Robot For All: sprites on the micro:bit's 5 x 5 LEDs, like MakeCode's Game blocks.
+export const GAME_PY = `# game.py - Robots For All: sprites on the micro:bit's 5 x 5 LEDs, like MakeCode's Game blocks.
 from microbit import display, sleep
 
 score = 0

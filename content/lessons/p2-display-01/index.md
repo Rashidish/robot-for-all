@@ -12,7 +12,7 @@ syllabus_links:
 duration_minutes: 45
 cost_estimate_zar: 0
 parts:
-  - { item: phone, tablet or computer with the Robot For All code editor, qty: 1 }
+  - { item: phone, tablet or computer with the Robots For All code editor, qty: 1 }
   - { item: BBC micro:bit and USB cable (optional), qty: 1, substitute: the on-screen micro:bit in the code editor }
 outcomes:
   - Explain that a program is a list of instructions the micro:bit follows in order (a sequence)

@@ -14,7 +14,7 @@ syllabus_links:
 duration_minutes: 60
 cost_estimate_zar: 0
 parts:
-  - { item: phone, tablet or computer with the Robot For All code editor, qty: 1 }
+  - { item: phone, tablet or computer with the Robots For All code editor, qty: 1 }
   - { item: BBC micro:bit and USB cable (optional), qty: 1, substitute: the on-screen micro:bit in the code editor }
   - { item: small box or cup to cover the micro:bit, qty: 1, substitute: your hand }
 outcomes:

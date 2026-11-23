@@ -5,7 +5,7 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     await page.goto('/');
     const href = await page.locator('link[rel="manifest"]').getAttribute('href');
     const manifest = await (await request.get(href ?? '')).json();
-    expect(manifest.name).toBe('Robot For All');
+    expect(manifest.name).toBe('Robots For All');
     expect(manifest.display).toBe('standalone');
     for (const icon of manifest.icons as { src: string }[]) {
       expect((await request.get(icon.src)).status(), icon.src).toBe(200);
@@ -23,7 +23,7 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     for (const [path, heading] of [
       ['/', 'From Cardboard to Innovation'],
       ['/lessons/', 'Lessons'],
-      ['/about/', 'About Robot For All']
+      ['/about/', 'About Robots For All']
     ] as const) {
       await page.goto(path);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(heading);
