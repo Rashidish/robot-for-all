@@ -1,0 +1,12 @@
+{
+  "id": "simple-maze",
+  "version": 1,
+  "challenge": "world_simple_maze_challenge",
+  "size": { "w": 1600, "h": 1200 },
+  "walls": [{ "x": 300, "y": 300, "w": 1000, "h": 600 }],
+  "areas": [{ "id": "exit", "x": 0, "y": 900, "w": 300, "h": 300, "pattern": "hatch" }],
+  "start": { "x": 150, "y": 150, "heading": 0 },
+  "bump": "shake",
+  "goal": { "reach": "exit" },
+  "timeLimitMs": 60000
+}

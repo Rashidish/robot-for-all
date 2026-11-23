@@ -1,0 +1,29 @@
+{
+  "id": "rhino-patrol",
+  "version": 1,
+  "challenge": "world_rhino_patrol_challenge",
+  "grid": { "cols": 5, "rows": 4 },
+  "lines": [{ "cells": ["A4", "A3", "A2", "A1", "B1", "C1", "D1", "E1", "E2", "E3", "E4"] }],
+  "pieces": [
+    { "piece": "tunnel", "id": "thicket", "cell": "A2", "dir": "ns" },
+    { "piece": "target", "id": "gate", "cell": "E4", "edge": "S" },
+    { "piece": "wall", "cell": "B3", "edge": "N", "length": 2 }
+  ],
+  "areas": [
+    { "id": "station", "cell": "A4", "pattern": "dots" },
+    { "id": "fence-north", "cell": "C1", "pattern": "hatch" },
+    { "id": "fence-east", "cell": "E3", "pattern": "hatch" },
+    { "id": "waterhole", "cell": "C3", "pattern": "checks" }
+  ],
+  "start": { "cell": "A4", "heading": 270 },
+  "bump": "whiskers",
+  "missions": [
+    { "id": "patrol", "type": "checkpoints", "zones": ["fence-north", "fence-east"], "points": 40 },
+    { "id": "thicket", "type": "passTunnel", "tunnel": "thicket", "points": 30 },
+    { "id": "gate", "type": "touchTarget", "target": "gate", "points": 30 },
+    { "id": "waterhole", "type": "stopInZone", "zone": "waterhole", "points": 40 },
+    { "id": "home", "type": "returnHome", "zone": "station", "points": 20 }
+  ],
+  "scoring": { "timeBonus": 30, "wallTouch": -5 },
+  "timeLimitMs": 120000
+}

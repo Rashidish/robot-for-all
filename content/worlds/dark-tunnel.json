@@ -1,0 +1,12 @@
+{
+  "id": "dark-tunnel",
+  "version": 1,
+  "challenge": "world_dark_tunnel_challenge",
+  "size": { "w": 2000, "h": 800 },
+  "areas": [
+    { "id": "tunnel", "x": 1000, "y": 250, "w": 400, "h": 300, "light": 20, "pattern": "checks" }
+  ],
+  "start": { "x": 150, "y": 400, "heading": 0 },
+  "goal": { "stopInside": "tunnel" },
+  "timeLimitMs": 20000
+}

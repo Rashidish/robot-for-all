@@ -1,0 +1,10 @@
+{
+  "name": "@robots-for-all/sim",
+  "private": true,
+  "description": "2D robot world for the simulator (M4): worlds and courses, robot calls, sensors, missions, run reports. No DOM, no dependencies.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

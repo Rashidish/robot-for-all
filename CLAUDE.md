@@ -1,6 +1,6 @@
 # CLAUDE.md — Robot For All
 
-> **Version:** 0.14 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
+> **Version:** 0.15 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -87,7 +87,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
-Current milestone: **M3** (spec: `docs/specs/M3-code.md`). M2 lessons and the six Phase 2 lessons are built and wait for the people checks in `docs/test-plan.md`.
+Current milestone: **M4** (spec: `docs/M4-simulate-spec_v0.5.md`; robot profiles: `docs/ADR-0008-robot-profiles_v1.0.md`). M2 lessons, the M3 editor and the six Phase 2 lessons are built and wait for the people checks in `docs/test-plan.md`.
 
 ---
 
@@ -105,7 +105,7 @@ Reuse proven open source before writing our own.
 | Block coding | **Blockly**, our own small block set (ADR-0005) | Industry standard, open source |
 | micro:bit | **MicroPython** .hex built in the browser (microbit-fs) + WebUSB (microbit-connection); firmware served from our domain (ADR-0005) | No third-party domain; fits our lessons and i18n |
 | Python in browser | Pyodide (lazy-loaded, later milestones only) | No server cost |
-| Simulator | Canvas 2D + small physics lib | 2D before 3D |
+| Simulator | **On-screen micro:bit + our 2D robot world** in `packages/sim` (ADR-0007); programs use robot calls through robot profiles, never pins (ADR-0008) | One engine for screen and real robot; no physics library; 2D before 3D |
 | Database / auth | Postgres (e.g. Supabase) | Free tier, row-level security |
 | Hosting | **Cloudflare Pages**, one hostname for everything (ADR-0002) | Free unlimited static traffic; zero-rating friendly |
 | AI | Claude API via our own server only | Keys never reach the browser |
@@ -126,6 +126,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /packages/i18n       Translation keys and loaders
 /content/lessons     Lessons as Markdown + front matter (one folder per lesson)
 /content/projects    Project data, parts lists, templates (SVG)
+/content/worlds      Robot worlds and courses for the simulator (JSON, checked)
 /content/i18n        Translations per language
 /docs/specs          One spec per feature (write before building)
 /docs/adr            Architecture decision records
@@ -269,4 +270,5 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.11 | 2026-11-22 | Owner reminder: revisit the extension folder format after the front office is complete |
 | 0.12 | 2026-11-22 | Lesson format: `starter_program` and `hardware` for Phase 2 lessons |
 | 0.13 | 2026-11-23 | Answer sheets (printable now; in-app records with M5) |
-| 0.14 | 2026-11-23 | Owner decision: rename the product to Robots For All during the UI work |
+| 0.14 | 2026-11-23 | Current milestone M4; simulator row from ADR-0007 and ADR-0008 (robot calls, not pins); `content/worlds` |
+| 0.15 | 2026-11-23 | Owner decision: rename the product to Robots For All during the UI work |

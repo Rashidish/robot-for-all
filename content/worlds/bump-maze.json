@@ -1,0 +1,10 @@
+{
+  "id": "bump-maze",
+  "version": 1,
+  "challenge": "world_bump_maze_challenge",
+  "maze": { "kind": "walls", "size": 4 },
+  "bump": "whiskers",
+  "missions": [{ "id": "finish", "type": "reachZone", "zone": "finish", "points": 100 }],
+  "scoring": { "timeBonus": 30, "wallTouch": -5 },
+  "timeLimitMs": 120000
+}

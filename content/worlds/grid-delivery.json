@@ -1,0 +1,18 @@
+{
+  "id": "grid-delivery",
+  "version": 1,
+  "challenge": "world_grid_delivery_challenge",
+  "grid": { "cols": 3, "rows": 3 },
+  "areas": [
+    { "id": "farm", "cell": "A1", "pattern": "dots" },
+    { "id": "puddle", "cell": "B2", "pattern": "checks" },
+    { "id": "garden", "cell": "B3", "pattern": "hatch" }
+  ],
+  "start": { "cell": "A1", "heading": 0 },
+  "missions": [
+    { "id": "deliver", "type": "stopInZone", "zone": "garden", "points": 50 },
+    { "id": "home", "type": "returnHome", "zone": "farm", "points": 20 }
+  ],
+  "scoring": { "timeBonus": 30, "wallTouch": -5 },
+  "timeLimitMs": 120000
+}

@@ -1,0 +1,9 @@
+{
+  "id": "line-maze",
+  "version": 1,
+  "challenge": "world_line_maze_challenge",
+  "maze": { "kind": "lines", "size": 4 },
+  "missions": [{ "id": "finish", "type": "reachZone", "zone": "finish", "points": 100 }],
+  "scoring": { "timeBonus": 30, "wallTouch": -5 },
+  "timeLimitMs": 120000
+}
