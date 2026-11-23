@@ -1,5 +1,5 @@
 {
-  "name": "@robot-for-all/blocks",
+  "name": "@robots-for-all/blocks",
   "private": true,
   "description": "Program model for the block editor: validation, MicroPython generator and interpreter (M3)",
   "license": "MIT",
