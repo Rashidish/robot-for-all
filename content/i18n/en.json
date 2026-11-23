@@ -438,5 +438,11 @@
   "sim_value_whisker_left": "Left whisker pressed",
   "sim_value_whisker_right": "Right whisker pressed",
   "sim_value_pen": "Pen",
-  "sim_value_gesture": "Last gesture"
+  "sim_value_gesture": "Last gesture",
+  "sim_maze_number": "Maze number",
+  "sim_maze_size": "Size",
+  "sim_maze_new": "New maze",
+  "sim_missions": "Missions",
+  "sim_done": "done",
+  "sim_not_yet": "not done yet"
 }

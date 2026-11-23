@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.13 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
+> **Version:** 0.14 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -64,6 +64,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B16 | **Robot profile `l9110s-basic` on a real board** (micro:bit + L9110S): with `rfa_robot`, left and right motors go forward and backward at 30 %, 60 % and 100 %; stop stops both; whiskers on P12/P15 and line sensors on P13/P14 read right (check the line polarity on black insulation tape); the pen servo on P16 goes down and up. Then set `testedBy` and `status: published` in the profile | |
 | B17 | **Robot sensors panel** on a phone with TalkBack: the four whisker and line checkboxes are announced and can be ticked; the left/right motor and pen lines are read out when they change | |
 | B18 | **Robot tab on a budget Android phone**: the robot moves smoothly (about 30 frames a second) in the follow-the-line world with the micro:bit running; "Where is the robot?" and the challenge result are read out by TalkBack; the Monitor table is read row by row and the grid letters are readable | |
+| B19 | **Surprise maze on two devices**: type the same maze number and size on two different phones; the mazes look the same. The mission checklist is read out by TalkBack, with "done" or "not done yet" for each mission | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -98,3 +99,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.11 | 2026-11-23 | B17 Robot sensors panel with TalkBack |
 | 0.12 | 2026-11-23 | C1, C2 name the hostname `robotsforall.org.za` and the redirects |
 | 0.13 | 2026-11-23 | B18 Robot tab on a budget phone and with TalkBack |
+| 0.14 | 2026-11-23 | B19 maze numbers on two devices; mission checklist with TalkBack |

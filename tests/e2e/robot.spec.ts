@@ -89,4 +89,36 @@ test.describe('Robot tab (M4 step 2)', () => {
     await expect(page.locator('.motor')).toHaveText('stop', { timeout: 15_000 });
     await expect(page.locator('.motor-b')).toHaveText('stop');
   });
+
+  test('maze courses: the same maze number draws the same maze; missions are listed', async ({
+    page
+  }) => {
+    await page.goto('/code/');
+    await expect(page.locator('.blocklySvg').first()).toBeVisible();
+    await page.getByRole('button', { name: 'Robot', exact: true }).click();
+    await page.getByLabel('World', { exact: true }).selectOption('bump-maze');
+    const canvas = page.locator('.robot-world canvas');
+    const picture = () => canvas.evaluate((c: HTMLCanvasElement) => c.toDataURL());
+    const number = page.getByLabel('Maze number');
+    await number.fill('4817');
+    await number.press('Enter');
+    await number.blur();
+    await page.waitForTimeout(300);
+    const first = await picture();
+    await number.fill('4818');
+    await number.blur();
+    await page.waitForTimeout(300);
+    expect(await picture()).not.toBe(first);
+    await number.fill('4817');
+    await number.blur();
+    await page.waitForTimeout(300);
+    expect(await picture()).toBe(first);
+    await page.getByLabel('Size').selectOption('6');
+    await page.waitForTimeout(300);
+    expect(await picture()).not.toBe(first);
+    // The mission checklist (FR-17): name and points, not done before a run.
+    const finish = page.locator('.missions li[data-mission="finish"]');
+    await expect(finish).toContainText('Reach the finish');
+    await expect(finish).toHaveAttribute('data-done', 'false');
+  });
 });
