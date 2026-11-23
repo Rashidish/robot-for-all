@@ -125,4 +125,34 @@ test.describe('Robot tab (M4 step 2)', () => {
     await expect(finish).toContainText('Reach the finish');
     await expect(finish).toHaveAttribute('data-done', 'false');
   });
+
+  test('Print course: true-size A4 pages with a calibration square and a build sheet', async ({
+    page
+  }) => {
+    await page.goto('/code/');
+    await expect(page.locator('.blocklySvg').first()).toBeVisible();
+    // The print dialog can't be driven in a test: record that it was asked for.
+    await page.evaluate(() => {
+      window.print = () => {
+        (window as unknown as { printed: boolean }).printed = true;
+      };
+    });
+    await page.getByRole('button', { name: 'Robot', exact: true }).click();
+    await page.getByLabel('World', { exact: true }).selectOption('bump-maze');
+    await page.getByLabel('Maze number').fill('4817');
+    await page.getByLabel('Maze number').blur();
+    await page.getByRole('button', { name: 'Print course' }).click();
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { printed?: boolean }).printed))
+      .toBe(true);
+    const pages = page.locator('.print-pages svg');
+    // First page + 15 floor tiles + build sheet.
+    await expect(pages).toHaveCount(17);
+    await expect(pages.first()).toHaveAttribute('width', '210mm');
+    await expect(pages.first()).toContainText('This square must measure 100 mm');
+    await expect(pages.first()).toContainText('Bump maze 4817 (4 × 4)');
+    await expect(pages.last()).toContainText('Build sheet');
+    // On screen the pages stay hidden; only the printer sees them.
+    await expect(page.locator('.print-pages')).toBeHidden();
+  });
 });
