@@ -78,6 +78,7 @@
   /** The learner pressed Stop: keep the run report (status "running"). */
   export function stop(): void {
     if (link && status === 'running') {
+      takeSample();
       link.sim.stop();
       saveReport(safeStorage(), link.report());
     }
@@ -156,6 +157,8 @@
 
   function finish() {
     if (!link) return;
+    // The loop stops here, so take a last sample: the Monitor must show how the run ended.
+    takeSample();
     const report = link.report();
     saveReport(safeStorage(), report);
     status = report.status === 'done' ? 'done' : 'failed';
