@@ -11,3 +11,5 @@ Copy `0000-template.md`. Never edit an accepted ADR's decision; write a new ADR 
 | 0004 | [Content pipeline](0004-content-pipeline.md): Markdown + Zod | Accepted |
 | 0005 | [Block editor and micro:bit](0005-block-editor-and-microbit.md): Blockly + MicroPython | Accepted |
 | 0006 | [On-screen micro:bit](0006-on-screen-microbit.md): real MicroPython simulator, built from source | Accepted |
+| 0007 | [Robot world](0007-robot-world-on-the-on-screen-microbit.md): reuse the on-screen micro:bit (pin link replaced by ADR-0008) | Accepted |
+| 0008 | [Robot profiles](../ADR-0008-robot-profiles_v1.0.md): code the robot, not the board | Accepted |

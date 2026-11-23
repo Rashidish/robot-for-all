@@ -1,6 +1,6 @@
 # Spec: M4 — Simulate (2D robot and sensor world)
 
-> **Version:** 0.5 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail · **Status:** Draft — v0.5 changes wait for owner review (v0.4 approved 2026-11-23)
+> **Version:** 0.5 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-23: simulator profile confirmed; no profile in the run report; step 1 status corrected)
 > Depends on: M3 (block editor, on-screen micro:bit, ADR-0006), ADR-0007 (engine reuse), **ADR-0008 (robot profiles)**, M2 (cardboard templates), CLAUDE.md 0.14. Feeds: the submission kit (submissions-spec v0.3, FR-S3 "runs ✔" check), M5 challenge records and virtual competitions.
 
 ## 1. Purpose
@@ -124,7 +124,8 @@ Blocks / typed Python ──► rfa_robot calls ──► on-screen micro:bit (M
 
 - `packages/sim`: pure TypeScript, no DOM, no dependencies, fully unit-tested.
 - Kinematics: `v = (vL + vR) / 2`, turn rate `(vL − vR) / track` (screen coordinates, y down, heading clockwise from east). Cart: 0.1 m between the wheels, 0.06 m radius for bumps, 0.2 m/s at 100 %.
-- Whiskers: two contact points 0.07 m ahead of the axle, ±0.04 m to each side; a whisker reads 1 while its point is inside a wall or target.
+- Whiskers: two contact points 0.07 m ahead of the axle, ±0.04 m to each side; a whisker reads 1 while its point is inside a wall or target. *(Step 1: it also reads 1 while the cart's body touches something ahead of the axle on that side — the whisker wire spans the front. Without this the 120 mm cart snagged wall ends that the two points missed.)*
+- Walls (step 1): a cart that meets a wall slides along it (only the part of the move into the wall is removed), like a real cart, instead of sticking on corners; one continuous touch counts as one bump. The world's edge is a wall.
 - "Real floor" option: each wheel gets a seeded difference of up to ±3 %, so learners see why a real robot drifts; seeded, so a run repeats exactly.
 - Maze generator: a small seeded random number generator (e.g. mulberry32) and a depth-first "perfect maze" (exactly one path between any two cells). Line mazes draw lines along cell centres between connected cells; wall mazes place a wall piece on every closed cell edge.
 - Robot calls reach the world as described in §6.2; no pin numbers cross the boundary between the on-screen micro:bit and `packages/sim`.
@@ -157,7 +158,8 @@ Blocks / typed Python ──► rfa_robot calls ──► on-screen micro:bit (M
 | left / right whisker pressed? | whisker contact point inside a wall or target | digital read on a free pin |
 | light level, shake | micro:bit's own sensors (unchanged) | micro:bit's own sensors |
 
-- **Proposed:** in the on-screen micro:bit, `rfa_robot` uses a built-in **simulator profile** that sends robot calls to the world and reads sensor answers back, through one small simulator patch (like the M3 pin-output patch). The real-robot profiles are the ADR-0008 data files. Confirm in step 1c.
+- **Decided (owner, 2026-11-23):** in the on-screen micro:bit, `rfa_robot` uses a built-in **simulator profile** that sends robot calls to the world and reads sensor answers back, through one small simulator patch (like the M3 pin-output patch). The real-robot profiles are the ADR-0008 data files.
+- **Sensor reads never wait for the world.** The world pushes sensor answers into the on-screen micro:bit whenever they change (and at least 10 times a second); `line(side)` and `whisker(side)` return the latest pushed value at once, like a real pin read. No message round-trip per read, so tight loops stay fast on budget phones.
 - `packages/sim` gets the same interface for headless replay: a scripted driver or the replayed program calls `setMotor(side, speed)`, `setPen(down)`, `line(side)`, `whisker(side)` — so tests never name pins.
 - One-motor profiles: "right motor" calls are ignored and both wheels follow the left motor (§2).
 - "Test my robot" fixes (flip a motor, swap motors) live in the learner's profile settings on the device and never reach the simulator.
@@ -172,7 +174,7 @@ Blocks / typed Python ──► rfa_robot calls ──► on-screen micro:bit (M
 
 ## 8. Acceptance criteria
 
-- [x] Forward at 100 % for 1 s moves the robot the expected distance ± 5 % (unit test).
+- [x] Forward at 100 % for 1 s moves the robot the expected distance ± 5 % (unit test). *(Rebuilt on robot calls in step 1.)*
 - [x] Two motors at different speeds turn the robot the right way (unit test).
 - [x] The "Robot that reacts" logic stops the robot inside the tunnel world; a two-sensor line follower finishes the line world; the box-and-back and maze worlds can be finished (unit tests with scripted drivers).
 - [x] Bumping a wall gives a shake and stops the robot at the wall (unit test).
@@ -184,21 +186,21 @@ Blocks / typed Python ──► rfa_robot calls ──► on-screen micro:bit (M
 - [ ] (v0.3) Grid readout names the right square at each corner and the centre of the grid world (unit test).
 - [ ] (v0.3) Headless replay of a scripted driver gives a byte-identical run report on two runs, with and without "real floor" (unit test).
 - [ ] (v0.3) Monitor shows light level falling as the robot enters the tunnel; the screen-reader table matches (e2e, step 2).
-- [ ] (v0.4) Driving straight into a wall makes the facing whisker report pressed and the other not; driving at an angle sets only the near one (unit test).
-- [ ] (v0.4) The same maze number and size give identical mazes on two runs; 1,000 random mazes are all solvable from start to finish (unit test).
-- [ ] (v0.4) A "bump, back up, turn right" driver escapes every 4×4 wall maze in a sample of 100 within the time limit, or the course's time limit is raised to fit (unit test sets the default).
-- [ ] (v0.4) A left-hand line-maze driver with two line sensors finishes 100 sample 4×4 line mazes (unit test).
-- [ ] (v0.4) Mission scoring: a scripted run that completes two of three missions gets exactly their points, the time bonus and the wall-touch penalties (unit test).
+- [x] (v0.4) Driving straight into a wall makes the facing whisker report pressed and the other not; driving at an angle sets only the near one (unit test).
+- [x] (v0.4) The same maze number and size give identical mazes on two runs; 1,000 random mazes are all solvable from start to finish (unit test).
+- [x] (v0.4) A "bump, back up, turn right" driver escapes every 4×4 wall maze in a sample of 100 within the time limit, or the course's time limit is raised to fit (unit test sets the default). *(Step 1c: with straight driving and fixed or random turns, 40–60 % of mazes were still not escaped after 10 minutes. The driver that passes curves gently left while driving (left wheel at 30 %), backs up 0.3 s and turns right about 70°, so it follows the left wall: slowest 97 s of the 120 s round.)*
+- [x] (v0.4) A left-hand line-maze driver with two line sensors finishes 100 sample 4×4 line mazes (unit test).
+- [x] (v0.4) Mission scoring: a scripted run that completes two of three missions gets exactly their points, the time bonus and the wall-touch penalties (unit test).
 - [ ] (v0.4) Printed tiles at 100 % give a calibration square of 100 mm ± 1 mm on two different printers; tiles join with marks aligned (manual test, test plan).
-- [ ] (v0.4) The build sheet lists the same number of wall pieces as the on-screen maze (unit test).
-- [ ] (v0.5) `packages/sim` has no pin numbers in its public interface; the scripted drivers and replay use robot calls only (unit test / type check).
-- [ ] (v0.5) The same program gives a byte-identical run report with two different robot profiles selected (unit test).
+- [ ] (v0.4) The build sheet lists the same number of wall pieces as the on-screen maze (unit test). *(Step 1c: the world's piece list matches its walls; the build sheet itself is step 2b.)*
+- [x] (v0.5) `packages/sim` has no pin numbers in its public interface; the scripted drivers and replay use robot calls only (unit test / type check).
+- [ ] (v0.5) The same program gives a byte-identical run report with two different robot profiles selected (unit test). *(Waits for the `rfa_robot` module and profile format, ADR-0008 rollout 1.)*
 
 ## 9. Work plan for Claude Code
 
-1. ~~**ADR-0007 + `packages/sim` core**~~ ✅ Done: world format and checks, kinematics, sensors, walls, rules, run report; five launch worlds with English challenge texts; unit tests.
+1. ✅ **ADR-0007 + `packages/sim` core** — done 2026-11-23, rebuilt directly on robot calls (no earlier version was found on any branch or pull request): world format and checks, kinematics, sensors, walls, rules, run report; five launch worlds with English challenge texts; unit tests; ADR-0007.
 1b. **(v0.3) `packages/sim` additions** — no UI, so not blocked by the rename: pen (pen calls → strokes; was P16 servo in v0.3), grid in the world format and square lookup, `seed` in the run report, `replay.ts`; grid-map and art-floor worlds; unit tests.
-1c. **(v0.4, changed v0.5) Robot calls and courses in `packages/sim`** — no UI: switch the engine from pins to robot calls (ADR-0008 rollout 1, §6.2) first; then whiskers and the `bump` setting, course layers and wall pieces, missions and scoring, `maze.ts`, score in the run report; first courses (§14.5); unit tests.
+1c. ✅ **(v0.4, changed v0.5) Robot calls and courses in `packages/sim`** — done 2026-11-23 (the `rfa_robot` module and profile format, the rest of ADR-0008 rollout 1, are a separate step) — no UI: switch the engine from pins to robot calls (ADR-0008 rollout 1, §6.2) first; then whiskers and the `bump` setting, course layers and wall pieces, missions and scoring, `maze.ts`, score in the run report; first courses (§14.5); unit tests.
 2. **Robot tab**: canvas view, link to the on-screen micro:bit through robot calls (simulator profile), controls, Monitor, grid overlay, location readout, pen drawing, mission checklist, maze number entry, accessibility. ⏸ Before this UI step: the repo rename to `robots-for-all` and the domain (owner reminder).
 2b. **(v0.4) Print course**: A4 tile pages, alignment marks, calibration square, assembly map, wall build sheet; loaded on demand.
 3. **Worlds and courses in the build** + `world:` in lesson front matter; the Phase 2 lessons point to their worlds.
@@ -217,7 +219,7 @@ Free at the core — including everything VEX sells in its paid VR tiers that we
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Pin messages arrive too slowly for smooth driving | Jerky robot | The world integrates at fixed steps using the latest pin state; the messages only change state |
+| Robot-call messages arrive too slowly for smooth driving | Jerky robot | The world integrates at fixed steps using the latest motor state; the messages only change state; sensor answers are pushed, not requested (§6.2) |
 | Learners expect the real robot to behave exactly like the screen | Frustration | Lessons say why they differ; "real floor" option with small seeded wheel differences |
 | Low-end phones struggle with the iframe plus the canvas | Slow | Draw only what changed; ×1 speed default; Monitor graph throttled; measured on a budget phone (test plan) |
 | Learners and teachers compare us with VEX's 3D playgrounds | "Looks basic" | Lite UI and CI makes 2D look deliberate; our pitch is "the same program drives your real cardboard robot", which VEX VR can't offer |
@@ -343,3 +345,4 @@ Take the best of both big competition formats and make them free and buildable f
 | 0.3 | 2026-11-23 | VEX review (§13): VEXcode Pro V5 is an end-of-life C++ editor, not a simulator; VEXcode VR is the real reference. Added Monitor (FR-11), grid and location (FR-12), pen on P16 (FR-13), headless replay (FR-14), grid-map and art-floor worlds, step 1b, pen-art lesson |
 | 0.4 | 2026-11-23 | Owner approved v0.3 and Courses & Seasons (§14): line courses, line + cardboard pieces, cardboard walled mazes; whisker bumper on P12/P15 (FR-15); course layers, missions and scoring (FR-16, FR-17); seeded random mazes (FR-18); print course as A4 tiles with build sheet (FR-19); seasons (FR-20), Season 1 "Rhino Patrol"; steps 1c, 2b, 5; new lessons and cardboard templates; risks for printing, IR ink and wall stability |
 | 0.5 | 2026-11-23 | Draft following ADR-0008: robot calls instead of pins everywhere (sensors, pen, FR-2/3/11/13/15, §6 diagram, §14.3); new FR-21 and §6.2 (robot calls, simulator profile proposal); step 1c starts with the switch to robot calls; two acceptance criteria; dropped the P12–P15 simulator patch and pin-check notes |
+| 0.5 (approved) | 2026-11-23 | Owner approved: simulator profile decided (§6.2) with pushed sensor answers so reads never wait; robot profile stays out of the run report; step 1 status corrected (not on `main`; find or rebuild on robot calls, with ADR-0007); first risk row reworded for robot calls |

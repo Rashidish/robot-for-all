@@ -1,0 +1,19 @@
+{
+  "id": "line-junction",
+  "version": 1,
+  "challenge": "world_line_junction_challenge",
+  "grid": { "cols": 4, "rows": 3 },
+  "lines": [{ "cells": ["A2", "B2", "C2", "D2"] }, { "cells": ["C2", "C1", "D1"] }],
+  "pieces": [{ "piece": "tunnel", "id": "tunnel", "cell": "B2", "dir": "ew" }],
+  "areas": [
+    { "id": "barn", "cell": "D1", "pattern": "hatch" },
+    { "id": "river", "cell": "D2", "pattern": "checks" }
+  ],
+  "start": { "cell": "A2", "heading": 0 },
+  "missions": [
+    { "id": "tunnel", "type": "stopInZone", "zone": "tunnel", "points": 40 },
+    { "id": "barn", "type": "reachZone", "zone": "barn", "points": 40 }
+  ],
+  "scoring": { "timeBonus": 30, "wallTouch": -5 },
+  "timeLimitMs": 120000
+}
