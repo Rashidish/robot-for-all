@@ -3,6 +3,13 @@
   // simulator, built from source and served from our own site, in a same-origin iframe. It runs
   // the same MicroPython as a real micro:bit V2, for blocks and typed Python alike.
   // Around it we add what MakeCode shows: sensor controls, pin and motor state and NeoPixels.
+  // Motors and the pen come from robot calls (ADR-0008, simulator patch 0005), never from pins.
+  import {
+    parseRobotCall,
+    SENSOR_NAMES,
+    type SensorName
+  } from '../../../../packages/robots/src/simulator';
+
   interface Props {
     src: string;
     labels: Record<string, string>;
@@ -50,21 +57,43 @@
   /** Which pins last got an analog (PWM) value; their numbers are percentages. */
   let analog = $state<Record<number, boolean>>({});
 
-  /** A motor on a driver: one pin on means forward or backward; the value is its speed. */
-  function motorState(forward: number, backward: number): { dir: string; speed: number } {
-    const f = pins[forward] ?? 0;
-    const b = pins[backward] ?? 0;
-    const speed = (pin: number, value: number) => (analog[pin] ? value : 100);
-    if (f > 0 && !b) return { dir: t('block_motor_forward'), speed: speed(forward, f) };
-    if (b > 0 && !f) return { dir: t('block_motor_reverse'), speed: speed(backward, b) };
+  /** The robot's state from its robot calls: motor speeds (−100…100) and the pen. */
+  let robot = $state({ left: 0, right: 0, usesRight: false, pen: null as boolean | null });
+
+  /** Sensor answers pushed into the on-screen micro:bit; set here until the Robot tab exists. */
+  let robotSensors = $state<Record<SensorName, number>>({
+    line_left: 0,
+    line_right: 0,
+    whisker_left: 0,
+    whisker_right: 0
+  });
+  const SENSOR_LABELS: Record<SensorName, string> = {
+    line_left: 'sim_line_left',
+    line_right: 'sim_line_right',
+    whisker_left: 'sim_whisker_left',
+    whisker_right: 'sim_whisker_right'
+  };
+
+  function motorState(speed: number): { dir: string; speed: number } {
+    if (speed > 0) return { dir: t('block_motor_forward'), speed };
+    if (speed < 0) return { dir: t('block_motor_reverse'), speed: -speed };
     return { dir: t('block_motor_stop'), speed: 0 };
   }
 
-  const motorA = $derived(motorState(0, 1));
-  const motorB = $derived(motorState(2, 8));
+  const motorA = $derived(motorState(robot.left));
+  const motorB = $derived(motorState(robot.right));
   const motor = $derived(motorA.dir);
-  /** Motor B (P2 and P8) is shown once a program uses pin P8. */
-  const hasMotorB = $derived(pins[8] !== undefined);
+  /** The right motor is shown once a program uses it. */
+  const hasMotorB = $derived(robot.usesRight);
+
+  function pushSensors() {
+    post({ kind: 'robot_sensors', values: { ...robotSensors } });
+  }
+
+  function setRobotSensor(name: SensorName, on: boolean) {
+    robotSensors = { ...robotSensors, [name]: on ? 1 : 0 };
+    pushSensors();
+  }
 
   function post(message: Record<string, unknown>) {
     frame?.contentWindow?.postMessage(message, window.location.origin);
@@ -101,8 +130,10 @@
     );
     pins = {};
     analog = {};
+    robot = { left: 0, right: 0, usesRight: false, pen: null };
     pixels = [];
     serial = '';
+    pushSensors();
     post({ kind: 'flash', filesystem });
     running = true;
   }
@@ -196,11 +227,26 @@
       case 'pin_output': {
         const pin = Number(data['pin']);
         const value = Number(data['value']);
-        if ([0, 1, 2, 8].includes(pin)) {
+        if ([0, 1, 2].includes(pin)) {
           analog = { ...analog, [pin]: Boolean(data['analog']) };
           pins = { ...pins, [pin]: data['analog'] ? Math.round(value / 10.23) : value };
           announce = `${t('sim_pin')} P${pin}: ${pins[pin]}`;
         }
+        break;
+      }
+      case 'robot_call': {
+        const call = parseRobotCall(data);
+        if (!call) break;
+        if (call.call === 'motor_left') robot.left = call.value;
+        else if (call.call === 'motor_right')
+          robot = { ...robot, right: call.value, usesRight: true };
+        else if (call.call === 'stop') robot = { ...robot, left: 0, right: 0 };
+        else robot.pen = call.value === 1;
+        announce =
+          call.call === 'pen'
+            ? `${t('sim_pen')} ${t(robot.pen ? 'block_pen_down' : 'block_pen_up')}`
+            : `${t(hasMotorB ? 'sim_motor_left' : 'sim_motor')} ${motorA.dir}` +
+              (hasMotorB ? `, ${t('sim_motor_right')} ${motorB.dir}` : '');
         break;
       }
       case 'neopixel': {
@@ -288,22 +334,42 @@
     {/each}
   </details>
 
+  <details class="sensors robot-sensors">
+    <summary>{t('sim_robot_sensors')}</summary>
+    {#each SENSOR_NAMES as name (name)}
+      <label class="check">
+        <input
+          type="checkbox"
+          checked={robotSensors[name] === 1}
+          onchange={(e) => setRobotSensor(name, e.currentTarget.checked)}
+        />
+        <span>{t(SENSOR_LABELS[name])}</span>
+      </label>
+    {/each}
+  </details>
+
   <div class="outputs" aria-label={t('sim_outputs')}>
     <p>
-      <span class="tag">{hasMotorB ? t('sim_motor_a') : t('sim_motor')}</span>
+      <span class="tag">{hasMotorB ? t('sim_motor_left') : t('sim_motor')}</span>
       <strong class="motor" data-motor={motor}>{motor}</strong>
       {#if motorA.speed > 0 && motorA.speed < 100}<span class="speed">{motorA.speed}%</span>{/if}
       {#if hasMotorB}
-        <span class="tag">{t('sim_motor_b')}</span>
+        <span class="tag">{t('sim_motor_right')}</span>
         <strong class="motor-b">{motorB.dir}</strong>
         {#if motorB.speed > 0 && motorB.speed < 100}<span class="speed">{motorB.speed}%</span>{/if}
       {/if}
       <span class="pins">
-        {#each hasMotorB ? [0, 1, 2, 8] : [0, 1, 2] as pin (pin)}
+        {#each [0, 1, 2] as pin (pin)}
           <span class="pin" class:on={(pins[pin] ?? 0) > 0}>P{pin} {pins[pin] ?? 0}</span>
         {/each}
       </span>
     </p>
+    {#if robot.pen !== null}
+      <p>
+        <span class="tag">{t('sim_pen')}</span>
+        <strong class="pen">{t(robot.pen ? 'block_pen_down' : 'block_pen_up')}</strong>
+      </p>
+    {/if}
     {#if pixels.length}
       <div class="pixels" role="img" aria-label={`${t('sim_neopixels')}: ${pixels.length}`}>
         {#each pixels as colour, i (i)}
@@ -415,6 +481,10 @@
     align-items: center;
     gap: 0.25rem;
     font-size: 0.8rem;
+  }
+  .sensors label.check {
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 2.75rem; /* touch target */
   }
   .outputs p {
     display: flex;

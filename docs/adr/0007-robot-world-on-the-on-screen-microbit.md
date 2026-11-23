@@ -44,6 +44,7 @@ answers its sensors.
 
 ## Consequences
 - Easier: one engine; typed Python works; tiny download; headless replay on a server (M4 spec §13.5).
-- Harder: the world depends on a small simulator patch to exchange robot calls (M4 step 2), like the
-  M3 pin-output patch.
+- Harder: the world depends on a small simulator patch to exchange robot calls, like the M3
+  pin-output patch. Done: `patches/simulator/0005-robot-calls.patch` adds a `_rfa_sim` module
+  (robot calls out, sensor answers pushed in).
 - Watch: the upstream embedding API is "not yet stable" (ADR-0006); we pin a version and test it in CI.

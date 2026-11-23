@@ -232,10 +232,14 @@ export function toPython(program: Program): string {
         return [`${pad}${names.get(s.name)} += ${bare(s.by)}`];
       case 'digital_write':
         return [`${pad}pin${s.pin}.write_digital(${s.value})`];
-      case 'motor': {
-        const [a, b] = s.action === 'forward' ? [1, 0] : s.action === 'reverse' ? [0, 1] : [0, 0];
-        return [`${pad}pin0.write_digital(${a})`, `${pad}pin1.write_digital(${b})`];
-      }
+      case 'motor':
+        // Robot calls, not pins (ADR-0008): on a one-motor robot the left motor drives it.
+        modules.add('rfa_robot');
+        return [
+          s.action === 'stop'
+            ? `${pad}rfa_robot.stop()`
+            : `${pad}rfa_robot.motor("left", ${s.action === 'forward' ? 100 : -100})`
+        ];
       default: {
         const spec = specFor(s);
         return spec?.role === 'stmt' ? spec.py(s, context(depth)) : [];
@@ -323,7 +327,7 @@ export function toPython(program: Program): string {
   }
 
   const head = ['# Made with the Robot For All block editor', 'from microbit import *'];
-  for (const m of ['music', 'radio', 'math', 'neopixel', 'game'])
+  for (const m of ['music', 'radio', 'math', 'neopixel', 'game', 'rfa_robot'])
     if (modules.has(m)) head.push(`import ${m}`);
   if (uses.random) head.push('import random');
   if (uses.number) {
@@ -342,11 +346,12 @@ export function toPython(program: Program): string {
 
 /**
  * Every file the micro:bit needs for a program: main.py, plus our own modules it imports
- * (e.g. game.py for the Game blocks). Works for typed Python too.
+ * (e.g. game.py for the Game blocks). Works for typed Python too. `own` adds modules made for
+ * this run, such as rfa_robot.py for the learner's robot profile or the on-screen simulator.
  */
-export function filesFor(mainPy: string): Record<string, string> {
+export function filesFor(mainPy: string, own: Record<string, string> = {}): Record<string, string> {
   const files: Record<string, string> = { 'main.py': mainPy };
-  for (const [name, source] of Object.entries(MODULES)) {
+  for (const [name, source] of Object.entries({ ...MODULES, ...own })) {
     if (new RegExp(`^\\s*(import ${name}\\b|from ${name} import)`, 'm').test(mainPy)) {
       files[`${name}.py`] = source;
     }

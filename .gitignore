@@ -17,3 +17,5 @@ apps/web/src/paraglide/
 .claude/settings.local.json
 # Built from source by scripts/build-simulator.sh (cached in CI)
 apps/web/public/simulator/
+# Python bytecode (test runs)
+__pycache__/

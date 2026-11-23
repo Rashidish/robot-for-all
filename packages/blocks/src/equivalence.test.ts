@@ -47,6 +47,8 @@ async function runInterpreter(program: Program, scenario: Scenario): Promise<Tra
     scroll: async (text) => void trace.push(['scroll', text]),
     clear: () => void trace.push(['clear']),
     writeDigital: (pin, value) => void trace.push(['pin', pin, value]),
+    robot: (call, side, speed) =>
+      void trace.push(side === undefined ? ['robot', call] : ['robot', call, side, speed ?? 0]),
     isPressed: (b) => (scenario.presses?.[b] ?? []).some((t) => t <= time && time < t + 100),
     wasPressed: (b) => {
       const count = presses(b).length;

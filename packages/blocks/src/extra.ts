@@ -148,17 +148,26 @@ const NOTES: readonly Option[] = [
   ['B 494', '494'],
   ['C5 523', '523']
 ];
+// Saved programs keep the values A and B; learners see left and right (ADR-0008).
 const DRIVE_MOTORS: readonly Option[] = [
-  ['A', 'A'],
-  ['B', 'B']
+  ['%{BKY_BLOCK_ROBOT_LEFT}', 'A'],
+  ['%{BKY_BLOCK_ROBOT_RIGHT}', 'B']
+];
+const SIDES: readonly Option[] = [
+  ['%{BKY_BLOCK_ROBOT_LEFT}', 'left'],
+  ['%{BKY_BLOCK_ROBOT_RIGHT}', 'right']
+];
+const PEN: readonly Option[] = [
+  ['%{BKY_BLOCK_PEN_DOWN}', 'down'],
+  ['%{BKY_BLOCK_PEN_UP}', 'up']
 ];
 const DRIVE_STOP_MOTORS: readonly Option[] = [...DRIVE_MOTORS, ['%{BKY_BLOCK_DRIVE_BOTH}', 'both']];
 const DRIVE_DIRECTIONS: readonly Option[] = [
   ['%{BKY_BLOCK_MOTOR_FORWARD}', 'forward'],
   ['%{BKY_BLOCK_MOTOR_REVERSE}', 'backward']
 ];
-/** Driver inputs for each motor: [forward pin, backward pin]. */
-export const DRIVE_PINS = { A: [0, 1], B: [2, 8] } as const;
+/** Which side each stored motor value drives. */
+const DRIVE_SIDE = { A: 'left', B: 'right' } as const;
 
 const ARROWS: readonly Option[] = [
   ['↑ N', 'N'],
@@ -1073,8 +1082,8 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
       return `(${v('r')}, ${v('g')}, ${v('b')})`;
     }
   },
-  // ---- Extension: motor driver (L9110S, two motors with speed). Motor A on P0/P1 like the
-  // Motors blocks; motor B on P2/P8. Speed is PWM on the "forward" or "backward" pin.
+  // ---- Extension: robot (ADR-0008). Blocks name robot parts, never pins: the rfa_robot module
+  // made for the learner's board (or the on-screen robot world) turns them into signals.
   {
     type: 'x_drive',
     role: 'stmt',
@@ -1086,11 +1095,11 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
       e('speed', 'SPEED', 'Number', n(100))
     ],
     py: (node, c) => {
-      const [a, b] = DRIVE_PINS[String(node['motor']) === 'B' ? 'B' : 'A'];
-      const [on, off] = node['dir'] === 'backward' ? [b, a] : [a, b];
+      c.use('rfa_robot');
+      const side = DRIVE_SIDE[String(node['motor']) === 'B' ? 'B' : 'A'];
+      const sign = node['dir'] === 'backward' ? '-' : '';
       return [
-        `${c.pad}pin${off}.write_digital(0)`,
-        `${c.pad}pin${on}.write_analog(int(max(0, min(100, ${num(c, node, 'speed')})) * 1023 / 100))`
+        `${c.pad}rfa_robot.motor("${side}", ${sign}max(0, min(100, ${num(c, node, 'speed')})))`
       ];
     }
   },
@@ -1101,16 +1110,45 @@ export const EXTRA_SPECS: readonly NodeSpec[] = [
     tip: 'BLOCK_DRIVE_TIP',
     fields: [{ kind: 'enum', key: 'motor', field: 'MOTOR', options: DRIVE_STOP_MOTORS }],
     py: (node, c) => {
+      c.use('rfa_robot');
       const which = String(node['motor']);
-      const motors =
-        which === 'both'
-          ? (['A', 'B'] as const)
-          : which === 'B'
-            ? (['B'] as const)
-            : (['A'] as const);
-      return motors.flatMap((m) =>
-        DRIVE_PINS[m].map((pin) => `${c.pad}pin${pin}.write_digital(0)`)
-      );
+      if (which === 'both') return [`${c.pad}rfa_robot.stop()`];
+      return [`${c.pad}rfa_robot.motor("${DRIVE_SIDE[which === 'B' ? 'B' : 'A']}", 0)`];
+    }
+  },
+  {
+    type: 'x_whisker',
+    role: 'expr',
+    output: 'Boolean',
+    category: 'motordriver',
+    tip: 'BLOCK_WHISKER_TIP',
+    fields: [{ kind: 'enum', key: 'side', field: 'SIDE', options: SIDES }],
+    py: (node, c) => {
+      c.use('rfa_robot');
+      return `rfa_robot.whisker("${node['side'] === 'right' ? 'right' : 'left'}")`;
+    }
+  },
+  {
+    type: 'x_line',
+    role: 'expr',
+    output: 'Boolean',
+    category: 'motordriver',
+    tip: 'BLOCK_LINE_TIP',
+    fields: [{ kind: 'enum', key: 'side', field: 'SIDE', options: SIDES }],
+    py: (node, c) => {
+      c.use('rfa_robot');
+      return `rfa_robot.line("${node['side'] === 'right' ? 'right' : 'left'}")`;
+    }
+  },
+  {
+    type: 'x_pen',
+    role: 'stmt',
+    category: 'motordriver',
+    tip: 'BLOCK_PEN_TIP',
+    fields: [{ kind: 'enum', key: 'pen', field: 'PEN', options: PEN }],
+    py: (node, c) => {
+      c.use('rfa_robot');
+      return [`${c.pad}rfa_robot.pen(${node['pen'] === 'up' ? 'False' : 'True'})`];
     }
   }
 ];
