@@ -40,6 +40,9 @@ describe('lesson front matter', () => {
     ).toBe(true);
     expect(lessonSchema.safeParse({ ...valid, starter_program: '../x' }).success).toBe(false);
     expect(lessonSchema.safeParse({ ...valid, hardware: 'arduino' }).success).toBe(false);
+    expect(parsed.world).toBeNull();
+    expect(lessonSchema.safeParse({ ...valid, world: 'dark-tunnel' }).success).toBe(true);
+    expect(lessonSchema.safeParse({ ...valid, world: '../x' }).success).toBe(false);
   });
 
   it('rejects a published lesson nobody reviewed', () => {

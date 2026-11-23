@@ -31,6 +31,7 @@ safety:
     - Take a battery out at once if anything gets hot, smells or smokes, and tell an adult
     - Test moving models on the floor or a large table with a barrier, away from the edge
 starter_program: forward-stop-reverse
+world: box-and-back
 hardware: microbit-motor
 assessment:
   - I can fill in the table of P0 and P1 values for forward, stop and backward

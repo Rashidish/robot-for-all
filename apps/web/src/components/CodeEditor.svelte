@@ -538,8 +538,12 @@
    * checked like any imported file.
    */
   function openFromLink() {
-    const match = /^#open=([A-Za-z0-9_-]+)$/.exec(window.location.hash);
+    const match = /^#open=([A-Za-z0-9_-]+)(?:&world=([a-z]+(?:-[a-z]+)*))?$/.exec(
+      window.location.hash
+    );
     if (!match?.[1]) return;
+    // A lesson with a robot world opens it in the Robot view (M4 spec FR-8).
+    if (match[2]) void tick().then(() => sim?.showWorld(match[2] ?? ''));
     history.replaceState(null, '', window.location.pathname);
     try {
       const b64 = match[1].replace(/-/g, '+').replace(/_/g, '/');

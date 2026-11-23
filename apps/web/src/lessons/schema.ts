@@ -53,6 +53,12 @@ export const lessonSchema = z
       .regex(/^[a-z0-9-]+$/, 'starter program names are file names without .rfa.json')
       .nullable()
       .default(null),
+    /** Phase 2+: the robot world the starter program opens in (M4 FR-8): content/worlds/<id>.json. */
+    world: z
+      .string()
+      .regex(/^[a-z]+(-[a-z]+)*$/, 'world ids are file names in content/worlds without .json')
+      .nullable()
+      .default(null),
     /** What a learner needs: every Phase 2 lesson also works on the on-screen micro:bit. */
     hardware: z.enum(['none', 'microbit', 'microbit-motor']).default('none'),
     status: z.enum(['draft', 'in_review', 'published']),
