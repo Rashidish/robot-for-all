@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { type Fixes, MODULE_BUDGET_BYTES, rfaRobotPy } from './module';
 import { buildProfile, type Profile } from './profile';
+import { parseRobotCall, SIMULATOR_RFA_ROBOT_PY } from './simulator';
 
 const basic = buildProfile(
   JSON.parse(
@@ -16,13 +17,26 @@ type Step = [string, number, number];
 
 function run(
   main: string,
-  opts: { profile?: Profile; fixes?: Fixes; reads?: Record<number, number> } = {}
+  opts: {
+    profile?: Profile;
+    fixes?: Fixes;
+    reads?: Record<number, number>;
+    /** Module source to test instead of the board's (e.g. the simulator profile). */
+    source?: string;
+    sensors?: Record<string, number>;
+  } = {}
 ) {
   const dir = mkdtempSync(join(tmpdir(), 'rfa-robot-'));
-  writeFileSync(join(dir, 'rfa_robot.py'), rfaRobotPy(opts.profile ?? basic, opts.fixes));
+  writeFileSync(
+    join(dir, 'rfa_robot.py'),
+    opts.source ?? rfaRobotPy(opts.profile ?? basic, opts.fixes)
+  );
   const result = spawnSync('python3', [join(import.meta.dirname, '../test-support/run.py'), dir], {
     input: `import rfa_robot\nimport microbit\nmicrobit.TRACE.clear()\n${main}`,
-    env: { ...process.env, MICROBIT_SCENARIO: JSON.stringify({ reads: opts.reads ?? {} }) },
+    env: {
+      ...process.env,
+      MICROBIT_SCENARIO: JSON.stringify({ reads: opts.reads ?? {}, sensors: opts.sensors ?? {} })
+    },
     encoding: 'utf8'
   });
   if (result.status !== 0) throw new Error(`Python failed:\n${result.stderr}`);
@@ -123,5 +137,45 @@ describe('rfa_robot.py on a pin-driven board (L9110S)', () => {
     expect(py).toContain(
       'from microbit import pin0, pin1, pin2, pin8, pin12, pin13, pin14, pin15, pin16\n'
     );
+  });
+});
+
+describe('rfa_robot.py on the on-screen micro:bit (simulator profile)', () => {
+  const sim = { source: SIMULATOR_RFA_ROBOT_PY };
+
+  it('sends motor, stop and pen calls to the robot world, never pins', () => {
+    const r = run(
+      'rfa_robot.motor("left", 60)\nrfa_robot.motor("right", -250)\nrfa_robot.motor("middle", 50)\nrfa_robot.stop()\nrfa_robot.pen(True)',
+      sim
+    );
+    expect(r.trace).toEqual([
+      ['call', 'motor_left', 60],
+      ['call', 'motor_right', -100],
+      ['call', 'stop', 0],
+      ['call', 'pen', 1]
+    ]);
+    expect(SIMULATOR_RFA_ROBOT_PY).not.toMatch(/\bpin\d/);
+  });
+
+  it('answers sensors from the values the world pushed in', () => {
+    const r = run(
+      'for s in ("left", "right"):\n    RESULTS.append(rfa_robot.line(s))\n    RESULTS.append(rfa_robot.whisker(s))',
+      {
+        ...sim,
+        sensors: { line_right: 1, whisker_left: 1 }
+      }
+    );
+    expect(r.results).toEqual([false, true, true, false]);
+  });
+
+  it('only accepts well-formed robot calls from the simulator', () => {
+    expect(parseRobotCall({ call: 'motor_left', value: 250 })).toEqual({
+      call: 'motor_left',
+      value: 100
+    });
+    expect(parseRobotCall({ call: 'pen', value: 1 })).toEqual({ call: 'pen', value: 1 });
+    expect(parseRobotCall({ call: 'motor_up', value: 1 })).toBeNull();
+    expect(parseRobotCall({ call: 'stop', value: 'x' })).toBeNull();
+    expect(parseRobotCall(null)).toBeNull();
   });
 });

@@ -22,6 +22,7 @@
     type Program
   } from '../../../../packages/blocks/src/index';
   import { buildHex, fetchFirmware } from '../code/hex';
+  import { modulesFor } from '../code/robot';
   import Simulator from './Simulator.svelte';
   import simulatorBuild from '../../simulator.json';
   import '../code/toolbox.css';
@@ -123,7 +124,7 @@
 
   function simulatorFiles(): Record<string, string> | null {
     const code = currentCode();
-    return code === null ? null : filesFor(code);
+    return code === null ? null : filesFor(code, modulesFor('screen'));
   }
 
   /** Like MakeCode: once running, the on-screen micro:bit restarts with each change. */
@@ -342,7 +343,7 @@
   async function makeHex(): Promise<string | null> {
     const code = currentCode();
     if (code === null) return null;
-    return buildHex(filesFor(code), await fetchFirmware());
+    return buildHex(filesFor(code, modulesFor('board')), await fetchFirmware());
   }
 
   async function download() {

@@ -1,7 +1,7 @@
 // Runs a program on the virtual micro:bit (M3 spec FR-4). It walks the program JSON; nothing is
 // ever turned into JavaScript and evaluated, so the strict CSP (no unsafe-eval) still holds.
 // Event rules match the MicroPython generator exactly (see python.ts), and CI checks both give
-// the same sequence of LED, pin and pause actions.
+// the same sequence of LED, pin, robot and pause actions.
 import type { IconName } from './icons';
 import type { Button, Expr, Handler, Pin, Program, Stmt } from './program';
 
@@ -12,6 +12,8 @@ export interface Device {
   scroll(text: string): Promise<void>;
   clear(): void;
   writeDigital(pin: Pin, value: 0 | 1): void;
+  /** A robot call (ADR-0008), e.g. robot('motor', 'left', 100) or robot('stop'). */
+  robot(call: 'motor' | 'stop', side?: 'left' | 'right', speed?: number): void;
   isPressed(button: Button): boolean;
   /** True if the button was pressed since the last time this was asked (like MicroPython). */
   wasPressed(button: Button): boolean;
@@ -197,12 +199,10 @@ export async function run(
         case 'digital_write':
           device.writeDigital(s.pin, s.value);
           break;
-        case 'motor': {
-          const [a, b] = s.action === 'forward' ? [1, 0] : s.action === 'reverse' ? [0, 1] : [0, 0];
-          device.writeDigital(0, a as 0 | 1);
-          device.writeDigital(1, b as 0 | 1);
+        case 'motor':
+          if (s.action === 'stop') device.robot('stop');
+          else device.robot('motor', 'left', s.action === 'forward' ? 100 : -100);
           break;
-        }
         default:
           // MakeCode-level blocks (extra.ts) run in the real MicroPython simulator (ADR-0006).
           throw new Error(`The test interpreter can't run "${s.type}"`);

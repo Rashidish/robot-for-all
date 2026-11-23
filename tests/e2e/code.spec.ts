@@ -94,7 +94,7 @@ test.describe('code editor (M3)', () => {
   test('a Phase 2 lesson opens its starter program in the editor', async ({ page }) => {
     for (const [id, name, python] of [
       ['p2-display-01', 'Blink a heart', 'display.show(Image.HEART)'],
-      ['p2-motor-02', 'Forward, stop, reverse', 'pin1.write_digital(1)'],
+      ['p2-motor-02', 'Forward, stop, reverse', 'rfa_robot.motor("left", -100)'],
       ['p2-robot-01', 'Robot that reacts', 'accelerometer.was_gesture("shake")']
     ] as const) {
       await page.goto(`/lessons/${id}/`);
@@ -185,7 +185,8 @@ test.describe('code editor (M3)', () => {
       const page = await context.newPage();
       await page.goto(CODE);
       await expect(page.locator('.blocklySvg').first()).toBeVisible();
-      await page.locator('details.sensors summary').click();
+      for (const summary of await page.locator('details.sensors summary').all())
+        await summary.click();
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth
       );
@@ -311,7 +312,7 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBeGreaterThan(10);
   });
 
-  test('shows the motor turning when the program drives pins P0 and P1', async ({ page }) => {
+  test('shows the motor turning from the robot calls the program makes', async ({ page }) => {
     await openEditor(page);
     await page.getByRole('button', { name: 'My programs' }).click();
     const motorFile = JSON.stringify({
@@ -359,14 +360,42 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
       )
     });
     // The extension's category appears because the program uses its blocks.
-    await expect(
-      page.locator('.blocklyToolboxCategory', { hasText: 'Motor driver' })
-    ).toBeVisible();
+    await expect(page.locator('.blocklyToolboxCategory', { hasText: 'Robot' })).toBeVisible();
     await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
     await expect(page.locator('.outputs .speed').first()).toHaveText('75%');
     await expect(page.locator('.motor-b')).toHaveText('backward');
     await expect(page.locator('.outputs .speed').nth(1)).toHaveText('40%');
+  });
+
+  test('robot sensors: pressing the left whisker makes the program back up', async ({ page }) => {
+    page.on('dialog', (dialog) => void dialog.accept());
+    await openEditor(page);
+    await page.getByRole('tab', { name: 'Python' }).click();
+    await page.getByRole('button', { name: 'Edit as Python' }).click();
+    await page
+      .getByLabel('Your MicroPython program')
+      .fill(
+        [
+          'from microbit import *',
+          'import rfa_robot',
+          'while True:',
+          '    if rfa_robot.whisker("left"):',
+          '        rfa_robot.motor("left", -60)',
+          '    else:',
+          '        rfa_robot.motor("left", 60)',
+          '    sleep(20)',
+          ''
+        ].join('\n')
+      );
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect(page.locator('.motor')).toHaveText('forward', { timeout: 15_000 });
+    await expect(page.locator('.outputs .speed').first()).toHaveText('60%');
+    await page.getByText('Robot sensors').click();
+    await page.getByLabel('Left whisker pressed').check();
+    await expect(page.locator('.motor')).toHaveText('backward');
+    await page.getByLabel('Left whisker pressed').uncheck();
+    await expect(page.locator('.motor')).toHaveText('forward');
   });
 
   test('Run switches the sound on for a laptop too (Windows Chrome)', async ({ browser }) => {
@@ -587,7 +616,9 @@ test.describe('on-screen micro:bit (M3 step 4)', () => {
     await page.getByRole('button', { name: 'Edit as Python' }).click();
     await page
       .getByLabel('Your MicroPython program')
-      .fill('from microbit import *\npin1.write_digital(1)\ndisplay.show(Image.SQUARE)\n');
+      .fill(
+        'from microbit import *\nimport rfa_robot\nrfa_robot.motor("left", -100)\ndisplay.show(Image.SQUARE)\n'
+      );
     await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
     await expect(page.locator('.motor')).toHaveText('backward', { timeout: 15_000 });
     await expect.poll(() => litLeds(page), { timeout: 15_000 }).toBe(16);

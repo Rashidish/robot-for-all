@@ -1,6 +1,6 @@
 # Robot profiles: format and rfa_robot module
 
-> **Version:** 0.1 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail · **Status:** Built (ADR-0008 rollout 1, part A)
+> **Version:** 0.2 · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail · **Status:** Built (ADR-0008 rollout 1, parts A and B)
 > Decision: `docs/ADR-0008-robot-profiles_v1.0.md`. Used by: M3 code editor, M4 simulate (`docs/M4-simulate-spec_v0.5.md` §6.2).
 
 ## What a profile is
@@ -66,8 +66,29 @@ rfa_robot.whisker("right")     # True while pressed (pins set to pull-down)
 - Pen servo: 20 ms period; 0° (duty 26) is down, 90° (duty 77) is up.
 - "Test my robot" fixes (flip a motor, swap motors, flip line sensors) are applied when the module is
   made; they live in the learner's settings on the device and never reach the simulator.
-- On screen, a built-in **simulator profile** sends the same calls to the robot world (M4 spec §6.2,
-  next step).
+- On screen, a built-in **simulator profile** (`packages/robots/src/simulator.ts`) sends the same
+  calls to the robot world through the `_rfa_sim` module (simulator patch 0005): `call(name, value)`
+  goes out to the editor as a `robot_call` message; the editor pushes sensor answers in with a
+  `robot_sensors` message, and `read(name)` returns the latest one at once (M4 spec §6.2). Every board
+  uses it on screen, so the on-screen run can't depend on the board (FR-21).
+
+## Blocks (part B)
+The Motors blocks and the **Robot** extension make robot calls, never pins:
+
+| Block | Python |
+|---|---|
+| motor forward / backward / stop (Motors) | `rfa_robot.motor("left", 100)` / `-100` / `rfa_robot.stop()` |
+| left / right motor forward / backward at speed n % | `rfa_robot.motor("left", n)` / `-n` |
+| stop motor left / right / both | `rfa_robot.motor("right", 0)` / `rfa_robot.stop()` |
+| left / right whisker pressed | `rfa_robot.whisker("left")` |
+| line under left / right sensor | `rfa_robot.line("right")` |
+| pen down / up | `rfa_robot.pen(True)` / `False` |
+
+Saved programs keep their stored values (motor `A` and `B`), shown as left and right. The `.hex`
+gets `rfa_robot.py` for the learner's board (the cheapest build until "My robot" setup exists); the
+on-screen micro:bit gets the simulator profile. The editor shows the motors and pen from robot calls,
+and a **Robot sensors** panel lets learners press a whisker or put a line under a sensor until the
+Robot tab (M4 step 2) answers them from the world.
 
 ## Launch profiles
 Only the recommended cheapest build for now: micro:bit + L9110S two-motor module (P0/P1 and P2/P8,
@@ -78,3 +99,10 @@ most common in South African schools and clubs follow in rollout 2, each tested 
 `packages/robots`: format checks; fixed pin assignment; module size; the module run in real Python
 against a stub `microbit` module (motor speeds and directions, stop, sensors, pull-down, pen, fixes,
 one-motor boards, missing sensor pins).
+
+## Version history
+
+| Version | Date | Change |
+|---|---|---|
+| 0.1 | 2026-11-23 | Part A: profile format, sensor pins, rfa_robot module, first profile |
+| 0.2 | 2026-11-23 | Part B: blocks make robot calls; simulator profile and patch 0005; editor motor display and Robot sensors panel |

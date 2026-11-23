@@ -29,10 +29,11 @@ describe('MicroPython generator', () => {
     expect(py).toContain('    if button_b.was_pressed():\n        display.show(Image.SAD)');
   });
 
-  it('drives the motor through pins 0 and 1', () => {
+  it('drives the motor with robot calls, not pins (ADR-0008)', () => {
     const py = toPython(SAMPLES.goAndStop);
-    expect(py).toContain('pin0.write_digital(1)\n        pin1.write_digital(0)');
-    expect(py).toContain('pin0.write_digital(0)\n        pin1.write_digital(1)');
+    expect(py).toContain('import rfa_robot\n');
+    expect(py).toContain('rfa_robot.motor("left", 100)');
+    expect(py).not.toMatch(/\bpin\d/);
   });
 
   it('is the same every time for the same program', () => {

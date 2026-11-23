@@ -194,7 +194,7 @@ Blocks / typed Python ──► rfa_robot calls ──► on-screen micro:bit (M
 - [ ] (v0.4) Printed tiles at 100 % give a calibration square of 100 mm ± 1 mm on two different printers; tiles join with marks aligned (manual test, test plan).
 - [ ] (v0.4) The build sheet lists the same number of wall pieces as the on-screen maze (unit test). *(Step 1c: the world's piece list matches its walls; the build sheet itself is step 2b.)*
 - [x] (v0.5) `packages/sim` has no pin numbers in its public interface; the scripted drivers and replay use robot calls only (unit test / type check).
-- [ ] (v0.5) The same program gives a byte-identical run report with two different robot profiles selected (unit test). *(Waits for the `rfa_robot` module and profile format, ADR-0008 rollout 1.)*
+- [x] (v0.5) The same program gives a byte-identical run report with two different robot profiles selected (unit test). *(On screen every board uses the simulator profile, so the on-screen files are byte-identical whichever board is selected; `apps/web/src/code/robot.test.ts`.)*
 
 ## 9. Work plan for Claude Code
 

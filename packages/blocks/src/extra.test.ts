@@ -91,9 +91,10 @@ describe('MakeCode-level blocks', () => {
     expect(check.status).toBe(0);
   });
 
-  it('drive two motors with speed through the L9110S driver', () => {
+  it('robot blocks make rfa_robot calls, never pins (ADR-0008)', () => {
     const drive = (motor: string, dir: string, speed: number) =>
       ({ type: 'x_drive', motor, dir, speed: { type: 'number', value: speed } }) as unknown as Stmt;
+    const node = (n: Record<string, unknown>) => n as unknown as Stmt;
     const python = toPython({
       version: 1,
       handlers: [
@@ -102,20 +103,50 @@ describe('MakeCode-level blocks', () => {
           body: [
             drive('A', 'forward', 75),
             drive('B', 'backward', 50),
-            { type: 'x_drive_stop', motor: 'both' } as unknown as Stmt
+            node({ type: 'x_drive_stop', motor: 'B' }),
+            node({ type: 'x_drive_stop', motor: 'both' }),
+            node({ type: 'x_pen', pen: 'down' }),
+            node({
+              type: 'if',
+              cond: { type: 'x_whisker', side: 'left' },
+              then: [node({ type: 'x_pen', pen: 'up' })],
+              else: []
+            }),
+            node({
+              type: 'if',
+              cond: { type: 'x_line', side: 'right' },
+              then: [],
+              else: []
+            })
           ]
         }
       ]
     });
+    expect(python).toContain('import rfa_robot\n');
     expect(python).toContain(
-      'pin1.write_digital(0)\npin0.write_analog(int(max(0, min(100, 75)) * 1023 / 100))'
+      [
+        'rfa_robot.motor("left", max(0, min(100, 75)))',
+        'rfa_robot.motor("right", -max(0, min(100, 50)))',
+        'rfa_robot.motor("right", 0)',
+        'rfa_robot.stop()',
+        'rfa_robot.pen(True)',
+        'if rfa_robot.whisker("left"):',
+        '    rfa_robot.pen(False)',
+        'if rfa_robot.line("right"):'
+      ].join('\n')
     );
-    expect(python).toContain(
-      'pin2.write_digital(0)\npin8.write_analog(int(max(0, min(100, 50)) * 1023 / 100))'
-    );
-    expect(python).toContain(
-      'pin0.write_digital(0)\npin1.write_digital(0)\npin2.write_digital(0)\npin8.write_digital(0)'
-    );
+    expect(python).not.toMatch(/\bpin\d/);
+  });
+
+  it('add rfa_robot.py made for this run when a program uses the robot', () => {
+    const files = filesFor('import rfa_robot\nrfa_robot.stop()\n', { rfa_robot: '# board\n' });
+    expect(files).toEqual({
+      'main.py': 'import rfa_robot\nrfa_robot.stop()\n',
+      'rfa_robot.py': '# board\n'
+    });
+    expect(Object.keys(filesFor('from microbit import *\n', { rfa_robot: '# board\n' }))).toEqual([
+      'main.py'
+    ]);
   });
 
   it('add game.py when a program uses the Game blocks, for blocks and typed Python', () => {
