@@ -220,7 +220,8 @@ test.describe('pages on a 360 px phone', () => {
       'p2-light-01',
       'p2-motor-01',
       'p2-motor-02',
-      'p2-robot-01'
+      'p2-robot-01',
+      'p2-motor-03'
     ]) {
       await page.goto(`/lessons/${id}/`);
       const img = page.locator('.lesson-body img').first();
@@ -249,7 +250,8 @@ test.describe('pages on a 360 px phone', () => {
       'p2-light-01',
       'p2-motor-01',
       'p2-motor-02',
-      'p2-robot-01'
+      'p2-robot-01',
+      'p2-motor-03'
     ];
     await page.goto('/lessons/p2-light-01/');
     // "Code for this lesson" sits just before the syllabus links (owner, 2026-11-23).
