@@ -1,0 +1,280 @@
+---
+// One language (more content spec §2.3): its interface words beside the English, the review
+// checklist and decisions, the history, and the change waiting to be merged (ADR-0012).
+// Only a reviewer who reads the language (on their Profile) can approve it; the database checks.
+import { DRAFTS_URL, GITHUB_APP_LOGIN } from 'astro:env/server';
+import Admin from '../../layouts/Admin.astro';
+import { GitHubError, type Pull } from '../../lib/github';
+import { githubFromEnv } from '../../lib/github-env';
+import { LANGUAGE_CHECKLIST, makeLanguageKind } from '../../lib/language-review';
+import { LANGUAGES_PATH } from '../../lib/languages';
+import { checkMerge, type MergeCheck, mergeIfReady } from '../../lib/merge';
+import {
+  type Decision,
+  DECISION_LABELS,
+  decide,
+  possibleDecisions,
+  pullsFor
+} from '../../lib/review';
+import type { Item } from '../../lib/kinds';
+import { canSeeLanguages, hasRole } from '../../lib/roles';
+import { completeness } from '../../../../../packages/settings/src/languages';
+
+const { supabase, user, roles } = Astro.locals;
+if (!canSeeLanguages(roles)) return Astro.redirect('/', 303);
+const code = Astro.params.code ?? '';
+if (!/^[a-z]{2,3}$/.test(code) || code === 'en') return Astro.redirect('/languages/', 303);
+const KIND = makeLanguageKind(code);
+
+const gh = githubFromEnv();
+const decided = async (url: string) =>
+  (await supabase.rpc('approved_pull_request', { p_pull_request: url })).data === true;
+const mergeOpts = { appLogin: GITHUB_APP_LOGIN ?? '', decided };
+
+const { data: profile } = await supabase
+  .from('admin_profiles')
+  .select('reviewer_name, languages')
+  .eq('user_id', user?.id ?? '')
+  .maybeSingle();
+const me = profile as { reviewer_name: string; languages: string[] } | null;
+const reviewerName = me?.reviewer_name ?? null;
+const readsIt = (me?.languages ?? []).includes(code);
+
+let notice = '';
+let error = '';
+interface Loaded {
+  item: Item | null;
+  english: Record<string, string>;
+  words: Record<string, string>;
+  pull: Pull | undefined;
+  check: MergeCheck | null;
+}
+const empty: Loaded = { item: null, english: {}, words: {}, pull: undefined, check: null };
+
+async function load(): Promise<Loaded> {
+  if (!gh) return empty;
+  const [list, en, mine] = await Promise.all([
+    gh.readFile(LANGUAGES_PATH),
+    gh.readFile('content/i18n/en.json'),
+    gh.readFile(`content/i18n/${code}.json`)
+  ]);
+  const english = JSON.parse(en.text) as Record<string, string>;
+  delete english['$schema'];
+  const pull = pullsFor('language', await gh.openAdminPulls()).get(code);
+  return {
+    item: KIND.summarise(code, list.text),
+    english,
+    words: JSON.parse(mine.text) as Record<string, string>,
+    pull,
+    check: pull ? await checkMerge(gh, pull.number, mergeOpts) : null
+  };
+}
+
+let loaded: Loaded = empty;
+try {
+  loaded = await load();
+} catch {
+  error = 'Could not read this language from GitHub. Try again in a minute.';
+}
+const done = () => completeness(loaded.english, loaded.words);
+
+if (gh && loaded.item && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  try {
+    if (form.get('action') === 'merge') {
+      const r = await mergeIfReady(gh, Number(form.get('pull')), mergeOpts);
+      if (r.ok) notice = 'Merged. The site updates in a few minutes.';
+      else error = `Not merged yet: ${r.waiting.join('; ')}.`;
+    } else {
+      const decision = String(form.get('decision')) as Decision;
+      if (decision === 'approved' && done().missing.length > 0)
+        throw new Error(
+          `Every interface word must be translated first (${done().missing.length} missing).`
+        );
+      const checklist =
+        decision === 'approved'
+          ? Object.fromEntries(
+              LANGUAGE_CHECKLIST.map((c) => [c.key, form.get(`tick_${c.key}`) === 'on'])
+            )
+          : null;
+      const url = await decide(gh, supabase, KIND, {
+        id: code,
+        decision,
+        checklist,
+        notes: String(form.get('notes') ?? '').trim(),
+        overrideReason: String(form.get('override') ?? '').trim(),
+        reviewerName,
+        who: reviewerName ?? user?.email ?? 'an admin'
+      });
+      notice = `${DECISION_LABELS[decision]}: a change is waiting (${url}). It can be merged once the automatic checks pass.`;
+    }
+    loaded = await load();
+  } catch (err) {
+    error =
+      err instanceof GitHubError && err.status === 409
+        ? 'Someone changed the languages in the meantime. Reload the page and try again.'
+        : err instanceof Error
+          ? err.message
+          : 'Something went wrong; nothing was changed.';
+  }
+  if (error) Astro.response.status = 400;
+}
+
+let history: {
+  at: string;
+  decision: Decision;
+  reviewer_name: string | null;
+  notes: string | null;
+}[] = [];
+{
+  const { data } = await supabase
+    .from('content_reviews')
+    .select('at, decision, reviewer_name, notes')
+    .eq('content_type', 'language')
+    .eq('content_id', code)
+    .order('at', { ascending: false })
+    .limit(20);
+  history = (data ?? []) as typeof history;
+}
+const { item, english, words, pull, check } = loaded;
+const options = item && !pull ? possibleDecisions(item).filter((d) => d !== 'build_tested') : [];
+const can: Record<Decision, boolean> = {
+  sent_for_review: hasRole(roles, 'translator') || hasRole(roles, 'content_editor'),
+  approved: hasRole(roles, 'reviewer') && readsIt,
+  changes_requested: hasRole(roles, 'reviewer') && readsIt,
+  build_tested: false,
+  unpublished: hasRole(roles, 'reviewer') || hasRole(roles, 'owner')
+};
+const STATUS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+const when = (iso: string) =>
+  new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+const c = done();
+const keys = Object.keys(english);
+---
+
+<Admin title={item?.title ?? code}>
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {item && (
+    <>
+      <p>
+        <strong>{STATUS[item.status]}</strong> · {c.translated} of {c.total} interface words
+        translated · Reviewed by: {item.reviewedBy ?? '—'}
+      </p>
+      <p>
+        <a href={`${DRAFTS_URL}/${code}/`}>See the site in {item.title} (drafts preview)</a>
+      </p>
+    </>
+  )}
+
+  {pull && check && (
+    <section aria-labelledby="waiting">
+      <h2 id="waiting">A change is waiting</h2>
+      <p>
+        <a href={pull.html_url}>{pull.title}</a>
+      </p>
+      {check.ok ? (
+        <form method="post">
+          <input type="hidden" name="action" value="merge" />
+          <input type="hidden" name="pull" value={pull.number} />
+          <button type="submit">Merge now</button>
+        </form>
+      ) : (
+        <p>Waiting: {check.waiting.join('; ')}.</p>
+      )}
+    </section>
+  )}
+
+  {hasRole(roles, 'reviewer') && !readsIt && (
+    <p class="error">
+      To approve {item?.title ?? code}, tick it under your languages on your{' '}
+      <a href="/profile/">Profile</a> (only if you read it well).
+    </p>
+  )}
+
+  {options
+    .filter((d) => can[d])
+    .map((d) => (
+      <section aria-labelledby={`do-${d}`}>
+        <h2 id={`do-${d}`}>{DECISION_LABELS[d]}</h2>
+        <form method="post">
+          <input type="hidden" name="decision" value={d} />
+          {d === 'approved' && (
+            <fieldset>
+              <legend>Checklist (all required)</legend>
+              {LANGUAGE_CHECKLIST.map((t) => (
+                <label class="check">
+                  <input type="checkbox" name={`tick_${t.key}`} required /> {t.label}
+                </label>
+              ))}
+            </fieldset>
+          )}
+          {d !== 'sent_for_review' && (
+            <>
+              <label for={`notes-${d}`}>
+                {d === 'approved' ? 'Note (optional)' : 'Note (at least 10 characters)'}
+              </label>
+              <textarea id={`notes-${d}`} name="notes" rows="3" required={d !== 'approved'} />
+            </>
+          )}
+          <div class="actions">
+            <button type="submit">{DECISION_LABELS[d]}</button>
+          </div>
+        </form>
+      </section>
+    ))}
+
+  <h2>Interface words</h2>
+  <p>
+    {c.missing.length === 0
+      ? 'Every word is translated.'
+      : `${c.missing.length} words still show in English.`}
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">English</th>
+          <th scope="col" lang={code}>
+            {item?.title ?? code}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {keys.map((k) => (
+          <tr>
+            <td>
+              {english[k]}
+              <br />
+              <small>{k}</small>
+            </td>
+            <td lang={code}>{words[k]?.trim() ? words[k] : <em>missing</em>}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>History</h2>
+  {history.length === 0 ? (
+    <p>No decisions yet.</p>
+  ) : (
+    <ul>
+      {history.map((h) => (
+        <li>
+          {when(h.at)}: <strong>{DECISION_LABELS[h.decision]}</strong>
+          {h.reviewer_name && ` by ${h.reviewer_name}`}
+          {h.notes && `: ${h.notes}`}
+        </li>
+      ))}
+    </ul>
+  )}
+</Admin>

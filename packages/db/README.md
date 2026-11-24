@@ -12,6 +12,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0005_withdraw_and_more_content.sql` | Withdraw / restore (`record_withdrawal`), content types template/world/season/language, the seventh (templates) tick |
 | `0006_world_reviews.sql` | Worlds and courses are reviewed with their own checklist (`review_checklist_keys_for`); `record_review` for lessons and worlds |
 | `0007_reviewer_languages.sql` | The languages each person reads (`admin_profiles.languages`, `set_reviewer_languages`, `reads_language`), for translation approvals |
+| `0008_language_reviews.sql` | Languages are reviewed: their own five ticks, only a reviewer who reads the language approves, translators send it for review, no build test |
 
 ## Tests
 

@@ -71,18 +71,14 @@ describe('the back office merges only its own, status-only, checked, decided pul
           { filename: 'apps/web/src/x.ts', status: 'modified' }
         ]
       },
-      'more than one lesson file, world file or the withdrawn list'
+      'more than one content file'
     ],
     [
       'a code file',
       { files: [{ filename: 'apps/web/src/x.ts', status: 'modified' }] },
-      'more than one lesson file, world file or the withdrawn list'
+      'more than one content file'
     ],
-    [
-      'a new file',
-      { files: [{ filename: PATH, status: 'added' }] },
-      'more than one lesson file, world file or the withdrawn list'
-    ],
+    ['a new file', { files: [{ filename: PATH, status: 'added' }] }, 'more than one content file'],
     [
       'lesson text changed too',
       { head: main.replace('Pen art', 'Pen art, edited') },
