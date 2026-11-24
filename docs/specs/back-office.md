@@ -1,6 +1,6 @@
 # Spec: Back office — foundation and module map
 
-> **Version:** 0.3 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Draft, waiting for owner review
+> **Version:** 0.4 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24); ADR-0009 and ADR-0010 written
 > Replaces v0.1 "Back office — Season dates" (one screen only).
 
 ## 1. Purpose
@@ -130,7 +130,7 @@ Season dates stay **content**: they change a few times a year and the public sit
 
 - **Supabase Auth** with email sign-in and **required MFA** (authenticator app) for every back-office account. The same accounts system serves the M5 portal, so there is one place to manage people.
 - An `admin_roles` table (`user_id`, `role`, `granted_by`, `granted_at`) with row-level security: owners can grant roles below owner; only a super admin can grant owner or super admin. Override actions go through one server function that requires a reason and writes the audit entry.
-- Optional second layer: **Cloudflare Access** in front of the admin hostname (free up to 50 people), so unlisted people never reach the sign-in page.
+- **Cloudflare Access** in front of the admin hostname (free up to 50 people; owner decision 2026-11-24), so unlisted people never reach the sign-in page. The app also checks Access's signed header on every server route.
 
 ### 6.4 Audit log
 
@@ -176,7 +176,7 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 
 ## 9. Work plan for Claude Code
 
-1. **ADR-0009 + ADR-0010**, and this spec's open questions (§13) answered. ⏸ owner review.
+1. ✅ **ADR-0009 + ADR-0010** written (2026-11-24). ⏸ owner review.
 2. **Foundation**: `apps/admin` skeleton (sign-in page with MFA, admin home, role checks with the super admin and its overrides, audit log), People → Back-office roles, database migrations for roles and audit log, CI job and tests per role. ⏸ owner actions (§13), then the owner signs in.
 3. **Configuration → Seasons** (§6.5) and **Site** settings, with the GitHub App. ⏸ owner changes a date end to end.
 4. **Content review & publishing**: short spec first, then build. ⏸
@@ -187,11 +187,11 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 - **AI:** AI-drafted content always lands in the review queue (CLAUDE.md §8); the M6 helper's cost caps can be a setting in Configuration.
 - **Revenue:** school dashboards, competition packs and sponsored seasons are managed here.
 - **Risks:** this brings the database forward from M5 (only for admin accounts at first); a server-rendered admin app is new for this repo; GitHub App setup is a one-off owner task.
-- **Owner decisions:**
-  1. Approve the split: content in Git through pull requests, operational data in Supabase.
-  2. Approve the role list in §3, including the super admin and its overrides (decided 2026-11-24: a super admin covers the first owner and reviewer).
-  3. Cloudflare Access as an extra gate: yes or no.
-  4. Who holds the sealed break-glass super admin account (a trusted second person, or a sealed envelope with the owner's lawyer or accountant).
+- **Owner decisions (2026-11-24):**
+  1. ✅ Content in Git through pull requests; operational data in Supabase (brought forward from M5, for back-office accounts first).
+  2. ✅ Roles as in §3, with a super admin who covers the first owner and reviewer and can override checks with a reason.
+  3. ✅ Cloudflare Access in front of the admin hostname.
+  4. ⏳ Who holds the sealed break-glass super admin account (needed before step 2 goes live; a trusted second person, or a sealed envelope with the owner's lawyer or accountant).
 - **Owner actions (before step 2):** create the Supabase project (free tier, the region nearest South Africa); add `admin.robotsforall.org.za` to a new Cloudflare Pages project; install a GitHub App on this repository only (contents: write, pull requests: write) and protect `main` (required review and green CI, no bypass); put the keys into Cloudflare secrets; require 2FA for everyone with write access to the repository.
 
 ## Version history
@@ -201,3 +201,4 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 | 0.1 | 2026-11-24 | First draft: season dates only, with Decap CMS |
 | 0.2 | 2026-11-24 | Owner: the back office runs all administration and configuration (lesson approval, users and access, competitions). Rewritten as the foundation and module map; seasons become its first module; Decap dropped (it edits files only, can't manage people or competitions) |
 | 0.3 | 2026-11-24 | Owner: a super admin covers the first owner and reviewer and can override checks (with a reason, audited); module map extended to every front-office capability and everything discussed (§4.1); more roles (build tester, translator, shop manager, communications, data protection officer) |
+| 0.4 | 2026-11-24 | Approved by the owner, with Cloudflare Access in front; decisions recorded in §13; ADR-0009 and ADR-0010 |
