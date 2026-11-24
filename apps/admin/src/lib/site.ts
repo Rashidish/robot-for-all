@@ -1,5 +1,6 @@
 // Configuration → Site (docs/specs/back-office.md §6.7): turn the form into a checked
 // content/site/settings.json, ready for a pull request. Same checks as the public build.
+import { prettyJson } from '../../../../packages/settings/src/json';
 import {
   checkSettings,
   FEATURES,
@@ -31,5 +32,5 @@ export function settingsFromForm(form: FormData): { text: string; problems: Sett
       : null;
   const features = Object.fromEntries(FEATURES.map((f) => [f, form.get(`feature_${f}`) === 'on']));
   const spec = { announcement, features };
-  return { text: `${JSON.stringify(spec, null, 2)}\n`, problems: checkSettings(spec) };
+  return { text: prettyJson(spec), problems: checkSettings(spec) };
 }

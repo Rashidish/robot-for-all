@@ -74,3 +74,7 @@ export const withdrawTypesFor = (
     : hasRole(mine, 'competition_manager')
       ? ['world', 'season']
       : [];
+
+/** Content → Languages: owners, translators and reviewers see it; only owners add or remove. */
+export const canSeeLanguages = (mine: readonly Role[]): boolean =>
+  (['owner', 'translator', 'reviewer'] as const).some((r) => hasRole(mine, r));
