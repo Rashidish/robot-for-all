@@ -1,6 +1,6 @@
 # Spec: Back office — Review and publishing for templates, worlds and courses, and translations
 
-> **Version:** 0.1 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Draft, waiting for owner review
+> **Version:** 0.2 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
 > Extends `docs/specs/back-office-content-review.md` (lessons, built) to the other content types, as the owner asked (2026-11-24, "go ahead with 1"). Same rules: ADR-0004, ADR-0009, ADR-0012.
 
 ## 1. Purpose
@@ -36,6 +36,17 @@ part of the lesson: they are reviewed **with it**, and are public **only when th
 - **Checklist:** meaning kept (not word for word); safety notes exact; words a child in that grade knows; names of parts and tools as used locally; nothing left in English by mistake.
 - **AI translations** (CLAUDE.md §8) land as drafts in this queue, like any AI content.
 
+### 2.4 Withdraw anything that is live (owner decision 2026-11-24)
+Any live item can be taken down quickly and brought back later, without editing it:
+**lessons, single templates, worlds and courses, seasons, and a whole language**.
+- **One list:** `content/site/withdrawn.json`, e.g.
+  `{ "items": [{ "type": "template", "id": "p1-crank-01/rhino-parts", "reason": "Wrong fold line on the leg", "since": "2026-11-24" }] }`.
+  Types: `lesson`, `template` (`<lesson>/<sheet>`), `world`, `season`, `language` (e.g. `zu`).
+- **The build:** production leaves out everything on the list (a withdrawn lesson's page, templates and answer sheet; a template's page; a world in the Robot tab; a season's grouping; a language's pages and switch). A published lesson can't open a withdrawn world (the build says so). The drafts preview shows withdrawn items with a "Withdrawn" label.
+- **The back office:** a **Withdraw** button (reason required) on every live item, and **Restore** on withdrawn ones; a **Content → Withdrawn** list of everything taken down, with who, when and why. Owners and reviewers can withdraw and restore anything; competition managers also worlds, courses and seasons.
+- **Fast and safe:** withdrawing changes only one entry in that list; the ADR-0012 merge check accepts "one item added to or removed from the withdrawn list", so it goes live as soon as CI passes (about 5 minutes), without a second approval on GitHub. Every withdraw and restore is in `content_reviews` (decisions `withdrawn`, `restored`) and the audit log.
+- Unpublishing a lesson (status back to draft) still exists for "needs more work"; withdrawing is for "take it down now, unchanged".
+
 ## 3. Requirements
 
 | ID | Requirement |
@@ -46,7 +57,8 @@ part of the lesson: they are reviewed **with it**, and are public **only when th
 | MC-4 | Production's Robot tab lists only published worlds and courses; a season shows as current only when its three courses are published |
 | MC-5 | Content → Worlds & courses works like Content → Lessons, with its own checklist, and the ADR-0012 merge check accepts "status lines of one world file" |
 | MC-6 | Translations: per-file status for lessons, per-language status for interface words, reviewers with that language only, translator can't approve their own; screens built with the first second language |
-| MC-7 | Every decision is in `content_reviews` (content type `lesson`, `world` or `translation`) and the audit log |
+| MC-7 | Every decision is in `content_reviews` (content type `lesson`, `world`, `template`, `season` or `translation`) and the audit log |
+| MC-8 | Withdraw / restore any live lesson, template, world, season or language through `content/site/withdrawn.json`; production leaves withdrawn items out; reason required; Content → Withdrawn lists them |
 
 ## 4. Security, privacy and child safety
 
@@ -62,24 +74,25 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 - [ ] A world marked published shows on production; a draft one only on the drafts preview.
 - [ ] The build fails if a published lesson opens a draft world.
 - [ ] A world goes through send for review → approve (→ build test for courses) → merge in the back office, with the same refusals as lessons.
-- [ ] (With the first second language) a translated lesson shows only after a reviewer who reads that language approves it.
+- [ ] (isiZulu) a translated lesson shows only after a reviewer who reads isiZulu approves it; the isiZulu interface is off on production until the language is approved.
+- [ ] Withdrawing a template, lesson, world, season or language from the back office takes it off production after CI, and Restore brings it back; both are recorded.
 
 ## 6. Work plan
 
-1. ⏸ Owner decisions (§7).
-2. Templates follow their lesson; the seventh tick (small PR).
-3. World status in `packages/sim` and the build; production filter; migration of the 14 existing worlds (per decision 1).
-4. Content → Worlds & courses screens; merge check for world files; database content type `world`.
-5. Translations: profile languages and database rules now; screens with the first second language.
+1. ✅ Owner decisions (§7).
+2. **Withdraw** for every content type (`content/site/withdrawn.json`, build filters, back-office Withdraw / Restore / Withdrawn list, merge check) and **templates follow their lesson** with the seventh tick.
+3. **World status** in `packages/sim` and the build: the 14 live worlds and courses marked `published` with `reviewed_by: "Owner (initial set)"`; Content → Worlds & courses screens.
+4. **isiZulu:** the language switch and per-language status (off on production until approved); profile languages and the database rules; translation screens; then **AI-drafted isiZulu translations** of the interface words and lessons as **drafts** (`ai_generated: true`), each needing a reviewer who reads isiZulu before it shows.
 
-## 7. Owner decisions
+## 7. Owner decisions (2026-11-24)
 
-1. **The 14 worlds and courses that are live today (7 launch worlds, 7 courses):** (a) **start them all as `draft`**, like lessons, so the Robot tab on production is empty until each is reviewed, or (b) **mark them `published` with `reviewed_by: "Owner (initial set)"`** so nothing disappears, and review new ones from now on. (Recommended: **b** for the 7 launch worlds the lessons open, **a** for the 7 courses, including Season 1, which nobody has reviewed yet.)
-2. **Translations now or later:** build the translation screens **now**, or **when the first second language starts** (recommended: later; nothing to review yet).
-3. **Which language comes first** (for planning): isiZulu, isiXhosa, Afrikaans, Sesotho, or another.
+1. ✅ **B:** the 14 live worlds and courses stay published, recorded as `reviewed_by: "Owner (initial set)"`; new ones are reviewed from now on.
+2. ✅ **Withdraw function** for any live lesson, template, world, course, season or language (§2.4).
+3. ✅ **isiZulu** is the first second language; the translation screens are built for it.
 
 ## Version history
 
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-24 | First draft |
+| 0.2 | 2026-11-24 | Approved: B (live worlds stay published as the initial set), withdraw for all live content (§2.4), isiZulu first |
