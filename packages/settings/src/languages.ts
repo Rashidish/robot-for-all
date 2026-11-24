@@ -117,3 +117,28 @@ export function liveLanguages(
       l.code === 'en' || showDrafts || (l.status === 'published' && !isWithdrawnLanguage(l.code))
   );
 }
+
+/** `{name}` placeholders and Blockly `%1` slots: a translation must keep exactly the same ones. */
+const SLOTS = /\{\w+\}|%\d/g;
+const slots = (text: string) => (text.match(SLOTS) ?? []).sort().join(' ');
+
+/**
+ * Problems with a translation file: words that aren't in English, and words whose placeholders
+ * or block slots differ from the English (they would break the page or the block).
+ */
+export function translationProblems(
+  english: Record<string, string>,
+  other: Record<string, string>
+): string[] {
+  const problems: string[] = [];
+  for (const [key, text] of Object.entries(other)) {
+    if (key.startsWith('$')) continue;
+    const source = english[key];
+    if (typeof source !== 'string') problems.push(`${key}: not an English key`);
+    else if (slots(source) !== slots(text))
+      problems.push(
+        `${key}: needs ${slots(source) || 'no placeholders'}, has ${slots(text) || 'none'}`
+      );
+  }
+  return problems;
+}
