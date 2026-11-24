@@ -1,0 +1,55 @@
+---
+// Your public reviewer name (content review spec CR-7): it appears in reviewed_by and
+// build_tested_by on lessons, in the public repository. Never an email.
+import Admin from '../layouts/Admin.astro';
+
+const { supabase, user } = Astro.locals;
+let notice = '';
+let error = '';
+if (Astro.request.method === 'POST') {
+  const name = String((await Astro.request.formData()).get('name') ?? '').trim();
+  const { error: err } = await supabase.rpc('set_reviewer_name', { p_name: name });
+  if (!err) notice = 'Saved.';
+  else {
+    error = /duplicate/.test(err.message)
+      ? 'Someone else already uses that name. Choose another.'
+      : /check constraint/.test(err.message)
+        ? 'Use 2 to 40 characters, and not an email address.'
+        : err.message;
+    Astro.response.status = 400;
+  }
+}
+const { data } = await supabase
+  .from('admin_profiles')
+  .select('reviewer_name')
+  .eq('user_id', user?.id ?? '')
+  .maybeSingle();
+const current = (data as { reviewer_name: string } | null)?.reviewer_name ?? '';
+---
+
+<Admin title="Profile">
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  <p>
+    Signed in as <strong>{user?.email}</strong>.
+  </p>
+  <form method="post">
+    <label for="name">Your public reviewer name</label>
+    <p>
+      Shown on lessons you review or build-test, in the public repository. For example "R. Ishmail"
+      or "Reviewer 3". Never your email.
+    </p>
+    <input id="name" name="name" value={current} minlength="2" maxlength="40" required />
+    <div class="actions">
+      <button type="submit">Save</button>
+    </div>
+  </form>
+</Admin>

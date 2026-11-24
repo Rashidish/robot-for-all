@@ -17,6 +17,16 @@ type Fetch = (url: string, init?: RequestInit) => Promise<Response>;
 
 const API = 'https://api.github.com';
 
+export interface Pull {
+  number: number;
+  html_url: string;
+  title: string;
+  state: string;
+  user: { login: string };
+  head: { ref: string; sha: string };
+  base: { ref: string };
+}
+
 export class GitHubError extends Error {
   constructor(
     message: string,
@@ -92,6 +102,7 @@ export class GitHub {
       ...(init.body === undefined ? {} : { body: JSON.stringify(init.body) })
     });
     if (!res.ok) throw new GitHubError(`GitHub ${init.method ?? 'GET'} ${path} failed`, res.status);
+    if (res.status === 204) return undefined as T;
     return (await res.json()) as T;
   }
 
@@ -103,10 +114,57 @@ export class GitHub {
     return items.filter((i) => i.type === 'file').map(({ name, path: p }) => ({ name, path: p }));
   }
 
-  /** A text file on main, with its blob sha (needed to change it safely). */
-  async readFile(path: string): Promise<{ text: string; sha: string }> {
-    const file = await this.api<{ content: string; sha: string }>(`/contents/${path}?ref=main`);
+  /** The sub-folders of a folder on main (e.g. one per lesson). */
+  async listDirs(path: string): Promise<string[]> {
+    const items = await this.api<{ name: string; type: string }[]>(`/contents/${path}?ref=main`);
+    return items.filter((i) => i.type === 'dir').map((i) => i.name);
+  }
+
+  /** A text file on main (or another ref), with its blob sha (needed to change it safely). */
+  async readFile(path: string, ref = 'main'): Promise<{ text: string; sha: string }> {
+    const file = await this.api<{ content: string; sha: string }>(
+      `/contents/${path}?ref=${encodeURIComponent(ref)}`
+    );
     return { text: base64ToUtf8(file.content), sha: file.sha };
+  }
+
+  /** Open pull requests from back-office branches (admin/…). */
+  async openAdminPulls(): Promise<Pull[]> {
+    const pulls = await this.api<Pull[]>('/pulls?state=open&base=main&per_page=100');
+    return pulls.filter((p) => p.head.ref.startsWith('admin/'));
+  }
+
+  async getPull(n: number): Promise<Pull> {
+    return this.api<Pull>(`/pulls/${n}`);
+  }
+
+  async pullFiles(n: number): Promise<{ filename: string; status: string }[]> {
+    return this.api<{ filename: string; status: string }[]>(`/pulls/${n}/files?per_page=10`);
+  }
+
+  /** The CI result for a commit: all checks finished and none failed. */
+  async checks(sha: string): Promise<'passed' | 'running' | 'failed'> {
+    const { check_runs: runs } = await this.api<{
+      check_runs: { status: string; conclusion: string | null }[];
+    }>(`/commits/${sha}/check-runs?per_page=100`);
+    if (runs.length === 0) return 'running';
+    if (runs.some((r) => r.status !== 'completed')) return 'running';
+    const good = new Set(['success', 'skipped', 'neutral']);
+    return runs.every((r) => good.has(r.conclusion ?? '')) ? 'passed' : 'failed';
+  }
+
+  /** Squash-merges a pull request, only if its head is still this commit. */
+  async merge(n: number, sha: string, title: string): Promise<void> {
+    await this.api(`/pulls/${n}/merge`, {
+      method: 'PUT',
+      body: { sha, merge_method: 'squash', commit_title: title }
+    });
+  }
+
+  /** Closes a pull request and deletes its branch (when a change is refused after opening). */
+  async closePull(n: number, branch: string): Promise<void> {
+    await this.api(`/pulls/${n}`, { method: 'PATCH', body: { state: 'closed' } });
+    await this.api(`/git/refs/heads/${branch}`, { method: 'DELETE' }).catch(() => undefined);
   }
 
   /**
@@ -136,10 +194,14 @@ export class GitHub {
         branch: change.branch
       }
     });
-    const pr = await this.api<{ html_url: string }>('/pulls', {
+    const pr = await this.api<{ html_url: string; number: number }>('/pulls', {
       method: 'POST',
       body: { title: change.title, head: change.branch, base: 'main', body: change.body }
     });
+    this.lastPullNumber = pr.number;
     return pr.html_url;
   }
+
+  /** The number of the pull request proposeChange last opened. */
+  lastPullNumber = 0;
 }

@@ -35,6 +35,14 @@ export default defineConfig({
         access: 'secret',
         optional: true
       }),
+      // The App's own login on GitHub, e.g. "robots-for-all-back-office[bot]" (ADR-0012 check 1).
+      GITHUB_APP_LOGIN: envField.string({ context: 'server', access: 'public', optional: true }),
+      // The drafts preview behind Cloudflare Access (content review spec §6.2).
+      DRAFTS_URL: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'https://drafts.robotsforall.org.za'
+      }),
       GITHUB_REPO: envField.string({
         context: 'server',
         access: 'public',

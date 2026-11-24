@@ -1,0 +1,242 @@
+---
+// One lesson: preview links, the review checklist and decisions, the history, and the change
+// waiting to be merged (docs/specs/back-office-content-review.md, ADR-0012).
+import { DRAFTS_URL, GITHUB_APP_LOGIN, GITHUB_REPO } from 'astro:env/server';
+import Admin from '../../layouts/Admin.astro';
+import { GitHubError, type Pull } from '../../lib/github';
+import { githubFromEnv } from '../../lib/github-env';
+import { type LessonSummary, summarise } from '../../lib/lessons';
+import { checkMerge, type MergeCheck, mergeIfReady } from '../../lib/merge';
+import {
+  CHECKLIST,
+  type Decision,
+  DECISION_LABELS,
+  decide,
+  lessonPath,
+  possibleDecisions,
+  pullsByLesson
+} from '../../lib/review';
+import { canSeeLessons, hasRole } from '../../lib/roles';
+
+const { supabase, user, roles } = Astro.locals;
+if (!canSeeLessons(roles)) return Astro.redirect('/', 303);
+const id = Astro.params.id ?? '';
+if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id)) return Astro.redirect('/lessons/', 303);
+
+const gh = githubFromEnv();
+const decided = async (url: string) =>
+  (await supabase.rpc('approved_pull_request', { p_pull_request: url })).data === true;
+const mergeOpts = { appLogin: GITHUB_APP_LOGIN ?? '', decided };
+
+let notice = '';
+let error = '';
+let lesson: LessonSummary | null = null;
+let pull: Pull | undefined;
+let check: MergeCheck | null = null;
+
+const { data: profile } = await supabase
+  .from('admin_profiles')
+  .select('reviewer_name')
+  .eq('user_id', user?.id ?? '')
+  .maybeSingle();
+const reviewerName = (profile as { reviewer_name: string } | null)?.reviewer_name ?? null;
+
+if (gh && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  try {
+    if (form.get('action') === 'merge') {
+      const n = Number(form.get('pull'));
+      const r = await mergeIfReady(gh, n, mergeOpts);
+      if (r.ok) {
+        notice = 'Merged. The site updates in a few minutes.';
+        await supabase.rpc('log_action', {
+          p_action: 'content.merged',
+          p_target: `lesson:${id}`,
+          p_before: null,
+          p_after: { pull_request: r.pull.html_url }
+        });
+      } else error = `Not merged yet: ${r.waiting.join('; ')}.`;
+    } else {
+      const decision = String(form.get('decision')) as Decision;
+      const checklist =
+        decision === 'approved'
+          ? Object.fromEntries(CHECKLIST.map((c) => [c.key, form.get(`tick_${c.key}`) === 'on']))
+          : null;
+      const url = await decide(gh, supabase, {
+        lessonId: id,
+        decision,
+        checklist,
+        notes: String(form.get('notes') ?? '').trim(),
+        overrideReason: String(form.get('override') ?? '').trim(),
+        reviewerName,
+        who: reviewerName ?? user?.email ?? 'an admin'
+      });
+      notice = `${DECISION_LABELS[decision]}: a change is waiting (${url}). It can be merged once the automatic checks pass.`;
+    }
+  } catch (err) {
+    error =
+      err instanceof GitHubError && err.status === 409
+        ? 'Someone changed this lesson in the meantime. Reload the page and try again.'
+        : err instanceof Error
+          ? err.message
+          : 'Something went wrong; nothing was changed.';
+  }
+  if (error) Astro.response.status = 400;
+}
+
+let history: {
+  at: string;
+  decision: Decision;
+  reviewer_name: string | null;
+  notes: string | null;
+  override_reason: string | null;
+}[] = [];
+if (gh) {
+  try {
+    lesson = summarise(id, (await gh.readFile(lessonPath(id))).text);
+    pull = pullsByLesson(await gh.openAdminPulls()).get(id);
+    if (pull) check = await checkMerge(gh, pull.number, mergeOpts);
+  } catch {
+    error ||= 'Could not read this lesson from GitHub.';
+  }
+  const { data } = await supabase
+    .from('content_reviews')
+    .select('at, decision, reviewer_name, notes, override_reason')
+    .eq('content_type', 'lesson')
+    .eq('content_id', id)
+    .order('at', { ascending: false })
+    .limit(20);
+  history = (data ?? []) as typeof history;
+}
+const options = lesson && !pull ? possibleDecisions(lesson) : [];
+const can: Record<Decision, boolean> = {
+  sent_for_review: hasRole(roles, 'content_editor'),
+  approved: hasRole(roles, 'reviewer'),
+  changes_requested: hasRole(roles, 'reviewer'),
+  build_tested: hasRole(roles, 'build_tester'),
+  unpublished: hasRole(roles, 'reviewer') || hasRole(roles, 'owner')
+};
+const when = (iso: string) =>
+  new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+const STATUS_LABELS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+---
+
+<Admin title={lesson?.title ?? id}>
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {lesson && (
+    <>
+      <p>
+        <strong>{STATUS_LABELS[lesson.status]}</strong> · Phase {lesson.phase} · Grades{' '}
+        {lesson.grades.join(', ')}
+        {lesson.aiGenerated && ' · AI-drafted'}
+      </p>
+      <p>
+        Reviewed by: {lesson.reviewedBy ?? '—'} · Built by: {lesson.buildTestedBy ?? '—'}
+      </p>
+      <ul>
+        <li>
+          <a href={`${DRAFTS_URL}/lessons/${id}/`}>Read it as learners will (drafts preview)</a>
+        </li>
+        <li>
+          <a href={`${DRAFTS_URL}/lessons/${id}/answer-sheet/`}>Answer sheet</a>
+        </li>
+        <li>
+          <a href={`https://github.com/${GITHUB_REPO}/blob/main/${lessonPath(id)}`}>
+            The lesson file on GitHub
+          </a>
+        </li>
+      </ul>
+    </>
+  )}
+
+  {pull && check && (
+    <section aria-labelledby="waiting">
+      <h2 id="waiting">A change is waiting</h2>
+      <p>
+        <a href={pull.html_url}>{pull.title}</a>
+      </p>
+      {check.ok ? (
+        <form method="post">
+          <input type="hidden" name="action" value="merge" />
+          <input type="hidden" name="pull" value={pull.number} />
+          <p>Every check has passed.</p>
+          <button type="submit">Merge now</button>
+        </form>
+      ) : (
+        <p>Waiting: {check.waiting.join('; ')}.</p>
+      )}
+    </section>
+  )}
+
+  {!reviewerName && (roles.includes('reviewer') || roles.includes('build_tester')) && (
+    <p class="error">
+      Choose your public reviewer name on your <a href="/profile/">Profile</a> before approving or
+      recording a build test.
+    </p>
+  )}
+
+  {options
+    .filter((d) => can[d])
+    .map((d) => (
+      <section aria-labelledby={`do-${d}`}>
+        <h2 id={`do-${d}`}>{DECISION_LABELS[d]}</h2>
+        <form method="post">
+          <input type="hidden" name="decision" value={d} />
+          {d === 'approved' && (
+            <fieldset>
+              <legend>Checklist (all required)</legend>
+              {CHECKLIST.map((c) => (
+                <label class="check">
+                  <input type="checkbox" name={`tick_${c.key}`} required /> {c.label}
+                </label>
+              ))}
+            </fieldset>
+          )}
+          {d !== 'sent_for_review' && (
+            <>
+              <label for={`notes-${d}`}>
+                {d === 'approved' ? 'Note (optional)' : 'Note (at least 10 characters)'}
+              </label>
+              <textarea id={`notes-${d}`} name="notes" rows="3" required={d !== 'approved'} />
+            </>
+          )}
+          {d === 'approved' && roles.includes('super_admin') && (
+            <>
+              <label for="override">
+                Only if you sent it for review yourself: why no one else can approve it
+              </label>
+              <input id="override" name="override" />
+            </>
+          )}
+          <div class="actions">
+            <button type="submit">{DECISION_LABELS[d]}</button>
+          </div>
+        </form>
+      </section>
+    ))}
+
+  <h2>History</h2>
+  {history.length === 0 ? (
+    <p>No decisions yet.</p>
+  ) : (
+    <ul>
+      {history.map((h) => (
+        <li>
+          {when(h.at)}: <strong>{DECISION_LABELS[h.decision]}</strong>
+          {h.reviewer_name && ` by ${h.reviewer_name}`}
+          {h.notes && `: ${h.notes}`}
+          {h.override_reason && ` (override: ${h.override_reason})`}
+        </li>
+      ))}
+    </ul>
+  )}
+</Admin>
