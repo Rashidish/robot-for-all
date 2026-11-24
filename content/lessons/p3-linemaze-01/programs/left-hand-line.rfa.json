@@ -1,0 +1,102 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Left hand on the line",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "HAPPY"
+          }
+        ]
+      },
+      {
+        "type": "forever",
+        "body": [
+          {
+            "type": "if",
+            "cond": {
+              "type": "x_line",
+              "side": "left"
+            },
+            "then": [
+              {
+                "type": "x_drive_stop",
+                "motor": "A"
+              },
+              {
+                "type": "x_drive",
+                "motor": "B",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "show_icon",
+                "icon": "ARROW_W"
+              }
+            ],
+            "else": [
+              {
+                "type": "if",
+                "cond": {
+                  "type": "x_line",
+                  "side": "right"
+                },
+                "then": [
+                  {
+                    "type": "x_drive",
+                    "motor": "A",
+                    "dir": "forward",
+                    "speed": {
+                      "type": "number",
+                      "value": 60
+                    }
+                  },
+                  {
+                    "type": "x_drive_stop",
+                    "motor": "B"
+                  },
+                  {
+                    "type": "show_icon",
+                    "icon": "ARROW_N"
+                  }
+                ],
+                "else": [
+                  {
+                    "type": "x_drive",
+                    "motor": "A",
+                    "dir": "forward",
+                    "speed": {
+                      "type": "number",
+                      "value": 60
+                    }
+                  },
+                  {
+                    "type": "x_drive",
+                    "motor": "B",
+                    "dir": "backward",
+                    "speed": {
+                      "type": "number",
+                      "value": 24
+                    }
+                  },
+                  {
+                    "type": "show_icon",
+                    "icon": "ARROW_E"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

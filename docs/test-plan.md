@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.20 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.21 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -46,6 +46,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | p2-line-01 Follow the line (as above; also: an adult checks the sensor wiring; the robot follows a taped line with three curves on the floor; check the sensors see black insulation tape, and printed ink) | | | | | n/a | |
 | p2-maze-01 Bump maze (as above; also: one printed stencil makes walls that stand by themselves when traced on cereal-box card; the tunnel roof halves join to 150 × 200 mm; the gate flap swings when the robot pushes it; the starter gets the real robot out of a six-wall maze) | | | | | n/a | |
 | p2-art-01 Pen art (as above; also: an adult checks the servo wiring, with the servo pack + never joined to the micro:bit; the servo lifts the pen clear of the paper and lets it drop back; the real robot draws a square that closes to within 2 cm after tuning the turn pause; a cardboard SG90 stand holds the servo steady) | | | | | n/a | |
+| p3-linemaze-01 Line maze (as above; also: the printed line maze tiles join and the taped lines match the screen; the real robot takes the left branch at a taped T junction and turns round at a dead end; two teams build, swap and race their own mazes) | | | | | n/a | |
 
 ---
 
@@ -112,3 +113,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.18 | 2026-11-24 | Lesson p2-line-01 Follow the line |
 | 0.19 | 2026-11-24 | Lesson p2-maze-01 Bump maze |
 | 0.20 | 2026-11-24 | Lesson p2-art-01 Pen art |
+| 0.21 | 2026-11-24 | Lesson p3-linemaze-01 Line maze |
