@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.16 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.17 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -42,6 +42,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | p2-motor-02 Forward, stop, reverse (as above) | | | | | n/a | |
 | p2-robot-01 Robot that reacts (as above; also: the micro:bit on its own 2 × AA pack, robot tested on the floor) | | | | | n/a | |
 | p2-motor-03 Two motors: turning (as above; also: an adult checks the breakout board and two-motor wiring; the robot drives straight, spins and curves on the floor) | | | | | n/a | |
+| p2-whisker-01 Whisker bumper (as above; also: an adult bends the paper clips; the bumper template printed at 100 %; the robot backs away from a real wall and the whiskers don't stay pressed) | | | | | | |
 
 ---
 
@@ -104,3 +105,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.14 | 2026-11-23 | B19 maze numbers on two devices; mission checklist with TalkBack |
 | 0.15 | 2026-11-23 | B20 print course on two printers |
 | 0.16 | 2026-11-24 | Lesson p2-motor-03 Two motors: turning |
+| 0.17 | 2026-11-24 | Lesson p2-whisker-01 Whisker bumper |
