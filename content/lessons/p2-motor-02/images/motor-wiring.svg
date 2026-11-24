@@ -8,7 +8,7 @@
   </g>
   <rect x="196" y="140" width="124" height="74" rx="6" fill="#1d5fbf" stroke="#1f1a14" stroke-width="3"/>
   <g font-size="10" font-weight="700" fill="#fff" text-anchor="middle">
-    <text x="258" y="160">MOTOR DRIVER</text>
+    <text x="258" y="160">L9110S</text>
     <text x="214" y="188">A-IA</text><text x="244" y="188">A-IB</text><text x="274" y="188">GND</text><text x="304" y="188">VCC</text>
   </g>
   <g fill="#e9b949" stroke="#1f1a14" stroke-width="1.5">

@@ -1,6 +1,6 @@
 # Spec: Translate templates, diagram words and starter program names
 
-> **Version:** 0.2 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): all three recommendations
+> **Version:** 0.3 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): all three recommendations
 > Follows `docs/specs/back-office-more-content.md` §2.7 (lesson translations) and §2.8 (flags), where the back office lists these three as "not translatable yet". CLAUDE.md §2 rule 4: all learner-facing text goes through translation.
 
 ## 1. Purpose
@@ -10,7 +10,7 @@ A learner using the site in isiZulu still meets English in three places, in ever
 | What | Where | How much | Why it's English today |
 |---|---|---|---|
 | **Template sheets** (printed, cut out, handled by learners) | `content/projects/<lesson>/templates/<name>.ts` | 15 sheets with 15 titles and about 45 part names, plus notes on some parts; plus the sentences the generator writes ("Push rod: 72 mm long, 12 mm wide", "2 holes, 6 mm from each end…") | Titles, part names and notes are written in code; the generator builds its sentences in English |
-| **Words inside diagrams** | `content/lessons/<lesson>/images/*.svg` | 6 words in 6 Phase 2–3 diagrams: "MOTOR DRIVER" (4), "servo", "robot", "finish". The rest are pin and board markings (P0, GND, VCC, A-IA, 3 V) and the name micro:bit | Drawn as text in the picture |
+| **Words inside diagrams** | `content/lessons/<lesson>/images/*.svg` | 10 words in 7 Phase 2–3 diagrams: "MOTOR DRIVER" (4), "LEFT" and "RIGHT" (2 diagrams), "servo", "robot", "finish". The rest are pin and board markings (P0, GND, VCC, A-IA, 3 V) and the name micro:bit | Drawn as text in the picture |
 | **Starter program names** | `content/lessons/<lesson>/programs/*.rfa.json` | 12 names ("Follow the line") shown in the code editor's My programs | Stored in the program file |
 
 ## 2. Proposal
@@ -46,7 +46,7 @@ The sentences the template generator writes from numbers ("{name}: {length} mm l
 
 ### 2.5 Diagrams: no words, only marks and numbers
 New rule for lesson pictures (ADR-0004 note, CLAUDE.md §6): **a diagram carries no words**. It may carry numbered callouts (explained in the lesson text, which is translated) and the markings printed on real parts (pin names, board names like L9110S or SG90, battery voltage), which must match the hardware and are the same in every language.
-- Fix the 6 words: "MOTOR DRIVER" becomes the board's printed name **L9110S** plus a numbered callout; "servo" becomes **SG90**; "robot" and "finish" become numbered callouts (or a flag mark for the finish), each explained in the lesson's numbered list.
+- *(Built 2026-11-24.)* Fix the words: "MOTOR DRIVER" becomes the board's printed name **L9110S**; "servo" becomes **SG90**; the two motors' "LEFT"/"RIGHT" become the driver's terminals **A**/**B**; the line sensors' "LEFT"/"RIGHT" become their pins **P13**/**P14**; "robot" becomes the robot's two wheels and "finish" a chequered flag. Each is already explained in the lesson's numbered list and alt text, which are translated.
 - A content check fails the build when a lesson SVG contains a word that isn't on the allowed list of markings (pin names, part numbers, voltages, micro:bit).
 - No per-language copies of images, so no extra data and nothing to keep in step.
 
@@ -95,3 +95,4 @@ No accounts, personal data, uploads or payments are involved; this is content an
 |---|---|---|
 | 0.1 | 2026-11-24 | First draft, after the owner asked whether untranslated content is flagged |
 | 0.2 | 2026-11-24 | Approved: template words in the lesson translation, diagrams without words, order diagrams → templates → program names |
+| 0.3 | 2026-11-24 | §2.5 built: 10 words in 7 diagrams replaced (LEFT/RIGHT found while building); content check |
