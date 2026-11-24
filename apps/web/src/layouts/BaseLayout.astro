@@ -1,5 +1,6 @@
 ---
 import '../styles/base.css';
+import Banner from '../components/Banner.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import UpdateNotice from '../components/UpdateNotice.astro';
@@ -36,6 +37,7 @@ const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.
       {m.skip_link()}
     </a>
     <SiteHeader />
+    <Banner />
     <main id="main" tabindex="-1" class:list={[{ wide }]}>
       <slot />
     </main>

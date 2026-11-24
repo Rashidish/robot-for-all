@@ -1,0 +1,9 @@
+{
+  "announcement": null,
+  "features": {
+    "robot_world": true,
+    "print_course": true,
+    "seasons": true,
+    "send_to_microbit": true
+  }
+}

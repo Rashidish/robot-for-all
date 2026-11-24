@@ -24,6 +24,7 @@
     WorldLink
   } from '../code/world-link';
   import { saDate, seasonState } from '../../../../packages/sim/src/season';
+  import { featureOn } from '../site';
 
   interface Props {
     worlds: World[];
@@ -439,9 +440,11 @@
       <span>{t('sim_grid')}</span>
     </label>
     <button type="button" class="plain" onclick={where}>{t('sim_where')}</button>
-    <button type="button" class="plain print-course" onclick={printCourse} disabled={printing}>
-      {t('sim_print_course')}
-    </button>
+    {#if featureOn('print_course')}
+      <button type="button" class="plain print-course" onclick={printCourse} disabled={printing}>
+        {t('sim_print_course')}
+      </button>
+    {/if}
   </div>
 
   <!-- Course pages for the printer only: true A4 size, 1 unit = 1 mm. -->

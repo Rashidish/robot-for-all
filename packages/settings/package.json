@@ -1,0 +1,10 @@
+{
+  "name": "@robots-for-all/settings",
+  "private": true,
+  "description": "Site settings (back-office spec §6.7): the announcement banner and feature switches, checked the same way by the public build and the back office",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/site.ts"
+  }
+}

@@ -1,0 +1,132 @@
+---
+// Configuration → Site (docs/specs/back-office.md §6.7): the announcement banner and the feature
+// switches of the public site. Saving opens a pull request; the site changes once it is merged.
+import Admin from '../layouts/Admin.astro';
+import { GitHubError } from '../lib/github';
+import { githubFromEnv } from '../lib/github-env';
+import { canManagePeople } from '../lib/roles';
+import { FEATURE_LABELS, settingsFromForm, SITE_SETTINGS_PATH } from '../lib/site';
+import {
+  BANNER_MAX,
+  checkSettings,
+  FEATURES,
+  type SiteSettings
+} from '../../../../packages/settings/src/site';
+
+const { supabase, user, roles } = Astro.locals;
+// Owners and super admins: these switches change the whole public site.
+if (!canManagePeople(roles)) return Astro.redirect('/', 303);
+
+const gh = githubFromEnv();
+let current: SiteSettings | null = null;
+let sha = '';
+let notice: { text: string; url: string } | null = null;
+let error = '';
+
+if (gh) {
+  try {
+    const file = await gh.readFile(SITE_SETTINGS_PATH);
+    const spec = JSON.parse(file.text) as unknown;
+    if (checkSettings(spec).length === 0) current = spec as SiteSettings;
+    else error = 'The settings file on GitHub has problems; fix it in a pull request first.';
+    sha = file.sha;
+  } catch {
+    error = 'Could not read the site settings from GitHub. Try again in a minute.';
+  }
+}
+
+if (gh && current && Astro.request.method === 'POST') {
+  const { text, problems } = settingsFromForm(await Astro.request.formData());
+  if (problems.length > 0) {
+    error = problems.map((p) => `${p.path}: ${p.message}`).join('; ');
+  } else if (text === `${JSON.stringify(current, null, 2)}\n`) {
+    error = 'Nothing changed.';
+  } else {
+    const next = JSON.parse(text) as SiteSettings;
+    const off = FEATURES.filter((f) => !next.features[f]);
+    const title = `Site settings: ${next.announcement ? 'banner on' : 'no banner'}${
+      off.length ? `, off: ${off.join(', ')}` : ''
+    }`;
+    try {
+      const url = await gh.proposeChange({
+        branch: `admin/site-settings-${new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)}`,
+        path: SITE_SETTINGS_PATH,
+        text,
+        sha,
+        message: `${title} (back office)`,
+        title,
+        body:
+          `Changed in the back office by ${user?.email ?? 'an admin'}.\n\n` +
+          '```json\n' +
+          text +
+          '```\n\nMerge after CI passes to publish.'
+      });
+      await supabase.rpc('log_action', {
+        p_action: 'site.settings',
+        p_target: SITE_SETTINGS_PATH,
+        p_before: current,
+        p_after: { ...next, pull_request: url }
+      });
+      notice = { text: `Sent for review: ${title}.`, url };
+    } catch (err) {
+      error =
+        err instanceof GitHubError && err.status === 409
+          ? 'Someone changed the settings in the meantime. Reload the page and try again.'
+          : 'GitHub did not accept the change. Nothing was changed; try again in a minute.';
+    }
+  }
+  if (error) Astro.response.status = 400;
+}
+const a = current?.announcement ?? null;
+---
+
+<Admin title="Site settings">
+  {notice && (
+    <p class="notice" role="status">
+      {notice.text} <a href={notice.url}>Open the pull request</a>. The site changes when it is
+      merged.
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {!gh && (
+    <p class="error">
+      The GitHub App is not set up yet, so settings can't be changed here. See docs/deploy.md §5.
+    </p>
+  )}
+  {current && (
+    <form method="post">
+      <h2>Announcement banner</h2>
+      <p>Shows at the top of every public page between the two dates (South African dates).</p>
+      <label class="check">
+        <input type="checkbox" name="banner" checked={a !== null} /> Show a banner
+      </label>
+      <label for="from">First day</label>
+      <input id="from" name="from" type="date" value={a?.from ?? ''} />
+      <label for="to">Last day</label>
+      <input id="to" name="to" type="date" value={a?.to ?? ''} />
+      <label for="text_en">Words (English, at most {BANNER_MAX} characters)</label>
+      <input id="text_en" name="text_en" maxlength={BANNER_MAX} value={a?.text['en'] ?? ''} />
+      <label for="link">Link to a page on the site (optional, e.g. /code/)</label>
+      <input id="link" name="link" value={a?.link ?? ''} />
+
+      <h2>Parts of the public site</h2>
+      <p>Switching a part off hides it for everyone; nothing is deleted.</p>
+      <fieldset>
+        <legend>On</legend>
+        {FEATURES.map((f) => (
+          <label class="check">
+            <input type="checkbox" name={`feature_${f}`} checked={current.features[f]} />{' '}
+            {FEATURE_LABELS[f]}
+          </label>
+        ))}
+      </fieldset>
+      <div class="actions">
+        <button type="submit">Save for review</button>
+      </div>
+    </form>
+  )}
+</Admin>

@@ -1,6 +1,6 @@
 # Spec: Back office — foundation and module map
 
-> **Version:** 0.5 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24); ADR-0009 and ADR-0010 accepted
+> **Version:** 0.6 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24); ADR-0009 and ADR-0010 accepted
 > Replaces v0.1 "Back office — Season dates" (one screen only).
 
 ## 1. Purpose
@@ -143,6 +143,13 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 - Saving opens a pull request that changes only `content/seasons/<id>.json`; CI checks it (`packages/sim/src/season.ts`); a reviewer or owner merges; the site redeploys in about 2 minutes and phones get the new dates the next time they are online.
 - Later in the same module: create a new season, choose its three courses, upload its badge.
 
+### 6.7 Configuration → Site (owner decision 2026-11-24: banner + feature switches)
+
+- **File:** `content/site/settings.json`, checked by `packages/settings` in both the public build (a bad file fails it) and the back office (a bad change is refused before a pull request).
+- **Announcement banner:** first and last day (South African dates), words per language (English required, at most 160 characters, no HTML; other languages fall back to English, so the translation rule holds), an optional link to a page on this site only. It shows at the top of every public page between its dates, and a learner can close it (remembered on the device per banner, so a new banner shows again). Without JavaScript it stays hidden, so it never shows out of date.
+- **Feature switches** (off hides the part for everyone, nothing is deleted): `robot_world` (Robot tab), `print_course` (Print course button), `seasons` (season grouping and banner in the Robot tab), `send_to_microbit` (Send to micro:bit button). New switches are added when a part needs one.
+- **Who:** owners and super admins. Saving opens a pull request that changes only the settings file; the site changes when it is merged (about 5 minutes after).
+
 ### 6.6 ADRs needed
 
 - **ADR-0009 Back-office architecture**: the admin app on its own hostname, Pages Functions, GitHub App for content writes.
@@ -178,7 +185,7 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 
 1. ✅ **ADR-0009 + ADR-0010** accepted (2026-11-24).
 2. **Foundation** *(built 2026-11-24, waits for the owner set-up in `docs/deploy.md` §5: database rules in `packages/db` (2a); admin app as a Cloudflare Worker, ADR-0011 (2b); break-glass sign-in alerts to owners by email still to do, with the email provider)*: `apps/admin` skeleton (sign-in page with MFA, admin home, role checks with the super admin and its overrides, audit log), People → Back-office roles, database migrations for roles and audit log, CI job and tests per role. ⏸ owner actions (§13), then the owner signs in.
-3. **Configuration → Seasons** (§6.5) and **Site** settings, with the GitHub App. *(Seasons built 2026-11-24: `apps/admin/src/pages/seasons.astro`; Site settings next.)* ⏸ owner changes a date end to end.
+3. **Configuration → Seasons** (§6.5) and **Site** settings (§6.7), with the GitHub App. *(Both built 2026-11-24: `apps/admin/src/pages/seasons.astro`, `site.astro`.)* ⏸ owner changes a date end to end.
 4. **Content review & publishing**: short spec first, then build. ⏸
 5. Further modules in the order of §4.2, each with a short spec, following the milestones.
 
@@ -203,3 +210,4 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 | 0.3 | 2026-11-24 | Owner: a super admin covers the first owner and reviewer and can override checks (with a reason, audited); module map extended to every front-office capability and everything discussed (§4.1); more roles (build tester, translator, shop manager, communications, data protection officer) |
 | 0.4 | 2026-11-24 | Approved by the owner, with Cloudflare Access in front; decisions recorded in §13; ADR-0009 and ADR-0010 |
 | 0.5 | 2026-11-24 | Break-glass account vaulted (owner); ADR-0009 and ADR-0010 accepted |
+| 0.6 | 2026-11-24 | §6.7 Configuration → Site: banner and feature switches (owner decision) |
