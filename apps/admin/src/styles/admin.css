@@ -143,3 +143,18 @@ ul.roles {
 code {
   word-break: break-all;
 }
+label.check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 400;
+}
+label.check input {
+  width: auto;
+  min-height: 1.5rem;
+}
+fieldset {
+  max-width: 32rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}

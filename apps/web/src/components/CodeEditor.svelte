@@ -24,6 +24,7 @@
   import { buildHex, fetchFirmware } from '../code/hex';
   import { modulesFor } from '../code/robot';
   import Simulator from './Simulator.svelte';
+  import { featureOn } from '../site';
   import simulatorBuild from '../../simulator.json';
   import '../code/toolbox.css';
   import { FILE_EXTENSION, fileName, fromFile, toFile } from '../code/files';
@@ -687,7 +688,7 @@
     </label>
     <div class="actions">
       <button type="button" class="primary" onclick={download}>{t('code_download_hex')}</button>
-      {#if hasUsb}
+      {#if hasUsb && featureOn('send_to_microbit')}
         <button type="button" class="secondary" onclick={send}>{t('code_send')}</button>
       {/if}
       <button type="button" class="plain" onclick={openDialog}>{t('code_programs')}</button>

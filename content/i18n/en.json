@@ -483,5 +483,8 @@
   "sim_print_edge_east": "east edge",
   "sim_print_edge_south": "south edge",
   "sim_print_edge_west": "west edge",
-  "sim_print_no_printer": "No printer? Draw the grid on the floor with chalk or masking tape: squares of 200 mm."
+  "sim_print_no_printer": "No printer? Draw the grid on the floor with chalk or masking tape: squares of 200 mm.",
+  "banner_label": "Announcement",
+  "banner_more": "Read more",
+  "banner_close": "Close the announcement"
 }
