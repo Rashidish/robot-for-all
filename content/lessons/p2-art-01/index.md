@@ -46,7 +46,7 @@ assessment:
   - I can make my robot draw a shape with a different number of sides
   - I can lift and lower the pen with the pen blocks
 prerequisites: [p2-motor-03]
-next: null
+next: p3-linemaze-01
 templates: [pen-lifter]
 status: draft
 ai_generated: true
