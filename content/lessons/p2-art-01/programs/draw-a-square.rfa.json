@@ -1,0 +1,108 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Draw a square",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "x_pen",
+            "pen": "up"
+          },
+          {
+            "type": "show_icon",
+            "icon": "HAPPY"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "A",
+        "body": [
+          {
+            "type": "x_pen",
+            "pen": "down"
+          },
+          {
+            "type": "show_icon",
+            "icon": "SQUARE"
+          },
+          {
+            "type": "repeat",
+            "times": {
+              "type": "number",
+              "value": 4
+            },
+            "body": [
+              {
+                "type": "x_drive",
+                "motor": "A",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "B",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "pause",
+                "ms": {
+                  "type": "number",
+                  "value": 1500
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "A",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "B",
+                "dir": "backward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "pause",
+                "ms": {
+                  "type": "number",
+                  "value": 650
+                }
+              }
+            ]
+          },
+          {
+            "type": "x_drive_stop",
+            "motor": "both"
+          },
+          {
+            "type": "x_pen",
+            "pen": "up"
+          },
+          {
+            "type": "show_icon",
+            "icon": "YES"
+          }
+        ]
+      }
+    ]
+  }
+}

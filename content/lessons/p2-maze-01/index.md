@@ -42,7 +42,7 @@ assessment:
   - I can build a wall piece that stands up by itself
   - I can change one number, test again and say whether it helped
 prerequisites: [p2-whisker-01]
-next: null
+next: p2-art-01
 templates: [wall-pieces, tunnel-and-gate]
 status: draft
 ai_generated: true
