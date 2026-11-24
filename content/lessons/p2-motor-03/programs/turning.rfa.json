@@ -1,0 +1,103 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Turning",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "HAPPY"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "A",
+        "body": [
+          {
+            "type": "x_drive",
+            "motor": "A",
+            "dir": "forward",
+            "speed": {
+              "type": "number",
+              "value": 60
+            }
+          },
+          {
+            "type": "x_drive",
+            "motor": "B",
+            "dir": "forward",
+            "speed": {
+              "type": "number",
+              "value": 60
+            }
+          },
+          {
+            "type": "show_icon",
+            "icon": "ARROW_N"
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 1000
+            }
+          },
+          {
+            "type": "x_drive_stop",
+            "motor": "both"
+          },
+          {
+            "type": "clear"
+          }
+        ]
+      },
+      {
+        "type": "on_button",
+        "button": "B",
+        "body": [
+          {
+            "type": "x_drive",
+            "motor": "A",
+            "dir": "forward",
+            "speed": {
+              "type": "number",
+              "value": 60
+            }
+          },
+          {
+            "type": "x_drive",
+            "motor": "B",
+            "dir": "backward",
+            "speed": {
+              "type": "number",
+              "value": 60
+            }
+          },
+          {
+            "type": "show_icon",
+            "icon": "ARROW_E"
+          },
+          {
+            "type": "pause",
+            "ms": {
+              "type": "number",
+              "value": 650
+            }
+          },
+          {
+            "type": "x_drive_stop",
+            "motor": "both"
+          },
+          {
+            "type": "clear"
+          }
+        ]
+      }
+    ]
+  }
+}

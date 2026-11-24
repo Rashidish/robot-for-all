@@ -155,4 +155,30 @@ test.describe('Robot tab (M4 step 2)', () => {
     // On screen the pages stay hidden; only the printer sees them.
     await expect(page.locator('.print-pages')).toBeHidden();
   });
+
+  test('"Two motors: turning": A drives both motors forward, B spins', async ({ page }) => {
+    await page.goto('/lessons/p2-motor-03/');
+    await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
+    await expect(page.locator('.blocklySvg').first()).toBeVisible();
+    await expect(page.getByLabel('World', { exact: true })).toHaveValue('open-floor');
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect(simulator(page).locator('#ButtonA')).toBeAttached({ timeout: 15_000 });
+    await page.waitForTimeout(1500);
+    await page.locator('.monitor summary').click();
+    const left = page.locator('.monitor tr[data-value="motor_left"] td');
+    const right = page.locator('.monitor tr[data-value="motor_right"] td');
+    await pressA(page);
+    await expect(left).toHaveText('60%', { timeout: 5_000 });
+    await expect(right).toHaveText('60%');
+    await expect(left).toHaveText('0%', { timeout: 5_000 });
+    const pressB = async () => {
+      const b = simulator(page).locator('#ButtonB');
+      await b.dispatchEvent('mousedown');
+      await page.waitForTimeout(150);
+      await b.dispatchEvent('mouseup');
+    };
+    await pressB();
+    await expect(left).toHaveText('60%', { timeout: 5_000 });
+    await expect(right).toHaveText('-60%');
+  });
 });

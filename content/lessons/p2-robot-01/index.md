@@ -45,7 +45,7 @@ assessment:
   - I can make my robot stop by itself in a dark tunnel
   - I can change one thing in my robot and test if it made it better
 prerequisites: [p2-motor-02, p1-wheel-01]
-next: null
+next: p2-motor-03
 templates: []
 status: in_review
 ai_generated: true
