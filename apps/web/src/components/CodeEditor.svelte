@@ -21,7 +21,6 @@
     variableBlocks,
     type Program
   } from '../../../../packages/blocks/src/index';
-  import { buildHex, fetchFirmware } from '../code/hex';
   import { modulesFor } from '../code/robot';
   import Simulator from './Simulator.svelte';
   import { featureOn } from '../site';
@@ -210,7 +209,27 @@
     closeDialog();
   }
 
+  /**
+   * Starting the editor is split into steps with a pause between them, so a cheap phone stays
+   * responsive while Blockly starts (one long block of work hurt Lighthouse on /code/).
+   */
+  const pause = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
   onMount(() => {
+    let stopped = false;
+    let cleanup: (() => void) | undefined;
+    void (async () => {
+      await pause();
+      if (stopped) return;
+      cleanup = await start();
+    })();
+    return () => {
+      stopped = true;
+      cleanup?.();
+    };
+  });
+
+  async function start(): Promise<() => void> {
     setUpBlockly();
     hasUsb = 'usb' in navigator;
     workspace = Blockly.inject(host, {
@@ -271,6 +290,7 @@
       });
     }
 
+    await pause();
     store = loadStore(storage());
     load(store.current ? store.programs[store.current] : undefined);
     if (!store.current) save();
@@ -294,7 +314,7 @@
       save();
       ws.dispose();
     };
-  });
+  }
 
   /** Searches every block's words, like MakeCode's toolbox search. */
   const searchable = allToolboxBlocks().map((item) => {
@@ -344,6 +364,9 @@
   async function makeHex(): Promise<string | null> {
     const code = currentCode();
     if (code === null) return null;
+    // The .hex builder and firmware load only when a program is downloaded or sent, so the
+    // editor itself starts faster on cheap phones.
+    const { buildHex, fetchFirmware } = await import('../code/hex');
     return buildHex(filesFor(code, modulesFor('board')), await fetchFirmware());
   }
 

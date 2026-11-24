@@ -47,8 +47,15 @@ export default defineConfig({
           // The code editor's libraries go in their own file so the service worker can leave
           // them out of the install download: only learners who open /code/ pay for them.
           manualChunks(id: string) {
+            // micro:bit file and USB code loads only on Download or Send (its own chunk).
             if (
-              /[\\/]node_modules[\\/](blockly|@microbit|nrf-intel-hex)[\\/]/.test(id) ||
+              /[\\/]node_modules[\\/](@microbit|nrf-intel-hex)[\\/]/.test(id) ||
+              /[\\/]src[\\/]code[\\/]hex\.ts$/.test(id)
+            ) {
+              return 'microbit';
+            }
+            if (
+              /[\\/]node_modules[\\/]blockly[\\/]/.test(id) ||
               /[\\/]src[\\/](code[\\/]|components[\\/]CodeEditor\.svelte)/.test(id) ||
               /[\\/]packages[\\/]blocks[\\/]/.test(id)
             ) {
