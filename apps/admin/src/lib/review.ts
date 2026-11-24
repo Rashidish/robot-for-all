@@ -37,6 +37,11 @@ export const CHECKLIST: { key: string; label: string }[] = [
     key: 'parts_cost',
     label: 'Parts are cheap, with substitutes; the cost estimate is believable'
   },
+  {
+    key: 'templates',
+    label:
+      'Templates: printed at 100 % and measured (the 50 mm square is 50 mm); fold and cut lines right'
+  },
   { key: 'ai_read', label: 'I read every section (required for AI-drafted lessons)' }
 ];
 

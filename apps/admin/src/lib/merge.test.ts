@@ -71,14 +71,18 @@ describe('the back office merges only its own, status-only, checked, decided pul
           { filename: 'apps/web/src/x.ts', status: 'modified' }
         ]
       },
-      'more than one lesson file'
+      'more than one lesson file or the withdrawn list'
     ],
     [
       'a code file',
       { files: [{ filename: 'apps/web/src/x.ts', status: 'modified' }] },
-      'more than one lesson file'
+      'more than one lesson file or the withdrawn list'
     ],
-    ['a new file', { files: [{ filename: PATH, status: 'added' }] }, 'more than one lesson file'],
+    [
+      'a new file',
+      { files: [{ filename: PATH, status: 'added' }] },
+      'more than one lesson file or the withdrawn list'
+    ],
     [
       'lesson text changed too',
       { head: main.replace('Pen art', 'Pen art, edited') },
@@ -99,5 +103,64 @@ describe('the back office merges only its own, status-only, checked, decided pul
     const r = await mergeIfReady(gh, 101, { appLogin: APP, decided: decided(false) });
     expect(r.waiting).toEqual(['no decision is recorded for it']);
     expect(merged).toEqual([]);
+  });
+
+  describe('the withdrawn list', () => {
+    const W = 'content/site/withdrawn.json';
+    const item = {
+      type: 'world',
+      id: 'bump-maze',
+      reason: 'A wall is in the wrong place',
+      since: '2026-11-24'
+    };
+    const list = (...items: object[]) => `${JSON.stringify({ items }, null, 2)}\n`;
+    const withList = (mainText: string, headText: string) => {
+      const merged: string[] = [];
+      const gh = {
+        getPull: async () => ({
+          number: 7,
+          html_url: URL,
+          title: 'Withdraw bump-maze',
+          state: 'open',
+          user: { login: APP },
+          head: { ref: 'admin/withdraw-world-bump-maze-20261124-150000', sha: 'head-sha' },
+          base: { ref: 'main' }
+        }),
+        pullFiles: async () => [{ filename: W, status: 'modified' }],
+        readFile: async (_p: string, ref: string) => ({
+          text: ref === 'main' ? mainText : headText,
+          sha: ref
+        }),
+        checks: async () => 'passed',
+        merge: async (_n: number, sha: string) => void merged.push(sha)
+      } as unknown as GitHub;
+      return { gh, merged };
+    };
+
+    it('merges one item added, or one removed', async () => {
+      for (const [a, b] of [
+        [list(), list(item)],
+        [list(item), list()]
+      ]) {
+        const { gh, merged } = withList(a ?? '', b ?? '');
+        expect((await mergeIfReady(gh, 7, { appLogin: APP, decided: decided(true) })).ok).toBe(
+          true
+        );
+        expect(merged).toEqual(['head-sha']);
+      }
+    });
+
+    it('waits for two items at once, a changed reason, or a broken file', async () => {
+      for (const [a, b] of [
+        [list(), list(item, { ...item, id: 'line-maze' })],
+        [list(item), list({ ...item, reason: 'Another long reason here' })],
+        [list(), '{ broken']
+      ]) {
+        const { gh, merged } = withList(a ?? '', b ?? '');
+        const r = await mergeIfReady(gh, 7, { appLogin: APP, decided: decided(true) });
+        expect(r.ok).toBe(false);
+        expect(merged).toEqual([]);
+      }
+    });
   });
 });

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { GitHub, Pull } from './github';
 import { summarise } from './lessons';
-import { decide, possibleDecisions, pullsByLesson } from './review';
+import { CHECKLIST, decide, possibleDecisions, pullsByLesson } from './review';
 
 const PATH = 'content/lessons/p2-art-01/index.md';
 const text = readFileSync(join(import.meta.dirname, '../../../../', PATH), 'utf8');
@@ -101,5 +101,14 @@ describe('content review decisions', () => {
     );
     expect(proposed).toEqual([]);
     expect(sb.calls).toEqual([]);
+  });
+
+  it('the checklist on the page is the one the database requires', () => {
+    const dir = join(import.meta.dirname, '../../../../packages/db/migrations');
+    const latest = readFileSync(join(dir, '0005_withdraw_and_more_content.sql'), 'utf8');
+    const keys = /array\[([^\]]*)\]/.exec(latest)?.[1] ?? '';
+    expect(CHECKLIST.map((c) => c.key).sort()).toEqual(
+      [...keys.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]).sort()
+    );
   });
 });

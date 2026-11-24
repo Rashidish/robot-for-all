@@ -1,12 +1,15 @@
 // The printable template file itself (true-scale A4 SVG), built at build time.
 import type { APIRoute } from 'astro';
+import { hidden } from '../../../withdrawn';
 import { getLessons } from '../../../lessons/load';
 import { findTemplate, templateSvg } from '../../../templates/load';
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
   return lessons.flatMap((lesson) =>
-    lesson.data.templates.map((name) => ({ params: { lesson: lesson.id, name } }))
+    lesson.data.templates
+      .filter((name) => !hidden('template', `${lesson.id}/${name}`))
+      .map((name) => ({ params: { lesson: lesson.id, name } }))
   );
 }
 

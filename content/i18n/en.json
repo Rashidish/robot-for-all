@@ -486,5 +486,6 @@
   "sim_print_no_printer": "No printer? Draw the grid on the floor with chalk or masking tape: squares of 200 mm.",
   "banner_label": "Announcement",
   "banner_more": "Read more",
-  "banner_close": "Close the announcement"
+  "banner_close": "Close the announcement",
+  "lesson_withdrawn_notice": "Withdrawn: this lesson is not on the live site at the moment."
 }

@@ -60,3 +60,17 @@ export const canEditSeasons = (mine: readonly Role[]): boolean =>
 /** The Lessons screens: content editors, reviewers, build testers and owners. */
 export const canSeeLessons = (mine: readonly Role[]): boolean =>
   (['content_editor', 'reviewer', 'build_tester', 'owner'] as const).some((r) => hasRole(mine, r));
+
+/** Withdraw and restore (more content spec §2.4): owners, reviewers, competition managers. */
+export const canWithdraw = (mine: readonly Role[]): boolean =>
+  (['owner', 'reviewer', 'competition_manager'] as const).some((r) => hasRole(mine, r));
+
+/** Competition managers may withdraw only worlds and seasons. */
+export const withdrawTypesFor = (
+  mine: readonly Role[]
+): ('lesson' | 'template' | 'world' | 'season' | 'language')[] =>
+  hasRole(mine, 'owner') || hasRole(mine, 'reviewer')
+    ? ['lesson', 'template', 'world', 'season', 'language']
+    : hasRole(mine, 'competition_manager')
+      ? ['world', 'season']
+      : [];

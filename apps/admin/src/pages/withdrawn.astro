@@ -1,0 +1,197 @@
+---
+// Content → Withdrawn (more content spec §2.4): take any live item off the site now, unchanged,
+// with a reason; bring it back later. Each change is one pull request the back office merges once
+// CI passes (ADR-0012).
+import { GITHUB_APP_LOGIN } from 'astro:env/server';
+import Admin from '../layouts/Admin.astro';
+import { GitHubError, type Pull } from '../lib/github';
+import { githubFromEnv } from '../lib/github-env';
+import { checkMerge, type MergeCheck, mergeIfReady } from '../lib/merge';
+import { canWithdraw, withdrawTypesFor } from '../lib/roles';
+import {
+  changeWithdrawn,
+  type LiveItem,
+  liveItems,
+  readWithdrawn,
+  TYPE_LABELS
+} from '../lib/withdraw';
+import type { WithdrawnList, WithdrawType } from '../../../../packages/settings/src/withdrawn';
+
+const { supabase, user, roles } = Astro.locals;
+if (!canWithdraw(roles)) return Astro.redirect('/', 303);
+const types = withdrawTypesFor(roles);
+
+const gh = githubFromEnv();
+const decided = async (url: string) =>
+  (await supabase.rpc('approved_pull_request', { p_pull_request: url })).data === true;
+const mergeOpts = { appLogin: GITHUB_APP_LOGIN ?? '', decided };
+
+let notice = '';
+let error = '';
+if (gh && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  try {
+    if (form.get('action') === 'merge') {
+      const r = await mergeIfReady(gh, Number(form.get('pull')), mergeOpts);
+      notice = r.ok ? 'Merged. The site updates in a few minutes.' : '';
+      if (!r.ok) error = `Not merged yet: ${r.waiting.join('; ')}.`;
+    } else {
+      const [type, ...rest] = String(form.get('item') ?? '').split(':');
+      const id = rest.join(':');
+      if (!types.includes(type as WithdrawType)) throw new Error('You cannot change that item.');
+      const url = await changeWithdrawn(gh, supabase, {
+        action: form.get('action') === 'restore' ? 'restore' : 'withdraw',
+        type: type as WithdrawType,
+        id,
+        reason: String(form.get('reason') ?? ''),
+        who: user?.email ?? 'an admin'
+      });
+      notice = `Sent: ${url}. It goes live once the automatic checks pass and it is merged below.`;
+    }
+  } catch (err) {
+    error =
+      err instanceof GitHubError && err.status === 409
+        ? 'Someone changed the withdrawn list in the meantime. Reload the page and try again.'
+        : err instanceof Error
+          ? err.message
+          : 'Something went wrong; nothing was changed.';
+  }
+  if (error) Astro.response.status = 400;
+}
+
+let list: WithdrawnList = { items: [] };
+let live: LiveItem[] = [];
+let waiting: { pull: Pull; check: MergeCheck }[] = [];
+if (gh) {
+  try {
+    list = (await readWithdrawn(gh)).list;
+    live = (await liveItems(gh, list)).filter((i) => types.includes(i.type));
+    const pulls = (await gh.openAdminPulls()).filter((p) =>
+      /^admin\/(withdraw|restore)-/.test(p.head.ref)
+    );
+    waiting = await Promise.all(
+      pulls.map(async (pull) => ({ pull, check: await checkMerge(gh, pull.number, mergeOpts) }))
+    );
+  } catch {
+    error ||= 'Could not read from GitHub. Try again in a minute.';
+  }
+}
+const preselect = Astro.url.searchParams.get('item') ?? '';
+const groups = types.map((t) => ({ type: t, items: live.filter((i) => i.type === t) }));
+---
+
+<Admin title="Withdrawn">
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {!gh && <p class="error">The GitHub App is not set up yet. See docs/deploy.md §5.</p>}
+
+  {waiting.length > 0 && (
+    <section aria-labelledby="waiting">
+      <h2 id="waiting">Waiting to go live</h2>
+      <ul>
+        {waiting.map(({ pull, check }) => (
+          <li>
+            <a href={pull.html_url}>{pull.title}</a>:{' '}
+            {check.ok ? (
+              <form method="post" class="inline">
+                <input type="hidden" name="action" value="merge" />
+                <input type="hidden" name="pull" value={pull.number} />
+                <button type="submit">Merge now</button>
+              </form>
+            ) : (
+              <span>waiting: {check.waiting.join('; ')}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <h2>Withdraw something</h2>
+  <p>
+    Takes a live item off the public site now, unchanged. It stays in the drafts preview, marked,
+    and can be restored. A withdrawn lesson takes its templates with it.
+  </p>
+  <form method="post">
+    <input type="hidden" name="action" value="withdraw" />
+    <label for="item">What</label>
+    <select id="item" name="item" required>
+      {groups
+        .filter((g) => g.items.length > 0)
+        .map((g) => (
+          <optgroup label={TYPE_LABELS[g.type]}>
+            {g.items.map((i) => (
+              <option value={`${i.type}:${i.id}`} selected={preselect === `${i.type}:${i.id}`}>
+                {i.label}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+    </select>
+    <label for="reason">
+      Why (at least 10 characters; shown to admins and in the pull request)
+    </label>
+    <textarea id="reason" name="reason" rows="2" required minlength="10"></textarea>
+    <div class="actions">
+      <button type="submit">Withdraw</button>
+    </div>
+  </form>
+
+  <h2>Withdrawn now</h2>
+  {list.items.length === 0 ? (
+    <p>Nothing is withdrawn.</p>
+  ) : (
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">What</th>
+            <th scope="col">Since</th>
+            <th scope="col">Why</th>
+            <th scope="col">Restore</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.items.map((i) => (
+            <tr>
+              <td>
+                {TYPE_LABELS[i.type]}: {i.id}
+              </td>
+              <td>{i.since}</td>
+              <td>{i.reason}</td>
+              <td>
+                {types.includes(i.type) && (
+                  <form method="post">
+                    <input type="hidden" name="action" value="restore" />
+                    <input type="hidden" name="item" value={`${i.type}:${i.id}`} />
+                    <label class="visually-hidden" for={`r-${i.type}-${i.id}`}>
+                      Why restore {i.id}
+                    </label>
+                    <input
+                      id={`r-${i.type}-${i.id}`}
+                      name="reason"
+                      required
+                      minlength="10"
+                      placeholder="Why it can come back"
+                    />
+                    <button type="submit" class="quiet">
+                      Restore
+                    </button>
+                  </form>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</Admin>

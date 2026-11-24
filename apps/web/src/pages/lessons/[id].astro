@@ -1,4 +1,5 @@
 ---
+import { hidden, isOff } from '../../withdrawn';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DownloadLesson from '../../components/DownloadLesson.astro';
@@ -25,16 +26,27 @@ const prerequisites = lesson.data.prerequisites.filter((id) => titles[id]);
 const next = lesson.data.next && titles[lesson.data.next] ? lesson.data.next : null;
 const { data } = lesson;
 const { Content } = await render(lesson);
-const sheets = data.templates.flatMap((name) => findTemplate(lesson.id, name) ?? []);
+const sheets = data.templates
+  .filter((name) => !hidden('template', `${lesson.id}/${name}`))
+  .flatMap((name) => findTemplate(lesson.id, name) ?? []);
+// A withdrawn world: the lesson still opens its program, on the plain micro:bit (spec §2.4).
+const world = data.world && !hidden('world', data.world) ? data.world : null;
 const starter = data.starter_program
-  ? starterLink(lesson.id, data.starter_program, data.world)
+  ? starterLink(lesson.id, data.starter_program, world)
   : undefined;
+const withdrawnHere = isOff('lesson', lesson.id);
 ---
 
 <BaseLayout title={data.title}>
   <p class="back">
     <a href="/lessons/">← {m.lesson_back()}</a>
   </p>
+
+  {withdrawnHere && (
+    <p class="draft" role="note">
+      {m.lesson_withdrawn_notice()}
+    </p>
+  )}
 
   {data.status !== 'published' && (
     <p class="draft" role="note">

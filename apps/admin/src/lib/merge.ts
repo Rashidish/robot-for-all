@@ -5,6 +5,9 @@
 // on GitHub.
 import type { GitHub, Pull } from './github';
 import { onlyStatusChanged } from './lessons';
+import { oneItemChanged } from '../../../../packages/settings/src/withdrawn';
+
+export const WITHDRAWN_PATH = 'content/site/withdrawn.json';
 
 const LESSON_FILE = /^content\/lessons\/[a-z0-9]+(?:-[a-z0-9]+)*\/index\.md$/;
 
@@ -34,23 +37,41 @@ export async function checkMerge(
   if (!pull.head.ref.startsWith('admin/')) waiting.push('it is not from a back-office branch');
   if (pull.base.ref !== 'main') waiting.push('it does not go into main');
 
-  // (2) One lesson file, and only its status lines changed compared with main now.
+  // (2) One file: a lesson whose status lines alone changed, or the withdrawn list with exactly
+  // one item added or removed (more content spec §2.4), compared with main now.
   const files = await gh.pullFiles(number);
   const [file] = files;
-  if (
-    files.length !== 1 ||
-    !file ||
-    file.status !== 'modified' ||
-    !LESSON_FILE.test(file.filename)
-  ) {
-    waiting.push('it changes more than one lesson file');
+  const kind =
+    files.length === 1 && file?.status === 'modified'
+      ? LESSON_FILE.test(file.filename)
+        ? 'lesson'
+        : file.filename === WITHDRAWN_PATH
+          ? 'withdrawn'
+          : null
+      : null;
+  if (!file || !kind) {
+    waiting.push('it changes more than one lesson file or the withdrawn list');
   } else {
     const [before, after] = await Promise.all([
       gh.readFile(file.filename, 'main'),
       gh.readFile(file.filename, pull.head.sha)
     ]);
-    if (!onlyStatusChanged(before.text, after.text)) {
-      waiting.push('it changes more than the status lines (or main changed meanwhile)');
+    const ok =
+      kind === 'lesson'
+        ? onlyStatusChanged(before.text, after.text)
+        : (() => {
+            try {
+              return oneItemChanged(JSON.parse(before.text), JSON.parse(after.text));
+            } catch {
+              return false;
+            }
+          })();
+    if (!ok) {
+      waiting.push(
+        kind === 'lesson'
+          ? 'it changes more than the status lines (or main changed meanwhile)'
+          : 'it changes more than one item of the withdrawn list (or main changed meanwhile)'
+      );
     }
   }
 

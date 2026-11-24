@@ -3,6 +3,7 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import PrintButton from '../../../../components/PrintButton.astro';
 import { m } from '../../../../i18n';
+import { hidden } from '../../../../withdrawn';
 import { getLessons } from '../../../../lessons/load';
 import {
   findTemplate,
@@ -14,10 +15,12 @@ import {
 export async function getStaticPaths() {
   const lessons = await getLessons();
   return lessons.flatMap((lesson) =>
-    lesson.data.templates.map((name) => ({
-      params: { lesson: lesson.id, name },
-      props: { lessonTitle: lesson.data.title, entry: findTemplate(lesson.id, name) }
-    }))
+    lesson.data.templates
+      .filter((name) => !hidden('template', `${lesson.id}/${name}`))
+      .map((name) => ({
+        params: { lesson: lesson.id, name },
+        props: { lessonTitle: lesson.data.title, entry: findTemplate(lesson.id, name) }
+      }))
   );
 }
 

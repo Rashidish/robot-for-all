@@ -9,6 +9,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0002_back_office_people.sql` | The people screen: `admin_people()` (everyone with a role, with email) and `grant_role_by_email`, owners and super admins only |
 | `0003_content_reviews.sql` | Content review: `admin_profiles` (public reviewer names), append-only `content_reviews`, `record_review` (roles, ticks, notes, not your own), `approved_pull_request` |
 | `0004_decided_pull_requests.sql` | ADR-0012 condition 4: any recorded decision lets its own pull request merge |
+| `0005_withdraw_and_more_content.sql` | Withdraw / restore (`record_withdrawal`), content types template/world/season/language, the seventh (templates) tick |
 
 ## Tests
 
