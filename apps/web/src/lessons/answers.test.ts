@@ -103,6 +103,29 @@ describe('answer sheet', () => {
       kind: 'question' as const,
       text: 'A long question that takes up most of a printed line on the sheet?'
     }));
-    expect(sheetIsDense([{ step: 'Investigate', items: long }])).toBe(true);
+    expect(sheetIsDense([{ step: 'Investigate', label: 'Investigate', items: long }])).toBe(true);
+  });
+
+  it('maps a translation to its PRIMM steps by position, with the translated headings', () => {
+    const zu = body
+      .replace('## Predict', '## Bikezela')
+      .replace('## Run', '## Qalisa')
+      .replace('## Investigate', '## Phenya')
+      .replace('## Modify', '## Shintsha')
+      .replace('## Make', '## Yenza')
+      .replace('## Teacher notes', '## Amanothi kathisha');
+    const english = ['Predict', 'Run', 'Investigate', 'Modify', 'Make', 'Teacher notes'];
+    const translated = answerSheet(zu, english);
+    expect(translated.map((s) => s.step)).toEqual(english.slice(0, 5));
+    expect(translated.map((s) => s.label)).toEqual([
+      'Bikezela',
+      'Qalisa',
+      'Phenya',
+      'Shintsha',
+      'Yenza'
+    ]);
+    expect(translated.map((s) => s.items)).toEqual(sheet.map((s) => s.items));
+    // Without the English headings, translated sections aren't PRIMM steps.
+    expect(answerSheet(zu)).toEqual([]);
   });
 });

@@ -12,7 +12,10 @@ const pages = [
   '/about/',
   '/privacy/',
   '/offline/',
-  '/no-such-page/'
+  '/no-such-page/',
+  // A translated lesson, and one shown in English on an isiZulu page (more content spec §2.7)
+  '/zu/lessons/p1-crank-01/',
+  '/zu/lessons/p1-cam-01/'
 ];
 
 for (const path of pages) {

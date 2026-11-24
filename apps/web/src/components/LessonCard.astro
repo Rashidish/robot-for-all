@@ -4,9 +4,14 @@ import type { LessonEntry } from '../lessons/load';
 
 interface Props {
   lesson: LessonEntry;
+  /** The title in the page's language (spec §2.7); English when none may be shown. */
+  title?: string;
+  /** Set when the title is in another language than the page. */
+  titleLang?: string | undefined;
 }
 
 const { data } = Astro.props.lesson;
+const { title = data.title, titleLang } = Astro.props;
 ---
 
 <article
@@ -17,7 +22,9 @@ const { data } = Astro.props.lesson;
   data-cost={data.cost_estimate_zar}
 >
   <h2>
-    <a href={localHref(`/lessons/${data.id}/`)}>{data.title}</a>
+    <a href={localHref(`/lessons/${data.id}/`)} lang={titleLang}>
+      {title}
+    </a>
   </h2>
   <p class="meta">
     {m.lesson_phase({ phase: data.phase })} · {m.lesson_grades({ grades: data.grades.join('–') })} ·

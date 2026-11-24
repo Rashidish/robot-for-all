@@ -82,6 +82,35 @@ export const lessonSchema = z
 
 export type Lesson = z.infer<typeof lessonSchema>;
 
+/**
+ * A lesson translation, content/lessons/<id>/index.<lang>.md (more content spec §2.7): only the
+ * translated words, in the same order as the English lesson, plus its own review status. Facts
+ * (grades, cost, quantities, templates, programs, adult help) always come from the English lesson.
+ */
+export const translationSchema = z
+  .object({
+    title: z.string().min(3).max(100),
+    outcomes: z.array(z.string().min(3)).default([]),
+    concepts: z.array(z.string().min(2)).default([]),
+    parts: z
+      .array(z.object({ item: z.string().min(2), substitute: z.string().min(2).optional() }))
+      .default([]),
+    safety_notes: z.array(z.string().min(3)).default([]),
+    assessment: z.array(z.string().min(3)).default([]),
+    /** Which English text this translates: `npm run translation-hash -- <lesson id>`. */
+    translated_from: z.string().regex(/^[0-9a-f]{16}$/, 'translated_from is 16 hex characters'),
+    status: z.enum(['draft', 'in_review', 'published']),
+    ai_generated: z.boolean(),
+    reviewed_by: z.string().min(2).nullable()
+  })
+  .strict()
+  .refine((t) => t.status !== 'published' || t.reviewed_by !== null, {
+    message: 'A published translation needs reviewed_by (a reviewer who reads the language)',
+    path: ['reviewed_by']
+  });
+
+export type Translation = z.infer<typeof translationSchema>;
+
 /** Returns problems with the lesson body: the five PRIMM steps must be `##` headings, in order. */
 export function checkPrimm(body: string): string[] {
   const headings = [...body.matchAll(/^##\s+(.+?)\s*$/gm)].map((m) => (m[1] ?? '').trim());

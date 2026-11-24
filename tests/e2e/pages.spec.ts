@@ -352,4 +352,25 @@ test.describe('a second language (more content spec §2.5)', () => {
     await expect(page).toHaveURL(/\/about\/$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   });
+
+  test('a translated lesson shows in isiZulu; an untranslated one in English, marked as English', async ({
+    page
+  }) => {
+    await page.goto('/zu/lessons/p1-crank-01/');
+    await expect(page.locator('h1')).toHaveText('Ubhejane olunqekuzisa ikhanda nge-crank');
+    await expect(page.locator('h1')).not.toHaveAttribute('lang', /./);
+    // A draft translation says so (the drafts preview only; production shows English instead).
+    await expect(page.getByRole('note').first()).toContainText('Ukuhumusha okusalungiswa');
+    await expect(page.locator('.lesson-body h2').first()).toHaveText('Bikezela');
+
+    await page.goto('/zu/lessons/p1-crank-01/answer-sheet/');
+    await expect(page.locator('[data-sheet-code^="p1-crank-01-zu-"]')).toHaveCount(1);
+    await expect(page.locator('.answer-sheet h2').first()).toContainText('Bikezela');
+
+    await page.goto('/zu/lessons/p1-cam-01/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'zu');
+    await expect(page.locator('h1')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('.lesson-body')).toHaveAttribute('lang', 'en');
+    await expect(page.getByRole('note').first()).toContainText('ngesiNgisi');
+  });
 });

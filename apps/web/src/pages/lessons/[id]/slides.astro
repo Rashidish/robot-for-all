@@ -2,9 +2,10 @@
 // Slides view of a lesson (M2 spec FR-4): for a projector or a phone shared with a group.
 // One slide per screen; swipe or scroll sideways without JavaScript; arrow keys and buttons with it.
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { localHref, m } from '../../../i18n';
+import { localHref, m, pageLang } from '../../../i18n';
 import { getLessons, type LessonEntry } from '../../../lessons/load';
 import { PRIMM_STEPS } from '../../../lessons/schema';
+import { localLesson } from '../../../lessons/translations';
 import { resolveImages, splitSections } from '../../../lessons/slides';
 
 // Built URLs of every lesson image, so slides can show the same diagrams as the handbook.
@@ -16,21 +17,26 @@ const imageUrls = import.meta.glob<string>('../../../../../../content/lessons/*/
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
-  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson } }));
+  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson, lessons } }));
 }
 
 interface Props {
   lesson: LessonEntry;
+  lessons: LessonEntry[];
 }
 
-const { lesson } = Astro.props;
-const { data } = lesson;
-const html = lesson.rendered?.html;
+const { lesson, lessons } = Astro.props;
+// The lesson in this page's language when a translation may be shown (spec §2.7), else English.
+const local = await localLesson(lesson, pageLang(), lessons);
+const { data } = local;
+const textLang = local.lang === pageLang() ? undefined : local.lang;
+const html = local.entry.rendered?.html;
 if (!html) throw new Error(`${lesson.id}: no rendered HTML for the slides view`);
 const urlFor = (src: string) =>
   imageUrls[`../../../../../../content/lessons/${lesson.id}/${src.replace(/^\.\//, '')}`];
-const steps = splitSections(resolveImages(html, urlFor)).filter((s) =>
-  (PRIMM_STEPS as readonly string[]).includes(s.heading)
+// Sections are matched to PRIMM steps by position, so translated headings work too.
+const steps = splitSections(resolveImages(html, urlFor)).filter((_, i) =>
+  (PRIMM_STEPS as readonly string[]).includes(local.steps[i] ?? '')
 );
 const total = 3 + steps.length + 1;
 ---
@@ -43,13 +49,13 @@ const total = 3 + steps.length + 1;
 
   <div class="deck" tabindex="0" aria-label={data.title} data-deck>
     <section class="slide title-slide" aria-label={m.slides_counter({ current: 1, total })}>
-      <h1>{data.title}</h1>
+      <h1 lang={textLang}>{data.title}</h1>
       <p class="facts">
         {m.lesson_grades({ grades: data.grades.join('–') })} ·{' '}
         {m.lesson_duration({ minutes: data.duration_minutes })}
       </p>
       <h2>{m.lesson_outcomes_title()}</h2>
-      <ul>
+      <ul lang={textLang}>
         {data.outcomes.map((o) => (
           <li>{o}</li>
         ))}
@@ -58,7 +64,7 @@ const total = 3 + steps.length + 1;
 
     <section class="slide" aria-label={m.slides_counter({ current: 2, total })}>
       <h2>{m.lesson_parts_title()}</h2>
-      <ul>
+      <ul lang={textLang}>
         {data.parts.map((p) => (
           <li>
             {p.qty} × {p.item}
@@ -70,7 +76,7 @@ const total = 3 + steps.length + 1;
     <section class="slide safety" aria-label={m.slides_counter({ current: 3, total })}>
       <h2>⚠ {m.lesson_safety_title()}</h2>
       {data.safety.adult_help && <p class="adult">{m.lesson_adult_help()}</p>}
-      <ul>
+      <ul lang={textLang}>
         {data.safety.notes.map((n) => (
           <li>{n}</li>
         ))}
@@ -78,7 +84,11 @@ const total = 3 + steps.length + 1;
     </section>
 
     {steps.map((step, i) => (
-      <section class="slide" aria-label={m.slides_counter({ current: 4 + i, total })}>
+      <section
+        class="slide"
+        lang={textLang}
+        aria-label={m.slides_counter({ current: 4 + i, total })}
+      >
         <h2>{step.heading}</h2>
         <div set:html={step.html} />
       </section>
@@ -86,7 +96,7 @@ const total = 3 + steps.length + 1;
 
     <section class="slide" aria-label={m.slides_counter({ current: total, total })}>
       <h2>{m.lesson_assessment_title()}</h2>
-      <ul class="checks">
+      <ul class="checks" lang={textLang}>
         {data.assessment.map((a) => (
           <li>{a}</li>
         ))}

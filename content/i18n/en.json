@@ -488,5 +488,8 @@
   "banner_more": "Read more",
   "banner_close": "Close the announcement",
   "lesson_withdrawn_notice": "Withdrawn: this lesson is not on the live site at the moment.",
-  "language_switch_label": "Language"
+  "language_switch_label": "Language",
+  "lesson_in_english_notice": "This lesson is not translated yet, so it is shown in English.",
+  "lesson_translation_draft_notice": "Draft translation: not reviewed yet.",
+  "lesson_translation_stale_notice": "The English lesson has changed since this was translated. It needs checking again."
 }

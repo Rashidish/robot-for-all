@@ -488,5 +488,8 @@
   "banner_more": "Funda kabanzi",
   "banner_close": "Vala isimemezelo",
   "lesson_withdrawn_notice": "Kuhoxisiwe: lesi sifundo asikho kusayithi ebukhoma okwamanje.",
-  "language_switch_label": "Ulimi"
+  "language_switch_label": "Ulimi",
+  "lesson_in_english_notice": "Lesi sifundo asikahunyushwa, ngakho siboniswa ngesiNgisi.",
+  "lesson_translation_draft_notice": "Ukuhumusha okusalungiswa: akukabuyekezwa.",
+  "lesson_translation_stale_notice": "Isifundo sesiNgisi sishintshile kusukela kwahunyushwa lokhu. Kudinga ukuhlolwa futhi."
 }

@@ -1,6 +1,6 @@
 # Spec: Back office — Review and publishing for templates, worlds and courses, and translations
 
-> **Version:** 0.4 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
+> **Version:** 0.5 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
 > Extends `docs/specs/back-office-content-review.md` (lessons, built) to the other content types, as the owner asked (2026-11-24, "go ahead with 1"). Same rules: ADR-0004, ADR-0009, ADR-0012.
 
 ## 1. Purpose
@@ -62,7 +62,14 @@ how many lessons are translated and approved.
 **Three PRs:**
 - ✅ *(built 2026-11-24)* **A. Language list and the Languages screen:** `content/i18n/languages.json` (English as the source, published), checked by the build; Content → Languages (list, how complete each is, add and remove as pull requests a person merges on GitHub, because they change several files); each reviewer's **languages** on their profile, and the database refuses a translation approval from someone without that language.
 - ✅ *(built 2026-11-24; isiZulu added as a draft, so only the drafts preview has `/zu/`)* **B. The site in a second language:** pages for each published language at `/<code>/…` (English stays at `/`), a language switch remembered on the device, only the chosen language's words downloaded (ADR-0003); draft languages only in the drafts preview.
-- **C. isiZulu text and review** *(C1 built 2026-11-24: the language review screen, side by side with English, and the rules; C2 built 2026-11-24: all interface words AI-drafted in `content/i18n/zu.json`; an interface file has no front matter, so its AI draft is recorded here and in its pull request, and isiZulu stays `draft` until approved; a test checks every placeholder and block slot is kept. Lessons next)*: AI-drafted isiZulu for the interface words, then lessons (Phase 1 first), all as drafts marked AI-drafted; the translation review screens (§2.3); a language is published only when complete and approved.
+- **C. isiZulu text and review** *(C1 built 2026-11-24: the language review screen, side by side with English, and the rules; C2 built 2026-11-24: all interface words AI-drafted in `content/i18n/zu.json`; an interface file has no front matter, so its AI draft is recorded here and in its pull request, and isiZulu stays `draft` until approved; a test checks every placeholder and block slot is kept. C3a built 2026-11-24: the lesson translation format (§2.7), its build checks and the pages in isiZulu, with the first lesson drafted; C3b: reviewing a lesson translation in the back office; C3c: two more Phase 1 lessons)*: AI-drafted isiZulu for the interface words, then lessons (Phase 1 first), all as drafts marked AI-drafted; the translation review screens (§2.3); a language is published only when complete and approved.
+
+### 2.7 Lesson translations: the file (owner: no preference, so the recommended option, 2026-11-24)
+- **Words only.** `content/lessons/<id>/index.<lang>.md` holds only what is translated: `title`, `outcomes`, `concepts`, `parts` (each `item` and, where the English has one, `substitute`), `safety_notes`, `assessment`, and the body with the same `##` sections in the same order (headings translated). Every fact (grades, cost, quantities, adult help, templates, programs, world, links) comes from the English lesson, so the two can never disagree.
+- **Its own review:** `status`, `ai_generated`, `reviewed_by` (a published translation needs a reviewer).
+- **Which English it translates:** `translated_from`, 16 hex characters from `npm run translation-hash -- <lesson id>`, a hash of the English file without its review lines (so publishing the English lesson doesn't change it). When the English words change, the translation is **needs updating**: production shows English until it is checked again and `translated_from` updated; the drafts preview shows it with a notice.
+- **The build fails** when a translation's lists don't line up with the English (same number of items, a substitute exactly where English has one), its sections don't match, its language isn't on the list, or its English lesson doesn't exist.
+- **What a learner sees** on a page in another language: the translation when it and the English lesson are published and it is up to date; otherwise the English lesson, marked as English (`lang="en"`), with a note that it isn't translated yet. The answer sheet and slides follow the same rule; their PRIMM sections are matched by position, and a translated sheet's code includes the language (e.g. `p1-crank-01-zu-…`).
 
 **Finding an isiZulu reviewer** (nothing in isiZulu goes live until this is done):
 - **Who:** a first-language isiZulu speaker, ideally a Foundation or Intermediate Phase teacher (Grades 3–7) who teaches maths, science or Coding and Robotics, so words suit children and the classroom; comfortable with simple technical words (motor, battery, switch) and with saying where isiZulu uses an English loan word.
@@ -128,3 +135,4 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 | 0.2 | 2026-11-24 | Correction: templates already follow their lesson on production. Approved: B (live worlds stay published as the initial set), withdraw for all live content (§2.4), isiZulu first |
 | 0.3 | 2026-11-24 | §2.5 add and remove languages (owner request) |
 | 0.4 | 2026-11-24 | §2.6 building the languages step in three PRs; plan for finding an isiZulu reviewer (owner request) |
+| 0.5 | 2026-11-24 | §2.7 lesson translation files: words only, `translated_from`, "needs updating" |

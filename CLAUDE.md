@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.23 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.24 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -173,6 +173,8 @@ ai_generated: true
 reviewed_by: null        # required to publish
 build_tested_by: null    # required to publish: who built it from the printed lesson
 ```
+A translation, `index.<lang>.md`, holds only the translated words (`title`, `outcomes`, `concepts`, `parts` item/substitute, `safety_notes`, `assessment`, the body with the same `##` sections) plus `status`, `ai_generated`, `reviewed_by` and `translated_from` (`npm run translation-hash -- <id>`); facts come from `index.md` (spec `docs/specs/back-office-more-content.md` §2.7).
+
 The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make, optionally followed by `## Teacher notes`. Links to other lessons must point to lessons that exist (build fails otherwise).
 Languages are worked out from the files present, never typed by hand.
 Teachers and content editors must be able to add a lesson without touching code.
@@ -232,6 +234,7 @@ lighthouse: npm run lighthouse          # performance/accessibility must be 90+
 lint:      npm run lint           # npm run format to auto-fix formatting
 build:     npm run build          # static site in apps/web/dist
 admin:     npm run build:admin    # back office (Cloudflare Worker) in apps/admin/dist
+translate: npm run translation-hash -- <lesson id>   # translated_from for a lesson translation
 ```
 Always commit `package-lock.json` changes; CI installs with `npm ci` and fails if it is out of date.
 
@@ -287,3 +290,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.21 | 2026-11-24 | Repo layout: `content/site`, `packages/db`, `packages/settings` |
 | 0.22 | 2026-11-24 | `content/site/withdrawn.json`: withdraw any live lesson, template, world, season or language (back office) |
 | 0.23 | 2026-11-24 | `content/i18n/languages.json`: languages added and removed from the back office (more content spec §2.5) |
+| 0.24 | 2026-11-24 | Lesson translations `index.<lang>.md`: words only, `translated_from` (more content spec §2.7) |
