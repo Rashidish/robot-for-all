@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 300" width="420" height="300" font-family="system-ui, sans-serif">
+  <rect x="100" y="16" width="220" height="70" rx="8" fill="#2c7a3f" stroke="#1f1a14" stroke-width="2"/>
+  <rect x="145" y="4" width="130" height="40" rx="6" fill="#1f1a14"/>
+  <g font-size="10" font-weight="700" fill="#fff" text-anchor="middle">
+    <text x="210" y="28">micro:bit</text>
+    <text x="130" y="74">P13</text><text x="180" y="74">3V</text><text x="240" y="74">GND</text><text x="290" y="74">P14</text>
+  </g>
+  <g fill="#e9b949" stroke="#1f1a14" stroke-width="1.5">
+    <circle cx="130" cy="82" r="4"/><circle cx="180" cy="82" r="4"/><circle cx="240" cy="82" r="4"/><circle cx="290" cy="82" r="4"/>
+  </g>
+  <!-- Floor with the black tape line running up between the two sensors. -->
+  <rect x="20" y="150" width="380" height="140" fill="#f4efe3" stroke="#1f1a14" stroke-width="1.5"/>
+  <path d="M210 290V150" stroke="#111" stroke-width="22"/>
+  <!-- Sensor boards (seen from above), one each side of the line. -->
+  <g stroke="#1f1a14" stroke-width="2">
+    <rect x="116" y="196" width="60" height="34" rx="4" fill="#1d5fbf"/>
+    <rect x="244" y="196" width="60" height="34" rx="4" fill="#1d5fbf"/>
+  </g>
+  <g font-size="9" font-weight="700" fill="#fff" text-anchor="middle">
+    <text x="146" y="217">LEFT</text><text x="274" y="217">RIGHT</text>
+  </g>
+  <g fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M180 86V120H136V196" stroke="#c0392b"/>
+    <path d="M180 120H264V196" stroke="#c0392b"/>
+    <path d="M240 86V130H146V196" stroke="#1f1a14"/>
+    <path d="M240 130H274V196" stroke="#1f1a14"/>
+    <path d="M130 86V100H60V250H124V230" stroke="#2e8b57"/>
+    <path d="M290 86V100H360V250H296V230" stroke="#2980b9"/>
+  </g>
+  <g font-size="15" font-weight="700" text-anchor="middle" fill="#1f1a14">
+    <circle cx="334" cy="20" r="11" fill="#fff" stroke="#1f1a14" stroke-width="2"/><text x="334" y="25">1</text>
+    <circle cx="100" cy="212" r="11" fill="#fff" stroke="#1f1a14" stroke-width="2"/><text x="100" y="217">2</text>
+    <circle cx="232" cy="272" r="11" fill="#fff" stroke="#1f1a14" stroke-width="2"/><text x="232" y="277">3</text>
+    <circle cx="210" cy="108" r="11" fill="#fff" stroke="#1f1a14" stroke-width="2"/><text x="210" y="113">4</text>
+    <circle cx="44" cy="174" r="11" fill="#fff" stroke="#1f1a14" stroke-width="2"/><text x="44" y="179">5</text>
+  </g>
+</svg>

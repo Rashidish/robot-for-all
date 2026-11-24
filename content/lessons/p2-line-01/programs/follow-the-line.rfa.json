@@ -1,0 +1,100 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Follow the line",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "HAPPY"
+          }
+        ]
+      },
+      {
+        "type": "forever",
+        "body": [
+          {
+            "type": "if",
+            "cond": {
+              "type": "x_line",
+              "side": "left"
+            },
+            "then": [
+              {
+                "type": "x_drive",
+                "motor": "A",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 0
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "B",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              }
+            ],
+            "else": [
+              {
+                "type": "if",
+                "cond": {
+                  "type": "x_line",
+                  "side": "right"
+                },
+                "then": [
+                  {
+                    "type": "x_drive",
+                    "motor": "A",
+                    "dir": "forward",
+                    "speed": {
+                      "type": "number",
+                      "value": 60
+                    }
+                  },
+                  {
+                    "type": "x_drive",
+                    "motor": "B",
+                    "dir": "forward",
+                    "speed": {
+                      "type": "number",
+                      "value": 0
+                    }
+                  }
+                ],
+                "else": [
+                  {
+                    "type": "x_drive",
+                    "motor": "A",
+                    "dir": "forward",
+                    "speed": {
+                      "type": "number",
+                      "value": 60
+                    }
+                  },
+                  {
+                    "type": "x_drive",
+                    "motor": "B",
+                    "dir": "forward",
+                    "speed": {
+                      "type": "number",
+                      "value": 60
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
