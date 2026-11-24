@@ -322,8 +322,8 @@ test.describe('a second language (more content spec §2.5)', () => {
       'href',
       '/zu/lessons/'
     );
-    // Missing isiZulu words fall back to English, so the page always works.
-    await expect(page.locator('h1')).toBeVisible();
+    // The interface is in isiZulu (any missing word would fall back to English).
+    await expect(page.locator('h1')).toHaveText('Izifundo');
     const card = page.locator('article.card a').first();
     await expect(card).toHaveAttribute('href', /^\/zu\/lessons\//);
     await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
@@ -336,9 +336,9 @@ test.describe('a second language (more content spec §2.5)', () => {
     page
   }) => {
     await page.goto('/lessons/');
-    const zulu = page.getByRole('navigation', { name: 'Language' }).getByRole('link', {
-      name: 'isiZulu'
-    });
+    // The switch's own label is translated ("Ulimi" in isiZulu); the language names are not.
+    const languages = page.locator('nav.languages');
+    const zulu = languages.getByRole('link', { name: 'isiZulu' });
     await expect(zulu).toHaveAttribute('href', '/zu/lessons/');
     await zulu.click();
     await expect(page).toHaveURL(/\/zu\/lessons\/$/);
@@ -346,10 +346,8 @@ test.describe('a second language (more content spec §2.5)', () => {
     await page.goto('/about/');
     await expect(page).toHaveURL(/\/zu\/about\/$/);
     // Choosing English is remembered too.
-    await page
-      .getByRole('navigation', { name: 'Language' })
-      .getByRole('link', { name: 'English' })
-      .click();
+    await expect(languages).toHaveAttribute('aria-label', 'Ulimi');
+    await languages.getByRole('link', { name: 'English' }).click();
     await page.goto('/about/');
     await expect(page).toHaveURL(/\/about\/$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
