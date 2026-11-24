@@ -11,9 +11,21 @@ export function translationSource(englishFile: string): string {
   return englishFile.replace(/\r\n/g, '\n').replace(REVIEW_LINES, '');
 }
 
-/** The `translated_from` value for an English lesson file: 16 hex characters of its SHA-256. */
-export async function translationHash(englishFile: string): Promise<string> {
-  const bytes = new TextEncoder().encode(translationSource(englishFile));
+/**
+ * The `translated_from` value for an English lesson: 16 hex characters of the SHA-256 of its file
+ * (without the review lines) and its template sheets' source files
+ * (content/projects/<lesson>/templates/*.ts), so changing a sheet also stales its translations
+ * (translate-templates spec §2.4).
+ */
+export async function translationHash(
+  englishFile: string,
+  templateFiles: readonly { name: string; text: string }[] = []
+): Promise<string> {
+  const sheets = [...templateFiles]
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+    .map((t) => `\n--- template ${t.name}\n${t.text.replace(/\r\n/g, '\n')}`)
+    .join('');
+  const bytes = new TextEncoder().encode(translationSource(englishFile) + sheets);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
   return [...digest.slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }

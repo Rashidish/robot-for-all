@@ -11,3 +11,11 @@ export function translationIds(paths: readonly string[], lang: string): string[]
     .map((m) => `${m[1]}/${lang}`)
     .sort();
 }
+
+/** A lesson's template source files on main (they count towards `translated_from`). */
+export function templatePaths(paths: readonly string[], lesson: string): string[] {
+  const prefix = `content/projects/${lesson}/templates/`;
+  return paths.filter(
+    (p) => p.startsWith(prefix) && p.endsWith('.ts') && !p.slice(prefix.length).includes('/')
+  );
+}

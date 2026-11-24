@@ -2,9 +2,10 @@
 // Template page (M2 spec FR-7): view, print at true size, or draw by hand from the measurements.
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import PrintButton from '../../../../components/PrintButton.astro';
-import { localHref, m } from '../../../../i18n';
+import { localHref, m, pageLang } from '../../../../i18n';
+import { localLesson } from '../../../../lessons/translations';
 import { hidden } from '../../../../withdrawn';
-import { getLessons } from '../../../../lessons/load';
+import { getLessons, type LessonEntry } from '../../../../lessons/load';
 import {
   findTemplate,
   templateFile,
@@ -19,26 +20,40 @@ export async function getStaticPaths() {
       .filter((name) => !hidden('template', `${lesson.id}/${name}`))
       .map((name) => ({
         params: { lesson: lesson.id, name },
-        props: { lessonTitle: lesson.data.title, entry: findTemplate(lesson.id, name) }
+        props: { lesson, lessons, entry: findTemplate(lesson.id, name) }
       }))
   );
 }
 
 interface Props {
-  lessonTitle: string;
+  lesson: LessonEntry;
+  lessons: LessonEntry[];
   entry: TemplateEntry;
 }
 
-const { lessonTitle, entry } = Astro.props;
-const file = templateFile(entry.lesson, entry.name);
+const { lesson, lessons, entry } = Astro.props;
+// The sheet in this page's language when its lesson translation may be shown (spec §2.3);
+// otherwise the English sheet, marked as English.
+const local = await localLesson(lesson, pageLang(), lessons);
+const words = local.lang === pageLang() ? local.sheets[entry.name] : undefined;
+const sheetLang = words || pageLang() === 'en' ? pageLang() : 'en';
+const textLang = sheetLang === pageLang() ? undefined : sheetLang;
+const title = words?.title ?? entry.sheet.title;
+const file = templateFile(entry.lesson, entry.name, sheetLang);
+const lessonTitle = local.data.title;
 ---
 
-<BaseLayout title={entry.sheet.title}>
+<BaseLayout title={title}>
   <div class="template-info">
     <p class="back">
-      <a href={localHref(`/lessons/${entry.lesson}/`)}>← {lessonTitle}</a>
+      <a
+        href={localHref(`/lessons/${entry.lesson}/`)}
+        lang={local.lang === pageLang() ? undefined : local.lang}
+      >
+        ← {lessonTitle}
+      </a>
     </p>
-    <h1>{entry.sheet.title}</h1>
+    <h1 lang={textLang}>{title}</h1>
     <p>{m.template_print_hint()}</p>
     <PrintButton label={m.template_print()} />
     <p>
@@ -48,12 +63,12 @@ const file = templateFile(entry.lesson, entry.name);
     </p>
   </div>
 
-  <img class="sheet" src={file} alt={entry.sheet.title} width="210" height="297" />
+  <img class="sheet" src={file} alt={title} lang={textLang} width="210" height="297" />
 
   <section class="template-info" aria-labelledby="measure-title">
     <h2 id="measure-title">{m.template_measurements_title()}</h2>
-    <ul>
-      {templateMeasurements(entry).map((line) => (
+    <ul lang={textLang}>
+      {templateMeasurements(entry, sheetLang, words).map((line) => (
         <li>{line}</li>
       ))}
     </ul>

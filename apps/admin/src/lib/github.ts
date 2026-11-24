@@ -125,7 +125,7 @@ export class GitHub {
     const tree = await this.api<{ tree: { path: string; type: string }[] }>(
       `/git/trees/main?recursive=1`
     );
-    const prefix = `${path.replace(/\/$/, '')}/`;
+    const prefix = path === '' ? '' : `${path.replace(/\/$/, '')}/`;
     return tree.tree
       .filter((t) => t.type === 'blob' && t.path.startsWith(prefix))
       .map((t) => t.path);

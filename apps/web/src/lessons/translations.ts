@@ -9,6 +9,8 @@ import {
   translationProblems,
   translationView
 } from '../../../../packages/settings/src/translation';
+import type { SheetWords } from '../../../../packages/templates/src/index';
+import { findTemplate } from '../templates/load';
 import type { LessonEntry } from './load';
 import type { Lesson } from './schema';
 
@@ -22,6 +24,47 @@ const englishFiles = import.meta.glob<string>('../../../../content/lessons/*/ind
 
 function englishFile(lesson: string): string | undefined {
   return Object.entries(englishFiles).find(([path]) => path.endsWith(`/${lesson}/index.md`))?.[1];
+}
+
+const templateSources = import.meta.glob<string>('../../../../content/projects/*/templates/*.ts', {
+  eager: true,
+  query: '?raw',
+  import: 'default'
+});
+
+/** A lesson's template source files, which count towards `translated_from` (spec §2.4). */
+function templateFiles(lesson: string): { name: string; text: string }[] {
+  return Object.entries(templateSources)
+    .filter(([path]) => path.includes(`/projects/${lesson}/templates/`))
+    .map(([path, text]) => ({ name: path.split('/').pop() ?? path, text }));
+}
+
+/** Problems with a translation's template words: each sheet and part must exist in English. */
+function sheetProblems(
+  lesson: LessonEntry,
+  templates: Record<string, { title?: string | undefined; parts: SheetWords['parts'] }>
+): string[] {
+  const problems: string[] = [];
+  for (const [name, words] of Object.entries(templates)) {
+    const sheet = lesson.data.templates.includes(name) ? findTemplate(lesson.id, name) : undefined;
+    if (!sheet) {
+      problems.push(`templates.${name}: the English lesson has no sheet "${name}"`);
+      continue;
+    }
+    const parts = words.parts ?? [];
+    if (parts.length !== sheet.sheet.parts.length)
+      problems.push(
+        `templates.${name}: the English sheet has ${sheet.sheet.parts.length} parts, this has ${parts.length}`
+      );
+    parts.forEach((p, i) => {
+      const en = sheet.sheet.parts[i];
+      if (en && p?.notes && p.notes.length !== en.notes.length)
+        problems.push(
+          `templates.${name}: part ${i + 1} (${en.name}) has ${en.notes.length} notes in English, this has ${p.notes.length}`
+        );
+    });
+  }
+  return problems;
 }
 
 export interface CheckedTranslation {
@@ -68,8 +111,11 @@ export function getTranslations(lessons: readonly LessonEntry[]): Promise<Checke
           entry.body ?? ''
         ))
           problems.push(`${where}: ${p}`);
+        for (const p of sheetProblems(english, entry.data.templates))
+          problems.push(`${where}: ${p}`);
       }
-      const stale = entry.data.translated_from !== (await translationHash(file));
+      const stale =
+        entry.data.translated_from !== (await translationHash(file, templateFiles(lesson)));
       out.push({ entry, lesson, lang, stale });
     }
     if (problems.length > 0) {
@@ -94,6 +140,8 @@ export interface LocalLesson {
   /** The English `##` headings, by position: they name the PRIMM step of each section. */
   steps: string[];
   notice: LessonNotice;
+  /** Template sheets with words in the lesson's language (spec §2.1), by sheet name. */
+  sheets: Record<string, SheetWords>;
 }
 
 /**
@@ -114,7 +162,8 @@ export async function localLesson(
     body: lesson.body ?? '',
     lang: 'en',
     steps,
-    notice: lang === 'en' ? null : 'english'
+    notice: lang === 'en' ? null : 'english',
+    sheets: {}
   };
   if (lang === 'en') return english;
   const t = (await getTranslations(lessons)).find((x) => x.lesson === lesson.id && x.lang === lang);
@@ -140,7 +189,8 @@ export async function localLesson(
     body: t.entry.body ?? '',
     lang,
     steps,
-    notice: view === 'live' ? null : view
+    notice: view === 'live' ? null : view,
+    sheets: w.templates
   };
 }
 

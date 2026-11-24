@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { onlyStatusChanged } from './lessons';
 import {
   lessonParts,
+  sheetSourceWords,
+  translatedSheet,
   splitTranslationId,
   summariseTranslation,
   TRANSLATION,
@@ -48,6 +50,7 @@ describe('lesson translations in the back office', () => {
       buildTestedBy: 'n/a'
     });
     expect(t.translatedFrom).toMatch(/^[0-9a-f]{16}$/);
+    expect(t.templates).toEqual(['rhino-parts']);
   });
 
   it('approving changes only the status lines, and publishes it', () => {
@@ -76,5 +79,24 @@ describe('lesson translations in the back office', () => {
     ]);
     expect(b).toHaveLength(a.length);
     expect(b[1]?.heading).toBe('Bikezela');
+  });
+});
+
+describe('template sheets side by side', () => {
+  it('shows the English words of a sheet and the translation of it', () => {
+    const src = readFileSync(
+      join(root, 'content/projects/p1-crank-01/templates/rhino-parts.ts'),
+      'utf8'
+    );
+    const en = sheetSourceWords(src);
+    expect(en).toContain("title: 'Waving rhino: parts'");
+    expect(en).toContain("name: 'Head'");
+    expect(en).toContain('head pivot hole near the front top');
+    expect(en).not.toContain('path:');
+    const front = lessonParts(zu)[0]?.text ?? '';
+    const t = translatedSheet(front, 'rhino-parts');
+    expect(t).toContain('Ubhejane olunqekuzisa ikhanda: izingxenye');
+    expect(t).toContain('name: Ikhanda');
+    expect(translatedSheet(front, 'no-such-sheet')).toBe('');
   });
 });

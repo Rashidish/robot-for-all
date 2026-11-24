@@ -373,4 +373,23 @@ test.describe('a second language (more content spec §2.5)', () => {
     await expect(page.locator('.lesson-body')).toHaveAttribute('lang', 'en');
     await expect(page.getByRole('note').first()).toContainText('ngesiNgisi');
   });
+
+  test('a translated lesson prints its template sheet in isiZulu, with the same shapes', async ({
+    page,
+    request
+  }) => {
+    await page.goto('/zu/lessons/p1-crank-01/');
+    const sheet = page.locator('section.templates a[download]');
+    await expect(sheet).toHaveAttribute('href', '/templates/p1-crank-01/rhino-parts.zu.svg');
+    const zu = await (await request.get('/templates/p1-crank-01/rhino-parts.zu.svg')).text();
+    const en = await (await request.get('/templates/p1-crank-01/rhino-parts.svg')).text();
+    expect(zu).toContain('Ubhejane olunqekuzisa ikhanda: izingxenye');
+    const shapes = (svg: string) =>
+      svg.replace(/<text[^>]*>[^<]*<\/text>|<title>[^<]*<\/title>/g, '');
+    expect(shapes(zu)).toBe(shapes(en));
+
+    await page.goto('/zu/templates/p1-crank-01/rhino-parts/');
+    await expect(page.locator('h1')).toHaveText('Ubhejane olunqekuzisa ikhanda: izingxenye');
+    await expect(page.locator('#measure-title + ul li').first()).toContainText('cishe 120 × 70 mm');
+  });
 });

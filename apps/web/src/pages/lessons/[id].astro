@@ -156,10 +156,19 @@ const withdrawnHere = isOff('lesson', lesson.id);
       <ul>
         {sheets.map((t) => (
           <li>
-            <a href={localHref(templatePage(t.lesson, t.name))} data-offline>
-              {t.sheet.title}
+            <a
+              href={localHref(templatePage(t.lesson, t.name))}
+              lang={local.sheets[t.name] || pageLang() === 'en' ? undefined : 'en'}
+              data-offline
+            >
+              {local.sheets[t.name]?.title ?? t.sheet.title}
             </a>
-            <a class="muted" href={templateFile(t.lesson, t.name)} data-offline download>
+            <a
+              class="muted"
+              href={templateFile(t.lesson, t.name, local.sheets[t.name] ? local.lang : 'en')}
+              data-offline
+              download
+            >
               ({m.template_download()})
             </a>
           </li>
@@ -223,6 +232,14 @@ const withdrawnHere = isOff('lesson', lesson.id);
 </BaseLayout>
 
 <style>
+  /* Each sheet link and its download link are full touch targets, even when a long
+     (translated) title wraps onto two lines (WCAG 2.2 target size). */
+  .templates a {
+    display: inline-block;
+    min-height: 24px;
+    padding-block: 2px;
+  }
+
   .back {
     margin-bottom: var(--space-2);
     font-size: var(--text-sm);

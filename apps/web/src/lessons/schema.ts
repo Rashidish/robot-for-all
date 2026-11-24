@@ -97,6 +97,30 @@ export const translationSchema = z
       .default([]),
     safety_notes: z.array(z.string().min(3)).default([]),
     assessment: z.array(z.string().min(3)).default([]),
+    /**
+     * The lesson's template sheets in this language (translate-templates spec §2.1): by sheet
+     * name, its title and each part's name and notes, in the same order as the sheet.
+     */
+    templates: z
+      .record(
+        z.string().regex(/^[a-z0-9-]+$/),
+        z
+          .object({
+            title: z.string().min(2).optional(),
+            parts: z
+              .array(
+                z
+                  .object({
+                    name: z.string().min(1).optional(),
+                    notes: z.array(z.string().min(2)).optional()
+                  })
+                  .strict()
+              )
+              .default([])
+          })
+          .strict()
+      )
+      .default({}),
     /** Which English text this translates: `npm run translation-hash -- <lesson id>`. */
     translated_from: z.string().regex(/^[0-9a-f]{16}$/, 'translated_from is 16 hex characters'),
     status: z.enum(['draft', 'in_review', 'published']),

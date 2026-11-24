@@ -20,7 +20,19 @@ assessment:
   - Ngiyakwazi ukuchaza ukuthi kungani amasondo enza kube lula ukuhambisa umthwalo
   - Ngiyakwazi ukulinganisa ngamasentimitha ukuthi inqola yami igingqika ibanga elingakanani
   - Ngiyakwazi ukusho ukuthi yini engingayishintshanga ukuze ukuhlola kwami kube kulungile
-translated_from: db5303a64140e808
+templates:
+  cart-parts:
+    title: "Inqola egingqikayo: izingxenye"
+    parts:
+      - name: Umzimba wenqola (goqa izinhlangothi ziye phezulu)
+        notes:
+          - "isisekelo: unxande ongu-110 × 60 mm"
+          - "isivalo esingu-20 mm ohlangothini ngalunye kwezi-4 (goqa siye phezulu ukuze wenze ithreyi)"
+      - name: Isondo 1
+      - name: Isondo 2
+      - name: Isondo 3
+      - name: Isondo 4
+translated_from: e2dd6aeeb27e6331
 status: draft
 ai_generated: true
 reviewed_by: null

@@ -1,6 +1,6 @@
 # Spec: Translate templates, diagram words and starter program names
 
-> **Version:** 0.3 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): all three recommendations
+> **Version:** 0.4 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): all three recommendations
 > Follows `docs/specs/back-office-more-content.md` §2.7 (lesson translations) and §2.8 (flags), where the back office lists these three as "not translatable yet". CLAUDE.md §2 rule 4: all learner-facing text goes through translation.
 
 ## 1. Purpose
@@ -15,7 +15,7 @@ A learner using the site in isiZulu still meets English in three places, in ever
 
 ## 2. Proposal
 
-### 2.1 Template words travel with the lesson translation (recommended)
+### 2.1 Template words travel with the lesson translation *(built 2026-11-24)*
 Templates already follow their lesson (more content spec §2.1), so their words go into the **lesson translation** file, reviewed together with it, rather than a separate file per sheet:
 
 ```yaml
@@ -33,15 +33,15 @@ templates:
 - The **build fails** when a translated sheet doesn't line up with the English one: a sheet the lesson doesn't have, a different number of parts, or notes on a part whose English has a different number of notes.
 - A lesson translation without `templates:` is still valid; its sheets print in English, and the back office keeps flagging them (§2.8).
 
-### 2.2 The generator's sentences become interface words
+### 2.2 The generator's sentences become interface words *(built 2026-11-24: `template_fact_*`)*
 The sentences the template generator writes from numbers ("{name}: {length} mm long, {width} mm wide", "{count} holes, {inset} mm from each end, {spacing} mm apart", "circle {diameter} mm across, hole in the centre", gear and cam sentences) move to translation keys with placeholders (`template_strip_size`, …). They are checked like every interface word, including the placeholder test (C2). Numbers and "mm" stay as they are.
 
 ### 2.3 One sheet per language
-- Each language gets its own sheet files and pages: `/zu/templates/<lesson>/<name>.svg` and `/zu/templates/<lesson>/<name>/` (English stays at `/templates/…`). The lesson page links to the sheet in its own language, and **Download for offline** saves that one.
+- Each language gets its own sheet file and page: `/templates/<lesson>/<name>.zu.svg` (beside the English file, like other files, which carry no language prefix) and `/zu/templates/<lesson>/<name>/` (English stays at `/templates/…`). *(Built 2026-11-24.)* The lesson page links to the sheet in its own language, and **Download for offline** saves that one.
 - The rule is the same as for lesson text: production shows the translated sheet only when the lesson translation is published and up to date; otherwise the English sheet, as today.
 - Sizes are unchanged: the shapes, true scale, check square and fold/cut lines are drawn once from the same code; only the words differ. A test checks the translated sheet's shapes are identical to the English one.
 
-### 2.4 "Needs updating" covers the sheets too
+### 2.4 "Needs updating" covers the sheets too *(built 2026-11-24)*
 `translated_from` (§2.7) is extended to hash the lesson's English template files as well as `index.md`. If someone renames a part or adds one, the translation turns "needs updating" and learners get the English lesson and sheets until a translator catches up. (Existing translations' `translated_from` values are updated in the same PR; they are drafts, so nothing live changes.)
 
 ### 2.5 Diagrams: no words, only marks and numbers
@@ -96,3 +96,4 @@ No accounts, personal data, uploads or payments are involved; this is content an
 | 0.1 | 2026-11-24 | First draft, after the owner asked whether untranslated content is flagged |
 | 0.2 | 2026-11-24 | Approved: template words in the lesson translation, diagrams without words, order diagrams → templates → program names |
 | 0.3 | 2026-11-24 | §2.5 built: 10 words in 7 diagrams replaced (LEFT/RIGHT found while building); content check |
+| 0.4 | 2026-11-24 | §2.1–2.4 and the template part of §2.7 built; translated sheet files are `<name>.<lang>.svg` |

@@ -20,6 +20,7 @@ import type { Item } from '../../lib/kinds';
 import { canSeeLanguages, hasRole } from '../../lib/roles';
 import { completeness } from '../../../../../packages/settings/src/languages';
 import { TRANSLATION, translationIds } from '../../lib/translation-review';
+import { templatePaths } from '../../lib/translation-files';
 import {
   LESSON_STATE_LABELS,
   type LessonCoverage,
@@ -76,7 +77,7 @@ async function load(): Promise<Loaded> {
     gh.readFile(LANGUAGES_PATH),
     gh.readFile('content/i18n/en.json'),
     gh.readFile(`content/i18n/${code}.json`),
-    gh.listTree('content/lessons')
+    gh.listTree('content')
   ]);
   const englishIds = tree
     .map((p) => /^content\/lessons\/([a-z0-9-]+)\/index\.md$/.exec(p)?.[1])
@@ -85,8 +86,20 @@ async function load(): Promise<Loaded> {
     Promise.all(
       englishIds.map(async (id) => {
         const text = (await gh.readFile(`content/lessons/${id}/index.md`)).text;
+        const sheets = await Promise.all(
+          templatePaths(tree, id).map(async (p) => ({
+            name: p.split('/').pop() ?? p,
+            text: (await gh.readFile(p)).text
+          }))
+        );
         const l = summarise(id, text);
-        return { id, title: l.title, status: l.status, hash: await translationHash(text) };
+        return {
+          id,
+          title: l.title,
+          status: l.status,
+          hash: await translationHash(text, sheets),
+          templates: l.templates
+        };
       })
     ),
     Promise.all(
@@ -247,8 +260,8 @@ const keys = Object.keys(english);
                 </li>
               ))}
             <li>
-              <a href="#not-translatable">Some text can't be translated yet</a> (templates, diagram
-              labels, starter program names)
+              <a href="#not-translatable">Some text can't be translated yet</a> (starter program
+              names)
             </li>
           </ul>
         )}
@@ -343,6 +356,12 @@ const keys = Object.keys(english);
             <td>
               {l.flagged && <strong class="flag">⚑ </strong>}
               {LESSON_STATE_LABELS[l.state]}
+              {l.state !== 'not_translated' && l.englishSheets.length > 0 && (
+                <>
+                  <br />
+                  <small>Sheets still in English: {l.englishSheets.join(', ')}</small>
+                </>
+              )}
             </td>
           </tr>
         ))}
