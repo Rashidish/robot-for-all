@@ -1,7 +1,13 @@
 ---
 // Back-office page frame: English only (admins), accessible, no scripts (ADR-0009).
 import '../styles/admin.css';
-import { canEditSeasons, canManagePeople, canSeeLessons, canWithdraw } from '../lib/roles';
+import {
+  canEditSeasons,
+  canManagePeople,
+  canSeeLanguages,
+  canSeeLessons,
+  canWithdraw
+} from '../lib/roles';
 
 interface Props {
   title: string;
@@ -13,6 +19,7 @@ const nav = [
   { href: '/', label: 'Home', show: roles.length > 0 },
   { href: '/lessons/', label: 'Lessons', show: canSeeLessons(roles) },
   { href: '/worlds/', label: 'Worlds', show: canSeeLessons(roles) },
+  { href: '/languages/', label: 'Languages', show: canSeeLanguages(roles) },
   { href: '/withdrawn/', label: 'Withdrawn', show: canWithdraw(roles) },
   { href: '/seasons/', label: 'Seasons', show: canEditSeasons(roles) },
   { href: '/site/', label: 'Site', show: canManagePeople(roles) },

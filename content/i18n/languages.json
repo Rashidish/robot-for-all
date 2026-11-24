@@ -1,0 +1,12 @@
+{
+  "languages": [
+    {
+      "code": "en",
+      "name": "English",
+      "native": "English",
+      "status": "published",
+      "source": true,
+      "reviewed_by": null
+    }
+  ]
+}

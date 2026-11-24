@@ -202,6 +202,43 @@ export class GitHub {
     return pr.html_url;
   }
 
+  /**
+   * Several file changes (write or delete) on one new branch from main, then one pull request.
+   * Each existing file's sha guards against overwriting a newer change.
+   */
+  async proposeChanges(change: {
+    branch: string;
+    files: { path: string; text?: string; sha?: string; remove?: boolean }[];
+    message: string;
+    title: string;
+    body: string;
+  }): Promise<string> {
+    const main = await this.api<{ object: { sha: string } }>('/git/ref/heads/main');
+    await this.api('/git/refs', {
+      method: 'POST',
+      body: { ref: `refs/heads/${change.branch}`, sha: main.object.sha }
+    });
+    for (const f of change.files) {
+      await this.api(`/contents/${f.path}`, {
+        method: f.remove ? 'DELETE' : 'PUT',
+        body: f.remove
+          ? { message: change.message, sha: f.sha, branch: change.branch }
+          : {
+              message: change.message,
+              content: utf8ToBase64(f.text ?? ''),
+              ...(f.sha ? { sha: f.sha } : {}),
+              branch: change.branch
+            }
+      });
+    }
+    const pr = await this.api<{ html_url: string; number: number }>('/pulls', {
+      method: 'POST',
+      body: { title: change.title, head: change.branch, base: 'main', body: change.body }
+    });
+    this.lastPullNumber = pr.number;
+    return pr.html_url;
+  }
+
   /** The number of the pull request proposeChange last opened. */
   lastPullNumber = 0;
 }

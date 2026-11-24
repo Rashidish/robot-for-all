@@ -174,3 +174,32 @@ describe('worlds have their own checklist (migration 0006)', () => {
     ).rejects.toThrow(/lessons and worlds/);
   });
 });
+
+describe('the languages each person reads (migration 0007)', () => {
+  it('people set their own languages; codes are cleaned and checked', async () => {
+    await t.as(REVIEWER, `select public.set_reviewer_languages($1)`, [[' ZU', 'en', 'zu', '']]);
+    const [row] = await t.as<{ languages: string[] }>(
+      REVIEWER,
+      `select languages from public.admin_profiles where user_id = $1`,
+      [REVIEWER]
+    );
+    expect(row?.languages).toEqual(['en', 'zu']);
+    const reads = async (code: string) =>
+      (await t.as<{ ok: boolean }>(REVIEWER, `select public.reads_language($1) as ok`, [code]))[0]
+        ?.ok;
+    expect(await reads('zu')).toBe(true);
+    expect(await reads('xh')).toBe(false);
+    await expect(
+      t.as(REVIEWER, `select public.set_reviewer_languages($1)`, [['isiZulu']])
+    ).rejects.toThrow(/language codes/);
+  });
+
+  it('needs a reviewer name first, and MFA', async () => {
+    await expect(
+      t.as(EDITOR, `select public.set_reviewer_languages($1)`, [['zu']])
+    ).rejects.toThrow(/reviewer name first/);
+    await expect(
+      t.as(REVIEWER, `select public.set_reviewer_languages($1)`, [['zu']], { mfa: false })
+    ).rejects.toThrow(/only back-office users/);
+  });
+});

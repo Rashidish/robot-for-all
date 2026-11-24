@@ -2,13 +2,23 @@
 // Your public reviewer name (content review spec CR-7): it appears in reviewed_by and
 // build_tested_by on lessons, in the public repository. Never an email.
 import Admin from '../layouts/Admin.astro';
+import { SA_LANGUAGES } from '../../../../packages/settings/src/languages';
+
+/** English plus South Africa's other official written languages. */
+const LANGS = [{ code: 'en', name: 'English' }, ...SA_LANGUAGES];
+const SA_CODES = LANGS.map((l) => l.code);
 
 const { supabase, user } = Astro.locals;
 let notice = '';
 let error = '';
 if (Astro.request.method === 'POST') {
-  const name = String((await Astro.request.formData()).get('name') ?? '').trim();
-  const { error: err } = await supabase.rpc('set_reviewer_name', { p_name: name });
+  const form = await Astro.request.formData();
+  const name = String(form.get('name') ?? '').trim();
+  let { error: err } = await supabase.rpc('set_reviewer_name', { p_name: name });
+  if (!err) {
+    const languages = SA_CODES.filter((c) => form.get(`lang_${c}`) === 'on');
+    ({ error: err } = await supabase.rpc('set_reviewer_languages', { p_languages: languages }));
+  }
   if (!err) notice = 'Saved.';
   else {
     error = /duplicate/.test(err.message)
@@ -21,10 +31,12 @@ if (Astro.request.method === 'POST') {
 }
 const { data } = await supabase
   .from('admin_profiles')
-  .select('reviewer_name')
+  .select('reviewer_name, languages')
   .eq('user_id', user?.id ?? '')
   .maybeSingle();
-const current = (data as { reviewer_name: string } | null)?.reviewer_name ?? '';
+const profile = data as { reviewer_name: string; languages: string[] } | null;
+const current = profile?.reviewer_name ?? '';
+const mine = new Set(profile?.languages ?? []);
 ---
 
 <Admin title="Profile">
@@ -48,6 +60,14 @@ const current = (data as { reviewer_name: string } | null)?.reviewer_name ?? '';
       or "Reviewer 3". Never your email.
     </p>
     <input id="name" name="name" value={current} minlength="2" maxlength="40" required />
+    <fieldset>
+      <legend>Languages you read well enough to translate or review</legend>
+      {LANGS.map((l) => (
+        <label class="check">
+          <input type="checkbox" name={`lang_${l.code}`} checked={mine.has(l.code)} /> {l.name}
+        </label>
+      ))}
+    </fieldset>
     <div class="actions">
       <button type="submit">Save</button>
     </div>

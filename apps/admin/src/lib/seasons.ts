@@ -1,6 +1,7 @@
 // Configuration → Seasons (docs/specs/back-office.md §6.5): read the seasons on main and turn a
 // date change into a checked file ready for a pull request. The same checks as the public build
 // (packages/sim/src/season.ts), so a bad change is caught here before CI sees it.
+import { prettyJson } from '../../../../packages/settings/src/json';
 import { checkSeason, type SeasonProblem } from '../../../../packages/sim/src/season';
 import type { GitHub } from './github';
 
@@ -54,7 +55,7 @@ export function withDates(
   worldIds: ReadonlySet<string>
 ): { text: string; problems: SeasonProblem[] } {
   const next = { ...spec, from: from.trim(), to: to.trim() };
-  return { text: `${JSON.stringify(next, null, 2)}\n`, problems: checkSeason(next, worldIds) };
+  return { text: prettyJson(next), problems: checkSeason(next, worldIds) };
 }
 
 /** A branch name for the change, unique per second: admin/season-rhino-patrol-20261124-153005. */

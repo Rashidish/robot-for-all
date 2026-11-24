@@ -1,6 +1,6 @@
 # Spec: Back office — Review and publishing for templates, worlds and courses, and translations
 
-> **Version:** 0.3 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
+> **Version:** 0.4 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
 > Extends `docs/specs/back-office-content-review.md` (lessons, built) to the other content types, as the owner asked (2026-11-24, "go ahead with 1"). Same rules: ADR-0004, ADR-0009, ADR-0012.
 
 ## 1. Purpose
@@ -54,8 +54,27 @@ how many lessons are translated and approved.
 - **Add a language:** pick it (South Africa's official languages are offered by name; any other by its ISO code), give its name in English and in the language itself (e.g. "isiZulu"). The back office opens a pull request adding it to `content/i18n/languages.json` as `draft`, with an empty interface file. A draft language is never offered to learners on production; the drafts preview shows it so translators and reviewers can work.
 - **Publish a language:** when every interface word is translated and a reviewer who reads it approves, the language turns `published` and learners can switch to it. Lesson translations are approved one by one (§2.3); untranslated lessons show in English.
 - **Take a language off the site:** **Withdraw** (§2.4) hides it at once and keeps everything.
-- **Remove a language:** owners only, after typing its name to confirm. If it was never published, the pull request deletes its files (they stay in Git history and can be restored); if it was published, it must be withdrawn first. Removal is recorded (decision `removed`) and in the audit log.
+- **Remove a language:** owners only, after typing its name to confirm. If it was never published, the pull request deletes its files (they stay in Git history and can be restored); if it was published, it must be withdrawn first. Adding and removing are recorded in the audit log (`language.add`, `language.remove`).
 - English (the source) can't be removed or withdrawn.
+
+### 2.6 Building it, and finding an isiZulu reviewer (owner: "plan for a reviewer", 2026-11-24)
+
+**Three PRs:**
+- ✅ *(built 2026-11-24)* **A. Language list and the Languages screen:** `content/i18n/languages.json` (English as the source, published), checked by the build; Content → Languages (list, how complete each is, add and remove as pull requests a person merges on GitHub, because they change several files); each reviewer's **languages** on their profile, and the database refuses a translation approval from someone without that language.
+- **B. The site in a second language:** pages for each published language at `/<code>/…` (English stays at `/`), a language switch remembered on the device, only the chosen language's words downloaded (ADR-0003); draft languages only in the drafts preview.
+- **C. isiZulu text and review:** AI-drafted isiZulu for the interface words, then lessons (Phase 1 first), all as drafts marked AI-drafted; the translation review screens (§2.3); a language is published only when complete and approved.
+
+**Finding an isiZulu reviewer** (nothing in isiZulu goes live until this is done):
+- **Who:** a first-language isiZulu speaker, ideally a Foundation or Intermediate Phase teacher (Grades 3–7) who teaches maths, science or Coding and Robotics, so words suit children and the classroom; comfortable with simple technical words (motor, battery, switch) and with saying where isiZulu uses an English loan word.
+- **Two people, not one:** a **translator** (checks and fixes the AI draft) and a separate **reviewer** (approves), so nobody approves their own work, as for lessons.
+- **Where to look (owner actions):**
+  1. Teachers already interested in the platform, especially in KwaZulu-Natal and Gauteng (ask in the pilot schools and clubs).
+  2. University isiZulu or education departments (e.g. UKZN, Wits, UNISA): lecturers or postgraduate students, sometimes as a community-engagement project.
+  3. The South African Translators' Institute (SATI) directory of accredited isiZulu translators (paid).
+  4. Provincial education department subject advisers, for word choices that match CAPS materials in isiZulu.
+- **What they need:** a back-office account with the Translator or Reviewer role and **isiZulu** on their profile, the translation checklist (§2.3), and 1–2 hours a week; start with the interface words (about 490 short phrases) and the first three Phase 1 lessons.
+- **Owner decisions still open:** volunteer, paid per word, or a small honorarium; who checks the reviewer's own work for the first lesson (a second speaker on a sample). Money is the owner's decision; no rates are assumed here.
+- **Test plan:** row B30 (a first-language speaker reads the isiZulu interface and three lessons on a phone; children in Grade 4 understand the safety notes).
 
 ## 3. Requirements
 
@@ -108,3 +127,4 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 | 0.1 | 2026-11-24 | First draft |
 | 0.2 | 2026-11-24 | Correction: templates already follow their lesson on production. Approved: B (live worlds stay published as the initial set), withdraw for all live content (§2.4), isiZulu first |
 | 0.3 | 2026-11-24 | §2.5 add and remove languages (owner request) |
+| 0.4 | 2026-11-24 | §2.6 building the languages step in three PRs; plan for finding an isiZulu reviewer (owner request) |

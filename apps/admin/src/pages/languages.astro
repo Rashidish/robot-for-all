@@ -1,0 +1,171 @@
+---
+// Content → Languages (more content spec §2.5): every language of the site, how complete its
+// interface is, and (owners) add a language as a draft or remove one. These pull requests change
+// three files, so a person merges them on GitHub after CI passes.
+import Admin from '../layouts/Admin.astro';
+import { GitHubError } from '../lib/github';
+import { githubFromEnv } from '../lib/github-env';
+import { addLanguage, type LanguageRow, readLanguages, removeLanguage } from '../lib/languages';
+import { canSeeLanguages, hasRole } from '../lib/roles';
+import { SA_LANGUAGES } from '../../../../packages/settings/src/languages';
+
+const { supabase, user, roles } = Astro.locals;
+if (!canSeeLanguages(roles)) return Astro.redirect('/', 303);
+const isOwner = hasRole(roles, 'owner');
+
+const gh = githubFromEnv();
+let notice: { text: string; url: string } | null = null;
+let error = '';
+let rows: LanguageRow[] = [];
+let offer: typeof SA_LANGUAGES = [];
+
+const load = async () => {
+  if (!gh) return;
+  ({ rows, offer } = await readLanguages(gh));
+};
+try {
+  await load();
+} catch {
+  error = 'Could not read the languages from GitHub. Try again in a minute.';
+}
+
+if (gh && isOwner && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const who = user?.email ?? 'an owner';
+  try {
+    if (form.get('action') === 'add') {
+      const picked = String(form.get('pick') ?? '');
+      const known = SA_LANGUAGES.find((l) => l.code === picked);
+      const lang = known ?? {
+        code: String(form.get('code') ?? ''),
+        name: String(form.get('name') ?? ''),
+        native: String(form.get('native') ?? '')
+      };
+      const url = await addLanguage(gh, lang, who);
+      await supabase.rpc('log_action', {
+        p_action: 'language.add',
+        p_target: lang.code,
+        p_before: null,
+        p_after: { ...lang, pull_request: url }
+      });
+      notice = { text: `Adding ${lang.name} as a draft.`, url };
+    } else if (form.get('action') === 'remove') {
+      const code = String(form.get('code') ?? '');
+      const row = rows.find((r) => r.code === code);
+      if (!row) throw new Error('That language is not on the list.');
+      if (String(form.get('confirm') ?? '').trim() !== row.name)
+        throw new Error(`To remove it, type its name exactly: ${row.name}`);
+      const url = await removeLanguage(gh, code, row.withdrawn, who);
+      await supabase.rpc('log_action', {
+        p_action: 'language.remove',
+        p_target: code,
+        p_before: { name: row.name, status: row.status },
+        p_after: { pull_request: url }
+      });
+      notice = { text: `Removing ${row.name}.`, url };
+    }
+  } catch (err) {
+    error =
+      err instanceof GitHubError && err.status === 409
+        ? 'Someone changed the languages in the meantime. Reload the page and try again.'
+        : err instanceof Error
+          ? err.message
+          : 'Something went wrong; nothing was changed.';
+  }
+  if (error) Astro.response.status = 400;
+}
+const STATUS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+const pct = (r: LanguageRow) => Math.floor((r.translated / Math.max(1, r.total)) * 100);
+---
+
+<Admin title="Languages">
+  {notice && (
+    <p class="notice" role="status">
+      {notice.text} <a href={notice.url}>Open the pull request</a>: merge it on GitHub once the
+      automatic checks pass.
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {!gh && <p class="error">The GitHub App is not set up yet. See docs/deploy.md §5.</p>}
+  <p>
+    A draft language is never offered to learners on the live site; missing words show in English. A
+    language is published when every word is translated and a reviewer who reads it approves it.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Language</th>
+          <th scope="col">Status</th>
+          <th scope="col">Interface words</th>
+          <th scope="col">Reviewed by</th>
+          {isOwner && <th scope="col">Remove</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <td>
+              {r.name} ({r.code}){r.native !== r.name && ` · ${r.native}`}
+            </td>
+            <td>
+              {STATUS[r.status]}
+              {r.withdrawn && ' · withdrawn'}
+            </td>
+            <td>{r.source ? 'Source' : `${r.translated} of ${r.total} (${pct(r)} %)`}</td>
+            <td>{r.reviewed_by ?? '—'}</td>
+            {isOwner && (
+              <td>
+                {!r.source && (
+                  <form method="post">
+                    <input type="hidden" name="action" value="remove" />
+                    <input type="hidden" name="code" value={r.code} />
+                    <label for={`confirm-${r.code}`}>Type “{r.name}” to remove it</label>
+                    <input id={`confirm-${r.code}`} name="confirm" required />
+                    <button type="submit" class="quiet">
+                      Remove
+                    </button>
+                  </form>
+                )}
+              </td>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {isOwner && (
+    <section aria-labelledby="add">
+      <h2 id="add">Add a language</h2>
+      <form method="post">
+        <input type="hidden" name="action" value="add" />
+        <label for="pick">Language</label>
+        <select id="pick" name="pick">
+          {offer.map((l) => (
+            <option value={l.code}>
+              {l.name} ({l.code})
+            </option>
+          ))}
+          <option value="">Another language (fill in below)</option>
+        </select>
+        <fieldset>
+          <legend>Only for another language</legend>
+          <label for="code">Code (ISO 639, e.g. sn)</label>
+          <input id="code" name="code" pattern="[a-z]{2,3}" />
+          <label for="name">Name in English</label>
+          <input id="name" name="name" />
+          <label for="native">Name in the language itself</label>
+          <input id="native" name="native" />
+        </fieldset>
+        <div class="actions">
+          <button type="submit">Add as a draft</button>
+        </div>
+      </form>
+    </section>
+  )}
+</Admin>

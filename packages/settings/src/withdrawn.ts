@@ -1,6 +1,7 @@
 // Withdrawn content (docs/specs/back-office-more-content.md §2.4): content/site/withdrawn.json
 // lists live items taken down, unchanged, with a reason. Production leaves them out; the back
 // office adds and removes one item at a time. One check for the public build and the back office.
+import { prettyJson } from './json';
 
 export const WITHDRAW_TYPES = ['lesson', 'template', 'world', 'season', 'language'] as const;
 export type WithdrawType = (typeof WITHDRAW_TYPES)[number];
@@ -107,7 +108,7 @@ export function withoutItem(list: WithdrawnList, type: WithdrawType, id: string)
 }
 
 /** The file text, formatted as the repository keeps it. */
-export const withdrawnText = (list: WithdrawnList): string => `${JSON.stringify(list, null, 2)}\n`;
+export const withdrawnText = (list: WithdrawnList): string => prettyJson(list);
 
 /**
  * True when two versions of the list differ by exactly one item added or removed (ADR-0012
