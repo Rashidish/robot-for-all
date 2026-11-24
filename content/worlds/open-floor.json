@@ -1,6 +1,9 @@
 {
   "id": "open-floor",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_open_floor_challenge",
   "size": { "w": 2000, "h": 1500 },
   "start": { "x": 1000, "y": 750, "heading": 270 }

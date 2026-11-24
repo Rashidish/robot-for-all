@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { GitHub, Pull } from './github';
 import { summarise } from './lessons';
-import { CHECKLIST, decide, possibleDecisions, pullsByLesson } from './review';
+import { CHECKLIST, decide, LESSON, possibleDecisions, pullsByLesson } from './review';
 
 const PATH = 'content/lessons/p2-art-01/index.md';
 const text = readFileSync(join(import.meta.dirname, '../../../../', PATH), 'utf8');
@@ -36,7 +36,7 @@ function fakeSupabase(error: { message: string } | null) {
   };
 }
 const input = {
-  lessonId: 'p2-art-01',
+  id: 'p2-art-01',
   decision: 'sent_for_review' as const,
   checklist: null,
   notes: '',
@@ -63,7 +63,7 @@ describe('content review decisions', () => {
   it('a decision opens one status-only pull request and records it with its link', async () => {
     const { gh, proposed } = fakeGitHub();
     const sb = fakeSupabase(null);
-    const url = await decide(gh, sb.client, input);
+    const url = await decide(gh, sb.client, LESSON, input);
     expect(url).toBe('https://github.com/Rashidish/robots-for-all/pull/55');
     expect(proposed).toHaveLength(1);
     expect(proposed[0]?.branch).toBe('admin/lesson-p2-art-01-20261124-150000');
@@ -89,16 +89,16 @@ describe('content review decisions', () => {
   it('when the database refuses, the pull request is closed again', async () => {
     const { gh, closed } = fakeGitHub();
     const sb = fakeSupabase({ message: 'only a content editor can send for review' });
-    await expect(decide(gh, sb.client, input)).rejects.toThrow(/only a content editor/);
+    await expect(decide(gh, sb.client, LESSON, input)).rejects.toThrow(/only a content editor/);
     expect(closed).toEqual([55]);
   });
 
   it('refuses a decision that does not fit the status, before touching GitHub', async () => {
     const { gh, proposed } = fakeGitHub();
     const sb = fakeSupabase(null);
-    await expect(decide(gh, sb.client, { ...input, decision: 'unpublished' })).rejects.toThrow(
-      /does not fit/
-    );
+    await expect(
+      decide(gh, sb.client, LESSON, { ...input, decision: 'unpublished' })
+    ).rejects.toThrow(/does not fit/);
     expect(proposed).toEqual([]);
     expect(sb.calls).toEqual([]);
   });

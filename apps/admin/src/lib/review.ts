@@ -1,13 +1,27 @@
-// Content review decisions (docs/specs/back-office-content-review.md): one decision on one
-// lesson becomes one pull request changing only its status lines, plus a record in the database.
+// Content review decisions (docs/specs/back-office-content-review.md, more content spec): one
+// decision on one item (a lesson, a world or course) becomes one pull request changing only its
+// status lines, plus a record in the database.
 // The database checks the role, the ticks, the notes and the "not your own" rule; if it refuses,
 // the pull request is closed again so nothing is left behind.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { GitHub, Pull } from './github';
-import { afterDecision, type LessonSummary, summarise, withStatus } from './lessons';
+import { type ContentKind, type Decision, type Item, possibleDecisions } from './kinds';
+import {
+  afterDecision,
+  type LessonSummary,
+  onlyStatusChanged,
+  summarise,
+  withStatus
+} from './lessons';
+import {
+  onlyWorldStatusChanged,
+  summariseWorld,
+  type WorldSummary,
+  withWorldStatus
+} from './worlds';
 
-export type Decision =
-  'sent_for_review' | 'approved' | 'changes_requested' | 'build_tested' | 'unpublished';
+export { possibleDecisions };
+export type { Decision };
 
 export const DECISION_LABELS: Record<Decision, string> = {
   sent_for_review: 'Sent for review',
@@ -47,40 +61,95 @@ export const CHECKLIST: { key: string; label: string }[] = [
 
 export const lessonPath = (id: string) => `content/lessons/${id}/index.md`;
 
-/** Which decisions make sense now (the database still checks roles and rules). */
-export function possibleDecisions(l: LessonSummary): Decision[] {
-  const out: Decision[] = [];
-  if (l.status === 'draft') out.push('sent_for_review');
-  if (l.status === 'in_review' && !l.reviewedBy) out.push('approved', 'changes_requested');
-  if (!l.buildTestedBy) out.push('build_tested');
-  if (l.status === 'published') out.push('unpublished');
-  return out;
+export const LESSON: ContentKind<LessonSummary> = {
+  type: 'lesson',
+  noun: 'lesson',
+  path: lessonPath,
+  list: { folder: 'content/lessons', entries: 'dirs' },
+  summarise,
+  withStatus,
+  onlyStatusChanged,
+  after: afterDecision,
+  checklist: CHECKLIST
+};
+
+/** What a reviewer checks for a world or course (more content spec §2.2). */
+export const WORLD_CHECKLIST: { key: string; label: string }[] = [
+  { key: 'challenge_clear', label: 'The challenge text is clear for the grade band' },
+  {
+    key: 'can_finish',
+    label: 'A sensible program can finish it on screen (try it in the drafts preview)'
+  },
+  { key: 'fair_points', label: 'Missions and points are fair' },
+  {
+    key: 'fits_floor',
+    label: 'Printed (Print course), it fits a classroom floor: size and tile count are sensible'
+  },
+  { key: 'child_theme', label: 'The theme, names and words are right for children' }
+];
+
+/** Worlds and courses: approving publishes (a floor build test is recorded when done, not required). */
+export function makeWorldKind(names: Record<string, string>): ContentKind<WorldSummary> {
+  return {
+    type: 'world',
+    noun: 'world',
+    path: (id) => `content/worlds/${id}.json`,
+    list: { folder: 'content/worlds', entries: 'json-files' },
+    summarise: (id, text) => summariseWorld(id, text, names),
+    withStatus: withWorldStatus,
+    onlyStatusChanged: onlyWorldStatusChanged,
+    after: (_w, decision, name) => {
+      switch (decision) {
+        case 'sent_for_review':
+          return { status: 'in_review' };
+        case 'approved':
+          return { reviewedBy: name, status: 'published' };
+        case 'build_tested':
+          return { buildTestedBy: name };
+        case 'changes_requested':
+        case 'unpublished':
+          return { status: 'draft', reviewedBy: null };
+      }
+    },
+    checklist: WORLD_CHECKLIST
+  };
 }
 
-/** Reads every lesson on main. */
-export async function readLessons(gh: GitHub): Promise<LessonSummary[]> {
-  const ids = await gh.listDirs('content/lessons');
-  const lessons = await Promise.all(
-    ids.map(async (id) => summarise(id, (await gh.readFile(lessonPath(id))).text))
+/** Reads every item of a kind on main. */
+export async function readItems<T extends Item>(gh: GitHub, kind: ContentKind<T>): Promise<T[]> {
+  const ids =
+    kind.list.entries === 'dirs'
+      ? await gh.listDirs(kind.list.folder)
+      : (await gh.listDir(kind.list.folder))
+          .filter((f) => f.name.endsWith('.json'))
+          .map((f) => f.name.replace(/\.json$/, ''));
+  const items = await Promise.all(
+    ids.map(async (id) => kind.summarise(id, (await gh.readFile(kind.path(id))).text))
   );
-  return lessons.sort((a, b) => a.id.localeCompare(b.id));
+  return items.sort((a, b) => a.id.localeCompare(b.id));
 }
 
-/** The open back-office pull request for each lesson, by lesson id. */
-export function pullsByLesson(pulls: Pull[]): Map<string, Pull> {
+export const readLessons = (gh: GitHub) => readItems(gh, LESSON);
+
+/** The open back-office pull request for each item of a kind, by id. */
+export function pullsFor(type: 'lesson' | 'world', pulls: Pull[]): Map<string, Pull> {
   const map = new Map<string, Pull>();
+  const re = new RegExp(`^admin/${type}-(.+)-\\d{8}-\\d{6}$`);
   for (const p of pulls) {
-    const m = /^admin\/lesson-(.+)-\d{8}-\d{6}$/.exec(p.head.ref);
+    const m = re.exec(p.head.ref);
     if (m?.[1]) map.set(m[1], p);
   }
   return map;
 }
 
-export async function decide(
+export const pullsByLesson = (pulls: Pull[]) => pullsFor('lesson', pulls);
+
+export async function decide<T extends Item>(
   gh: GitHub,
   supabase: SupabaseClient,
+  kind: ContentKind<T>,
   input: {
-    lessonId: string;
+    id: string;
     decision: Decision;
     checklist: Record<string, boolean> | null;
     notes: string;
@@ -90,20 +159,20 @@ export async function decide(
     now?: Date;
   }
 ): Promise<string> {
-  const path = lessonPath(input.lessonId);
+  const path = kind.path(input.id);
   const file = await gh.readFile(path);
-  const lesson = summarise(input.lessonId, file.text);
-  if (!possibleDecisions(lesson).includes(input.decision)) {
-    throw new Error('That decision does not fit the lesson’s status now. Reload the page.');
+  const item = kind.summarise(input.id, file.text);
+  if (!possibleDecisions(item).includes(input.decision)) {
+    throw new Error(`That decision does not fit the ${kind.noun}’s status now. Reload the page.`);
   }
-  const text = withStatus(file.text, afterDecision(lesson, input.decision, input.reviewerName));
+  const text = kind.withStatus(file.text, kind.after(item, input.decision, input.reviewerName));
   const stamp = (input.now ?? new Date())
     .toISOString()
     .replace(/[-:]/g, '')
     .replace('T', '-')
     .slice(0, 15);
-  const branch = `admin/lesson-${lesson.id}-${stamp}`;
-  const title = `${lesson.title} (${lesson.id}): ${DECISION_LABELS[input.decision].toLowerCase()}`;
+  const branch = `admin/${kind.type}-${item.id}-${stamp}`;
+  const title = `${item.title} (${item.id}): ${DECISION_LABELS[input.decision].toLowerCase()}`;
   const url = await gh.proposeChange({
     branch,
     path,
@@ -118,8 +187,8 @@ export async function decide(
   });
   const number = gh.lastPullNumber;
   const { error } = await supabase.rpc('record_review', {
-    p_type: 'lesson',
-    p_id: lesson.id,
+    p_type: kind.type,
+    p_id: item.id,
     p_decision: input.decision,
     p_checklist: input.checklist,
     p_notes: input.notes || null,

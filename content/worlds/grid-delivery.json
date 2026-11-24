@@ -1,6 +1,9 @@
 {
   "id": "grid-delivery",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_grid_delivery_challenge",
   "grid": { "cols": 3, "rows": 3 },
   "areas": [

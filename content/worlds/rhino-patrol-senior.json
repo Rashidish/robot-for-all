@@ -1,6 +1,9 @@
 {
   "id": "rhino-patrol-senior",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_rhino_patrol_senior_challenge",
   "grid": { "cols": 6, "rows": 5 },
   "lines": [

@@ -1,15 +1,17 @@
 // ADR-0012: the back office merges a pull request itself only when all four hold, checked just
 // before merging: (1) the App opened it, from an admin/ branch, into main; (2) it changes only the
-// status lines of one lesson; (3) CI passed on its latest commit; (4) the decision it carries was
+// status lines of one lesson or world file (or one item of the withdrawn list); (3) CI passed on its latest commit; (4) the decision it carries was
 // recorded in the back office by a person with the right role. Anything else waits for a person
 // on GitHub.
 import type { GitHub, Pull } from './github';
 import { onlyStatusChanged } from './lessons';
+import { onlyWorldStatusChanged } from './worlds';
 import { oneItemChanged } from '../../../../packages/settings/src/withdrawn';
 
 export const WITHDRAWN_PATH = 'content/site/withdrawn.json';
 
 const LESSON_FILE = /^content\/lessons\/[a-z0-9]+(?:-[a-z0-9]+)*\/index\.md$/;
+const WORLD_FILE = /^content\/worlds\/[a-z]+(?:-[a-z]+)*\.json$/;
 
 export interface MergeCheck {
   ok: boolean;
@@ -45,12 +47,14 @@ export async function checkMerge(
     files.length === 1 && file?.status === 'modified'
       ? LESSON_FILE.test(file.filename)
         ? 'lesson'
-        : file.filename === WITHDRAWN_PATH
-          ? 'withdrawn'
-          : null
+        : WORLD_FILE.test(file.filename)
+          ? 'world'
+          : file.filename === WITHDRAWN_PATH
+            ? 'withdrawn'
+            : null
       : null;
   if (!file || !kind) {
-    waiting.push('it changes more than one lesson file or the withdrawn list');
+    waiting.push('it changes more than one lesson file, world file or the withdrawn list');
   } else {
     const [before, after] = await Promise.all([
       gh.readFile(file.filename, 'main'),
@@ -59,16 +63,18 @@ export async function checkMerge(
     const ok =
       kind === 'lesson'
         ? onlyStatusChanged(before.text, after.text)
-        : (() => {
-            try {
-              return oneItemChanged(JSON.parse(before.text), JSON.parse(after.text));
-            } catch {
-              return false;
-            }
-          })();
+        : kind === 'world'
+          ? onlyWorldStatusChanged(before.text, after.text)
+          : (() => {
+              try {
+                return oneItemChanged(JSON.parse(before.text), JSON.parse(after.text));
+              } catch {
+                return false;
+              }
+            })();
     if (!ok) {
       waiting.push(
-        kind === 'lesson'
+        kind !== 'withdrawn'
           ? 'it changes more than the status lines (or main changed meanwhile)'
           : 'it changes more than one item of the withdrawn list (or main changed meanwhile)'
       );

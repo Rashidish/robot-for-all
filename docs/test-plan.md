@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.28 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.29 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -80,6 +80,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B26 | **Banner and switches from the back office**: an owner sets a banner for today to next week with a link and saves; after the merge it shows on a phone on the home page, a lesson and the code editor; TalkBack reads it as "Announcement"; closing it keeps it closed after a reload; switching Print course off hides the button after the merge; a competition manager does not see Site | |
 | B27 | **Publish a lesson from the back office**: set reviewer names on Profile; an editor sends `p2-art-01` for review and merges once checks pass; a different reviewer opens the drafts preview (refused without Access), ticks all six items and approves; the editor-reviewer can't approve their own; a build tester records "built and works"; the lesson appears on the production site after the last merge; Unpublish takes it down; every step is in the history and the audit log; all on a phone at 360 px | |
 | B28 | **Withdraw and restore**: a reviewer withdraws one template of a published lesson with a reason; after Merge now and the deploy, its page is gone from the live site and the lesson no longer lists it, while the drafts preview still has it; restoring brings it back; withdrawing a world removes it from the Robot tab and the lesson that opened it falls back to the micro:bit view; a competition manager can withdraw a season but not a lesson | |
+| B29 | **Review a world in the back office**: an editor sends a new course for review; it shows on the drafts preview but not on the live site; a reviewer tries it on screen, ticks the five world items and approves; after Merge now it appears in the live Robot tab; Unpublish takes it off again; a lesson that opens an unpublished world falls back to the micro:bit | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -129,3 +130,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.26 | 2026-11-24 | B26 banner and switches |
 | 0.27 | 2026-11-24 | B27 publish a lesson from the back office |
 | 0.28 | 2026-11-24 | B28 withdraw and restore |
+| 0.29 | 2026-11-24 | B29 review a world |

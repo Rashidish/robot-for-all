@@ -13,6 +13,7 @@
   import { loadSeasons, loadWorlds, type Pushes, specsById } from '../code/world-link';
   import { featureOn } from '../site';
   import { hidden } from '../withdrawn';
+  import { worldReview } from '../../../../packages/sim/src/world';
 
   // Worlds and courses from content/worlds, checked when the page is built (M4 spec FR-4).
   const worldFiles = import.meta.glob('../../../../content/worlds/*.json', {
@@ -21,8 +22,13 @@
   });
   // Withdrawn worlds and seasons are left out of production (more content spec §2.4).
   const allWorlds = loadWorlds(worldFiles);
-  const worlds = allWorlds.filter((w) => !hidden('world', w.id));
   const worldSpecs = specsById(worldFiles);
+  // Production shows published worlds only, and none that are withdrawn (more content spec).
+  const worlds = allWorlds.filter(
+    (w) =>
+      !hidden('world', w.id) &&
+      (__RFA_SHOW_DRAFTS__ || worldReview(worldSpecs[w.id]).status === 'published')
+  );
   // Seasons (FR-20): each with its badge, served from our own site.
   // Site settings can switch the Robot tab and the seasons off (back-office spec §6.7).
   const robotOn = featureOn('robot_world');

@@ -1,6 +1,9 @@
 {
   "id": "box-and-back",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_box_and_back_challenge",
   "size": { "w": 1200, "h": 600 },
   "areas": [

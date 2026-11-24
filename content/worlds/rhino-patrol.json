@@ -1,6 +1,9 @@
 {
   "id": "rhino-patrol",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_rhino_patrol_challenge",
   "grid": { "cols": 5, "rows": 4 },
   "lines": [{ "cells": ["A4", "A3", "A2", "A1", "B1", "C1", "D1", "E1", "E2", "E3", "E4"] }],

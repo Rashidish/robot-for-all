@@ -1,0 +1,71 @@
+---
+// Content → Worlds & courses (more content spec §2.2): every world and course with its status,
+// reviewer, builder and any change waiting to be merged.
+import en from '../../../../../content/i18n/en.json';
+import Admin from '../../layouts/Admin.astro';
+import type { Pull } from '../../lib/github';
+import { githubFromEnv } from '../../lib/github-env';
+import { makeWorldKind, pullsFor, readItems } from '../../lib/review';
+import { canSeeLessons } from '../../lib/roles';
+import type { WorldSummary } from '../../lib/worlds';
+
+const { roles } = Astro.locals;
+if (!canSeeLessons(roles)) return Astro.redirect('/', 303);
+
+const STATUS_LABELS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+const gh = githubFromEnv();
+let worlds: WorldSummary[] = [];
+let pulls = new Map<string, Pull>();
+let error = '';
+if (gh) {
+  try {
+    const [all, open] = await Promise.all([
+      readItems(gh, makeWorldKind(en as Record<string, string>)),
+      gh.openAdminPulls()
+    ]);
+    worlds = all;
+    pulls = pullsFor('world', open);
+  } catch {
+    error = 'Could not read the worlds from GitHub. Try again in a minute.';
+  }
+}
+---
+
+<Admin title="Worlds & courses">
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {!gh && <p class="error">The GitHub App is not set up yet. See docs/deploy.md §5.</p>}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">World</th>
+          <th scope="col">Kind</th>
+          <th scope="col">Status</th>
+          <th scope="col">Reviewed</th>
+          <th scope="col">Built</th>
+          <th scope="col">Waiting</th>
+        </tr>
+      </thead>
+      <tbody>
+        {worlds.map((w) => (
+          <tr>
+            <td>
+              <a href={`/worlds/${w.id}/`}>{w.title}</a>
+              <br />
+              <small>{w.id}</small>
+            </td>
+            <td>{w.isCourse ? 'Course' : 'World'}</td>
+            <td>{STATUS_LABELS[w.status]}</td>
+            <td>{w.reviewedBy ?? '—'}</td>
+            <td>{w.buildTestedBy ?? '—'}</td>
+            <td>{pulls.has(w.id) ? 'A change is waiting' : ''}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Admin>

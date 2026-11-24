@@ -143,3 +143,34 @@ describe('the seventh tick: templates', () => {
     );
   });
 });
+
+describe('worlds have their own checklist (migration 0006)', () => {
+  const WORLD = {
+    challenge_clear: true,
+    can_finish: true,
+    fair_points: true,
+    fits_floor: true,
+    child_theme: true
+  };
+  it('approving a world needs the world ticks, not the lesson ones', async () => {
+    await expect(
+      t.as(
+        REVIEWER,
+        `select public.record_review('world', 'bump-maze', 'approved', $1, null, $2)`,
+        [{ ...SIX, templates: true }, PR]
+      )
+    ).rejects.toThrow(/missing: challenge_clear/);
+    await t.as(
+      REVIEWER,
+      `select public.record_review('world', 'bump-maze', 'approved', $1, null, $2)`,
+      [WORLD, PR]
+    );
+    await expect(
+      t.as(
+        REVIEWER,
+        `select public.record_review('season', 'rhino-patrol', 'approved', $1, null, $2)`,
+        [WORLD, PR]
+      )
+    ).rejects.toThrow(/lessons and worlds/);
+  });
+});
