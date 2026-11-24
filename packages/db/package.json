@@ -1,0 +1,7 @@
+{
+  "name": "@robots-for-all/db",
+  "private": true,
+  "description": "Database migrations for Supabase (ADR-0010): back-office roles, audit log and overrides, with row-level security; tested on PGlite",
+  "license": "MIT",
+  "type": "module"
+}
