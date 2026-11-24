@@ -1,0 +1,120 @@
+---
+// Configuration → Seasons (docs/specs/back-office.md §6.5): change a season's dates. Saving
+// opens a pull request that changes only that season's file; CI checks it and a person merges
+// it. Nothing here changes the live site directly.
+import en from '../../../../content/i18n/en.json';
+import Admin from '../layouts/Admin.astro';
+import { GitHubError } from '../lib/github';
+import { githubFromEnv } from '../lib/github-env';
+import { canEditSeasons } from '../lib/roles';
+import { branchFor, readSeasons, type SeasonFile, withDates } from '../lib/seasons';
+
+const { supabase, user, roles } = Astro.locals;
+if (!canEditSeasons(roles)) return Astro.redirect('/', 303);
+
+const names = en as Record<string, string>;
+const nameOf = (s: SeasonFile) =>
+  names[`season_${s.id.replaceAll('-', '_')}_name`] ?? `Season ${s.number}`;
+
+const gh = githubFromEnv();
+let seasons: SeasonFile[] = [];
+let worldIds = new Set<string>();
+let notice: { text: string; url: string } | null = null;
+let error = '';
+
+if (gh) {
+  try {
+    ({ seasons, worldIds } = await readSeasons(gh));
+  } catch (err) {
+    error =
+      err instanceof GitHubError
+        ? `Could not read the seasons from GitHub (${err.status}). Try again in a minute.`
+        : 'Could not read the seasons.';
+  }
+}
+
+if (gh && !error && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const id = String(form.get('season') ?? '');
+  const season = seasons.find((s) => s.id === id);
+  const from = String(form.get('from') ?? '');
+  const to = String(form.get('to') ?? '');
+  if (!season) {
+    error = 'That season was not found.';
+  } else if (from === season.from && to === season.to) {
+    error = 'The dates are the same as now: nothing to change.';
+  } else {
+    const { text, problems } = withDates(season.spec, from, to, worldIds);
+    if (problems.length > 0) {
+      error = problems.map((p) => `${p.path}: ${p.message}`).join('; ');
+    } else {
+      const title = `${nameOf(season)}: dates ${from} to ${to}`;
+      try {
+        const url = await gh.proposeChange({
+          branch: branchFor(season.id, new Date()),
+          path: season.path,
+          text,
+          sha: season.sha,
+          message: `${title} (back office)`,
+          title,
+          body:
+            `Changed in the back office by ${user?.email ?? 'an admin'}.\n\n` +
+            `| | Before | After |\n|---|---|---|\n| Start | ${season.from} | ${from} |\n` +
+            `| End | ${season.to} | ${to} |\n\nMerge after CI passes to publish the new dates.`
+        });
+        await supabase.rpc('log_action', {
+          p_action: 'season.dates',
+          p_target: season.id,
+          p_before: { from: season.from, to: season.to },
+          p_after: { from, to, pull_request: url }
+        });
+        notice = { text: `Sent for review: ${title}.`, url };
+      } catch (err) {
+        error =
+          err instanceof GitHubError && err.status === 409
+            ? 'Someone changed this season in the meantime. Reload the page and try again.'
+            : 'GitHub did not accept the change. Nothing was changed; try again in a minute.';
+      }
+    }
+  }
+  if (error) Astro.response.status = 400;
+}
+---
+
+<Admin title="Seasons">
+  {notice && (
+    <p class="notice" role="status">
+      {notice.text} <a href={notice.url}>Open the pull request</a>. The new dates go live when it is
+      merged.
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {!gh && (
+    <p class="error">
+      The GitHub App is not set up yet, so seasons can't be changed here. See docs/deploy.md §5.
+    </p>
+  )}
+  <p>
+    Change a season's start and end dates (South African dates). Saving opens a pull request; the
+    dates change on the site once it is merged.
+  </p>
+  {seasons.map((s) => (
+    <section aria-labelledby={`season-${s.id}`}>
+      <h2 id={`season-${s.id}`}>{nameOf(s)}</h2>
+      <form method="post">
+        <input type="hidden" name="season" value={s.id} />
+        <label for={`from-${s.id}`}>Start</label>
+        <input id={`from-${s.id}`} name="from" type="date" value={s.from} required />
+        <label for={`to-${s.id}`}>End</label>
+        <input id={`to-${s.id}`} name="to" type="date" value={s.to} required />
+        <div class="actions">
+          <button type="submit">Save for review</button>
+        </div>
+      </form>
+    </section>
+  ))}
+</Admin>

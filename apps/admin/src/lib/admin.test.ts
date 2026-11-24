@@ -4,7 +4,15 @@ import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { verifyAccess } from './access';
 import { decide, type Facts, SECURITY_HEADERS } from './guard';
-import { canManagePeople, grantableRoles, hasRole, isRole, ROLE_LABELS, ROLES } from './roles';
+import {
+  canEditSeasons,
+  canManagePeople,
+  grantableRoles,
+  hasRole,
+  isRole,
+  ROLE_LABELS,
+  ROLES
+} from './roles';
 
 describe('Cloudflare Access token check (ADR-0009)', () => {
   const config = { team: 'robotsforall', aud: 'aud-tag-123' };
@@ -142,5 +150,9 @@ describe('roles in the pages (the database enforces them too)', () => {
     expect(hasRole(['reviewer'], 'judge')).toBe(false);
     expect(canManagePeople(['owner'])).toBe(true);
     expect(canManagePeople(['content_editor'])).toBe(false);
+    expect(canEditSeasons(['competition_manager'])).toBe(true);
+    expect(canEditSeasons(['owner'])).toBe(true);
+    expect(canEditSeasons(['super_admin'])).toBe(true);
+    expect(canEditSeasons(['reviewer', 'judge'])).toBe(false);
   });
 });

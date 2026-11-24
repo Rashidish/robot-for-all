@@ -98,7 +98,25 @@ Do these once, in this order:
    `ADMIN_DEPLOY` = `true`. The next push to `main` deploys the Worker, attaches the custom domain,
    creates its small KV store (`SESSION`) and checks that the live site refuses requests without
    Access.
-6. **Sign in:** open `admin.robotsforall.org.za`, pass Access with the emailed PIN, sign in with
+6. **The GitHub App** (lets the back office open pull requests, e.g. new season dates):
+   github.com → Settings → Developer settings → **GitHub Apps → New GitHub App**: name
+   "Robots For All back office", no webhook, permissions **Contents: Read and write**,
+   **Pull requests: Read and write** (Metadata: Read is automatic), "Only on this account".
+   Create it, note the **App ID**, **Generate a private key**, then **Install App** on
+   `Rashidish/robots-for-all` **only** and note the installation id (the number at the end of the
+   installation's settings URL). GitHub gives the key as PKCS#1; convert it once on your computer
+   and store it as a Worker secret, then delete the downloaded file:
+   ```
+   openssl pkcs8 -topk8 -nocrypt -in downloaded-key.pem -out app-key.pem
+   npx wrangler secret put GITHUB_APP_ID
+   npx wrangler secret put GITHUB_INSTALLATION_ID
+   npx wrangler secret put GITHUB_APP_PRIVATE_KEY < app-key.pem
+   ```
+7. **Protect `main`** (so the App can never change the live site by itself): repository →
+   Settings → Rules → **New branch ruleset** for `main`: require a pull request with 1 approval,
+   require the CI checks to pass, block force pushes, and leave the bypass list empty (the App
+   must not be on it).
+8. **Sign in:** open `admin.robotsforall.org.za`, pass Access with the emailed PIN, sign in with
    your Supabase account and set up your authenticator app.
 
 Without `ACCESS_TEAM` and `ACCESS_AUD` the app refuses every request, and without the Supabase
