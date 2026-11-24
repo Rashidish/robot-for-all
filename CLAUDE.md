@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.18 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.19 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -106,7 +106,8 @@ Reuse proven open source before writing our own.
 | micro:bit | **MicroPython** .hex built in the browser (microbit-fs) + WebUSB (microbit-connection); firmware served from our domain (ADR-0005) | No third-party domain; fits our lessons and i18n |
 | Python in browser | Pyodide (lazy-loaded, later milestones only) | No server cost |
 | Simulator | **On-screen micro:bit + our 2D robot world** in `packages/sim` (ADR-0007); programs use robot calls through robot profiles, never pins (ADR-0008) | One engine for screen and real robot; no physics library; 2D before 3D |
-| Database / auth | Postgres (e.g. Supabase) | Free tier, row-level security |
+| Database / auth | **Supabase** (Postgres + Auth, MFA for admins), roles by row-level security, audit log (ADR-0010); back-office accounts first, M5 accounts later | Free tier, row-level security, open source |
+| Back office | **`apps/admin`**: Astro + Svelte with server routes on a second Pages project, `admin.robotsforall.org.za`, behind Cloudflare Access; content changes as pull requests through a GitHub App (ADR-0009; spec `docs/specs/back-office.md`) | Never exposed in the front office; review gate kept |
 | Hosting | **Cloudflare Pages**, one hostname for everything: `robotsforall.org.za` (ADR-0002) | Free unlimited static traffic; zero-rating friendly |
 | AI | Claude API via our own server only | Keys never reach the browser |
 | Offline platform option | Evaluate Kolibri for schools with no internet | Built for this case |
@@ -277,3 +278,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.16 | 2026-11-23 | Renamed to Robots For All in user-facing text; hostname `robotsforall.org.za`, other domains redirect |
 | 0.17 | 2026-11-23 | Lesson format: `world` (the robot world a starter program opens in, M4) |
 | 0.18 | 2026-11-24 | `content/seasons` (M4 FR-20) |
+| 0.19 | 2026-11-24 | Back office approved (spec `docs/specs/back-office.md`): admin app, Supabase accounts and roles (ADR-0009, ADR-0010 accepted) |
