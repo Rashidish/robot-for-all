@@ -13,6 +13,8 @@ import { buildWithdrawn, isWithdrawn } from '../../../../packages/settings/src/w
 import { prettyJson } from '../../../../packages/settings/src/json';
 import type { GitHub } from './github';
 
+import { translationIds } from './translation-files';
+
 export const LANGUAGES_PATH = 'content/i18n/languages.json';
 export const INLANG_PATH = 'project.inlang/settings.json';
 const messagesPath = (code: string) => `content/i18n/${code}.json`;
@@ -22,16 +24,21 @@ export interface LanguageRow extends Language {
   translated: number;
   total: number;
   withdrawn: boolean;
+  /** Lessons with a translation file in this language, of all lessons (spec §2.8). */
+  lessonsTranslated: number;
+  lessonsTotal: number;
 }
 
 export async function readLanguages(
   gh: GitHub
 ): Promise<{ rows: LanguageRow[]; offer: typeof SA_LANGUAGES }> {
-  const [listFile, enFile, withdrawnFile] = await Promise.all([
+  const [listFile, enFile, withdrawnFile, tree] = await Promise.all([
     gh.readFile(LANGUAGES_PATH),
     gh.readFile(messagesPath('en')),
-    gh.readFile('content/site/withdrawn.json')
+    gh.readFile('content/site/withdrawn.json'),
+    gh.listTree('content/lessons')
   ]);
+  const lessonsTotal = tree.filter((p) => /^content\/lessons\/[^/]+\/index\.md$/.test(p)).length;
   const list = JSON.parse(listFile.text) as LanguageList;
   const en = JSON.parse(enFile.text) as Record<string, string>;
   const withdrawn = buildWithdrawn(JSON.parse(withdrawnFile.text));
@@ -46,7 +53,9 @@ export async function readLanguages(
         ...l,
         translated: c.translated,
         total: c.total,
-        withdrawn: isWithdrawn(withdrawn, 'language', l.code)
+        withdrawn: isWithdrawn(withdrawn, 'language', l.code),
+        lessonsTranslated: l.code === 'en' ? lessonsTotal : translationIds(tree, l.code).length,
+        lessonsTotal
       };
     })
   );

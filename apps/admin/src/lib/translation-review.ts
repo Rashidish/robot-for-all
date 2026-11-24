@@ -5,6 +5,9 @@
 import type { ContentKind, Item } from './kinds';
 import { LANGUAGE_CHECKLIST } from './language-review';
 import { onlyStatusChanged } from './lessons';
+import { TRANSLATION_FILE, translationIds } from './translation-files';
+
+export { TRANSLATION_FILE, translationIds };
 
 export const TRANSLATION_CHECKLIST: { key: string; label: string }[] = [
   ...LANGUAGE_CHECKLIST,
@@ -15,8 +18,6 @@ export const TRANSLATION_CHECKLIST: { key: string; label: string }[] = [
 ];
 
 export const TRANSLATION_ID = /^(p[1-3]-[a-z]+-\d{2})\/([a-z]{2,3})$/;
-export const TRANSLATION_FILE =
-  /^content\/lessons\/(p[1-3]-[a-z]+-\d{2})\/index\.([a-z]{2,3})\.md$/;
 
 export function splitTranslationId(id: string): { lesson: string; lang: string } {
   const m = TRANSLATION_ID.exec(id);
@@ -105,15 +106,6 @@ export const TRANSLATION: ContentKind<TranslationItem> = {
   },
   checklist: TRANSLATION_CHECKLIST
 };
-
-/** The lesson translations into one language on main, as "<lesson>/<language>" ids. */
-export function translationIds(paths: readonly string[], lang: string): string[] {
-  return paths
-    .map((p) => TRANSLATION_FILE.exec(p))
-    .filter((m): m is RegExpExecArray => m !== null && m[2] === lang)
-    .map((m) => `${m[1]}/${lang}`)
-    .sort();
-}
 
 /**
  * A lesson file cut into parts to show beside each other: the front matter first, then one part

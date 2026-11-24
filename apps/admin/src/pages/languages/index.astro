@@ -102,6 +102,7 @@ const pct = (r: LanguageRow) => Math.floor((r.translated / Math.max(1, r.total))
           <th scope="col">Language</th>
           <th scope="col">Status</th>
           <th scope="col">Interface words</th>
+          <th scope="col">Lessons translated</th>
           <th scope="col">Reviewed by</th>
           {isOwner && <th scope="col">Remove</th>}
         </tr>
@@ -124,6 +125,7 @@ const pct = (r: LanguageRow) => Math.floor((r.translated / Math.max(1, r.total))
               {r.withdrawn && ' · withdrawn'}
             </td>
             <td>{r.source ? 'Source' : `${r.translated} of ${r.total} (${pct(r)} %)`}</td>
+            <td>{r.source ? 'Source' : `${r.lessonsTranslated} of ${r.lessonsTotal}`}</td>
             <td>{r.reviewed_by ?? '—'}</td>
             {isOwner && (
               <td>

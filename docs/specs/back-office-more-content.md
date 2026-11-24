@@ -1,6 +1,6 @@
 # Spec: Back office — Review and publishing for templates, worlds and courses, and translations
 
-> **Version:** 0.5 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
+> **Version:** 0.6 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
 > Extends `docs/specs/back-office-content-review.md` (lessons, built) to the other content types, as the owner asked (2026-11-24, "go ahead with 1"). Same rules: ADR-0004, ADR-0009, ADR-0012.
 
 ## 1. Purpose
@@ -71,6 +71,16 @@ how many lessons are translated and approved.
 - **The build fails** when a translation's lists don't line up with the English (same number of items, a substitute exactly where English has one), its sections don't match, its language isn't on the list, or its English lesson doesn't exist.
 - **What a learner sees** on a page in another language: the translation when it and the English lesson are published and it is up to date; otherwise the English lesson, marked as English (`lang="en"`), with a note that it isn't translated yet. The answer sheet and slides follow the same rule; their PRIMM sections are matched by position, and a translated sheet's code includes the language (e.g. `p1-crank-01-zu-…`).
 
+### 2.8 Flags: what learners would still see in English (owner request 2026-11-24)
+The back office flags (⚑) everything learners of a language would still meet in English:
+- **Home:** for each language, how many interface words and lessons have no translation yet.
+- **Content → Languages:** a "Lessons translated" column.
+- **Content → Languages → <language>:** a **Still in English** summary at the top, then:
+  - **every lesson** with its English status and its state in that language (not translated, draft, in review, published, needs updating); a lesson is flagged when it is live in English but not in that language;
+  - **interface words by area**: robot worlds, challenges, missions and seasons; the code editor and blocks; lessons, answer sheets and templates; site pages (challenges and missions are interface words, so they are covered here);
+  - **not translatable yet**: template sheets (titles, part names, measurement notes), words drawn inside lesson diagrams, starter program names. They stay in English in every language until a later change makes them translatable.
+- Flags inform; they don't block. A published language may still have lessons in English (they show in English with a note), as §2.3 allows.
+
 **Finding an isiZulu reviewer** (nothing in isiZulu goes live until this is done):
 - **Who:** a first-language isiZulu speaker, ideally a Foundation or Intermediate Phase teacher (Grades 3–7) who teaches maths, science or Coding and Robotics, so words suit children and the classroom; comfortable with simple technical words (motor, battery, switch) and with saying where isiZulu uses an English loan word.
 - **Two people, not one:** a **translator** (checks and fixes the AI draft) and a separate **reviewer** (approves), so nobody approves their own work, as for lessons.
@@ -136,3 +146,4 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 | 0.3 | 2026-11-24 | §2.5 add and remove languages (owner request) |
 | 0.4 | 2026-11-24 | §2.6 building the languages step in three PRs; plan for finding an isiZulu reviewer (owner request) |
 | 0.5 | 2026-11-24 | §2.7 lesson translation files: words only, `translated_from`, "needs updating" |
+| 0.6 | 2026-11-24 | §2.8 flags for what learners would still see in English (owner request) |

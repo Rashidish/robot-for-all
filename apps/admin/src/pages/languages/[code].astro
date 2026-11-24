@@ -19,7 +19,16 @@ import {
 import type { Item } from '../../lib/kinds';
 import { canSeeLanguages, hasRole } from '../../lib/roles';
 import { completeness } from '../../../../../packages/settings/src/languages';
-import { TRANSLATION, translationIds, type TranslationItem } from '../../lib/translation-review';
+import { TRANSLATION, translationIds } from '../../lib/translation-review';
+import {
+  LESSON_STATE_LABELS,
+  type LessonCoverage,
+  lessonCoverage,
+  NOT_TRANSLATABLE,
+  wordCoverage
+} from '../../lib/coverage';
+import { summarise } from '../../lib/lessons';
+import { translationHash } from '../../../../../packages/settings/src/translation';
 
 const { supabase, user, roles } = Astro.locals;
 if (!canSeeLanguages(roles)) return Astro.redirect('/', 303);
@@ -49,8 +58,8 @@ interface Loaded {
   words: Record<string, string>;
   pull: Pull | undefined;
   check: MergeCheck | null;
-  /** Lesson translations into this language (more content spec §2.7). */
-  lessons: TranslationItem[];
+  /** Every lesson, and how far it is translated into this language (spec §2.7, §2.8). */
+  lessons: LessonCoverage[];
 }
 const empty: Loaded = {
   item: null,
@@ -69,11 +78,25 @@ async function load(): Promise<Loaded> {
     gh.readFile(`content/i18n/${code}.json`),
     gh.listTree('content/lessons')
   ]);
-  const lessons = await Promise.all(
-    translationIds(tree, code).map(async (id) =>
-      TRANSLATION.summarise(id, (await gh.readFile(TRANSLATION.path(id))).text)
+  const englishIds = tree
+    .map((p) => /^content\/lessons\/([a-z0-9-]+)\/index\.md$/.exec(p)?.[1])
+    .filter((id): id is string => Boolean(id));
+  const [englishLessons, translations] = await Promise.all([
+    Promise.all(
+      englishIds.map(async (id) => {
+        const text = (await gh.readFile(`content/lessons/${id}/index.md`)).text;
+        const l = summarise(id, text);
+        return { id, title: l.title, status: l.status, hash: await translationHash(text) };
+      })
+    ),
+    Promise.all(
+      translationIds(tree, code).map(async (id) => ({
+        lesson: id.split('/')[0] ?? id,
+        ...TRANSLATION.summarise(id, (await gh.readFile(TRANSLATION.path(id))).text)
+      }))
     )
-  );
+  ]);
+  const lessons = lessonCoverage(englishLessons, translations);
   const english = JSON.parse(en.text) as Record<string, string>;
   delete english['$schema'];
   const pull = pullsFor('language', await gh.openAdminPulls()).get(code);
@@ -154,6 +177,9 @@ let history: {
   history = (data ?? []) as typeof history;
 }
 const { item, english, words, pull, check, lessons } = loaded;
+const areas = wordCoverage(english, words);
+const flaggedLessons = lessons.filter((l) => l.flagged);
+const flaggedWords = areas.reduce((n, a) => n + a.missing.length, 0);
 const options = item && !pull ? possibleDecisions(item).filter((d) => d !== 'build_tested') : [];
 const can: Record<Decision, boolean> = {
   sent_for_review: hasRole(roles, 'translator') || hasRole(roles, 'content_editor'),
@@ -189,6 +215,44 @@ const keys = Object.keys(english);
       <p>
         <a href={`${DRAFTS_URL}/${code}/`}>See the site in {item.title} (drafts preview)</a>
       </p>
+      <section aria-labelledby="still-english" class="flags">
+        <h2 id="still-english">Still in English</h2>
+        {flaggedLessons.length === 0 && flaggedWords === 0 ? (
+          <p>Nothing: every live lesson and every interface word is in {item.title}.</p>
+        ) : (
+          <ul>
+            {flaggedLessons.length > 0 && (
+              <li>
+                <a href="#lessons">
+                  {flaggedLessons.length} live{' '}
+                  {flaggedLessons.length === 1 ? 'lesson is' : 'lessons are'} not live in{' '}
+                  {item.title}
+                </a>{' '}
+                ({flaggedLessons.filter((l) => l.state === 'not_translated').length} not translated,{' '}
+                {flaggedLessons.filter((l) => l.state === 'needs_updating').length} need updating,{' '}
+                {
+                  flaggedLessons.filter((l) => l.state === 'draft' || l.state === 'in_review')
+                    .length
+                }{' '}
+                waiting for review)
+              </li>
+            )}
+            {areas
+              .filter((a) => a.missing.length > 0)
+              .map((a) => (
+                <li>
+                  <a href="#areas">
+                    {a.area}: {a.missing.length} words
+                  </a>
+                </li>
+              ))}
+            <li>
+              <a href="#not-translatable">Some text can't be translated yet</a> (templates, diagram
+              labels, starter program names)
+            </li>
+          </ul>
+        )}
+      </section>
     </>
   )}
 
@@ -249,22 +313,66 @@ const keys = Object.keys(english);
       </section>
     ))}
 
-  <h2>Lessons</h2>
-  {lessons.length === 0 ? (
-    <p>No lessons are translated into {item?.title ?? code} yet: learners see them in English.</p>
-  ) : (
-    <ul>
-      {lessons.map((l) => (
-        <li>
-          <a href={`/languages/${code}/${l.id.split('/')[0]}/`} lang={code}>
-            {l.title}
-          </a>{' '}
-          ({l.id.split('/')[0]}) · {STATUS[l.status]}
-          {l.aiGenerated && ' · AI-drafted'}
-        </li>
-      ))}
-    </ul>
-  )}
+  <h2 id="lessons">Lessons</h2>
+  <p>
+    Every lesson, and how learners of {item?.title ?? code} meet it. Flagged lessons are live in
+    English but not in {item?.title ?? code}, so learners see them in English.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Lesson</th>
+          <th scope="col">English</th>
+          <th scope="col">{item?.title ?? code}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {lessons.map((l) => (
+          <tr>
+            <td>
+              {l.state === 'not_translated' ? (
+                l.title
+              ) : (
+                <a href={`/languages/${code}/${l.id}/`}>{l.title}</a>
+              )}
+              <br />
+              <small>{l.id}</small>
+            </td>
+            <td>{STATUS[l.englishStatus]}</td>
+            <td>
+              {l.flagged && <strong class="flag">⚑ </strong>}
+              {LESSON_STATE_LABELS[l.state]}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="areas">Interface words by area</h2>
+  <p>
+    Robot worlds, challenges, missions and seasons are interface words, so they are counted here.
+  </p>
+  <ul>
+    {areas.map((a) => (
+      <li>
+        {a.missing.length > 0 && <strong class="flag">⚑ </strong>}
+        {a.area}: {a.translated} of {a.total}
+        {a.missing.length > 0 && ` (${a.missing.length} still in English)`}
+      </li>
+    ))}
+  </ul>
+
+  <h2 id="not-translatable">Not translatable yet</h2>
+  <p>This text has no translation file yet, so learners see it in English in every language:</p>
+  <ul>
+    {NOT_TRANSLATABLE.map((n) => (
+      <li>
+        {n.what} (<code>{n.where}</code>)
+      </li>
+    ))}
+  </ul>
 
   <h2>Interface words</h2>
   <p>
@@ -312,3 +420,9 @@ const keys = Object.keys(english);
     </ul>
   )}
 </Admin>
+
+<style>
+  .flag {
+    color: var(--danger);
+  }
+</style>
