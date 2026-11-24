@@ -53,6 +53,31 @@
   }
   let { src, labels, files }: Props = $props();
 
+  /**
+   * The on-screen micro:bit (with its 600 KB WebAssembly) starts loading only when it comes near
+   * the screen or the learner presses Run, so the editor is ready sooner on cheap phones. Once
+   * loaded it asks for the program itself ("request_flash"), so nothing is lost by waiting.
+   */
+  let wanted = $state(false);
+  const frameSrc = $derived(wanted ? src : undefined);
+  function nearScreen(node: HTMLElement) {
+    if (typeof IntersectionObserver === 'undefined') {
+      wanted = true;
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          wanted = true;
+          io.disconnect();
+        }
+      },
+      { rootMargin: '100px' }
+    );
+    io.observe(node);
+    return { destroy: () => io.disconnect() };
+  }
+
   /** micro:bit or Robot (M4 spec FR-1). The micro:bit keeps running behind the Robot view. */
   let view = $state<'microbit' | 'robot'>('microbit');
   let robotWorld: RobotWorld | undefined = $state();
@@ -154,6 +179,7 @@
    * inside the tap, and hand it to the simulator.
    */
   export function flash(fromTap = false): void {
+    wanted = true;
     const current = files();
     if (!current) return;
     try {
@@ -367,7 +393,8 @@
   {/if}
   <iframe
     bind:this={frame}
-    {src}
+    use:nearScreen
+    src={frameSrc}
     title={t('sim_title')}
     allow="autoplay"
     class:behind={view === 'robot'}

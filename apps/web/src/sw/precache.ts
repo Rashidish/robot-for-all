@@ -6,9 +6,10 @@ export const SHELL_PAGES = ['/', '/offline/', '/about/', '/lessons/'] as const;
 
 /**
  * Code editor files (M3 spec §5): cached when a learner first opens /code/, not on install,
- * so visitors who never code don't spend data on them.
+ * so visitors who never code don't spend data on them. The micro:bit file and USB code
+ * (`microbit`) is fetched and cached on the first Download or Send.
  */
-export const EDITOR_ASSET = /^_astro\/editor-vendor\./;
+export const EDITOR_ASSET = /^_astro\/(editor-vendor|microbit)\./;
 
 /** Turns built file paths (relative to dist, using "/") into the precache URL list. */
 export function precacheList(distFiles: readonly string[]): string[] {
