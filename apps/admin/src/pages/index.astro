@@ -1,7 +1,9 @@
 ---
 // Back-office home: who you are, your roles, and (for owners) recent super-admin overrides.
 import Admin from '../layouts/Admin.astro';
-import { canManagePeople, ROLE_LABELS } from '../lib/roles';
+import { githubFromEnv } from '../lib/github-env';
+import { type LanguageRow, readLanguages } from '../lib/languages';
+import { canManagePeople, canSeeLanguages, ROLE_LABELS } from '../lib/roles';
 
 const { supabase, user, roles } = Astro.locals;
 interface Override {
@@ -20,6 +22,17 @@ if (canManagePeople(roles)) {
     .limit(10);
   overrides = (data ?? []) as Override[];
 }
+// Translations still to do, per language (more content spec §2.8): flagged here so nothing
+// learners would see in English is missed. Details are on Content → Languages → <language>.
+let languages: LanguageRow[] = [];
+const gh = githubFromEnv();
+if (gh && canSeeLanguages(roles)) {
+  try {
+    languages = (await readLanguages(gh)).rows.filter((l) => !l.source);
+  } catch {
+    languages = [];
+  }
+}
 const when = (iso: string) =>
   new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
 ---
@@ -34,6 +47,26 @@ const when = (iso: string) =>
       <li>{ROLE_LABELS[r]}</li>
     ))}
   </ul>
+  {languages.length > 0 && (
+    <section aria-labelledby="translations">
+      <h2 id="translations">Translations still to do</h2>
+      <ul>
+        {languages.map((l) => {
+          const words = l.total - l.translated;
+          const lessons = l.lessonsTotal - l.lessonsTranslated;
+          return (
+            <li>
+              {(words > 0 || lessons > 0) && <strong class="flag">⚑ </strong>}
+              <a href={`/languages/${l.code}/`}>{l.name}</a> ({l.status}):{' '}
+              {words === 0 && lessons === 0
+                ? 'every interface word and lesson has a translation'
+                : `${words} interface words and ${lessons} of ${l.lessonsTotal} lessons have no translation yet`}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
   {canManagePeople(roles) && (
     <section aria-labelledby="overrides">
       <h2 id="overrides">Recent super-admin overrides</h2>
@@ -67,3 +100,9 @@ const when = (iso: string) =>
   )}
   <p>More modules arrive step by step (docs/specs/back-office.md §4.2).</p>
 </Admin>
+
+<style>
+  .flag {
+    color: var(--danger);
+  }
+</style>

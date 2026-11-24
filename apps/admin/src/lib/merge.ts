@@ -9,7 +9,7 @@ import { onlyStatusChanged } from './lessons';
 import { onlyWorldStatusChanged } from './worlds';
 import { onlyLanguageStatusChanged } from './language-review';
 import { LANGUAGES_PATH } from './languages';
-import { TRANSLATION_FILE } from './translation-review';
+import { TRANSLATION_FILE } from './translation-files';
 import { oneItemChanged } from '../../../../packages/settings/src/withdrawn';
 
 export const WITHDRAWN_PATH = 'content/site/withdrawn.json';
