@@ -6,6 +6,8 @@
 import type { GitHub, Pull } from './github';
 import { onlyStatusChanged } from './lessons';
 import { onlyWorldStatusChanged } from './worlds';
+import { onlyLanguageStatusChanged } from './language-review';
+import { LANGUAGES_PATH } from './languages';
 import { oneItemChanged } from '../../../../packages/settings/src/withdrawn';
 
 export const WITHDRAWN_PATH = 'content/site/withdrawn.json';
@@ -51,10 +53,14 @@ export async function checkMerge(
           ? 'world'
           : file.filename === WITHDRAWN_PATH
             ? 'withdrawn'
-            : null
+            : file.filename === LANGUAGES_PATH
+              ? 'language'
+              : null
       : null;
   if (!file || !kind) {
-    waiting.push('it changes more than one lesson file, world file or the withdrawn list');
+    waiting.push(
+      'it changes more than one content file (lesson, world, language status or the withdrawn list)'
+    );
   } else {
     const [before, after] = await Promise.all([
       gh.readFile(file.filename, 'main'),
@@ -65,13 +71,15 @@ export async function checkMerge(
         ? onlyStatusChanged(before.text, after.text)
         : kind === 'world'
           ? onlyWorldStatusChanged(before.text, after.text)
-          : (() => {
-              try {
-                return oneItemChanged(JSON.parse(before.text), JSON.parse(after.text));
-              } catch {
-                return false;
-              }
-            })();
+          : kind === 'language'
+            ? onlyLanguageStatusChanged(before.text, after.text)
+            : (() => {
+                try {
+                  return oneItemChanged(JSON.parse(before.text), JSON.parse(after.text));
+                } catch {
+                  return false;
+                }
+              })();
     if (!ok) {
       waiting.push(
         kind !== 'withdrawn'

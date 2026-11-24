@@ -171,7 +171,7 @@ describe('worlds have their own checklist (migration 0006)', () => {
         `select public.record_review('season', 'rhino-patrol', 'approved', $1, null, $2)`,
         [WORLD, PR]
       )
-    ).rejects.toThrow(/lessons and worlds/);
+    ).rejects.toThrow(/reviews are for lessons, worlds/);
   });
 });
 
@@ -201,5 +201,45 @@ describe('the languages each person reads (migration 0007)', () => {
     await expect(
       t.as(REVIEWER, `select public.set_reviewer_languages($1)`, [['zu']], { mfa: false })
     ).rejects.toThrow(/only back-office users/);
+  });
+});
+
+describe('languages are reviewed by someone who reads them (migration 0008)', () => {
+  const TICKS = {
+    meaning_kept: true,
+    safety_exact: true,
+    child_words: true,
+    local_terms: true,
+    no_english_left: true
+  };
+  const review = (
+    user: string,
+    decision: string,
+    checklist: unknown = null,
+    notes: string | null = null
+  ) =>
+    t.as(user, `select public.record_review('language', 'zu', $1, $2, $3, $4)`, [
+      decision,
+      checklist,
+      notes,
+      PR
+    ]);
+
+  it('a translator sends isiZulu for review; only a reviewer who reads isiZulu approves it', async () => {
+    const TRANSLATOR = EDITOR;
+    await t.as(ROOT, `select public.grant_role($1, 'translator')`, [TRANSLATOR]);
+    await review(TRANSLATOR, 'sent_for_review');
+    await expect(review(REVIEWER, 'approved', TICKS)).rejects.toThrow(/reads this language/);
+    await t.as(REVIEWER, `select public.set_reviewer_languages($1)`, [['zu']]);
+    await expect(review(REVIEWER, 'approved', { ...TICKS, safety_exact: false })).rejects.toThrow(
+      /missing: safety_exact/
+    );
+    await review(REVIEWER, 'approved', TICKS);
+  });
+
+  it('a language has no build test', async () => {
+    await expect(review(REVIEWER, 'build_tested', null, 'Built it on the floor')).rejects.toThrow(
+      /no build test/
+    );
   });
 });

@@ -2,12 +2,12 @@
 // Content → Languages (more content spec §2.5): every language of the site, how complete its
 // interface is, and (owners) add a language as a draft or remove one. These pull requests change
 // three files, so a person merges them on GitHub after CI passes.
-import Admin from '../layouts/Admin.astro';
-import { GitHubError } from '../lib/github';
-import { githubFromEnv } from '../lib/github-env';
-import { addLanguage, type LanguageRow, readLanguages, removeLanguage } from '../lib/languages';
-import { canSeeLanguages, hasRole } from '../lib/roles';
-import { SA_LANGUAGES } from '../../../../packages/settings/src/languages';
+import Admin from '../../layouts/Admin.astro';
+import { GitHubError } from '../../lib/github';
+import { githubFromEnv } from '../../lib/github-env';
+import { addLanguage, type LanguageRow, readLanguages, removeLanguage } from '../../lib/languages';
+import { canSeeLanguages, hasRole } from '../../lib/roles';
+import { SA_LANGUAGES } from '../../../../../packages/settings/src/languages';
 
 const { supabase, user, roles } = Astro.locals;
 if (!canSeeLanguages(roles)) return Astro.redirect('/', 303);
@@ -110,7 +110,14 @@ const pct = (r: LanguageRow) => Math.floor((r.translated / Math.max(1, r.total))
         {rows.map((r) => (
           <tr>
             <td>
-              {r.name} ({r.code}){r.native !== r.name && ` · ${r.native}`}
+              {r.source ? (
+                r.name
+              ) : (
+                <a href={`/languages/${r.code}/`}>
+                  {r.name} ({r.code})
+                </a>
+              )}
+              {r.native !== r.name && ` · ${r.native}`}
             </td>
             <td>
               {STATUS[r.status]}
