@@ -1,6 +1,6 @@
 # Spec: M5 — Teach (enrolment, classes, progress, badges and certificates)
 
-> **Version:** 0.3 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): the recommendations, with the owner's changes below (§13)
+> **Version:** 0.4 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): the recommendations, with the owner's changes below (§13)
 > Builds on: answer-sheets spec Part B (approved in principle), back-office spec (People, Badges, Privacy modules), ADR-0010 (accounts and roles), CLAUDE.md §7 (POPIA).
 > **Owner direction (2026-11-24):** (1) learners' names may be stored, **encrypted**, as POPIA allows with proper security safeguards; a name is never seen on screen while printing, only on the printed certificate or badge; (2) parents give consent **online during enrolment**, with controls; no paper consent, because securing signed paper is its own POPIA problem; (3) avoid admin-heavy steps that don't work for **large-scale events**.
 > **Owner decisions (2026-11-24, second round):** children under 18 are enrolled by their **school, club or parent**; when a school or club enrols, a **parent confirms online** with a one-time code sent by **WhatsApp, SMS or email**; badges (images) and certificates (PDFs) are **fully automated**; data is **deleted as soon as it is no longer needed**; the owner asked how schools are verified (§7.4) and about an **ID for life** (§4.7).
@@ -205,25 +205,35 @@ Each **school or club is verified once**; its admin then invites staff without f
    - a code sent to the school's **official email** (a `@<school>.<province>.school.za` or the school's own domain), or
    - a **call to the official phone number** from the DBE list, where the principal or office confirms the admin works there, or
    - a **letter on the school's letterhead signed by the principal**, emailed from the school's official address.
+   - **Schools without email (owner note):** the call to the DBE-listed number is enough; or the principal sends the signed letter as a **WhatsApp photo from the school's phone or the principal's number**, and the back office confirms it by calling the DBE-listed number. The photo is looked at and **not kept**: the back office records only "letter seen, confirmed by phone on <date>".
 3. The back office records which check was used, by whom and when (no copies of IDs). The school's admin is then verified.
 
-**Clubs and others** (libraries, NPOs, community centres, companies running clubs):
+**Registered clubs and others** (libraries, NPOs, community centres, companies running clubs):
 1. A **registration number** checked against a public register: the NPO register (Department of Social Development), CIPC (companies), or the municipality for libraries and community centres.
 2. Plus confirmation by its **official email or phone** from that register, or a letter from a verified school or partner organisation it works with.
 
+**Unregistered clubs** (owner note: many community clubs aren't registered), any one of:
+1. **Vouched for by a verified organisation** it works with or meets at (a school, library, church hall, community centre or partner NPO): that organisation's admin confirms in the back office, or by phone.
+2. **Two community references** (for example a principal, ward councillor, faith leader, librarian or a verified coach), each confirmed by a phone call from the back office.
+3. A **verification call** with the club lead (video if possible) about where and when the club meets and who helps run it, plus one reference as in 2.
+
+The back office records only which route was used, who confirmed and when; no ID copies. Unregistered clubs are re-confirmed **every year** (registered ones every two years), and a club that vouched-for organisations stop vouching for loses verification until it is confirmed again.
+
 **Event organisers** are back-office competition managers (already verified staff) or verified schools and clubs.
 
-Re-checks: a verified organisation is re-confirmed every two years, or at once if a report is made.
+Re-checks: a verified school or registered club is re-confirmed every two years (unregistered clubs every year), or at once if a report is made.
 
 ### 7.5 Keeping and deleting data: delete as soon as it is no longer needed (owner decision, POPIA s14)
 Each piece is deleted when its reason ends, not on a fixed calendar:
 - **Pending school/club enrolment not confirmed:** deleted after 14 days (FR-5a).
 - **Consent withdrawn:** (a) the learner and records are deleted at once; (b) the name is deleted at once; (c) the child leaves that class at once.
 - **A class ends:** the class and its staff links are deleted when it is archived; learners stay only if they are in another class, club or event, or the parent's account is in use.
-- **No longer needed:** a learner who is in no class, club or event, and whose parent hasn't signed in for **12 months**, is deleted; the parent is told 30 days before (with the portfolio download, FR-35).
+- **Dormant accounts (owner decision):** an account nobody has signed in to for **10 months** is sent a message **every 30 days** (at 10 and 11 months, by the adult's chosen channel: WhatsApp, SMS or email) saying it will be **deleted at 12 months of dormancy**, with a link to sign in to keep it and, for parents, to download the portfolio (FR-35). Signing in at any time stops the countdown. At **12 months** it is deleted:
+  - a **parent account**: with it, every learner profile it holds that is in no current class, club or event (learners still in a class stay, linked to the class only, until the class ends);
+  - a **teacher, coach or organisation admin account**: their classes pass to another staff member of the same organisation, or are archived and deleted under the class rule if there is none.
+- **No longer needed:** a learner who is in no class, club or event and whose parent's account is gone or dormant is deleted with the parent account as above.
 - **Turning 18:** if nobody takes the profile over within 3 months (FR-34), it is deleted.
 - **Parent "delete my child's profile":** deleted at once.
-- **Adult accounts** with no children and no classes, unused for 12 months: deleted after a 30-day notice.
 - **Backups** holding deleted data expire within 30 days; names in backups are ciphertext anyway.
 - **What stays:** verification codes (badge, date, organisation: not personal data) and counts for reports, with nothing linking them to a child.
 - The back-office Privacy module records access and deletion requests and keeps a breach log with the POPIA s22 notification steps.
@@ -246,7 +256,8 @@ Each piece is deleted when its reason ends, not on a fixed calendar:
 - [ ] A school uploads a class list of 40; each parent gets a WhatsApp, SMS or email request, confirms with a one-time code, and can correct the name; unconfirmed learners are deleted after 14 days.
 - [ ] A child enrolled at a school and later a club keeps one profile: the club's enrolment links to it after the parent confirms.
 - [ ] A badge awarded automatically gives a badge image in the profile and a certificate PDF ready to download, and the parent's notice contains no name.
-- [ ] A learner in no class with no parent sign-in for 12 months is deleted after a 30-day notice; their verification codes still check out.
+- [ ] An account with no sign-in for 10 months gets a message at 10 and 11 months; signing in stops it; otherwise it is deleted at 12 months with its learners that are in no class, and their verification codes still check out.
+- [ ] A school without email is verified by a phone call to its DBE-listed number; an unregistered club by a vouching organisation or two phone-confirmed references.
 - [ ] The certificate name appears in no database column, log, network response other than the certificate PDF, or screen; an automated test checks the database, the Workers' logs and browser storage after enrolment and after printing.
 - [ ] A class batch prints one PDF with each learner's name on their certificate; a learner whose parent turned off control (b) gets a blank line.
 - [ ] A 5,000-learner event batch is produced in the background within 5 minutes.
@@ -302,4 +313,5 @@ Core stays free. Later paid add-ons this makes possible: school dashboards acros
 |---|---|---|
 | 0.1 | 2026-11-24 | First draft, including where certificate and badge names come from (owner request) |
 | 0.2 | 2026-11-24 | Owner feedback: certificate name stored encrypted, seen only on the certificate; online enrolment with consent controls, no paper consent; built for large events (parent enrolment instead of teacher data entry, bulk certificates, automatic badges with spot-checks, one-time organisation verification) |
+| 0.4 | 2026-11-24 | Owner notes: schools without email (phone, or a WhatsApp photo of the principal's letter confirmed by phone and not kept); unregistered clubs (vouching organisation, references, verification call; yearly re-check); dormant accounts warned every 30 days from 10 months and deleted at 12 months |
 | 0.3 | 2026-11-24 | Approved with owner changes: enrolment by school, club or parent, with parent confirmation by one-time code over WhatsApp, SMS or email; badges and certificates fully automated; how schools and clubs are verified (EMIS number and DBE list, public registers); delete when no longer needed; one profile per child for as long as needed (§4.7) |
