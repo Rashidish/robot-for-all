@@ -42,7 +42,7 @@ const world =
     ? data.world
     : null;
 const starter = data.starter_program
-  ? starterLink(lesson.id, data.starter_program, world)
+  ? starterLink(lesson.id, data.starter_program, world, local.programName)
   : undefined;
 const withdrawnHere = isOff('lesson', lesson.id);
 ---

@@ -1,6 +1,6 @@
 // What still needs translating into a language (more content spec §2.8): the back office flags
 // every lesson, robot world, challenge and interface word that learners would still see in
-// English, and lists what can't be translated yet, so nothing is missed silently.
+// English, so nothing is missed silently.
 
 /** Interface words grouped by where learners meet them (by key prefix). */
 export const WORD_AREAS: { area: string; prefixes: string[] }[] = [
@@ -68,6 +68,8 @@ export interface LessonCoverage {
   state: LessonState;
   /** Template sheets the translation has no words for: they print in English (spec §2.1). */
   englishSheets: string[];
+  /** The lesson has a starter program, but the translation gives it no name (spec §2.6). */
+  englishProgram: boolean;
   /** Live in English but not (fully) in this language: learners see some of it in English. */
   flagged: boolean;
 }
@@ -80,6 +82,8 @@ export function lessonCoverage(
     hash: string;
     /** The lesson's template sheet names. */
     templates?: string[];
+    /** True when the lesson has a starter program. */
+    program?: boolean;
   }[],
   translations: {
     lesson: string;
@@ -87,6 +91,8 @@ export function lessonCoverage(
     translatedFrom: string | null;
     /** Sheets the translation has words for. */
     templates?: string[];
+    /** True when the translation names the starter program. */
+    programName?: boolean;
   }[]
 ): LessonCoverage[] {
   const byLesson = new Map(translations.map((t) => [t.lesson, t]));
@@ -100,13 +106,17 @@ export function lessonCoverage(
     const englishSheets = t
       ? (l.templates ?? []).filter((s) => !(t.templates ?? []).includes(s))
       : (l.templates ?? []);
+    const englishProgram = Boolean(l.program) && !t?.programName;
     return {
       id: l.id,
       title: l.title,
       englishStatus: l.status,
       state,
       englishSheets,
-      flagged: l.status === 'published' && (state !== 'published' || englishSheets.length > 0)
+      englishProgram,
+      flagged:
+        l.status === 'published' &&
+        (state !== 'published' || englishSheets.length > 0 || englishProgram)
     };
   });
 }
@@ -118,14 +128,3 @@ export const LESSON_STATE_LABELS: Record<LessonState, string> = {
   published: 'Published',
   needs_updating: 'Needs updating'
 };
-
-/**
- * Learner-facing text that has no translation file yet, so it stays in English in every
- * language until it is made translatable (a later change).
- */
-export const NOT_TRANSLATABLE: { what: string; where: string }[] = [
-  {
-    what: 'Starter program names (shown in the code editor)',
-    where: 'content/lessons/<lesson>/programs/*.rfa.json'
-  }
-];
