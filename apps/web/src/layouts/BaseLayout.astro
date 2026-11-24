@@ -4,7 +4,8 @@ import Banner from '../components/Banner.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import UpdateNotice from '../components/UpdateNotice.astro';
-import { lang, m } from '../i18n';
+import { localHref, m, pageLang } from '../i18n';
+import { basePath, siteLanguages } from '../site-languages';
 
 interface Props {
   /** Page title; the site name is added after it. Leave out on the home page. */
@@ -19,7 +20,7 @@ const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={pageLang()}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,6 +32,14 @@ const fullTitle = title ? `${title} · ${m.app_name()}` : `${m.app_name()}: ${m.
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>{fullTitle}</title>
+    {siteLanguages.length > 1 &&
+      siteLanguages.map((l) => (
+        <link
+          rel="alternate"
+          hreflang={l.code}
+          href={localHref(basePath(Astro.url.pathname), l.code)}
+        />
+      ))}
   </head>
   <body>
     <a class="skip-link" href="#main">

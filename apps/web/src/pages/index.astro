@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { m } from '../i18n';
+import { localHref, m } from '../i18n';
 ---
 
 <BaseLayout>
@@ -12,10 +12,10 @@ import { m } from '../i18n';
     <li>{m.home_point_offline()}</li>
   </ul>
   <p class="actions">
-    <a class="button" href="/lessons/">
+    <a class="button" href={localHref('/lessons/')}>
       {m.home_browse()}
     </a>
-    <a href="/about/">{m.home_learn_more()}</a>
+    <a href={localHref('/about/')}>{m.home_learn_more()}</a>
   </p>
 </BaseLayout>
 

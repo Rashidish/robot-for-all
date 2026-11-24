@@ -1,0 +1,72 @@
+---
+// Language switch (more content spec §2.5, ADR-0003): the same page in each language the site
+// serves, each named in itself. Shown only when there is more than one. The choice is
+// remembered on this device; the site then opens in that language.
+import { localHref, m, pageLang } from '../i18n';
+import { basePath, siteLanguages } from '../site-languages';
+
+const here = basePath(Astro.url.pathname);
+const current = pageLang();
+---
+
+{siteLanguages.length > 1 && (
+  <nav
+    class="languages"
+    aria-label={m.language_switch_label()}
+    data-languages={siteLanguages.map((l) => l.code).join(' ')}
+  >
+    <ul>
+      {siteLanguages.map((l) => (
+        <li>
+          <a
+            href={localHref(here, l.code)}
+            hreflang={l.code}
+            lang={l.code}
+            data-lang={l.code}
+            aria-current={l.code === current ? 'true' : undefined}
+          >
+            {l.native}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  import { rememberLanguage } from '../language-choice';
+
+  rememberLanguage(
+    document,
+    window.location,
+    (() => {
+      try {
+        return localStorage;
+      } catch {
+        return null;
+      }
+    })()
+  );
+</script>
+
+<style>
+  .languages ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+
+  .languages a {
+    display: inline-block;
+    min-height: 2.75rem;
+    padding: var(--space-2);
+  }
+
+  .languages a[aria-current='true'] {
+    font-weight: 700;
+  }
+</style>

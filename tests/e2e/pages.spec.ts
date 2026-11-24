@@ -311,3 +311,47 @@ test.describe('pages on a 360 px phone', () => {
     }
   });
 });
+
+test.describe('a second language (more content spec §2.5)', () => {
+  test('isiZulu pages exist in this build, link to each other, and say they are isiZulu', async ({
+    page
+  }) => {
+    await page.goto('/zu/lessons/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'zu');
+    await expect(page.locator('.site-header a[aria-current="page"]')).toHaveAttribute(
+      'href',
+      '/zu/lessons/'
+    );
+    // Missing isiZulu words fall back to English, so the page always works.
+    await expect(page.locator('h1')).toBeVisible();
+    const card = page.locator('article.card a').first();
+    await expect(card).toHaveAttribute('href', /^\/zu\/lessons\//);
+    await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
+      'href',
+      '/lessons/'
+    );
+  });
+
+  test('the language switch goes to the same page and is remembered on this device', async ({
+    page
+  }) => {
+    await page.goto('/lessons/');
+    const zulu = page.getByRole('navigation', { name: 'Language' }).getByRole('link', {
+      name: 'isiZulu'
+    });
+    await expect(zulu).toHaveAttribute('href', '/zu/lessons/');
+    await zulu.click();
+    await expect(page).toHaveURL(/\/zu\/lessons\/$/);
+    // Opening an English page again goes to the remembered language.
+    await page.goto('/about/');
+    await expect(page).toHaveURL(/\/zu\/about\/$/);
+    // Choosing English is remembered too.
+    await page
+      .getByRole('navigation', { name: 'Language' })
+      .getByRole('link', { name: 'English' })
+      .click();
+    await page.goto('/about/');
+    await expect(page).toHaveURL(/\/about\/$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  });
+});

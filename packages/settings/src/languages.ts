@@ -102,3 +102,18 @@ export function completeness(
   const missing = keys.filter((k) => typeof other[k] !== 'string' || other[k].trim() === '');
   return { translated: keys.length - missing.length, total: keys.length, missing };
 }
+
+/**
+ * The languages this build serves: English always; another language when it is published and
+ * not withdrawn (production), or any language in the drafts preview (spec §2.5).
+ */
+export function liveLanguages(
+  list: LanguageList,
+  isWithdrawnLanguage: (code: string) => boolean,
+  showDrafts: boolean
+): Language[] {
+  return list.languages.filter(
+    (l) =>
+      l.code === 'en' || showDrafts || (l.status === 'published' && !isWithdrawnLanguage(l.code))
+  );
+}

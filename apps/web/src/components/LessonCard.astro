@@ -1,5 +1,5 @@
 ---
-import { m } from '../i18n';
+import { localHref, m } from '../i18n';
 import type { LessonEntry } from '../lessons/load';
 
 interface Props {
@@ -17,7 +17,7 @@ const { data } = Astro.props.lesson;
   data-cost={data.cost_estimate_zar}
 >
   <h2>
-    <a href={`/lessons/${data.id}/`}>{data.title}</a>
+    <a href={localHref(`/lessons/${data.id}/`)}>{data.title}</a>
   </h2>
   <p class="meta">
     {m.lesson_phase({ phase: data.phase })} · {m.lesson_grades({ grades: data.grades.join('–') })} ·

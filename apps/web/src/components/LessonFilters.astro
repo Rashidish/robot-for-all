@@ -1,6 +1,6 @@
 ---
 // Filters for the lessons list (FR-9). Hidden without JavaScript, when every lesson simply shows.
-import { m } from '../i18n';
+import { localHref, m } from '../i18n';
 import type { LessonEntry } from '../lessons/load';
 
 interface Props {
@@ -42,7 +42,7 @@ const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
 </form>
 <p class="muted" data-filter-none role="status" hidden>
   {m.lessons_filter_none()}
-  <a href="/lessons/">{m.lessons_filter_reset()}</a>
+  <a href={localHref('/lessons/')}>{m.lessons_filter_reset()}</a>
 </p>
 
 <script>

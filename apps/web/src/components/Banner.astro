@@ -3,7 +3,7 @@
 // hidden until a tiny script checks today's South African date is in its range and the learner
 // hasn't closed it. Without JavaScript it stays hidden, so it never shows out of date.
 import { bannerId, bannerText } from '../../../../packages/settings/src/site';
-import { lang, m } from '../i18n';
+import { m, pageLang } from '../i18n';
 import { site } from '../site';
 
 const a = site.announcement;
@@ -21,7 +21,7 @@ const a = site.announcement;
     hidden
   >
     <p>
-      {bannerText(a, lang)}
+      {bannerText(a, pageLang())}
       {a.link && (
         <>
           {' '}

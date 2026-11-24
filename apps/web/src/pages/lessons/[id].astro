@@ -7,7 +7,7 @@ import DownloadLesson from '../../components/DownloadLesson.astro';
 import PrintButton from '../../components/PrintButton.astro';
 import { findTemplate, templateFile, templatePage } from '../../templates/load';
 import { starterLink } from '../../lessons/programs';
-import { m } from '../../i18n';
+import { localHref, m } from '../../i18n';
 import { getLessons, type LessonEntry } from '../../lessons/load';
 
 export async function getStaticPaths() {
@@ -44,7 +44,7 @@ const withdrawnHere = isOff('lesson', lesson.id);
 
 <BaseLayout title={data.title}>
   <p class="back">
-    <a href="/lessons/">← {m.lesson_back()}</a>
+    <a href={localHref('/lessons/')}>← {m.lesson_back()}</a>
   </p>
 
   {withdrawnHere && (
@@ -70,10 +70,10 @@ const withdrawnHere = isOff('lesson', lesson.id);
   </ul>
 
   <p>
-    <a class="button" href={`/lessons/${lesson.id}/slides/`} data-offline>
+    <a class="button" href={localHref(`/lessons/${lesson.id}/slides/`)} data-offline>
       {m.lesson_slides_link()}
     </a>
-    <a class="button" href={`/lessons/${lesson.id}/answer-sheet/`} data-offline>
+    <a class="button" href={localHref(`/lessons/${lesson.id}/answer-sheet/`)} data-offline>
       {m.lesson_answer_sheet_link()}
     </a>
   </p>
@@ -113,7 +113,7 @@ const withdrawnHere = isOff('lesson', lesson.id);
       <ul>
         {prerequisites.map((id) => (
           <li>
-            <a href={`/lessons/${id}/`}>{titles[id]}</a>
+            <a href={localHref(`/lessons/${id}/`)}>{titles[id]}</a>
           </li>
         ))}
       </ul>
@@ -140,7 +140,7 @@ const withdrawnHere = isOff('lesson', lesson.id);
       <ul>
         {sheets.map((t) => (
           <li>
-            <a href={templatePage(t.lesson, t.name)} data-offline>
+            <a href={localHref(templatePage(t.lesson, t.name))} data-offline>
               {t.sheet.title}
             </a>
             <a class="muted" href={templateFile(t.lesson, t.name)} data-offline download>
@@ -176,7 +176,7 @@ const withdrawnHere = isOff('lesson', lesson.id);
             : m.lesson_code_microbit_motor()}
       </p>
       <p>
-        <a class="button" href={starter}>
+        <a class="button" href={localHref(starter)}>
           {m.lesson_open_in_editor()}
         </a>
       </p>
@@ -198,7 +198,8 @@ const withdrawnHere = isOff('lesson', lesson.id);
 
   {next && (
     <p class="next">
-      <strong>{m.lesson_next_title()}:</strong> <a href={`/lessons/${next}/`}>{titles[next]}</a>
+      <strong>{m.lesson_next_title()}:</strong>{' '}
+      <a href={localHref(`/lessons/${next}/`)}>{titles[next]}</a>
     </p>
   )}
 

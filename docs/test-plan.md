@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.31 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.32 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -83,6 +83,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B29 | **Review a world in the back office**: an editor sends a new course for review; it shows on the drafts preview but not on the live site; a reviewer tries it on screen, ticks the five world items and approves; after Merge now it appears in the live Robot tab; Unpublish takes it off again; a lesson that opens an unpublished world falls back to the micro:bit | |
 | B30 | **isiZulu with a first-language speaker** (before isiZulu is published): the reviewer reads the isiZulu interface and three Phase 1 lessons on a phone; technical words are understood or have an agreed loan word; a Grade 4 class understands the safety notes read aloud; a second speaker spot-checks one lesson | |
 | B31 | **Add and remove a language**: an owner adds isiZulu on the Languages screen; the pull request has three files and passes CI; after merging, isiZulu shows as a draft with 0 % of the interface translated and nothing changes for learners; a reviewer ticks isiZulu on their Profile; removing needs its name typed; English can't be removed; a published language must be withdrawn first | |
+| B32 | **Language switch on a phone** (drafts preview, then live once a language is published): English / isiZulu in the header; tapping isiZulu opens the same page at `/zu/…`; the site opens in isiZulu next time; TalkBack reads the page in the right language; links stay in isiZulu; offline, visited isiZulu pages still open | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -135,3 +136,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.29 | 2026-11-24 | B29 review a world |
 | 0.30 | 2026-11-24 | B30 isiZulu with a first-language speaker |
 | 0.31 | 2026-11-24 | B31 add and remove a language |
+| 0.32 | 2026-11-24 | B32 language switch |

@@ -61,7 +61,7 @@ how many lessons are translated and approved.
 
 **Three PRs:**
 - ✅ *(built 2026-11-24)* **A. Language list and the Languages screen:** `content/i18n/languages.json` (English as the source, published), checked by the build; Content → Languages (list, how complete each is, add and remove as pull requests a person merges on GitHub, because they change several files); each reviewer's **languages** on their profile, and the database refuses a translation approval from someone without that language.
-- **B. The site in a second language:** pages for each published language at `/<code>/…` (English stays at `/`), a language switch remembered on the device, only the chosen language's words downloaded (ADR-0003); draft languages only in the drafts preview.
+- ✅ *(built 2026-11-24; isiZulu added as a draft, so only the drafts preview has `/zu/`)* **B. The site in a second language:** pages for each published language at `/<code>/…` (English stays at `/`), a language switch remembered on the device, only the chosen language's words downloaded (ADR-0003); draft languages only in the drafts preview.
 - **C. isiZulu text and review:** AI-drafted isiZulu for the interface words, then lessons (Phase 1 first), all as drafts marked AI-drafted; the translation review screens (§2.3); a language is published only when complete and approved.
 
 **Finding an isiZulu reviewer** (nothing in isiZulu goes live until this is done):

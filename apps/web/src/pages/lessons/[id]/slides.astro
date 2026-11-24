@@ -2,7 +2,7 @@
 // Slides view of a lesson (M2 spec FR-4): for a projector or a phone shared with a group.
 // One slide per screen; swipe or scroll sideways without JavaScript; arrow keys and buttons with it.
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { m } from '../../../i18n';
+import { localHref, m } from '../../../i18n';
 import { getLessons, type LessonEntry } from '../../../lessons/load';
 import { PRIMM_STEPS } from '../../../lessons/schema';
 import { resolveImages, splitSections } from '../../../lessons/slides';
@@ -37,7 +37,7 @@ const total = 3 + steps.length + 1;
 
 <BaseLayout title={`${data.title}: ${m.lesson_slides_link()}`}>
   <p class="back">
-    <a href={`/lessons/${lesson.id}/`}>← {m.slides_back()}</a>
+    <a href={localHref(`/lessons/${lesson.id}/`)}>← {m.slides_back()}</a>
   </p>
   <p class="muted hint">{m.slides_hint()}</p>
 

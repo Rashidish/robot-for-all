@@ -2,7 +2,7 @@
 // Template page (M2 spec FR-7): view, print at true size, or draw by hand from the measurements.
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import PrintButton from '../../../../components/PrintButton.astro';
-import { m } from '../../../../i18n';
+import { localHref, m } from '../../../../i18n';
 import { hidden } from '../../../../withdrawn';
 import { getLessons } from '../../../../lessons/load';
 import {
@@ -36,7 +36,7 @@ const file = templateFile(entry.lesson, entry.name);
 <BaseLayout title={entry.sheet.title}>
   <div class="template-info">
     <p class="back">
-      <a href={`/lessons/${entry.lesson}/`}>← {lessonTitle}</a>
+      <a href={localHref(`/lessons/${entry.lesson}/`)}>← {lessonTitle}</a>
     </p>
     <h1>{entry.sheet.title}</h1>
     <p>{m.template_print_hint()}</p>

@@ -1,12 +1,12 @@
 ---
-import { m } from '../i18n';
+import { localHref, m } from '../i18n';
 ---
 
 <footer class="site-footer">
   <p>{m.footer_promise()}</p>
   <p class="muted">{m.footer_licence()}</p>
   <p>
-    <a href="/privacy/">{m.nav_privacy()}</a>
+    <a href={localHref('/privacy/')}>{m.nav_privacy()}</a>
   </p>
 </footer>
 
