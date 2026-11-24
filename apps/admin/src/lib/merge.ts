@@ -1,6 +1,7 @@
 // ADR-0012: the back office merges a pull request itself only when all four hold, checked just
 // before merging: (1) the App opened it, from an admin/ branch, into main; (2) it changes only the
-// status lines of one lesson or world file (or one item of the withdrawn list); (3) CI passed on its latest commit; (4) the decision it carries was
+// status lines of one lesson, lesson translation or world file, one language's entry, or one
+// item of the withdrawn list; (3) CI passed on its latest commit; (4) the decision it carries was
 // recorded in the back office by a person with the right role. Anything else waits for a person
 // on GitHub.
 import type { GitHub, Pull } from './github';
@@ -8,6 +9,7 @@ import { onlyStatusChanged } from './lessons';
 import { onlyWorldStatusChanged } from './worlds';
 import { onlyLanguageStatusChanged } from './language-review';
 import { LANGUAGES_PATH } from './languages';
+import { TRANSLATION_FILE } from './translation-review';
 import { oneItemChanged } from '../../../../packages/settings/src/withdrawn';
 
 export const WITHDRAWN_PATH = 'content/site/withdrawn.json';
@@ -47,7 +49,7 @@ export async function checkMerge(
   const [file] = files;
   const kind =
     files.length === 1 && file?.status === 'modified'
-      ? LESSON_FILE.test(file.filename)
+      ? LESSON_FILE.test(file.filename) || TRANSLATION_FILE.test(file.filename)
         ? 'lesson'
         : WORLD_FILE.test(file.filename)
           ? 'world'
@@ -59,7 +61,7 @@ export async function checkMerge(
       : null;
   if (!file || !kind) {
     waiting.push(
-      'it changes more than one content file (lesson, world, language status or the withdrawn list)'
+      'it changes more than one content file (lesson, translation, world, language status or the withdrawn list)'
     );
   } else {
     const [before, after] = await Promise.all([

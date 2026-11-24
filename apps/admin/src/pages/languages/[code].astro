@@ -19,6 +19,7 @@ import {
 import type { Item } from '../../lib/kinds';
 import { canSeeLanguages, hasRole } from '../../lib/roles';
 import { completeness } from '../../../../../packages/settings/src/languages';
+import { TRANSLATION, translationIds, type TranslationItem } from '../../lib/translation-review';
 
 const { supabase, user, roles } = Astro.locals;
 if (!canSeeLanguages(roles)) return Astro.redirect('/', 303);
@@ -48,16 +49,31 @@ interface Loaded {
   words: Record<string, string>;
   pull: Pull | undefined;
   check: MergeCheck | null;
+  /** Lesson translations into this language (more content spec §2.7). */
+  lessons: TranslationItem[];
 }
-const empty: Loaded = { item: null, english: {}, words: {}, pull: undefined, check: null };
+const empty: Loaded = {
+  item: null,
+  english: {},
+  words: {},
+  pull: undefined,
+  check: null,
+  lessons: []
+};
 
 async function load(): Promise<Loaded> {
   if (!gh) return empty;
-  const [list, en, mine] = await Promise.all([
+  const [list, en, mine, tree] = await Promise.all([
     gh.readFile(LANGUAGES_PATH),
     gh.readFile('content/i18n/en.json'),
-    gh.readFile(`content/i18n/${code}.json`)
+    gh.readFile(`content/i18n/${code}.json`),
+    gh.listTree('content/lessons')
   ]);
+  const lessons = await Promise.all(
+    translationIds(tree, code).map(async (id) =>
+      TRANSLATION.summarise(id, (await gh.readFile(TRANSLATION.path(id))).text)
+    )
+  );
   const english = JSON.parse(en.text) as Record<string, string>;
   delete english['$schema'];
   const pull = pullsFor('language', await gh.openAdminPulls()).get(code);
@@ -66,7 +82,8 @@ async function load(): Promise<Loaded> {
     english,
     words: JSON.parse(mine.text) as Record<string, string>,
     pull,
-    check: pull ? await checkMerge(gh, pull.number, mergeOpts) : null
+    check: pull ? await checkMerge(gh, pull.number, mergeOpts) : null,
+    lessons
   };
 }
 
@@ -136,7 +153,7 @@ let history: {
     .limit(20);
   history = (data ?? []) as typeof history;
 }
-const { item, english, words, pull, check } = loaded;
+const { item, english, words, pull, check, lessons } = loaded;
 const options = item && !pull ? possibleDecisions(item).filter((d) => d !== 'build_tested') : [];
 const can: Record<Decision, boolean> = {
   sent_for_review: hasRole(roles, 'translator') || hasRole(roles, 'content_editor'),
@@ -231,6 +248,23 @@ const keys = Object.keys(english);
         </form>
       </section>
     ))}
+
+  <h2>Lessons</h2>
+  {lessons.length === 0 ? (
+    <p>No lessons are translated into {item?.title ?? code} yet: learners see them in English.</p>
+  ) : (
+    <ul>
+      {lessons.map((l) => (
+        <li>
+          <a href={`/languages/${code}/${l.id.split('/')[0]}/`} lang={code}>
+            {l.title}
+          </a>{' '}
+          ({l.id.split('/')[0]}) · {STATUS[l.status]}
+          {l.aiGenerated && ' · AI-drafted'}
+        </li>
+      ))}
+    </ul>
+  )}
 
   <h2>Interface words</h2>
   <p>

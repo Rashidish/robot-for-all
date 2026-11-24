@@ -1,0 +1,325 @@
+---
+// One lesson translation (more content spec §2.7): each part of the lesson beside the English,
+// whether the English changed since it was translated, the review checklist and decisions, the
+// history, and the change waiting to be merged (ADR-0012). Only a reviewer who reads the language
+// (on their Profile) can approve it; the database checks.
+import { DRAFTS_URL, GITHUB_APP_LOGIN } from 'astro:env/server';
+import Admin from '../../../layouts/Admin.astro';
+import { GitHubError, type Pull } from '../../../lib/github';
+import { githubFromEnv } from '../../../lib/github-env';
+import { checkMerge, type MergeCheck, mergeIfReady } from '../../../lib/merge';
+import {
+  type Decision,
+  DECISION_LABELS,
+  decide,
+  possibleDecisions,
+  pullsFor
+} from '../../../lib/review';
+import { canSeeLanguages, hasRole } from '../../../lib/roles';
+import {
+  lessonParts,
+  TRANSLATION,
+  TRANSLATION_CHECKLIST,
+  type TranslationItem
+} from '../../../lib/translation-review';
+import { translationHash } from '../../../../../../packages/settings/src/translation';
+
+const { supabase, user, roles } = Astro.locals;
+if (!canSeeLanguages(roles)) return Astro.redirect('/', 303);
+const code = Astro.params.code ?? '';
+const lesson = Astro.params.lesson ?? '';
+if (!/^[a-z]{2,3}$/.test(code) || code === 'en' || !/^p[1-3]-[a-z]+-\d{2}$/.test(lesson))
+  return Astro.redirect('/languages/', 303);
+const id = `${lesson}/${code}`;
+
+const gh = githubFromEnv();
+const decided = async (url: string) =>
+  (await supabase.rpc('approved_pull_request', { p_pull_request: url })).data === true;
+const mergeOpts = { appLogin: GITHUB_APP_LOGIN ?? '', decided };
+
+const { data: profile } = await supabase
+  .from('admin_profiles')
+  .select('reviewer_name, languages')
+  .eq('user_id', user?.id ?? '')
+  .maybeSingle();
+const me = profile as { reviewer_name: string; languages: string[] } | null;
+const reviewerName = me?.reviewer_name ?? null;
+const readsIt = (me?.languages ?? []).includes(code);
+
+let notice = '';
+let error = '';
+interface Loaded {
+  item: TranslationItem | null;
+  englishTitle: string;
+  parts: { english: string; heading: string; translated: string; translatedHeading: string }[];
+  stale: boolean;
+  currentHash: string;
+  pull: Pull | undefined;
+  check: MergeCheck | null;
+}
+const empty: Loaded = {
+  item: null,
+  englishTitle: lesson,
+  parts: [],
+  stale: false,
+  currentHash: '',
+  pull: undefined,
+  check: null
+};
+
+async function load(): Promise<Loaded> {
+  if (!gh) return empty;
+  const [en, mine] = await Promise.all([
+    gh.readFile(`content/lessons/${lesson}/index.md`),
+    gh.readFile(TRANSLATION.path(id))
+  ]);
+  const item = TRANSLATION.summarise(id, mine.text);
+  const a = lessonParts(en.text);
+  const b = lessonParts(mine.text);
+  const currentHash = await translationHash(en.text);
+  const pull = pullsFor('translation', await gh.openAdminPulls()).get(id);
+  return {
+    item,
+    englishTitle: /^title:[ \t]*(.*)$/m.exec(a[0]?.text ?? '')?.[1]?.trim() ?? lesson,
+    parts: a.map((p, i) => ({
+      heading: p.heading,
+      english: p.text,
+      translatedHeading: b[i]?.heading ?? '',
+      translated: b[i]?.text ?? ''
+    })),
+    stale: item.translatedFrom !== currentHash,
+    currentHash,
+    pull,
+    check: pull ? await checkMerge(gh, pull.number, mergeOpts) : null
+  };
+}
+
+let loaded: Loaded = empty;
+try {
+  loaded = await load();
+} catch {
+  error = 'Could not read this translation from GitHub. Try again in a minute.';
+}
+
+if (gh && loaded.item && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  try {
+    if (form.get('action') === 'merge') {
+      const r = await mergeIfReady(gh, Number(form.get('pull')), mergeOpts);
+      if (r.ok) notice = 'Merged. The site updates in a few minutes.';
+      else error = `Not merged yet: ${r.waiting.join('; ')}.`;
+    } else {
+      const decision = String(form.get('decision')) as Decision;
+      if ((decision === 'approved' || decision === 'sent_for_review') && loaded.stale)
+        throw new Error(
+          `The English lesson changed since this was translated. Update the translation and set translated_from: ${loaded.currentHash} first.`
+        );
+      const checklist =
+        decision === 'approved'
+          ? Object.fromEntries(
+              TRANSLATION_CHECKLIST.map((c) => [c.key, form.get(`tick_${c.key}`) === 'on'])
+            )
+          : null;
+      const url = await decide(gh, supabase, TRANSLATION, {
+        id,
+        decision,
+        checklist,
+        notes: String(form.get('notes') ?? '').trim(),
+        overrideReason: String(form.get('override') ?? '').trim(),
+        reviewerName,
+        who: reviewerName ?? user?.email ?? 'an admin'
+      });
+      notice = `${DECISION_LABELS[decision]}: a change is waiting (${url}). It can be merged once the automatic checks pass.`;
+    }
+    loaded = await load();
+  } catch (err) {
+    error =
+      err instanceof GitHubError && err.status === 409
+        ? 'Someone changed this translation in the meantime. Reload the page and try again.'
+        : err instanceof Error
+          ? err.message
+          : 'Something went wrong; nothing was changed.';
+  }
+  if (error) Astro.response.status = 400;
+}
+
+let history: {
+  at: string;
+  decision: Decision;
+  reviewer_name: string | null;
+  notes: string | null;
+}[] = [];
+{
+  const { data } = await supabase
+    .from('content_reviews')
+    .select('at, decision, reviewer_name, notes')
+    .eq('content_type', 'translation')
+    .eq('content_id', id)
+    .order('at', { ascending: false })
+    .limit(20);
+  history = (data ?? []) as typeof history;
+}
+const { item, englishTitle, parts, stale, currentHash, pull, check } = loaded;
+const options = item && !pull ? possibleDecisions(item).filter((d) => d !== 'build_tested') : [];
+const can: Record<Decision, boolean> = {
+  sent_for_review: hasRole(roles, 'translator') || hasRole(roles, 'content_editor'),
+  approved: hasRole(roles, 'reviewer') && readsIt,
+  changes_requested: hasRole(roles, 'reviewer') && readsIt,
+  build_tested: false,
+  unpublished: hasRole(roles, 'reviewer') || hasRole(roles, 'owner')
+};
+const STATUS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+const when = (iso: string) =>
+  new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+---
+
+<Admin title={item?.title ?? id}>
+  <p>
+    <a href={`/languages/${code}/`}>← Back to the language</a>
+  </p>
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {item && (
+    <>
+      <p>
+        <strong>{STATUS[item.status]}</strong> · Translation of “{englishTitle}” ({lesson}) ·
+        Reviewed by: {item.reviewedBy ?? '—'}
+        {item.aiGenerated && ' · AI-drafted'}
+      </p>
+      <p>
+        <a href={`${DRAFTS_URL}/${code}/lessons/${lesson}/`}>See it on the drafts preview</a>
+      </p>
+      {stale && (
+        <p class="error" role="note">
+          Needs updating: the English lesson changed after this was translated. Learners see the
+          English lesson until the translation is checked against it and its translated_from is set
+          to <code>{currentHash}</code> (a pull request on GitHub).
+        </p>
+      )}
+    </>
+  )}
+
+  {pull && check && (
+    <section aria-labelledby="waiting">
+      <h2 id="waiting">A change is waiting</h2>
+      <p>
+        <a href={pull.html_url}>{pull.title}</a>
+      </p>
+      {check.ok ? (
+        <form method="post">
+          <input type="hidden" name="action" value="merge" />
+          <input type="hidden" name="pull" value={pull.number} />
+          <button type="submit">Merge now</button>
+        </form>
+      ) : (
+        <p>Waiting: {check.waiting.join('; ')}.</p>
+      )}
+    </section>
+  )}
+
+  {hasRole(roles, 'reviewer') && !readsIt && (
+    <p class="error">
+      To approve this, tick the language under your languages on your{' '}
+      <a href="/profile/">Profile</a> (only if you read it well).
+    </p>
+  )}
+
+  {options
+    .filter((d) => can[d])
+    .map((d) => (
+      <section aria-labelledby={`do-${d}`}>
+        <h2 id={`do-${d}`}>{DECISION_LABELS[d]}</h2>
+        <form method="post">
+          <input type="hidden" name="decision" value={d} />
+          {d === 'approved' && (
+            <fieldset>
+              <legend>Checklist (all required)</legend>
+              {TRANSLATION_CHECKLIST.map((t) => (
+                <label class="check">
+                  <input type="checkbox" name={`tick_${t.key}`} required /> {t.label}
+                </label>
+              ))}
+            </fieldset>
+          )}
+          {d !== 'sent_for_review' && (
+            <>
+              <label for={`notes-${d}`}>
+                {d === 'approved' ? 'Note (optional)' : 'Note (at least 10 characters)'}
+              </label>
+              <textarea id={`notes-${d}`} name="notes" rows="3" required={d !== 'approved'} />
+            </>
+          )}
+          <div class="actions">
+            <button type="submit">{DECISION_LABELS[d]}</button>
+          </div>
+        </form>
+      </section>
+    ))}
+
+  <h2>Side by side</h2>
+  <p>
+    Each part of the lesson: the English on the left, the translation on the right. Facts (grades,
+    cost, quantities, templates) always come from the English lesson.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">English</th>
+          <th scope="col">Translation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {parts.map((p) => (
+          <tr>
+            <td>
+              <strong>{p.heading}</strong>
+              <pre class="text">{p.english}</pre>
+            </td>
+            <td lang={code}>
+              <strong>{p.translatedHeading}</strong>
+              <pre class="text">{p.translated}</pre>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>History</h2>
+  {history.length === 0 ? (
+    <p>No decisions yet.</p>
+  ) : (
+    <ul>
+      {history.map((h) => (
+        <li>
+          {when(h.at)}: <strong>{DECISION_LABELS[h.decision]}</strong>
+          {h.reviewer_name && ` by ${h.reviewer_name}`}
+          {h.notes && `: ${h.notes}`}
+        </li>
+      ))}
+    </ul>
+  )}
+</Admin>
+
+<style>
+  .text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font: inherit;
+    margin: 0.5rem 0 0;
+  }
+
+  td {
+    vertical-align: top;
+    width: 50%;
+  }
+</style>
