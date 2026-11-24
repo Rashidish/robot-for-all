@@ -1,6 +1,6 @@
 # Spec: Translate templates, diagram words and starter program names
 
-> **Version:** 0.1 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Draft, for owner review
+> **Version:** 0.2 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): all three recommendations
 > Follows `docs/specs/back-office-more-content.md` §2.7 (lesson translations) and §2.8 (flags), where the back office lists these three as "not translatable yet". CLAUDE.md §2 rule 4: all learner-facing text goes through translation.
 
 ## 1. Purpose
@@ -84,7 +84,7 @@ No accounts, personal data, uploads or payments are involved; this is content an
 2. **Templates:** the generator sentences as interface words (en + zu), `templates:` in lesson translations with build checks, per-language sheets and pages, `translated_from` covering template files, the back-office side-by-side view; isiZulu sheet words for the three drafted lessons.
 3. **Program names:** `program_name` in lesson translations, the translated editor link, the back-office field.
 
-## 7. Owner decisions
+## 7. Owner decisions (2026-11-24: the recommendations, all three)
 1. **Where template words live:** in the lesson translation (recommended, reviewed with the lesson), or a separate file per sheet and language (reviewed on its own).
 2. **Diagrams:** no words, only numbered callouts and printed markings (recommended), or per-language copies of each picture.
 3. **Order:** diagrams, then templates, then program names (recommended: cheapest first, and templates are what learners hold).
@@ -94,3 +94,4 @@ No accounts, personal data, uploads or payments are involved; this is content an
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-24 | First draft, after the owner asked whether untranslated content is flagged |
+| 0.2 | 2026-11-24 | Approved: template words in the lesson translation, diagrams without words, order diagrams → templates → program names |
