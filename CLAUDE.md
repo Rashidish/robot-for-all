@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.27 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.28 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -87,7 +87,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
-Current milestone: **M4** (spec: `docs/M4-simulate-spec_v0.5.md`; robot profiles: `docs/ADR-0008-robot-profiles_v1.0.md`). M2 lessons, the M3 editor and the six Phase 2 lessons are built and wait for the people checks in `docs/test-plan.md`.
+Current milestone: **M4** (spec: `docs/M4-simulate-spec_v0.5.md`; robot profiles: `docs/ADR-0008-robot-profiles_v1.0.md`). M2 lessons, the M3 editor and the six Phase 2 lessons are built and wait for the people checks in `docs/test-plan.md`. M4's build steps are done; next is **M5** (spec approved 2026-11-24: `docs/specs/M5-teach.md`; enrolment by school, club or parent with online parent consent, the learner's certificate name stored encrypted and printed only on certificates, automated badges and certificates, delete when no longer needed).
 
 ---
 
@@ -294,3 +294,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.25 | 2026-11-24 | Lesson pictures carry no words (translate-templates-and-programs spec §2.5) |
 | 0.26 | 2026-11-24 | Template sheets in other languages: `templates` in lesson translations (translate-templates spec §2.1–2.4) |
 | 0.27 | 2026-11-24 | `program_name` in lesson translations (translate-templates spec §2.6) |
+| 0.28 | 2026-11-24 | M5 spec approved (`docs/specs/M5-teach.md`) |

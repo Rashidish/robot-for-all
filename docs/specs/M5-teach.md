@@ -1,8 +1,9 @@
 # Spec: M5 — Teach (enrolment, classes, progress, badges and certificates)
 
-> **Version:** 0.2 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Draft, revised after owner feedback, for review
+> **Version:** 0.3 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): the recommendations, with the owner's changes below (§13)
 > Builds on: answer-sheets spec Part B (approved in principle), back-office spec (People, Badges, Privacy modules), ADR-0010 (accounts and roles), CLAUDE.md §7 (POPIA).
 > **Owner direction (2026-11-24):** (1) learners' names may be stored, **encrypted**, as POPIA allows with proper security safeguards; a name is never seen on screen while printing, only on the printed certificate or badge; (2) parents give consent **online during enrolment**, with controls; no paper consent, because securing signed paper is its own POPIA problem; (3) avoid admin-heavy steps that don't work for **large-scale events**.
+> **Owner decisions (2026-11-24, second round):** children under 18 are enrolled by their **school, club or parent**; when a school or club enrols, a **parent confirms online** with a one-time code sent by **WhatsApp, SMS or email**; badges (images) and certificates (PDFs) are **fully automated**; data is **deleted as soon as it is no longer needed**; the owner asked how schools are verified (§7.4) and about an **ID for life** (§4.7).
 
 ## 1. Purpose
 
@@ -26,13 +27,15 @@ Up to M4 nobody signs in: every lesson, template and the code editor work withou
 2. Invites colleagues by email; they become teachers or coaches of that school or club with no further checks.
 
 **Teacher or coach**
-1. Creates a class (name, grade, language) and gets an **enrolment link and QR code** to share with parents: in the school's newsletter, WhatsApp group or on a printed notice. The teacher types no learner details.
+1. Creates a class (name, grade, language). Then either:
+   - **the school or club enrols the class:** uploads its class list (a spreadsheet: learner's name, grade, and a parent's mobile number or email), or adds learners one by one. Each parent gets a **confirmation request** by WhatsApp, SMS or email (§4.2); or
+   - **parents enrol:** the teacher shares an **enrolment link and QR code** (newsletter, WhatsApp group, printed notice) and types nothing.
 2. Watches enrolments arrive; can rename a nickname that is unsuitable, move learners between their classes, and reset sign-in.
 3. Sees the **progress grid** and prints certificates or badge cards for the class in one go.
 
 **Parent or guardian**
-1. Opens the enrolment link on their phone (a light page, in their language), creates a parent account (§4.1), and reads the notice of what is collected and why.
-2. **Enrols the child:** the child's **name for certificates** (first name and surname, stored encrypted), grade, and a nickname for the app (suggested from the first name, changeable). Sets the **consent controls** (§4.2).
+1. Either opens the class's enrolment link, or receives the school's or club's **confirmation request** by WhatsApp, SMS or email. Either way they sign in with a **one-time code** sent to their mobile (WhatsApp or SMS) or email, and read the notice of what is collected and why, in their language.
+2. **Enrols or confirms the child:** the child's **name for certificates** (first name and surname, stored encrypted; already filled in if the school entered it, and the parent can correct it), grade, and a nickname for the app (suggested from the first name, changeable). Sets the **consent controls** (§4.2).
 3. Can see and change their consent, see their child's progress and badges, correct the certificate name, and **delete** the child's profile at any time.
 4. A family can also enrol a child with no school (homeschool), or into a **club or event** with the same link pattern.
 
@@ -50,16 +53,19 @@ Up to M4 nobody signs in: every lesson, template and the code editor work withou
 ### 4.1 Accounts, organisations and classes
 | ID | Requirement |
 |---|---|
-| FR-1 | Adults sign up with email or mobile number and a one-time code (Supabase Auth, ADR-0010): parent/guardian, teacher, coach, school/club admin. One person may hold several roles. Back-office roles keep required MFA. |
+| FR-1 | Adults sign in with a **one-time code** sent by **WhatsApp, SMS or email**, whichever they choose (Supabase Auth phone/email OTP, ADR-0010; WhatsApp and SMS through a message provider, §6.2): parent/guardian, teacher, coach, school/club admin. One person may hold several roles. Back-office roles keep required MFA. |
 | FR-2 | A **school** or **club** is registered once by its admin and verified once in the back office (§7.4). The admin invites teachers or coaches by email or mobile; invited staff need no separate verification. |
 | FR-3 | A **class** has a name, grade band, language, one or more teachers or coaches, and an **enrolment link + QR code** (can be closed or renewed). A **class code** (6 letters, no vowels) is used for learner sign-in. |
-| FR-4 | A **learner profile** has a nickname (unique in the class, 2–20 characters), grade, avatar, language, picture PIN, and an **encrypted certificate name** (§4.5). It belongs to the enrolling parent and can join several classes, clubs and events. |
-| FR-5 | **No teacher data entry:** learners appear in a class only through their parent's enrolment, or when a parent links an existing profile. Teachers can rename a nickname, move or remove a learner, and reset sign-in. |
+| FR-4 | A **learner profile** has a nickname (unique in the class, 2–20 characters), grade, avatar, language, picture PIN, and an **encrypted certificate name** (§4.5). It belongs to the child's parent or guardian (whoever enrolled the child), and can join several classes, clubs and events over the years (§4.7). |
+| FR-5 | **Three ways in (owner decision):** a child under 18 is enrolled by (1) their **parent** through a class or event link; (2) their **school**; or (3) their **club**. Schools and clubs enrol by **uploading a class list** (name, grade, parent's mobile or email) or adding learners one by one; the names are encrypted on arrival (§6.3). |
+| FR-5a | A learner enrolled by a school or club is **pending until a parent confirms online** (FR-6). A pending learner holds only what is needed to ask: the encrypted name, grade, class and the parent contact. If no parent confirms within **14 days** (two reminders), the pending learner and the parent contact are **deleted**. |
+| FR-5b | If the parent already has a learner profile for this child (from another school, club or event), confirming **links** the existing profile instead of making a second one. |
+| FR-5c | Teachers can rename a nickname, move or remove a learner, and reset sign-in; they never see the certificate name. |
 
 ### 4.2 Online enrolment and consent controls
 | ID | Requirement |
 |---|---|
-| FR-6 | Consent is given **online by the parent or guardian during enrolment**, after a plain-language notice in their language. There is no paper consent route (owner decision). |
+| FR-6 | Consent is always given **online by the parent or guardian**, signed in with a one-time code (WhatsApp, SMS or email), after a plain-language notice in their language: while enrolling the child themself, or when confirming the school's or club's enrolment. There is no paper consent route (owner decision). |
 | FR-7 | **Consent controls** (each recorded with the notice version and time, each changeable later in the parent's account): |
 | | (a) *Learning record* (required to enrol): progress, sheet records and badges are kept for this child. |
 | | (b) *Name on certificates* (optional, on by default only if the parent types a name): the child's name is stored encrypted and printed only on certificates and badge cards. Off: certificates print with a blank name line. |
@@ -85,6 +91,7 @@ Up to M4 nobody signs in: every lesson, template and the code editor work withou
 | FR-17 | Badge definitions are **content** (`content/badges/<id>.json` + `<id>.svg`), reviewed like seasons: a name and description (translated), artwork, and a rule. |
 | FR-18 | First rules: complete a lesson (all steps, built and working); all "I can" checks "Yes"; complete N lessons of a phase; complete every lesson of a mechanism; Season 1 (finish the season's course for your grade band, recorded by the teacher or event organiser, since runs stay on the device in M5). |
 | FR-19 | In the app, badges show with the **nickname** only. |
+| FR-19a | **Fully automated (owner decision):** when a rule is met, the badge is awarded, its **badge image** appears in the learner's profile, and its **certificate PDF** becomes available, without anyone pressing a button. The parent is told by their chosen channel ("Rocket earned the Crank badge") with a link to sign in and download; the message itself never contains the child's name or the certificate. |
 
 ### 4.5 The certificate name: stored encrypted, seen only on the certificate
 | ID | Requirement |
@@ -100,10 +107,19 @@ Up to M4 nobody signs in: every lesson, template and the code editor work withou
 | ID | Requirement |
 |---|---|
 | FR-26 | **Who can print:** the parent (their child), the learner's teachers or coaches (their class), and the event organiser (their event's participants). |
-| FR-27 | **Bulk by design:** one action produces one PDF for a whole class, club or event: "every learner who earned badge X", "every participant of event Y", or a hand-picked set. Large batches (thousands) are produced in the background and offered as a download when ready; nobody types names. |
+| FR-27 | **Automated and in bulk:** each certificate is produced automatically when its badge is awarded (FR-19a). Teachers, coaches and organisers can also download a whole class, club or event in one PDF ("every learner who earned badge X", "every participant of event Y"); large batches (thousands) are produced in the background, and an event's batch is ready automatically when the event closes. Nobody types names. |
 | FR-28 | A **certificate** (A4) shows: badge artwork and name, the learner's certificate name (or a blank line), the date, the school, club or event, the issuer's chosen display name, and a **verification code**. **Badge cards** (A6, four to a page) show the same in short. |
 | FR-29 | The **verification code** (e.g. `RFA-7K3P-Q9`) can be checked by anyone at `/verify/`: it shows the badge, date and school, club or event, never the name or nickname. Codes are random and can be revoked. |
 | FR-30 | Certificates are in the language chosen for the batch (default: the class or event language). Fixed text is interface words; badge names come from the badge's translations. |
+
+### 4.7 One learner profile for life, kept only while it is needed (owner question)
+| ID | Requirement |
+|---|---|
+| FR-31 | A child has **one learner profile** that follows them from class to class, school to school, club and event, so badges and certificates build up over the years. Schools and clubs **link to** it (FR-5b); they don't own it. The family does. |
+| FR-32 | The profile's ID is an internal random number. It is never shown, printed or used as an identifier outside the system (no national ID or learner number from the school is stored). |
+| FR-33 | **It lasts only while it is needed:** while the child is in a class, club or event, or the parent's account is in use. When none of these holds (§7.5), it is deleted. "For life" means "as long as the family wants it", not "forever". |
+| FR-34 | **At 18** the learner can take over the profile with their own mobile or email and give their own consent; the parent's access ends. If nobody takes it over, it is deleted as in §7.5. |
+| FR-35 | Before deletion the parent can **download** the child's badges and certificates (a PDF portfolio), so the record outlives the data we keep. Verification codes stay checkable after deletion: they show only the badge, date and organisation, which are not personal data. |
 
 ## 5. Non-functional requirements
 - **Public pages stay as they are:** lessons, templates and the code editor need no account and load no account code. Account code loads only on `/enrol/`, `/class/`, `/home/` and `/me/` pages, as Svelte islands, within a 120 KB compressed budget; the enrolment page within 60 KB (parents on prepaid data).
@@ -124,6 +140,8 @@ learners(id, nickname, grade, avatar, language, pin_hash, parent_user_id,
          certificate_name_ciphertext?, certificate_name_key_version?)
 learner_guardians(learner_id, user_id)
 class_learners(class_id, learner_id, consented_at)
+pending_enrolments(id, class_id, certificate_name_ciphertext, grade, parent_contact_ciphertext,
+                   requested_at, reminders_sent, expires_at)   -- deleted on confirmation or after 14 days
 consents(learner_id, user_id, control: record|name|class:<id>|event_results, notice_version,
          given_at, withdrawn_at)
 sheet_records(learner_id, lesson_id, sheet_code, steps_done, i_can, built_working,
@@ -136,6 +154,7 @@ The **certificate name** is the only real name, and only ever stored as cipherte
 ### 6.2 Where the pieces live
 - Same Supabase project as the back office, separate tables and policies; learners are **not** Supabase Auth users (they have no email).
 - `apps/web`: `/enrol/<token>/`, `/class/`, `/home/`, `/me/`, `/verify/` as Svelte islands calling Supabase with row-level security.
+- **Messages (WhatsApp, SMS, email):** one-time codes, confirmation requests and badge notices go through a message provider (WhatsApp Business Platform and SMS through a South African provider; email through Supabase's mailer). Messages carry no child's name and no certificate. Choosing the provider is an owner action (cost per message, and POPIA s72 for any provider outside South Africa; ADR-0016).
 - **Two small Cloudflare Workers** (the ADR-0011 pattern; no service key in any browser):
   - **sign-in service:** checks class code + nickname + picture PIN (rate-limited) and issues a learner session;
   - **certificate service:** the only code that holds the name key; it checks the caller may print for those learners (§4.6), decrypts the names in memory, draws the PDF and streams it back.
@@ -161,6 +180,7 @@ A per-learner outbox in IndexedDB; records are idempotent (learner, lesson, shee
 | **Certificate name** (encrypted) | Printed on the child's certificates and badge cards | Separate consent, control (b); optional |
 | Class membership | The class's teachers see progress | Consent, control (c) |
 | Adult email or mobile, display name, role | Account, sign-in, consent records | Consent of the adult; terms of use |
+| **Pending school/club enrolment:** the child's name (encrypted), grade, class and a parent's mobile or email, entered by the school or club | Only to ask the parent to confirm; deleted after 14 days if they don't | The school's or club's own relationship with the family; processed by us on its behalf as operator (POPIA s20–21, an operator agreement in the organisation's terms) until the parent consents |
 | Organisation name, area | Group classes; verify organisations | Legitimate interest of the school or club |
 
 **Not collected:** birth dates, ID numbers, photos, voice, location, addresses, learner contact details, free-text answers, tracking identifiers.
@@ -176,15 +196,37 @@ A per-learner outbox in IndexedDB; records are idempotent (learner, lesson, shee
 - Nicknames are checked for full names and rude words (per language); teachers can rename.
 - Learners never see other learners' records, and no screen shows any real name.
 
-### 7.4 Verifying organisations (scale)
-The back office verifies each **school or club once** (official email domain, school phone number, or a registered organisation or library). Its admin then invites staff without further checks. Unverified organisations can run one trial class of up to 40 learners and can't print certificates.
+### 7.4 Verifying organisations: how (owner question)
+Each **school or club is verified once**; its admin then invites staff without further checks. Unverified organisations can run one trial class of up to 40 learners and their certificates carry "not yet verified".
 
-### 7.5 Keeping and deleting data
-- Withdrawn consent: (a) learner and records deleted within 7 days; (b) name deleted at once; (c) removed from that class at once.
-- Archived class: learners in no other class are deleted **12 months** after the class is archived; the parent is told first.
-- Parent "delete my child's profile": deleted at once; backups expire within 30 days.
-- Adult accounts unused for 24 months: reminded, then deleted 30 days later.
-- The back-office Privacy module handles access and deletion requests and keeps a breach log with the POPIA s22 notification steps.
+**Schools** (public and independent):
+1. The admin registers with the school's **EMIS number** (the Department of Basic Education's school number). The back office looks it up in the **DBE master list of schools** (public), which gives the official name, province, district and the school's **official phone number** and address.
+2. **Confirmation, any one of:**
+   - a code sent to the school's **official email** (a `@<school>.<province>.school.za` or the school's own domain), or
+   - a **call to the official phone number** from the DBE list, where the principal or office confirms the admin works there, or
+   - a **letter on the school's letterhead signed by the principal**, emailed from the school's official address.
+3. The back office records which check was used, by whom and when (no copies of IDs). The school's admin is then verified.
+
+**Clubs and others** (libraries, NPOs, community centres, companies running clubs):
+1. A **registration number** checked against a public register: the NPO register (Department of Social Development), CIPC (companies), or the municipality for libraries and community centres.
+2. Plus confirmation by its **official email or phone** from that register, or a letter from a verified school or partner organisation it works with.
+
+**Event organisers** are back-office competition managers (already verified staff) or verified schools and clubs.
+
+Re-checks: a verified organisation is re-confirmed every two years, or at once if a report is made.
+
+### 7.5 Keeping and deleting data: delete as soon as it is no longer needed (owner decision, POPIA s14)
+Each piece is deleted when its reason ends, not on a fixed calendar:
+- **Pending school/club enrolment not confirmed:** deleted after 14 days (FR-5a).
+- **Consent withdrawn:** (a) the learner and records are deleted at once; (b) the name is deleted at once; (c) the child leaves that class at once.
+- **A class ends:** the class and its staff links are deleted when it is archived; learners stay only if they are in another class, club or event, or the parent's account is in use.
+- **No longer needed:** a learner who is in no class, club or event, and whose parent hasn't signed in for **12 months**, is deleted; the parent is told 30 days before (with the portfolio download, FR-35).
+- **Turning 18:** if nobody takes the profile over within 3 months (FR-34), it is deleted.
+- **Parent "delete my child's profile":** deleted at once.
+- **Adult accounts** with no children and no classes, unused for 12 months: deleted after a 30-day notice.
+- **Backups** holding deleted data expire within 30 days; names in backups are ciphertext anyway.
+- **What stays:** verification codes (badge, date, organisation: not personal data) and counts for reports, with nothing linking them to a child.
+- The back-office Privacy module records access and deletion requests and keeps a breach log with the POPIA s22 notification steps.
 
 ### 7.6 Threat notes
 | Threat | Mitigation |
@@ -201,6 +243,10 @@ The back office verifies each **school or club once** (official email domain, sc
 ## 8. Acceptance criteria
 - [ ] A teacher creates a class and shares the enrolment link; 30 parents enrol their children online with consent controls in English and isiZulu; the teacher types no learner details.
 - [ ] Nothing is recorded for a learner before consent (a) and (c).
+- [ ] A school uploads a class list of 40; each parent gets a WhatsApp, SMS or email request, confirms with a one-time code, and can correct the name; unconfirmed learners are deleted after 14 days.
+- [ ] A child enrolled at a school and later a club keeps one profile: the club's enrolment links to it after the parent confirms.
+- [ ] A badge awarded automatically gives a badge image in the profile and a certificate PDF ready to download, and the parent's notice contains no name.
+- [ ] A learner in no class with no parent sign-in for 12 months is deleted after a 30-day notice; their verification codes still check out.
 - [ ] The certificate name appears in no database column, log, network response other than the certificate PDF, or screen; an automated test checks the database, the Workers' logs and browser storage after enrolment and after printing.
 - [ ] A class batch prints one PDF with each learner's name on their certificate; a learner whose parent turned off control (b) gets a blank line.
 - [ ] A 5,000-learner event batch is produced in the background within 5 minutes.
@@ -216,12 +262,12 @@ The back office verifies each **school or club once** (official email domain, sc
 One PR per step; ⏸ marks a stop for review.
 1. ⏸ **This spec** approved; then **ADR-0013** (learner sign-in), **ADR-0014** (offline records) and **ADR-0015** (encrypting the certificate name) for review.
 2. **Database:** migrations for §6.1 with row-level security, consent controls and deletion; PGlite tests for every policy.
-3. **Organisations and classes:** sign-up with email or mobile, organisation registration and one-time verification (back-office People module), staff invitations, classes with enrolment links and QR codes.
-4. **Enrolment:** the enrolment page (light, translated), consent controls, the certificate-name encryption path through the certificate service; parent account page (consent changes, replace name, delete); back-office Privacy module.
+3. **Organisations and classes:** one-time-code sign-in by WhatsApp, SMS or email (provider chosen, ADR-0016), organisation registration with EMIS or register numbers and one-time verification (back-office People module), staff invitations, classes with enrolment links and QR codes.
+4. **Enrolment:** parent enrolment by link; school and club enrolment by class list with parent confirmation requests; consent controls; the certificate-name encryption path; linking an existing profile; parent account page (consent, correct name, portfolio download, delete); automatic deletion jobs; back-office Privacy module.
 5. **Learner sign-in and records:** the sign-in Worker, picture PIN, QR cards, `/me/`, answer-sheet recording offline with per-learner outboxes.
 6. **Progress views:** the teacher/coach grid with spot-check and revoke; the parent view.
-7. **Badges:** the badge format in content, the first badges, automatic awarding; back-office Badges module.
-8. **Certificates:** the certificate service (decrypt in memory, PDF), single and bulk batches, background batches, verification codes and `/verify/`; the name-leak tests.
+7. **Badges:** the badge format in content, the first badges, automatic awarding with badge images and parent notices; back-office Badges module.
+8. **Certificates:** the certificate service (decrypt in memory, PDF), automatic certificates on award, class and event batches in the background, verification codes and `/verify/`; the name-leak tests.
 9. ⏸ **People checks** (test plan): enrolment by parents on cheap phones, sign-in with Grade 3 learners, a printed certificate batch at a school.
 
 ## 10. AI opportunities
@@ -239,18 +285,21 @@ Core stays free. Later paid add-ons this makes possible: school dashboards acros
 | Large events overload the certificate service | Slow batches | Background batches, queued per event |
 
 ## 13. Owner decisions
-**Decided (2026-11-24):** names stored encrypted and seen only on certificates and badges; online consent during enrolment with controls; no paper consent; avoid admin-heavy steps for large events.
+**Decided (2026-11-24):**
+- Names stored encrypted and seen only on certificates and badges; consent online with controls; no paper consent; nothing admin-heavy for large events.
+- The recommendations: the consent controls of FR-7; automatic badges with optional spot-checks; organisations verified once; picture PIN plus QR cards for events; one-time-code sign-in; delete when no longer needed.
+- Children under 18 are enrolled by their **school, club or parent**; school and club enrolments need a **parent's online confirmation** by one-time code over **WhatsApp, SMS or email**.
+- **Badges (images) and certificates (PDFs) are fully automated.**
+- **Delete as soon as it is no longer needed** (§7.5), with one learner profile per child for as long as the family wants it (§4.7).
 
-**Still to confirm (recommendation first):**
-1. **Consent controls** as in FR-7: (a) learning record required, (b) name optional, (c) per class, (d) event results later.
-2. **Badges awarded automatically**, with optional spot-checks and revoke, and an optional "badges need a check" switch (replaces v0.1's required check mark).
-3. **Organisations verified once**; their admin invites staff (replaces per-teacher verification).
-4. **Learner sign-in:** picture PIN, plus printable QR cards for events.
-5. **Parent sign-in:** email or mobile number with a one-time code.
-6. **Retention:** delete learners 12 months after their class is archived.
+**Owner actions:**
+1. Choose the WhatsApp and SMS provider (cost per message; where it stores data, POPIA s72); ADR-0016 records the choice.
+2. Confirm the reading of "ID for life" in §4.7: one profile per child that follows them across schools, clubs and events, kept while needed, taken over by the learner at 18, with a downloadable portfolio.
+3. Name the Information Officer (POPIA s55) for Robots For All, and register them with the Information Regulator before M5 goes live.
 
 ## Version history
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-24 | First draft, including where certificate and badge names come from (owner request) |
 | 0.2 | 2026-11-24 | Owner feedback: certificate name stored encrypted, seen only on the certificate; online enrolment with consent controls, no paper consent; built for large events (parent enrolment instead of teacher data entry, bulk certificates, automatic badges with spot-checks, one-time organisation verification) |
+| 0.3 | 2026-11-24 | Approved with owner changes: enrolment by school, club or parent, with parent confirmation by one-time code over WhatsApp, SMS or email; badges and certificates fully automated; how schools and clubs are verified (EMIS number and DBE list, public registers); delete when no longer needed; one profile per child for as long as needed (§4.7) |
