@@ -19,3 +19,6 @@ apps/web/src/paraglide/
 apps/web/public/simulator/
 # Python bytecode (test runs)
 __pycache__/
+# Cloudflare Worker local state and local secrets (back office, ADR-0011)
+.wrangler/
+.dev.vars

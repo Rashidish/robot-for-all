@@ -15,3 +15,4 @@ Copy `0000-template.md`. Never edit an accepted ADR's decision; write a new ADR 
 | 0008 | [Robot profiles](../ADR-0008-robot-profiles_v1.0.md): code the robot, not the board | Accepted |
 | 0009 | [Back-office architecture](0009-back-office-architecture.md): own admin app on its own hostname, behind Cloudflare Access; content through pull requests | Accepted |
 | 0010 | [Accounts and roles](0010-accounts-and-roles.md): Supabase with MFA, row-level security, super admin, audit log | Accepted |
+| 0011 | [Admin app on Workers](0011-admin-on-workers.md): the back office runs as a Cloudflare Worker (replaces ADR-0009's Pages hosting) | Accepted |

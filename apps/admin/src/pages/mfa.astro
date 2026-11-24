@@ -1,0 +1,85 @@
+---
+// Second step: an authenticator-app code (TOTP). MFA is required for every back-office account
+// (ADR-0010); the first time, the person sets up their authenticator app here.
+import Admin from '../layouts/Admin.astro';
+
+const { supabase } = Astro.locals;
+let error = '';
+
+const { data: factors } = await supabase.auth.mfa.listFactors();
+let factor = factors?.totp.find((f) => f.status === 'verified') ?? null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const factorId = String(form.get('factor') ?? '');
+  const code = String(form.get('code') ?? '').replace(/\s/g, '');
+  const { error: err } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
+  if (!err) {
+    await supabase.rpc('log_action', {
+      p_action: 'auth.sign_in',
+      p_target: null,
+      p_before: null,
+      p_after: null
+    });
+    return Astro.redirect('/', 303);
+  }
+  error = 'That code did not work. Check the time on your phone and try the newest code.';
+  Astro.response.status = 401;
+}
+
+// First time: set up an authenticator app (old unfinished set-ups are removed first).
+let enrol: { id: string; qr: string; secret: string } | null = null;
+if (!factor) {
+  for (const f of factors?.all ?? []) {
+    if (f.status !== 'verified') await supabase.auth.mfa.unenroll({ factorId: f.id });
+  }
+  const { data } = await supabase.auth.mfa.enroll({
+    factorType: 'totp',
+    friendlyName: 'Back office'
+  });
+  if (data) enrol = { id: data.id, qr: data.totp.qr_code, secret: data.totp.secret };
+}
+const factorId = factor?.id ?? enrol?.id ?? '';
+---
+
+<Admin title={enrol ? 'Set up your authenticator app' : 'Enter your code'}>
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {enrol && (
+    <>
+      <p>
+        Every back-office account needs a second step. Scan this code with an authenticator app (for
+        example Google Authenticator, Microsoft Authenticator or Aegis), then type the 6-digit code
+        it shows.
+      </p>
+      <img
+        class="qr"
+        src={enrol.qr}
+        alt="QR code for your authenticator app"
+        width="200"
+        height="200"
+      />
+      <p>
+        Can't scan? Type this key into the app instead: <code>{enrol.secret}</code>
+      </p>
+    </>
+  )}
+  <form method="post">
+    <input type="hidden" name="factor" value={factorId} />
+    <label for="code">6-digit code</label>
+    <input
+      id="code"
+      name="code"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      pattern="[0-9 ]{6,7}"
+      required
+    />
+    <div class="actions">
+      <button type="submit">Continue</button>
+    </div>
+  </form>
+</Admin>

@@ -1,0 +1,110 @@
+---
+// People → Back-office roles (docs/specs/back-office.md §4.1). Owners give roles below owner;
+// super admins give any role. The database checks every change and records it (ADR-0010).
+import Admin from '../layouts/Admin.astro';
+import { canManagePeople, grantableRoles, isRole, ROLE_LABELS } from '../lib/roles';
+
+const { supabase, roles } = Astro.locals;
+if (!canManagePeople(roles)) return Astro.redirect('/', 303);
+const grantable = grantableRoles(roles);
+
+let notice = '';
+let error = '';
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const action = String(form.get('action') ?? '');
+  const role = form.get('role');
+  if (!isRole(role) || !grantable.includes(role)) {
+    error = 'You cannot give or take away that role.';
+  } else if (action === 'grant') {
+    const email = String(form.get('email') ?? '');
+    const { error: err } = await supabase.rpc('grant_role_by_email', {
+      p_email: email,
+      p_role: role
+    });
+    if (err) error = err.message;
+    else notice = `Gave ${ROLE_LABELS[role]} to ${email.trim()}.`;
+  } else if (action === 'revoke') {
+    const user = String(form.get('user') ?? '');
+    const { error: err } = await supabase.rpc('revoke_role', { p_user: user, p_role: role });
+    if (err) error = err.message;
+    else notice = `Took away ${ROLE_LABELS[role]}.`;
+  }
+  if (error) Astro.response.status = 400;
+}
+
+const { data } = await supabase.rpc('admin_people');
+const people = (data ?? []) as { user_id: string; email: string; roles: string[] }[];
+---
+
+<Admin title="People">
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+
+  <h2>Give a role</h2>
+  <p>The person signs up first; then give them a role here. Every change is in the audit log.</p>
+  <form method="post">
+    <input type="hidden" name="action" value="grant" />
+    <label for="email">Their email</label>
+    <input id="email" name="email" type="email" required />
+    <label for="role">Role</label>
+    <select id="role" name="role" required>
+      {grantable.map((r) => (
+        <option value={r}>{ROLE_LABELS[r]}</option>
+      ))}
+    </select>
+    <div class="actions">
+      <button type="submit">Give role</button>
+    </div>
+  </form>
+
+  <h2>Everyone with a back-office role</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Email</th>
+          <th scope="col">Roles</th>
+        </tr>
+      </thead>
+      <tbody>
+        {people.map((p) => (
+          <tr>
+            <td>{p.email}</td>
+            <td>
+              <ul class="roles">
+                {p.roles.filter(isRole).map((r) => (
+                  <li>
+                    {ROLE_LABELS[r]}
+                    {grantable.includes(r) && (
+                      <form method="post" class="inline">
+                        <input type="hidden" name="action" value="revoke" />
+                        <input type="hidden" name="user" value={p.user_id} />
+                        <input type="hidden" name="role" value={r} />
+                        <button
+                          type="submit"
+                          class="quiet"
+                          aria-label={`Take away ${ROLE_LABELS[r]} from ${p.email}`}
+                        >
+                          Take away
+                        </button>
+                      </form>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Admin>

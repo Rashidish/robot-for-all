@@ -78,6 +78,10 @@ jobs:
         run: npm run build
       - name: No inline scripts or styles (strict CSP)
         run: node scripts/check-no-inline.mjs apps/web/dist
+      - name: Build the back office (ADR-0009, ADR-0011)
+        run: npm run build:admin
+      - name: Back office refuses every page without Cloudflare Access
+        run: bash scripts/check-admin-gate.sh
       - name: Service worker is valid JavaScript
         run: node --check apps/web/dist/sw.js && grep -c '"/offline/"' apps/web/dist/sw.js
       - name: Page size budgets (fail when exceeded)

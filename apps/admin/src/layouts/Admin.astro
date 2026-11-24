@@ -1,0 +1,59 @@
+---
+// Back-office page frame: English only (admins), accessible, no scripts (ADR-0009).
+import '../styles/admin.css';
+import { canManagePeople } from '../lib/roles';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const { user, roles } = Astro.locals;
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/', label: 'Home', show: roles.length > 0 },
+  { href: '/people/', label: 'People', show: canManagePeople(roles) }
+].filter((n) => n.show);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · Robots For All back office</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      Skip to content
+    </a>
+    <header>
+      <p class="brand">
+        Robots For All · <strong>Back office</strong>
+      </p>
+      {nav.length > 0 && (
+        <nav aria-label="Back office">
+          <ul>
+            {nav.map((n) => (
+              <li>
+                <a href={n.href} aria-current={path === n.href ? 'page' : undefined}>
+                  {n.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+      {user && (
+        <form method="post" action="/sign-out/" class="who">
+          <span>{user.email}</span>
+          <button type="submit">Sign out</button>
+        </form>
+      )}
+    </header>
+    <main id="main">
+      <h1>{title}</h1>
+      <slot />
+    </main>
+  </body>
+</html>

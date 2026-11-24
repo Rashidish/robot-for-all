@@ -6,6 +6,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | Migration | What it sets up |
 |---|---|
 | `0001_back_office_roles_and_audit.sql` | Back-office roles (super admin, owner, reviewer, …), `grant_role` / `revoke_role`, at-least-one-super-admin rule, insert-only `audit_log`, `log_action`, super-admin `record_override` (needs a written reason), `bootstrap_super_admin` |
+| `0002_back_office_people.sql` | The people screen: `admin_people()` (everyone with a role, with email) and `grant_role_by_email`, owners and super admins only |
 
 ## Tests
 

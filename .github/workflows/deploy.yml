@@ -114,3 +114,34 @@ jobs:
           fi
           npx playwright install --with-deps chromium > /dev/null
           LIVE_URL="$base" npx playwright test tests/e2e/code.spec.ts --grep "on-screen micro:bit" --retries=1
+
+  deploy-admin:
+    name: Deploy the back office (Cloudflare Worker)
+    runs-on: ubuntu-latest
+    # Only from main, and only once the owner has set it up (docs/deploy.md §5): the repository
+    # variable ADMIN_DEPLOY=true plus the Cloudflare secrets. Pull requests never deploy it.
+    if: github.event_name == 'push' && vars.ADMIN_DEPLOY == 'true'
+    environment: production
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build:admin
+      - name: Publish the Worker (admin.robotsforall.org.za)
+        working-directory: apps/admin
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ADMIN_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: The live back office refuses requests that bypass Cloudflare Access
+        run: |
+          sleep 15
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://admin.robotsforall.org.za/sign-in/)
+          # Access answers unknown visitors with its own login page (302 to cloudflareaccess.com)
+          # or 403; the app itself never shows the sign-in page without Access.
+          case "$code" in 302|403) echo "Gate in place ($code).";; *) echo "::error::Got $code"; exit 1;; esac

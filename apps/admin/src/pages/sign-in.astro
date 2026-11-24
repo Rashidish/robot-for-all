@@ -1,0 +1,33 @@
+---
+// Sign in with email and password; MFA follows on the next page (ADR-0010).
+import Admin from '../layouts/Admin.astro';
+
+let error = '';
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const email = String(form.get('email') ?? '').trim();
+  const password = String(form.get('password') ?? '');
+  const { error: err } = await Astro.locals.supabase.auth.signInWithPassword({ email, password });
+  if (!err) return Astro.redirect('/mfa/', 303);
+  // The same message whatever went wrong, so it doesn't reveal which accounts exist.
+  error = 'That email and password did not work.';
+  Astro.response.status = 401;
+}
+---
+
+<Admin title="Sign in">
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  <form method="post">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="username" required />
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required />
+    <div class="actions">
+      <button type="submit">Sign in</button>
+    </div>
+  </form>
+</Admin>
