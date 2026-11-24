@@ -13,7 +13,11 @@ const migrations = readdirSync(migrationsDir)
   .map((f) => readFileSync(join(migrationsDir, f), 'utf8'));
 
 export class TestDb {
-  private constructor(readonly db: PGlite) {}
+  readonly db: PGlite;
+
+  private constructor(db: PGlite) {
+    this.db = db;
+  }
 
   static async create(users: Record<string, string>): Promise<TestDb> {
     const t = new TestDb(new PGlite());

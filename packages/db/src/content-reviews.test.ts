@@ -51,7 +51,7 @@ beforeEach(async () => {
     [JUDGE, 'judge'],
     [EDITOR_REVIEWER, 'content_editor'],
     [EDITOR_REVIEWER, 'reviewer']
-  ]) {
+  ] as const) {
     await t.as(ROOT, `select public.grant_role($1, $2)`, [user, role]);
   }
   for (const [user, name] of [
@@ -59,7 +59,7 @@ beforeEach(async () => {
     [REVIEWER, 'Reviewer 3'],
     [TESTER, 'T. Builder'],
     [EDITOR_REVIEWER, 'E. Both']
-  ]) {
+  ] as const) {
     await t.as(user, `select public.set_reviewer_name($1)`, [name]);
   }
 });
