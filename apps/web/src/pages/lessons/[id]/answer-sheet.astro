@@ -6,28 +6,40 @@
 import { createHash } from 'node:crypto';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PrintButton from '../../../components/PrintButton.astro';
-import { localHref, m } from '../../../i18n';
+import { localHref, m, pageLang } from '../../../i18n';
+import { localLesson } from '../../../lessons/translations';
 import { getLessons, type LessonEntry } from '../../../lessons/load';
 import { answerSheet, sheetIsDense } from '../../../lessons/answers';
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
-  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson } }));
+  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson, lessons } }));
 }
 
 interface Props {
   lesson: LessonEntry;
+  lessons: LessonEntry[];
 }
 
-const { lesson } = Astro.props;
-const { data } = lesson;
-const sections = answerSheet(lesson.body ?? '');
+const { lesson, lessons } = Astro.props;
+// The lesson in this page's language when a translation may be shown (spec §2.7), else English.
+const local = await localLesson(lesson, pageLang(), lessons);
+const { data } = local;
+const textLang = local.lang === pageLang() ? undefined : local.lang;
+const sections = answerSheet(local.body, local.steps);
 const dense = sheetIsDense(sections);
 const version = createHash('sha256')
-  .update(JSON.stringify([sections, data.assessment]))
+  // English sheet codes stay as they were; a translated sheet also hashes its headings.
+  .update(
+    JSON.stringify([
+      sections.map(({ label, ...s }) => (local.lang === 'en' ? s : { ...s, label })),
+      data.assessment
+    ])
+  )
   .digest('hex')
   .slice(0, 6);
-const code = `${lesson.id}-${version}`;
+const code =
+  local.lang === 'en' ? `${lesson.id}-${version}` : `${lesson.id}-${local.lang}-${version}`;
 let number = 0;
 ---
 
@@ -52,7 +64,7 @@ let number = 0;
       return (
         <section>
           <h2>
-            <span aria-hidden="true">☐</span> {section.step}
+            <span aria-hidden="true">☐</span> <span lang={textLang}>{section.label}</span>
             {steps && steps.kind === 'steps' && (
               <span class="steps">
                 {m.sheet_steps_done()}{' '}
@@ -64,14 +76,14 @@ let number = 0;
           {section.items.map((item) =>
             item.kind === 'question' ? (
               <div class="question">
-                <p>
+                <p lang={textLang}>
                   <strong>{++number}.</strong> {item.text}
                 </p>
                 <div class="line" />
                 <div class="line extra" />
               </div>
             ) : item.kind === 'table' ? (
-              <table>
+              <table lang={textLang}>
                 <thead>
                   <tr>
                     {item.head.map((cell) => (
@@ -97,7 +109,7 @@ let number = 0;
 
     <section>
       <h2>{m.lesson_assessment_title()}</h2>
-      <table class="check">
+      <table class="check" lang={textLang}>
         <tbody>
           {data.assessment.map((item) => (
             <tr>

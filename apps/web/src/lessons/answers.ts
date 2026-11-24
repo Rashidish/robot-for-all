@@ -10,7 +10,10 @@ export type SheetItem =
   | { kind: 'steps'; count: number };
 
 export interface SheetSection {
+  /** The PRIMM step (English name, e.g. "Make"). */
   step: string;
+  /** The section's heading as written in the lesson (translated in a translation). */
+  label: string;
   items: SheetItem[];
 }
 
@@ -89,20 +92,28 @@ function sectionItems(lines: string[]): SheetItem[] {
   return items;
 }
 
-/** The answer sheet for a lesson body: one section per PRIMM step (Teacher notes left out). */
-export function answerSheet(body: string): SheetSection[] {
+/**
+ * The answer sheet for a lesson body: one section per PRIMM step (Teacher notes left out).
+ * `steps` names the step of each `##` section by position (the English headings), so a
+ * translation, whose headings are translated, maps the same way; English needs none.
+ */
+export function answerSheet(body: string, steps?: readonly string[]): SheetSection[] {
   const sections: SheetSection[] = [];
   let step: string | null = null;
+  let label = '';
+  let index = -1;
   let lines: string[] = [];
   const close = () => {
     // Make is open-ended: the sheet gives it a box instead of separate questions.
-    if (step) sections.push({ step, items: step === 'Make' ? [] : sectionItems(lines) });
+    if (step) sections.push({ step, label, items: step === 'Make' ? [] : sectionItems(lines) });
   };
   for (const line of body.split('\n')) {
     const heading = /^##\s+(.+?)\s*$/.exec(line);
     if (heading) {
       close();
-      const name = heading[1] ?? '';
+      index += 1;
+      label = heading[1] ?? '';
+      const name = steps ? (steps[index] ?? '') : label;
       step = (PRIMM_STEPS as readonly string[]).includes(name) ? name : null;
       lines = [];
     } else if (step) {

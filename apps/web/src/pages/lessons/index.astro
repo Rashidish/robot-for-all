@@ -2,10 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LessonCard from '../../components/LessonCard.astro';
 import LessonFilters from '../../components/LessonFilters.astro';
-import { m } from '../../i18n';
+import { m, pageLang } from '../../i18n';
 import { getLessons } from '../../lessons/load';
+import { localLesson } from '../../lessons/translations';
 
 const lessons = await getLessons();
+// Titles in this page's language where a translation may be shown (spec §2.7).
+const local = await Promise.all(lessons.map((l) => localLesson(l, pageLang(), lessons)));
 ---
 
 <BaseLayout title={m.lessons_title()}>
@@ -15,6 +18,15 @@ const lessons = await getLessons();
   {lessons.length === 0 ? (
     <p class="muted">{m.lessons_empty()}</p>
   ) : (
-    lessons.map((lesson) => <LessonCard lesson={lesson} />)
+    lessons.map((lesson, i) => {
+      const view = local[i];
+      return (
+        <LessonCard
+          lesson={lesson}
+          title={view?.data.title ?? lesson.data.title}
+          titleLang={view && view.lang !== pageLang() ? view.lang : undefined}
+        />
+      );
+    })
   )}
 </BaseLayout>

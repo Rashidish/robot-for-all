@@ -7,26 +7,31 @@ import DownloadLesson from '../../components/DownloadLesson.astro';
 import PrintButton from '../../components/PrintButton.astro';
 import { findTemplate, templateFile, templatePage } from '../../templates/load';
 import { starterLink } from '../../lessons/programs';
-import { localHref, m } from '../../i18n';
+import { localHref, m, pageLang } from '../../i18n';
+import { localLesson, localTitles } from '../../lessons/translations';
 import { getLessons, type LessonEntry } from '../../lessons/load';
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
-  const titles = Object.fromEntries(lessons.map((l) => [l.id, l.data.title]));
-  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson, titles } }));
+  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson, lessons } }));
 }
 
 interface Props {
   lesson: LessonEntry;
-  /** Titles of the lessons visible in this build, for prerequisite and next links. */
-  titles: Record<string, string>;
+  /** The lessons visible in this build, for prerequisite and next links. */
+  lessons: LessonEntry[];
 }
 
-const { lesson, titles } = Astro.props;
+const { lesson, lessons } = Astro.props;
+// The lesson in this page's language when a translation may be shown (spec §2.7), else English.
+const local = await localLesson(lesson, pageLang(), lessons);
+const titles = await localTitles(lessons, pageLang());
+// Lesson text in another language than the page (English on an isiZulu page) says so.
+const textLang = local.lang === pageLang() ? undefined : local.lang;
 const prerequisites = lesson.data.prerequisites.filter((id) => titles[id]);
 const next = lesson.data.next && titles[lesson.data.next] ? lesson.data.next : null;
-const { data } = lesson;
-const { Content } = await render(lesson);
+const { data } = local;
+const { Content } = await render(local.entry);
 const sheets = data.templates
   .filter((name) => !hidden('template', `${lesson.id}/${name}`))
   .flatMap((name) => findTemplate(lesson.id, name) ?? []);
@@ -53,13 +58,23 @@ const withdrawnHere = isOff('lesson', lesson.id);
     </p>
   )}
 
+  {local.notice && (
+    <p class="draft" role="note">
+      {local.notice === 'english'
+        ? m.lesson_in_english_notice()
+        : local.notice === 'stale'
+          ? m.lesson_translation_stale_notice()
+          : m.lesson_translation_draft_notice()}
+    </p>
+  )}
+
   {data.status !== 'published' && (
     <p class="draft" role="note">
       {m.lesson_draft_notice()}
     </p>
   )}
 
-  <h1>{data.title}</h1>
+  <h1 lang={textLang}>{data.title}</h1>
 
   <ul class="facts">
     <li>{m.lesson_phase({ phase: data.phase })}</li>
@@ -86,7 +101,7 @@ const withdrawnHere = isOff('lesson', lesson.id);
   >
     <h2 id="safety-title">⚠ {m.lesson_safety_title()}</h2>
     {data.safety.adult_help && <p class="adult">{m.lesson_adult_help()}</p>}
-    <ul>
+    <ul lang={textLang}>
       {data.safety.notes.map((note) => (
         <li>{note}</li>
       ))}
@@ -95,14 +110,15 @@ const withdrawnHere = isOff('lesson', lesson.id);
 
   <section aria-labelledby="outcomes-title">
     <h2 id="outcomes-title">{m.lesson_outcomes_title()}</h2>
-    <ul>
+    <ul lang={textLang}>
       {data.outcomes.map((outcome) => (
         <li>{outcome}</li>
       ))}
     </ul>
     {data.concepts.length > 0 && (
       <p class="concepts">
-        <strong>{m.lesson_concepts_title()}:</strong> {data.concepts.join(', ')}
+        <strong>{m.lesson_concepts_title()}:</strong>{' '}
+        <span lang={textLang}>{data.concepts.join(', ')}</span>
       </p>
     )}
   </section>
@@ -122,7 +138,7 @@ const withdrawnHere = isOff('lesson', lesson.id);
 
   <section class="parts" aria-labelledby="parts-title">
     <h2 id="parts-title">{m.lesson_parts_title()}</h2>
-    <ul>
+    <ul lang={textLang}>
       {data.parts.map((part) => (
         <li>
           {part.qty} × {part.item}
@@ -152,13 +168,13 @@ const withdrawnHere = isOff('lesson', lesson.id);
     </section>
   )}
 
-  <div class="lesson-body">
+  <div class="lesson-body" lang={textLang}>
     <Content />
   </div>
 
   <section class="assessment" aria-labelledby="assessment-title">
     <h2 id="assessment-title">{m.lesson_assessment_title()}</h2>
-    <ul>
+    <ul lang={textLang}>
       {data.assessment.map((item) => (
         <li>{item}</li>
       ))}

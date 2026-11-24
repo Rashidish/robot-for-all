@@ -25,7 +25,8 @@
     "e2e": "playwright test",
     "lighthouse": "lhci autorun",
     "build:production": "SHOW_DRAFTS=false npm run build",
-    "build:admin": "npm run build -w apps/admin"
+    "build:admin": "npm run build -w apps/admin",
+    "translation-hash": "node --experimental-strip-types scripts/translation-hash.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
