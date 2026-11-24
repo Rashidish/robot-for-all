@@ -219,4 +219,25 @@ test.describe('Robot tab (M4 step 2)', () => {
       timeout: 120_000
     });
   });
+
+  test('"Pen art": A puts the pen down, draws a square and lifts the pen', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.goto('/lessons/p2-art-01/');
+    await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
+    await expect(page.locator('.blocklySvg').first()).toBeVisible();
+    await expect(page.getByLabel('World', { exact: true })).toHaveValue('art-floor');
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect(simulator(page).locator('#ButtonA')).toBeAttached({ timeout: 15_000 });
+    await page.waitForTimeout(1500);
+    await page.locator('.monitor summary').click();
+    const pen = page.locator('.monitor tr[data-value="pen"] td');
+    const left = page.locator('.monitor tr[data-value="motor_left"] td');
+    await expect(pen).toHaveText('up');
+    await pressA(page);
+    await expect(pen).toHaveText('down', { timeout: 5_000 });
+    await expect(left).toHaveText('60%');
+    // Four sides and four turns take about 8.6 s; then the robot stops and lifts the pen.
+    await expect(pen).toHaveText('up', { timeout: 20_000 });
+    await expect(left).toHaveText('0%');
+  });
 });
