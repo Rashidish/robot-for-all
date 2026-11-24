@@ -15,6 +15,8 @@ export interface LessonSummary {
   reviewedBy: string | null;
   buildTestedBy: string | null;
   aiGenerated: boolean;
+  /** Template sheet names (content/projects/<id>/templates/<name>.ts). */
+  templates: string[];
 }
 
 const FRONT = /^---\n([\s\S]*?)\n---\n/;
@@ -46,7 +48,11 @@ export function summarise(id: string, text: string): LessonSummary {
     status: status === 'in_review' || status === 'published' ? status : 'draft',
     reviewedBy: scalar(field(front, 'reviewed_by')),
     buildTestedBy: scalar(field(front, 'build_tested_by')),
-    aiGenerated: field(front, 'ai_generated') === 'true'
+    aiGenerated: field(front, 'ai_generated') === 'true',
+    templates: (field(front, 'templates') ?? '')
+      .replace(/[[\]\s]/g, '')
+      .split(',')
+      .filter(Boolean)
   };
 }
 

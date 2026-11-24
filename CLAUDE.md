@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.21 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.22 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -131,7 +131,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /content/projects    Project data, parts lists, templates (SVG)
 /content/worlds      Robot worlds and courses for the simulator (JSON, checked)
 /content/seasons     Seasons: three courses per theme, one per grade band, plus badge (JSON + SVG)
-/content/site        Site settings: announcement banner and feature switches (set from the back office)
+/content/site        Site settings (banner, feature switches) and the withdrawn list (set from the back office)
 /content/i18n        Translations per language
 /docs/specs          One spec per feature (write before building)
 /docs/adr            Architecture decision records
@@ -285,3 +285,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.19 | 2026-11-24 | Back office approved (spec `docs/specs/back-office.md`): admin app, Supabase accounts and roles (ADR-0009, ADR-0010 accepted) |
 | 0.20 | 2026-11-24 | Back office runs as a Cloudflare Worker (ADR-0011); `npm run build:admin` |
 | 0.21 | 2026-11-24 | Repo layout: `content/site`, `packages/db`, `packages/settings` |
+| 0.22 | 2026-11-24 | `content/site/withdrawn.json`: withdraw any live lesson, template, world, season or language (back office) |

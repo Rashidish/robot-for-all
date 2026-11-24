@@ -12,13 +12,16 @@
   import RobotWorld from './RobotWorld.svelte';
   import { loadSeasons, loadWorlds, type Pushes, specsById } from '../code/world-link';
   import { featureOn } from '../site';
+  import { hidden } from '../withdrawn';
 
   // Worlds and courses from content/worlds, checked when the page is built (M4 spec FR-4).
   const worldFiles = import.meta.glob('../../../../content/worlds/*.json', {
     eager: true,
     import: 'default'
   });
-  const worlds = loadWorlds(worldFiles);
+  // Withdrawn worlds and seasons are left out of production (more content spec §2.4).
+  const allWorlds = loadWorlds(worldFiles);
+  const worlds = allWorlds.filter((w) => !hidden('world', w.id));
   const worldSpecs = specsById(worldFiles);
   // Seasons (FR-20): each with its badge, served from our own site.
   // Site settings can switch the Robot tab and the seasons off (back-office spec §6.7).
@@ -32,8 +35,9 @@
           query: '?url',
           import: 'default'
         }),
-        worlds
-      );
+        // Checked against every world; a withdrawn course simply drops out of its group.
+        allWorlds
+      ).filter((e) => !hidden('season', e.season.id));
 
   interface Props {
     src: string;

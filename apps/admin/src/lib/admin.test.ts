@@ -7,11 +7,13 @@ import { decide, type Facts, SECURITY_HEADERS } from './guard';
 import {
   canEditSeasons,
   canManagePeople,
+  canWithdraw,
   grantableRoles,
   hasRole,
   isRole,
   ROLE_LABELS,
-  ROLES
+  ROLES,
+  withdrawTypesFor
 } from './roles';
 
 describe('Cloudflare Access token check (ADR-0009)', () => {
@@ -154,5 +156,10 @@ describe('roles in the pages (the database enforces them too)', () => {
     expect(canEditSeasons(['owner'])).toBe(true);
     expect(canEditSeasons(['super_admin'])).toBe(true);
     expect(canEditSeasons(['reviewer', 'judge'])).toBe(false);
+    expect(canWithdraw(['reviewer'])).toBe(true);
+    expect(canWithdraw(['content_editor', 'judge'])).toBe(false);
+    expect(withdrawTypesFor(['competition_manager'])).toEqual(['world', 'season']);
+    expect(withdrawTypesFor(['reviewer'])).toContain('template');
+    expect(withdrawTypesFor(['judge'])).toEqual([]);
   });
 });

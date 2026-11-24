@@ -104,7 +104,10 @@ jobs:
           if [ -e apps/web/dist/lessons/p1-crank-01/index.html ]; then
             echo "::error::A draft lesson was published in the production build"; exit 1
           fi
-          echo "Draft lessons are hidden in production."
+          if [ -e apps/web/dist/templates/p1-crank-01/rhino-parts/index.html ]; then
+            echo "::error::A draft lesson's template was published in the production build"; exit 1
+          fi
+          echo "Draft lessons and their templates are hidden in production."
       - name: Save test report and 360 px screenshots
         if: always()
         uses: actions/upload-artifact@v4

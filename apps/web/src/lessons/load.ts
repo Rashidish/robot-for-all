@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { findTemplate } from '../templates/load';
 import { findProgram } from './programs';
 import { checkLinks, checkPrimm, isVisible } from './schema';
+import { isOff } from '../withdrawn';
 import { seasonProblems } from './seasons';
 import { worldIds, worldProblems } from './worlds';
 
@@ -62,6 +63,6 @@ export async function getLessons(): Promise<LessonEntry[]> {
     throw new Error(`Lesson problems:\n- ${problems.join('\n- ')}`);
   }
   return all
-    .filter((l) => isVisible(l.data, showDrafts))
+    .filter((l) => isVisible(l.data, showDrafts) && !(isOff('lesson', l.id) && !showDrafts))
     .sort((a, b) => a.data.phase - b.data.phase || a.id.localeCompare(b.id));
 }

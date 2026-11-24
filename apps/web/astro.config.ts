@@ -15,6 +15,8 @@ export default defineConfig({
     inlineStylesheets: 'never'
   },
   vite: {
+    // Production (SHOW_DRAFTS=false) leaves out drafts and withdrawn items; other builds show them.
+    define: { __RFA_SHOW_DRAFTS__: JSON.stringify(process.env['SHOW_DRAFTS'] !== 'false') },
     build: {
       assetsInlineLimit: 0,
       rollupOptions: {

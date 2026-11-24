@@ -29,7 +29,8 @@ describe('Content → Lessons: reading front matter', () => {
       status: 'draft',
       reviewedBy: null,
       buildTestedBy: null,
-      aiGenerated: true
+      aiGenerated: true,
+      templates: ['pen-lifter']
     });
   });
 });

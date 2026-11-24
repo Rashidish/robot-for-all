@@ -15,7 +15,8 @@ const ALL_TICKS = {
   age_language: true,
   caps: true,
   parts_cost: true,
-  ai_read: true
+  ai_read: true,
+  templates: true
 };
 
 let t: TestDb;

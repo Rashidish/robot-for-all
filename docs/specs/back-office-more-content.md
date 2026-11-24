@@ -80,7 +80,7 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 ## 6. Work plan
 
 1. ✅ Owner decisions (§7).
-2. **Withdraw** for every content type (`content/site/withdrawn.json`, build filters, back-office Withdraw / Restore / Withdrawn list, merge check), the seventh (templates) tick, and a test that production builds templates only for published lessons.
+2. ✅ *(built 2026-11-24)* **Withdraw** for every content type (`content/site/withdrawn.json`, build filters, back-office Withdraw / Restore / Withdrawn list, merge check), the seventh (templates) tick, and a test that production builds templates only for published lessons.
 3. **World status** in `packages/sim` and the build: the 14 live worlds and courses marked `published` with `reviewed_by: "Owner (initial set)"`; Content → Worlds & courses screens.
 4. **isiZulu:** the language switch and per-language status (off on production until approved); profile languages and the database rules; translation screens; then **AI-drafted isiZulu translations** of the interface words and lessons as **drafts** (`ai_generated: true`), each needing a reviewer who reads isiZulu before it shows.
 

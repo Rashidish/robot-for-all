@@ -16,7 +16,7 @@ import {
   possibleDecisions,
   pullsByLesson
 } from '../../lib/review';
-import { canSeeLessons, hasRole } from '../../lib/roles';
+import { canSeeLessons, canWithdraw, hasRole } from '../../lib/roles';
 
 const { supabase, user, roles } = Astro.locals;
 if (!canSeeLessons(roles)) return Astro.redirect('/', 303);
@@ -223,6 +223,13 @@ const STATUS_LABELS = { draft: 'Draft', in_review: 'In review', published: 'Publ
         </form>
       </section>
     ))}
+
+  {lesson?.status === 'published' && canWithdraw(roles) && (
+    <p>
+      <a href={`/withdrawn/?item=lesson:${id}`}>Withdraw this lesson</a> or one of its templates
+      (takes it off the live site now, unchanged).
+    </p>
+  )}
 
   <h2>History</h2>
   {history.length === 0 ? (
