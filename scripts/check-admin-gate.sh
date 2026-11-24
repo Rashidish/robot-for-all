@@ -20,7 +20,7 @@ check() {
     echo "$headers" | grep -qi "^$h:" || { echo "::error::$path is missing $h"; fail=1; }
   done
 }
-for p in / /sign-in/ /mfa/ /people/ /no-role/; do check "$p"; done
+for p in / /sign-in/ /mfa/ /people/ /seasons/ /no-role/; do check "$p"; done
 check /sign-in/ "Cf-Access-Jwt-Assertion: forged.token.value"
 [ $fail = 0 ] && echo "Back office refuses every page without Cloudflare Access."
 exit $fail

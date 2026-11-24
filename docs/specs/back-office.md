@@ -178,7 +178,7 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 
 1. ✅ **ADR-0009 + ADR-0010** accepted (2026-11-24).
 2. **Foundation** *(built 2026-11-24, waits for the owner set-up in `docs/deploy.md` §5: database rules in `packages/db` (2a); admin app as a Cloudflare Worker, ADR-0011 (2b); break-glass sign-in alerts to owners by email still to do, with the email provider)*: `apps/admin` skeleton (sign-in page with MFA, admin home, role checks with the super admin and its overrides, audit log), People → Back-office roles, database migrations for roles and audit log, CI job and tests per role. ⏸ owner actions (§13), then the owner signs in.
-3. **Configuration → Seasons** (§6.5) and **Site** settings, with the GitHub App. ⏸ owner changes a date end to end.
+3. **Configuration → Seasons** (§6.5) and **Site** settings, with the GitHub App. *(Seasons built 2026-11-24: `apps/admin/src/pages/seasons.astro`; Site settings next.)* ⏸ owner changes a date end to end.
 4. **Content review & publishing**: short spec first, then build. ⏸
 5. Further modules in the order of §4.2, each with a short spec, following the milestones.
 

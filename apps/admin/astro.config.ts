@@ -22,7 +22,24 @@ export default defineConfig({
       SUPABASE_URL: envField.string({ context: 'server', access: 'secret' }),
       SUPABASE_ANON_KEY: envField.string({ context: 'server', access: 'secret' }),
       ACCESS_TEAM: envField.string({ context: 'server', access: 'secret', optional: true }),
-      ACCESS_AUD: envField.string({ context: 'server', access: 'secret', optional: true })
+      ACCESS_AUD: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // The GitHub App that opens content pull requests (ADR-0009; docs/deploy.md §5).
+      GITHUB_APP_ID: envField.string({ context: 'server', access: 'secret', optional: true }),
+      GITHUB_APP_PRIVATE_KEY: envField.string({
+        context: 'server',
+        access: 'secret',
+        optional: true
+      }),
+      GITHUB_INSTALLATION_ID: envField.string({
+        context: 'server',
+        access: 'secret',
+        optional: true
+      }),
+      GITHUB_REPO: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'Rashidish/robots-for-all'
+      })
     }
   }
 });

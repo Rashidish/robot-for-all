@@ -52,3 +52,7 @@ export function grantableRoles(mine: readonly Role[]): Role[] {
 
 /** Owners and super admins see the roles screen and the audit log. */
 export const canManagePeople = (mine: readonly Role[]): boolean => hasRole(mine, 'owner');
+
+/** Season dates: competition managers and owners (docs/specs/back-office.md §6.5). */
+export const canEditSeasons = (mine: readonly Role[]): boolean =>
+  hasRole(mine, 'competition_manager') || hasRole(mine, 'owner');
