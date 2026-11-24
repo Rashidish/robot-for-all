@@ -17,6 +17,8 @@ export interface LessonSummary {
   aiGenerated: boolean;
   /** Template sheet names (content/projects/<id>/templates/<name>.ts). */
   templates: string[];
+  /** The starter program's file name, or null. */
+  starterProgram: string | null;
 }
 
 const FRONT = /^---\n([\s\S]*?)\n---\n/;
@@ -52,7 +54,8 @@ export function summarise(id: string, text: string): LessonSummary {
     templates: (field(front, 'templates') ?? '')
       .replace(/[[\]\s]/g, '')
       .split(',')
-      .filter(Boolean)
+      .filter(Boolean),
+    starterProgram: scalar(field(front, 'starter_program'))
   };
 }
 

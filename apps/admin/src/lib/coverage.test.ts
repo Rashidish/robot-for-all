@@ -77,4 +77,20 @@ describe('what still needs translating', () => {
     );
     expect(row).toMatchObject({ state: 'published', englishSheets: ['spare'], flagged: true });
   });
+
+  it('flags a translation that leaves the starter program name in English', () => {
+    const lesson = {
+      id: 'p2-art-01',
+      title: 'Pen art',
+      status: 'published' as const,
+      hash: 'a',
+      program: true
+    };
+    const t = { lesson: 'p2-art-01', status: 'published' as const, translatedFrom: 'a' };
+    expect(lessonCoverage([lesson], [t])[0]).toMatchObject({ englishProgram: true, flagged: true });
+    expect(lessonCoverage([lesson], [{ ...t, programName: true }])[0]).toMatchObject({
+      englishProgram: false,
+      flagged: false
+    });
+  });
 });

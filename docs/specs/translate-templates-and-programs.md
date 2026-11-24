@@ -1,6 +1,6 @@
 # Spec: Translate templates, diagram words and starter program names
 
-> **Version:** 0.4 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): all three recommendations
+> **Version:** 0.5 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): all three recommendations
 > Follows `docs/specs/back-office-more-content.md` §2.7 (lesson translations) and §2.8 (flags), where the back office lists these three as "not translatable yet". CLAUDE.md §2 rule 4: all learner-facing text goes through translation.
 
 ## 1. Purpose
@@ -50,7 +50,7 @@ New rule for lesson pictures (ADR-0004 note, CLAUDE.md §6): **a diagram carries
 - A content check fails the build when a lesson SVG contains a word that isn't on the allowed list of markings (pin names, part numbers, voltages, micro:bit).
 - No per-language copies of images, so no extra data and nothing to keep in step.
 
-### 2.6 Starter program names
+### 2.6 Starter program names *(built 2026-11-24)*
 A lesson translation may give its program a name: `program_name: Landela umugqa`. A translated lesson's "Open in code editor" link opens the program under that name, so it appears in My programs in the learner's language. The program itself (blocks) has no words to translate: block labels already come from the interface words.
 
 ### 2.7 Back office
@@ -97,3 +97,4 @@ No accounts, personal data, uploads or payments are involved; this is content an
 | 0.2 | 2026-11-24 | Approved: template words in the lesson translation, diagrams without words, order diagrams → templates → program names |
 | 0.3 | 2026-11-24 | §2.5 built: 10 words in 7 diagrams replaced (LEFT/RIGHT found while building); content check |
 | 0.4 | 2026-11-24 | §2.1–2.4 and the template part of §2.7 built; translated sheet files are `<name>.<lang>.svg` |
+| 0.5 | 2026-11-24 | §2.6 and the rest of §2.7 built: `program_name`; the "not translatable yet" list is gone (everything learners see can now be translated) |

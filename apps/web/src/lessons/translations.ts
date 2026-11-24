@@ -113,6 +113,8 @@ export function getTranslations(lessons: readonly LessonEntry[]): Promise<Checke
           problems.push(`${where}: ${p}`);
         for (const p of sheetProblems(english, entry.data.templates))
           problems.push(`${where}: ${p}`);
+        if (entry.data.program_name && !english.data.starter_program)
+          problems.push(`${where}: program_name, but the English lesson has no starter_program`);
       }
       const stale =
         entry.data.translated_from !== (await translationHash(file, templateFiles(lesson)));
@@ -142,6 +144,8 @@ export interface LocalLesson {
   notice: LessonNotice;
   /** Template sheets with words in the lesson's language (spec §2.1), by sheet name. */
   sheets: Record<string, SheetWords>;
+  /** The starter program's name in the lesson's language (spec §2.6). */
+  programName?: string | undefined;
 }
 
 /**
@@ -190,7 +194,8 @@ export async function localLesson(
     lang,
     steps,
     notice: view === 'live' ? null : view,
-    sheets: w.templates
+    sheets: w.templates,
+    programName: w.program_name
   };
 }
 

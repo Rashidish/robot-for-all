@@ -30,7 +30,8 @@ describe('Content → Lessons: reading front matter', () => {
       reviewedBy: null,
       buildTestedBy: null,
       aiGenerated: true,
-      templates: ['pen-lifter']
+      templates: ['pen-lifter'],
+      starterProgram: 'draw-a-square'
     });
   });
 });

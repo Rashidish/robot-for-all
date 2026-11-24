@@ -25,7 +25,6 @@ import {
   LESSON_STATE_LABELS,
   type LessonCoverage,
   lessonCoverage,
-  NOT_TRANSLATABLE,
   wordCoverage
 } from '../../lib/coverage';
 import { summarise } from '../../lib/lessons';
@@ -98,15 +97,16 @@ async function load(): Promise<Loaded> {
           title: l.title,
           status: l.status,
           hash: await translationHash(text, sheets),
-          templates: l.templates
+          templates: l.templates,
+          program: Boolean(l.starterProgram)
         };
       })
     ),
     Promise.all(
-      translationIds(tree, code).map(async (id) => ({
-        lesson: id.split('/')[0] ?? id,
-        ...TRANSLATION.summarise(id, (await gh.readFile(TRANSLATION.path(id))).text)
-      }))
+      translationIds(tree, code).map(async (id) => {
+        const t = TRANSLATION.summarise(id, (await gh.readFile(TRANSLATION.path(id))).text);
+        return { ...t, lesson: id.split('/')[0] ?? id, programName: Boolean(t.programName) };
+      })
     )
   ]);
   const lessons = lessonCoverage(englishLessons, translations);
@@ -259,10 +259,6 @@ const keys = Object.keys(english);
                   </a>
                 </li>
               ))}
-            <li>
-              <a href="#not-translatable">Some text can't be translated yet</a> (starter program
-              names)
-            </li>
           </ul>
         )}
       </section>
@@ -362,6 +358,12 @@ const keys = Object.keys(english);
                   <small>Sheets still in English: {l.englishSheets.join(', ')}</small>
                 </>
               )}
+              {l.state !== 'not_translated' && l.englishProgram && (
+                <>
+                  <br />
+                  <small>Starter program name still in English (program_name)</small>
+                </>
+              )}
             </td>
           </tr>
         ))}
@@ -379,16 +381,6 @@ const keys = Object.keys(english);
         {a.missing.length > 0 && <strong class="flag">⚑ </strong>}
         {a.area}: {a.translated} of {a.total}
         {a.missing.length > 0 && ` (${a.missing.length} still in English)`}
-      </li>
-    ))}
-  </ul>
-
-  <h2 id="not-translatable">Not translatable yet</h2>
-  <p>This text has no translation file yet, so learners see it in English in every language:</p>
-  <ul>
-    {NOT_TRANSLATABLE.map((n) => (
-      <li>
-        {n.what} (<code>{n.where}</code>)
       </li>
     ))}
   </ul>

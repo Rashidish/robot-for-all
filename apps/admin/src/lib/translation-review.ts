@@ -36,6 +36,8 @@ export interface TranslationItem extends Item {
   aiGenerated: boolean;
   /** Template sheets it has words for (the keys under `templates:`). */
   templates: string[];
+  /** The starter program's name in this language, if given. */
+  programName: string | null;
 }
 
 const FRONT = /^---\n([\s\S]*?)\n---\n/;
@@ -73,7 +75,8 @@ export function summariseTranslation(id: string, text: string): TranslationItem 
     buildTestedBy: 'n/a',
     translatedFrom: field(front, 'translated_from'),
     aiGenerated: field(front, 'ai_generated') === 'true',
-    templates: sheetNames(front)
+    templates: sheetNames(front),
+    programName: field(front, 'program_name')
   };
 }
 

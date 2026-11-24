@@ -121,6 +121,8 @@ export const translationSchema = z
           .strict()
       )
       .default({}),
+    /** The starter program's name in this language (spec §2.6), shown in My programs. */
+    program_name: z.string().min(2).max(60).optional(),
     /** Which English text this translates: `npm run translation-hash -- <lesson id>`. */
     translated_from: z.string().regex(/^[0-9a-f]{16}$/, 'translated_from is 16 hex characters'),
     status: z.enum(['draft', 'in_review', 'published']),
