@@ -1,6 +1,6 @@
 # Spec: Back office — Content review and publishing (lessons first)
 
-> **Version:** 0.1 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Draft, waiting for owner review
+> **Version:** 0.2 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): Option B, drafts preview yes
 > Part of `docs/specs/back-office.md` (module "Content → Lessons", build order step 4). Depends on ADR-0004, ADR-0009, ADR-0010, ADR-0011.
 
 ## 1. Purpose
@@ -98,20 +98,21 @@ reviewers that is a second step outside the back office.
 
 ## 9. Work plan
 
-1. ⏸ Owner decisions (§10); ADR-0012 if Option B.
+1. ✅ Owner decisions (§10); ADR-0012.
 2. Database: `content_reviews`, `reviewer_name`, decision functions with the "not your own" rule (PGlite tests).
 3. Drafts preview deploy behind Access.
 4. Back office: Lessons list and review queue, checklist, approve / changes / build test / unpublish, pull requests (and merging, if Option B).
 5. Test-plan rows; then the same flow for templates, worlds and translations.
 
-## 10. Owner decisions
+## 10. Owner decisions (2026-11-24)
 
-1. **Who merges:** Option A (an owner merges on GitHub) or **Option B (the back office merges after CI and a recorded approval; recommended)**.
-2. **Drafts preview** at `drafts.robotsforall.org.za` behind Cloudflare Access: yes or no.
-3. **Reviewer names** in the public repository (e.g. "R. Ishmail"), or roles only ("Reviewer 3").
+1. ✅ **Option B:** the back office merges its own front-matter pull requests after green CI and a recorded reviewer approval (ADR-0012).
+2. ✅ **Drafts preview** at `drafts.robotsforall.org.za`, behind Cloudflare Access.
+3. **Reviewer names:** each person chooses the name shown publicly when they first review (e.g. "R. Ishmail", or a role like "Reviewer 3"); an email is never accepted. The owner can still decide roles only, by asking.
 
 ## Version history
 
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-24 | First draft |
+| 0.2 | 2026-11-24 | Approved: Option B (ADR-0012), drafts preview; reviewer names chosen by each person |
