@@ -122,7 +122,7 @@ Season dates stay **content**: they change a few times a year and the public sit
 
 ### 6.2 The admin app
 
-- `apps/admin`: **Astro + Svelte** (same stack and shared `packages/ui` components as the front office, ADR-0001), server-rendered on **Cloudflare Pages Functions** (the public site stays static).
+- `apps/admin`: **Astro + Svelte** (same stack and shared `packages/ui` components as the front office, ADR-0001), server-rendered in a **Cloudflare Worker** (ADR-0011; the public site stays static on Pages).
 - Hostname **`admin.robotsforall.org.za`**, `noindex`, strict CSP, no third-party scripts.
 - Reads content from the repository; writes content through a **GitHub App** installed on this repository only (contents and pull requests: write, nothing else). It pushes a new branch and opens a pull request; **branch protection on `main`** (required review and green CI, no bypass for the App) means it can never change the live site by itself. The App's private key is a Cloudflare secret.
 
@@ -177,7 +177,7 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 ## 9. Work plan for Claude Code
 
 1. ✅ **ADR-0009 + ADR-0010** accepted (2026-11-24).
-2. **Foundation**: `apps/admin` skeleton (sign-in page with MFA, admin home, role checks with the super admin and its overrides, audit log), People → Back-office roles, database migrations for roles and audit log, CI job and tests per role. ⏸ owner actions (§13), then the owner signs in.
+2. **Foundation** *(built 2026-11-24, waits for the owner set-up in `docs/deploy.md` §5: database rules in `packages/db` (2a); admin app as a Cloudflare Worker, ADR-0011 (2b); break-glass sign-in alerts to owners by email still to do, with the email provider)*: `apps/admin` skeleton (sign-in page with MFA, admin home, role checks with the super admin and its overrides, audit log), People → Back-office roles, database migrations for roles and audit log, CI job and tests per role. ⏸ owner actions (§13), then the owner signs in.
 3. **Configuration → Seasons** (§6.5) and **Site** settings, with the GitHub App. ⏸ owner changes a date end to end.
 4. **Content review & publishing**: short spec first, then build. ⏸
 5. Further modules in the order of §4.2, each with a short spec, following the milestones.

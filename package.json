@@ -8,7 +8,8 @@
     "node": ">=22.17"
   },
   "workspaces": [
-    "apps/web"
+    "apps/web",
+    "apps/admin"
   ],
   "scripts": {
     "i18n": "paraglide-js compile --project ./project.inlang --outdir ./apps/web/src/paraglide",
@@ -18,12 +19,13 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "npm run i18n && npm run typecheck -w apps/web && tsc -p packages/blocks && tsc -p packages/sim && tsc -p packages/robots && tsc -p packages/db",
+    "typecheck": "npm run i18n && npm run typecheck -w apps/web && npm run typecheck -w apps/admin && tsc -p packages/blocks && tsc -p packages/sim && tsc -p packages/robots && tsc -p packages/db",
     "test": "npm run i18n && vitest run",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "e2e": "playwright test",
     "lighthouse": "lhci autorun",
-    "build:production": "SHOW_DRAFTS=false npm run build"
+    "build:production": "SHOW_DRAFTS=false npm run build",
+    "build:admin": "npm run build -w apps/admin"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

@@ -245,3 +245,40 @@ describe('super-admin overrides', () => {
     ]);
   });
 });
+
+describe('the people screen (migration 0002)', () => {
+  it('owners and super admins see everyone with a role, with emails', async () => {
+    const rows = await as<{ email: string; roles: string[] }>(
+      OWNER,
+      `select email, roles from public.admin_people()`
+    );
+    expect(rows).toEqual([
+      { email: 'editor@example.org', roles: ['content_editor'] },
+      { email: 'owner@example.org', roles: ['owner'] },
+      { email: 'root@example.org', roles: ['super_admin'] }
+    ]);
+  });
+
+  it('nobody else sees the list, and nobody without MFA', async () => {
+    await expect(as(EDITOR, `select * from public.admin_people()`)).rejects.toThrow(
+      /only an owner/
+    );
+    await expect(
+      as(OWNER, `select * from public.admin_people()`, [], { mfa: false })
+    ).rejects.toThrow(/only an owner/);
+  });
+
+  it('gives a role by email, with the same rules as grant_role', async () => {
+    await as(OWNER, `select public.grant_role_by_email($1, 'reviewer')`, ['  Newbie@Example.org ']);
+    expect(await roles(NEWBIE)).toEqual(['reviewer']);
+    await expect(
+      as(OWNER, `select public.grant_role_by_email($1, 'owner')`, ['newbie@example.org'])
+    ).rejects.toThrow(/only a super admin/);
+    await expect(
+      as(OWNER, `select public.grant_role_by_email($1, 'judge')`, ['nobody@example.org'])
+    ).rejects.toThrow(/sign up first/);
+    await expect(
+      as(EDITOR, `select public.grant_role_by_email($1, 'judge')`, ['newbie@example.org'])
+    ).rejects.toThrow(/only an owner/);
+  });
+});

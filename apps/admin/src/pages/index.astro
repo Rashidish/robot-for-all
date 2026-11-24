@@ -1,0 +1,71 @@
+---
+// Back-office home: who you are, your roles, and (for owners) recent super-admin overrides.
+import Admin from '../layouts/Admin.astro';
+import { canManagePeople, ROLE_LABELS } from '../lib/roles';
+
+const { supabase, user, roles } = Astro.locals;
+interface Override {
+  at: string;
+  action: string;
+  target: string | null;
+  override_reason: string;
+}
+let overrides: Override[] = [];
+if (canManagePeople(roles)) {
+  const { data } = await supabase
+    .from('audit_log')
+    .select('at, action, target, override_reason')
+    .not('override_reason', 'is', null)
+    .order('at', { ascending: false })
+    .limit(10);
+  overrides = (data ?? []) as Override[];
+}
+const when = (iso: string) =>
+  new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+---
+
+<Admin title="Back office">
+  <p>
+    Signed in as <strong>{user?.email}</strong>.
+  </p>
+  <h2>Your roles</h2>
+  <ul class="roles">
+    {roles.map((r) => (
+      <li>{ROLE_LABELS[r]}</li>
+    ))}
+  </ul>
+  {canManagePeople(roles) && (
+    <section aria-labelledby="overrides">
+      <h2 id="overrides">Recent super-admin overrides</h2>
+      {overrides.length === 0 ? (
+        <p>None.</p>
+      ) : (
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">When</th>
+                <th scope="col">What</th>
+                <th scope="col">On</th>
+                <th scope="col">Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              {overrides.map((o) => (
+                <tr>
+                  <td>{when(o.at)}</td>
+                  <td>{o.action}</td>
+                  <td>{o.target ?? ''}</td>
+                  <td>{o.override_reason}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  )}
+  <p>
+    More modules arrive step by step: Configuration → Seasons next (docs/specs/back-office.md §4.2).
+  </p>
+</Admin>

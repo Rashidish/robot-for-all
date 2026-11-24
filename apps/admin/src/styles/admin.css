@@ -1,0 +1,145 @@
+/* Back office: plain, readable, high contrast; works at 360 px. */
+:root {
+  --ink: #1f1a14;
+  --paper: #fbfaf5;
+  --line: #8a8378;
+  --brand: #1d5a2c;
+  --danger: #a32a1c;
+  --focus: #1d5fbf;
+  font-family: system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.5;
+}
+body {
+  margin: 0;
+}
+.skip {
+  position: absolute;
+  left: -999px;
+}
+.skip:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  background: #fff;
+  padding: 0.5rem;
+}
+header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--brand);
+  background: #fff;
+}
+.brand {
+  margin: 0;
+}
+nav ul {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+nav a[aria-current='page'] {
+  font-weight: 700;
+}
+.who {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
+  font-size: 0.9rem;
+}
+main {
+  max-width: 60rem;
+  padding: 1rem;
+}
+a {
+  color: var(--brand);
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+label {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+input,
+select,
+button {
+  font: inherit;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+}
+input,
+select {
+  width: 100%;
+  max-width: 24rem;
+  padding: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+button {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--brand);
+  border-radius: 4px;
+  background: var(--brand);
+  color: #fff;
+  cursor: pointer;
+}
+button.quiet {
+  background: #fff;
+  color: var(--danger);
+  border-color: var(--danger);
+  min-height: 2.25rem;
+  padding: 0.2rem 0.6rem;
+}
+.actions {
+  margin-top: 1rem;
+}
+.notice {
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--brand);
+  background: #eef5ef;
+}
+.error {
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--danger);
+  background: #fbeeec;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.4rem;
+  border-bottom: 1px solid #ddd8ce;
+}
+.table-wrap {
+  overflow-x: auto;
+}
+.inline {
+  display: inline;
+}
+ul.roles {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.qr {
+  background: #fff;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+}
+code {
+  word-break: break-all;
+}

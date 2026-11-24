@@ -69,8 +69,43 @@ Learners who installed the app from `robot-for-all.pages.dev` keep that copy wor
 new install (browsers keep apps per address). Before the public launch, tell pilot users to open the new
 address once.
 
+### 5. The back office (ADR-0009, ADR-0010, ADR-0011)
+
+The back office is a separate **Cloudflare Worker** (`robots-for-all-admin`) on
+`admin.robotsforall.org.za`, behind **Cloudflare Access**. It is never part of the public site.
+Do these once, in this order:
+
+1. **Supabase:** create a project (free plan, the region nearest South Africa). Turn on
+   **Authentication → Multi-factor → TOTP**. Apply `packages/db/migrations/*.sql` in order and set
+   up the first super admin and the vaulted break-glass account (`packages/db/README.md`).
+2. **Cloudflare Access:** Zero Trust (free plan) → **Access → Applications → Add → Self-hosted**:
+   domain `admin.robotsforall.org.za`, a policy that **allows only the admin email addresses**,
+   login method **One-time PIN**. Copy the application's **AUD tag** and your **team name**
+   (the `<team>` in `<team>.cloudflareaccess.com`).
+3. **A deploy token for the Worker:** My Profile → API Tokens → Create Token → *Edit Cloudflare
+   Workers* template; keep only this account and the `robotsforall.org.za` zone. Add it to GitHub
+   as the secret **`CLOUDFLARE_ADMIN_API_TOKEN`** (separate from the Pages token, so each can do
+   only its own job). If the first deploy says it can't attach the custom domain, add
+   **Zone → DNS → Edit** for `robotsforall.org.za` to this token only.
+4. **Worker secrets** (on your computer, once, from `apps/admin`; values never go into the repo):
+   ```
+   npx wrangler secret put SUPABASE_URL
+   npx wrangler secret put SUPABASE_ANON_KEY
+   npx wrangler secret put ACCESS_TEAM
+   npx wrangler secret put ACCESS_AUD
+   ```
+5. **Switch the deploy on:** GitHub → Settings → Secrets and variables → Actions → **Variables** →
+   `ADMIN_DEPLOY` = `true`. The next push to `main` deploys the Worker, attaches the custom domain,
+   creates its small KV store (`SESSION`) and checks that the live site refuses requests without
+   Access.
+6. **Sign in:** open `admin.robotsforall.org.za`, pass Access with the emailed PIN, sign in with
+   your Supabase account and set up your authenticator app.
+
+Without `ACCESS_TEAM` and `ACCESS_AUD` the app refuses every request, and without the Supabase
+secrets it shows an error: it never opens by accident.
+
 ## Security notes
-- The token can only deploy Pages; it can't change DNS or anything else.
+- The Pages token can only deploy Pages; the back-office token (`CLOUDFLARE_ADMIN_API_TOKEN`) is limited to Workers (and, if needed, DNS for the admin custom domain) on this account and zone.
 - Secrets are never exposed to pull requests from forks.
 - Security headers come from `apps/web/public/_headers` and are tested in CI.
 - To roll back: Cloudflare dashboard → the project → **Deployments** → pick an earlier one → **Rollback**.

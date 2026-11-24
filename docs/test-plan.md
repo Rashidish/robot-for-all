@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.23 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.24 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -74,6 +74,8 @@ How to use this list: add a row whenever a step adds something only a person can
 | B20 | **Print course on two different printers**: print bump maze 4817 (4 × 4) at 100 % from a phone or laptop; the calibration square measures **100 mm ± 1 mm** on both; the 15 tiles join with the corner marks lined up, following the assembly map; the build sheet's 25 walls match the walls on screen; lines and zones are readable on a black-and-white printer | |
 | B21 | **Season 1 "Rhino Patrol" on the floor**: print and build the three courses (Junior 4 × 3, Grade 5–6 5 × 4, Senior 6 × 5) from Print course; each fits a classroom floor or a corridor; the tunnel, gate flap and waterhole walls stand up; a Grade 3–4 group finishes Junior with timed moves, and a Grade 7–9 group finishes Senior with sensors; teachers say the mission names and difficulty suit each grade band | |
 | B22 | **Season banner with TalkBack and in sunlight**: choose a Season 1 course; the picker announces the "Season 1: Rhino Patrol" group; the banner reads the season name, its state and the description; the rhino badge is recognisable on a budget phone outdoors | |
+| B23 | **Back office sign-in** (after `docs/deploy.md` §5): an email not on the Access list never reaches the sign-in page; a listed admin passes Access, signs in, sets up an authenticator app and lands on Home; a wrong code is refused; signing in as a different account from the Access email is refused; everything works on a phone at 360 px and with a keyboard only | |
+| B24 | **Back-office roles**: an owner gives Reviewer to a signed-up account by email and takes it away; an owner can't give Owner; a super admin can; the last super admin can't be removed; the vaulted break-glass account signs in from the vault; every change shows in the audit log | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -118,3 +120,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.21 | 2026-11-24 | Lesson p3-linemaze-01 Line maze |
 | 0.22 | 2026-11-24 | B21 Season 1 courses on the floor |
 | 0.23 | 2026-11-24 | B22 season banner |
+| 0.24 | 2026-11-24 | B23–B24 back office |

@@ -1,0 +1,14 @@
+---
+import Admin from '../layouts/Admin.astro';
+
+if (Astro.request.method === 'POST') {
+  await Astro.locals.supabase.auth.signOut();
+  return Astro.redirect('/sign-in/', 303);
+}
+---
+
+<Admin title="Sign out">
+  <form method="post">
+    <button type="submit">Sign out</button>
+  </form>
+</Admin>
