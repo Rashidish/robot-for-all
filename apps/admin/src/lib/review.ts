@@ -132,7 +132,10 @@ export async function readItems<T extends Item>(gh: GitHub, kind: ContentKind<T>
 export const readLessons = (gh: GitHub) => readItems(gh, LESSON);
 
 /** The open back-office pull request for each item of a kind, by id. */
-export function pullsFor(type: 'lesson' | 'world' | 'language', pulls: Pull[]): Map<string, Pull> {
+export function pullsFor(
+  type: 'lesson' | 'world' | 'language' | 'translation',
+  pulls: Pull[]
+): Map<string, Pull> {
   const map = new Map<string, Pull>();
   const re = new RegExp(`^admin/${type}-(.+)-\\d{8}-\\d{6}$`);
   for (const p of pulls) {

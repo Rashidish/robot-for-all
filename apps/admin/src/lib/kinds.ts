@@ -21,7 +21,7 @@ export interface Item {
 }
 
 export interface ContentKind<T extends Item> {
-  type: 'lesson' | 'world' | 'language';
+  type: 'lesson' | 'world' | 'language' | 'translation';
   noun: string;
   path(id: string): string;
   /** The folder whose entries are the items (sub-folders for lessons, .json files for worlds). */

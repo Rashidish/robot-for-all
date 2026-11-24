@@ -120,6 +120,17 @@ export class GitHub {
     return items.filter((i) => i.type === 'dir').map((i) => i.name);
   }
 
+  /** Every file path under a folder on main, in one request (the git tree, recursive). */
+  async listTree(path: string): Promise<string[]> {
+    const tree = await this.api<{ tree: { path: string; type: string }[] }>(
+      `/git/trees/main?recursive=1`
+    );
+    const prefix = `${path.replace(/\/$/, '')}/`;
+    return tree.tree
+      .filter((t) => t.type === 'blob' && t.path.startsWith(prefix))
+      .map((t) => t.path);
+  }
+
   /** A text file on main (or another ref), with its blob sha (needed to change it safely). */
   async readFile(path: string, ref = 'main'): Promise<{ text: string; sha: string }> {
     const file = await this.api<{ content: string; sha: string }>(

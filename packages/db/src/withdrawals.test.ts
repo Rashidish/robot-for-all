@@ -243,3 +243,63 @@ describe('languages are reviewed by someone who reads them (migration 0008)', ()
     );
   });
 });
+
+describe('lesson translations are reviewed by someone who reads the language (migration 0009)', () => {
+  const TICKS = {
+    meaning_kept: true,
+    safety_exact: true,
+    child_words: true,
+    local_terms: true,
+    no_english_left: true,
+    ai_read: true
+  };
+  const review = (
+    user: string,
+    decision: string,
+    checklist: unknown = null,
+    id = 'p1-crank-01/zu',
+    notes: string | null = null
+  ) =>
+    t.as(user, `select public.record_review('translation', $1, $2, $3, $4, $5)`, [
+      id,
+      decision,
+      checklist,
+      notes,
+      PR
+    ]);
+
+  it('a translator sends it; only a reviewer who reads isiZulu approves, with all six ticks', async () => {
+    const TRANSLATOR = EDITOR;
+    await t.as(ROOT, `select public.grant_role($1, 'translator')`, [TRANSLATOR]);
+    await review(TRANSLATOR, 'sent_for_review');
+    await expect(review(REVIEWER, 'approved', TICKS)).rejects.toThrow(/reads this language/);
+    await t.as(REVIEWER, `select public.set_reviewer_languages($1)`, [['zu']]);
+    await expect(review(REVIEWER, 'approved', { ...TICKS, ai_read: false })).rejects.toThrow(
+      /missing: ai_read/
+    );
+    await review(REVIEWER, 'approved', TICKS);
+    const [row] = await t.service<{ n: number }>(
+      `select count(*)::int as n from public.content_reviews where content_type = 'translation' and content_id = 'p1-crank-01/zu'`
+    );
+    expect(row?.n).toBe(2);
+  });
+
+  it('refuses a build test, an English "translation" and a malformed id', async () => {
+    await t.as(REVIEWER, `select public.set_reviewer_languages($1)`, [['zu', 'en']]);
+    await expect(
+      review(REVIEWER, 'build_tested', null, 'p1-crank-01/zu', 'Built it from the lesson')
+    ).rejects.toThrow(/no build test/);
+    await expect(review(REVIEWER, 'approved', TICKS, 'p1-crank-01/en')).rejects.toThrow(
+      /<lesson>\/<language>/
+    );
+    await expect(review(REVIEWER, 'approved', TICKS, 'p1-crank-01')).rejects.toThrow(
+      /<lesson>\/<language>/
+    );
+  });
+
+  it('a translator cannot approve, even one who reads the language', async () => {
+    await t.as(ROOT, `select public.grant_role($1, 'translator')`, [EDITOR]);
+    await t.as(EDITOR, `select public.set_reviewer_name($1)`, ['Editor 4']);
+    await expect(review(EDITOR, 'approved', TICKS)).rejects.toThrow(/reads this language|reviewer/);
+  });
+});
