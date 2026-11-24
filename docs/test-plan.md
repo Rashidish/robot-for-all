@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.18 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.19 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -44,6 +44,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | p2-motor-03 Two motors: turning (as above; also: an adult checks the breakout board and two-motor wiring; the robot drives straight, spins and curves on the floor) | | | | | n/a | |
 | p2-whisker-01 Whisker bumper (as above; also: an adult bends the paper clips; the bumper template printed at 100 %; the robot backs away from a real wall and the whiskers don't stay pressed) | | | | | | |
 | p2-line-01 Follow the line (as above; also: an adult checks the sensor wiring; the robot follows a taped line with three curves on the floor; check the sensors see black insulation tape, and printed ink) | | | | | n/a | |
+| p2-maze-01 Bump maze (as above; also: one printed stencil makes walls that stand by themselves when traced on cereal-box card; the tunnel roof halves join to 150 × 200 mm; the gate flap swings when the robot pushes it; the starter gets the real robot out of a six-wall maze) | | | | | n/a | |
 
 ---
 
@@ -108,3 +109,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.16 | 2026-11-24 | Lesson p2-motor-03 Two motors: turning |
 | 0.17 | 2026-11-24 | Lesson p2-whisker-01 Whisker bumper |
 | 0.18 | 2026-11-24 | Lesson p2-line-01 Follow the line |
+| 0.19 | 2026-11-24 | Lesson p2-maze-01 Bump maze |

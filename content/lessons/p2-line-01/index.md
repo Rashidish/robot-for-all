@@ -43,7 +43,7 @@ assessment:
   - I can make my robot follow a curved line to the end
   - I can change a speed, test it and say if it got better
 prerequisites: [p2-whisker-01]
-next: null
+next: p2-maze-01
 templates: []
 status: draft
 ai_generated: true

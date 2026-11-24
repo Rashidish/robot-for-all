@@ -207,4 +207,16 @@ test.describe('Robot tab (M4 step 2)', () => {
       timeout: 60_000
     });
   });
+
+  test('"Bump maze": the starter hugs a wall and gets out of the bump maze', async ({ page }) => {
+    test.setTimeout(150_000);
+    await page.goto('/lessons/p2-maze-01/');
+    await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
+    await expect(page.locator('.blocklySvg').first()).toBeVisible();
+    await expect(page.getByLabel('World', { exact: true })).toHaveValue('bump-maze');
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect(page.locator('.robot-world .result')).toHaveText(/Challenge done!/, {
+      timeout: 120_000
+    });
+  });
 });

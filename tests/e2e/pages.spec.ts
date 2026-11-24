@@ -196,7 +196,9 @@ test.describe('pages on a 360 px phone', () => {
       '/templates/p1-gear-01/gear-train.svg',
       '/templates/p1-pulley-01/pulley-parts.svg',
       '/templates/p1-motor-01/scribble-bot.svg',
-      '/templates/p2-whisker-01/whisker-bumper.svg'
+      '/templates/p2-whisker-01/whisker-bumper.svg',
+      '/templates/p2-maze-01/wall-pieces.svg',
+      '/templates/p2-maze-01/tunnel-and-gate.svg'
     ]) {
       const res = await request.get(path);
       expect(res.status(), path).toBe(200);
@@ -224,7 +226,8 @@ test.describe('pages on a 360 px phone', () => {
       'p2-robot-01',
       'p2-motor-03',
       'p2-whisker-01',
-      'p2-line-01'
+      'p2-line-01',
+      'p2-maze-01'
     ]) {
       await page.goto(`/lessons/${id}/`);
       const img = page.locator('.lesson-body img').first();
@@ -256,7 +259,8 @@ test.describe('pages on a 360 px phone', () => {
       'p2-robot-01',
       'p2-motor-03',
       'p2-whisker-01',
-      'p2-line-01'
+      'p2-line-01',
+      'p2-maze-01'
     ];
     await page.goto('/lessons/p2-light-01/');
     // "Code for this lesson" sits just before the syllabus links (owner, 2026-11-23).
