@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import en from '../../../content/i18n/en.json';
-import { bumpMaze, leftHandLineMaze } from '../test-support/drivers';
+import { bumpMaze, leftHandLineMaze, timed } from '../test-support/drivers';
 import { runScripted } from './sim';
 import { buildWorld, checkWorld } from './world';
 
@@ -17,7 +17,8 @@ const messages = en as Record<string, string>;
 const key = (id: unknown) => String(id).replaceAll('-', '_');
 
 describe('content/worlds', () => {
-  it('has the seven launch worlds and the five first courses', () => {
+  it('has the seven launch worlds, the first courses and the Season 1 courses', () => {
+    // Sorted as file names: "rhino-patrol-…" comes before "rhino-patrol.json".
     expect(files.sort()).toEqual(
       [
         'art-floor',
@@ -30,6 +31,8 @@ describe('content/worlds', () => {
         'line-junction',
         'line-maze',
         'open-floor',
+        'rhino-patrol-junior',
+        'rhino-patrol-senior',
         'rhino-patrol',
         'simple-maze'
       ].map((id) => `${id}.json`)
@@ -70,5 +73,61 @@ describe('random maze courses can be finished within their time limit', () => {
       const sim = runScripted(buildWorld(course, { seed }), leftHandLineMaze());
       expect(sim.status, `maze ${seed}`).toBe('done');
     }
+  });
+});
+
+describe('Season 1 "Rhino Patrol": every mission can be done within the time limit', () => {
+  const load = (id: string) => buildWorld(specs.find((s) => s.spec.id === id)?.spec ?? {});
+  // A planned run with timed moves: forward or back by mm at speed 60 (120 mm/s), quarter
+  // turns on the spot (about 654 ms), and a pause. Learners' sensor programs take other paths.
+  type Move = { ms: number; left: number; right: number };
+  const F = (mm: number): Move => ({
+    ms: Math.round((Math.abs(mm) / 120) * 1000),
+    left: Math.sign(mm) * 60,
+    right: Math.sign(mm) * 60
+  });
+  const L: Move = { ms: 654, left: -60, right: 60 };
+  const R: Move = { ms: 654, left: 60, right: -60 };
+  const pause: Move = { ms: 500, left: 0, right: 0 };
+
+  it.each([
+    // Grade 3–4: timed moves only, no sensors.
+    ['rhino-patrol-junior', [F(400), pause, F(200), L, F(400), L, F(600), L, F(400)], 145],
+    // Grade 5–6: up the fence line, through the thicket, touch the gate, waterhole, home.
+    [
+      'rhino-patrol',
+      [F(600), R, F(800), R, F(680), F(-80), R, F(400), R, F(200), pause, L, F(400), L, F(200)],
+      177
+    ],
+    // Grade 7–9: three posts in order, thicket, gate, the walled waterhole, home.
+    [
+      'rhino-patrol-senior',
+      [
+        F(800),
+        L,
+        F(1000),
+        L,
+        F(800),
+        L,
+        F(440),
+        F(-40),
+        L,
+        F(400),
+        pause,
+        F(-200),
+        R,
+        F(600),
+        R,
+        F(200)
+      ],
+      190
+    ]
+  ] as const)('%s', (id, moves, score) => {
+    const world = load(id);
+    const sim = runScripted(world, timed([...moves]));
+    expect(sim.status).toBe('done');
+    for (const m of world.missions) expect(sim.missionDone(m.id), m.id).toBe(true);
+    expect(sim.timeMs).toBeLessThan(world.timeLimitMs ?? 120_000);
+    expect(sim.report('planned').score).toBe(score);
   });
 });

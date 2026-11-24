@@ -113,7 +113,9 @@ const ORDER = [
   'line-junction',
   'bump-maze',
   'line-maze',
-  'rhino-patrol'
+  'rhino-patrol-junior',
+  'rhino-patrol',
+  'rhino-patrol-senior'
 ];
 
 /** Run reports are kept on this device only, the latest per world (spec §2, §6.1, §7). */
