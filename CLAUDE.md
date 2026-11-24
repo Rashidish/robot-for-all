@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.24 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.25 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -139,7 +139,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 ```
 
 ### Lesson content (see ADR-0004)
-One folder per lesson: `index.md` (English source), `index.<lang>.md` for translations, `images/` for pictures.
+One folder per lesson: `index.md` (English source), `index.<lang>.md` for translations, `images/` for pictures. Pictures carry no words: numbered callouts explained in the lesson text, plus markings printed on real parts (pins, part names, voltages); a test fails on any other word.
 
 Front matter is metadata only:
 ```yaml
@@ -291,3 +291,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.22 | 2026-11-24 | `content/site/withdrawn.json`: withdraw any live lesson, template, world, season or language (back office) |
 | 0.23 | 2026-11-24 | `content/i18n/languages.json`: languages added and removed from the back office (more content spec §2.5) |
 | 0.24 | 2026-11-24 | Lesson translations `index.<lang>.md`: words only, `translated_from` (more content spec §2.7) |
+| 0.25 | 2026-11-24 | Lesson pictures carry no words (translate-templates-and-programs spec §2.5) |

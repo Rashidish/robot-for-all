@@ -49,4 +49,5 @@ Rules:
 - CLAUDE.md §6 is updated in this PR: PRIMM moves from front matter to the lesson body, and `languages` is computed.
 - The CI "Content checks" job grows into the full schema validator in M1 step 5.
 - **Translations (2026-11-24, more content spec §2.7):** `index.<lang>.md` holds only the translated words plus its own `status`/`reviewed_by` and `translated_from` (which English text it translates); facts always come from `index.md`. A translation whose English changed shows English on production until it is checked again.
+- **Diagrams carry no words (2026-11-24, translate-templates-and-programs spec §2.5):** a lesson SVG shows only numbered callouts (explained in the lesson text, which is translated) and markings printed on real parts (pins, L9110S, SG90, voltages, micro:bit). A unit test fails on any other word, so no picture needs a copy per language.
 - Revisit when non-technical editors exceed what the GitHub web editor can handle (likely M2–M3). A Git-based CMS such as Decap or Keystatic can sit on top of these same files.

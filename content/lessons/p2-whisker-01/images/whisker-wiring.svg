@@ -11,7 +11,9 @@
   <!-- Cardboard bumper front, seen from above, with the robot behind it. -->
   <rect x="60" y="200" width="300" height="30" rx="4" fill="#d9b98c" stroke="#1f1a14" stroke-width="2"/>
   <rect x="120" y="230" width="180" height="56" rx="6" fill="#e8e2d6" stroke="#1f1a14" stroke-width="2" stroke-dasharray="5 4"/>
-  <text x="210" y="264" font-size="11" text-anchor="middle" fill="#1f1a14">robot</text>
+  <!-- The robot's two wheels, so the body reads as the robot without a word. -->
+  <rect x="104" y="240" width="14" height="36" rx="3" fill="#1f1a14"/>
+  <rect x="302" y="240" width="14" height="36" rx="3" fill="#1f1a14"/>
   <!-- Foil strips on the bumper. -->
   <rect x="96" y="194" width="44" height="10" fill="#c7ccd1" stroke="#1f1a14" stroke-width="1.5"/>
   <rect x="280" y="194" width="44" height="10" fill="#c7ccd1" stroke="#1f1a14" stroke-width="1.5"/>
