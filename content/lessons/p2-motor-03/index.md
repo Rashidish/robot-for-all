@@ -45,7 +45,7 @@ assessment:
   - I can use repeat to make my robot drive a square
   - I can change the speeds and say what changed
 prerequisites: [p2-robot-01]
-next: null
+next: p2-whisker-01
 templates: []
 status: draft
 ai_generated: true

@@ -181,4 +181,16 @@ test.describe('Robot tab (M4 step 2)', () => {
     await expect(left).toHaveText('60%', { timeout: 5_000 });
     await expect(right).toHaveText('-60%');
   });
+
+  test('"Whisker bumper": the starter feels its way out of the simple maze', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.goto('/lessons/p2-whisker-01/');
+    await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
+    await expect(page.locator('.blocklySvg').first()).toBeVisible();
+    await expect(page.getByLabel('World', { exact: true })).toHaveValue('simple-maze');
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect(page.locator('.robot-world .result')).toHaveText(/Challenge done!/, {
+      timeout: 60_000
+    });
+  });
 });
