@@ -14,6 +14,8 @@ import {
   hashText,
   MAX_RECORDED_CALLS,
   type RunReport,
+  buildSeason,
+  type Season,
   Sim,
   type World
 } from '../../../../packages/sim/src/index';
@@ -98,6 +100,46 @@ export function loadWorlds(specs: Record<string, unknown>): World[] {
   return Object.values(specs)
     .map((spec) => buildWorld(spec))
     .sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
+}
+
+/** A season with the URL of its badge (FR-20). */
+export interface SeasonEntry {
+  season: Season;
+  badge: string;
+}
+
+/** All seasons, newest first, each with its badge (checked at build, like worlds). */
+export function loadSeasons(
+  specs: Record<string, unknown>,
+  badges: Record<string, string>,
+  worlds: readonly World[]
+): SeasonEntry[] {
+  const ids = new Set(worlds.map((w) => w.id));
+  const badgeFor = (id: string) =>
+    Object.entries(badges).find(([path]) => path.endsWith(`/${id}.svg`))?.[1] ?? '';
+  return Object.values(specs)
+    .map((spec) => buildSeason(spec, ids))
+    .sort((a, b) => b.number - a.number)
+    .map((season) => ({ season, badge: badgeFor(season.id) }));
+}
+
+/** The picker's groups: each season's courses (grade order), then every other world. */
+export function pickerGroups(
+  worlds: readonly World[],
+  seasons: readonly SeasonEntry[]
+): { season: Season | null; worlds: World[] }[] {
+  const byId = new Map(worlds.map((w) => [w.id, w]));
+  const inSeason = new Set(seasons.flatMap((s) => Object.values(s.season.courses)));
+  return [
+    ...seasons.map(({ season }) => ({
+      season,
+      worlds: Object.values(season.courses).flatMap((id) => {
+        const w = byId.get(id);
+        return w ? [w] : [];
+      })
+    })),
+    { season: null, worlds: worlds.filter((w) => !inSeason.has(w.id)) }
+  ];
 }
 
 /** Launch worlds first, in lesson order, then the courses (spec §2, §14.5). */

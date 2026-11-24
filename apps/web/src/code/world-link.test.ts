@@ -10,7 +10,9 @@ import {
   loadReports,
   monitorSample,
   squareAt,
+  loadSeasons,
   loadWorlds,
+  pickerGroups,
   missionList,
   specsById,
   withMaze,
@@ -168,5 +170,38 @@ describe('replaying a run from the editor (FR-14)', () => {
     }
     const again = replay(world, link.calls, { oneMotor: true });
     expect(JSON.stringify(again.report(link.programHash))).toBe(JSON.stringify(link.report()));
+  });
+});
+
+describe('seasons in the picker (M4 spec FR-20)', () => {
+  const worldFiles = import.meta.glob('../../../../content/worlds/*.json', {
+    eager: true,
+    import: 'default'
+  });
+  const worlds = loadWorlds(worldFiles);
+  const seasons = loadSeasons(
+    import.meta.glob('../../../../content/seasons/*.json', { eager: true, import: 'default' }),
+    { '../../../../content/seasons/rhino-patrol.svg': '/_astro/rhino-patrol.svg' },
+    worlds
+  );
+
+  it('loads Season 1 with its badge', () => {
+    expect(seasons.map((s) => [s.season.number, s.season.id, s.badge])).toEqual([
+      [1, 'rhino-patrol', '/_astro/rhino-patrol.svg']
+    ]);
+  });
+
+  it("groups each season's courses in grade order, then every other world", () => {
+    const groups = pickerGroups(worlds, seasons);
+    expect(groups.map((g) => g.season?.id ?? null)).toEqual(['rhino-patrol', null]);
+    expect(groups[0]?.worlds.map((w) => w.id)).toEqual([
+      'rhino-patrol-junior',
+      'rhino-patrol',
+      'rhino-patrol-senior'
+    ]);
+    const rest = groups[1]?.worlds.map((w) => w.id) ?? [];
+    expect(rest[0]).toBe('open-floor');
+    expect(rest).not.toContain('rhino-patrol');
+    expect(rest.length + 3).toBe(worlds.length);
   });
 });

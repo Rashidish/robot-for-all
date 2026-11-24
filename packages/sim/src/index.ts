@@ -4,6 +4,7 @@ export * from './build-sheet';
 export * from './maze';
 export * from './replay';
 export * from './robot';
+export * from './season';
 export * from './sim';
 export * from './world';
 export { hashText } from './util';

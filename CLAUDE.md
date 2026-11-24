@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.17 (draft) · **Date:** 2026-11-23 · **Owner:** Rashid Ishmail
+> **Version:** 0.18 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -127,6 +127,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /content/lessons     Lessons as Markdown + front matter (one folder per lesson)
 /content/projects    Project data, parts lists, templates (SVG)
 /content/worlds      Robot worlds and courses for the simulator (JSON, checked)
+/content/seasons     Seasons: three courses per theme, one per grade band, plus badge (JSON + SVG)
 /content/i18n        Translations per language
 /docs/specs          One spec per feature (write before building)
 /docs/adr            Architecture decision records
@@ -275,3 +276,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.15 | 2026-11-23 | Owner decision: rename the product to Robots For All during the UI work |
 | 0.16 | 2026-11-23 | Renamed to Robots For All in user-facing text; hostname `robotsforall.org.za`, other domains redirect |
 | 0.17 | 2026-11-23 | Lesson format: `world` (the robot world a starter program opens in, M4) |
+| 0.18 | 2026-11-24 | `content/seasons` (M4 FR-20) |

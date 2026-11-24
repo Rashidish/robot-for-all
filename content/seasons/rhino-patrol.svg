@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Season 1 "Rhino Patrol" badge: a rhino in a ring, in the site's green and earth colours. -->
+  <circle cx="60" cy="60" r="56" fill="#f4efe3" stroke="#2c7a3f" stroke-width="6"/>
+  <path d="M10 82H110" stroke="#d9b98c" stroke-width="4"/>
+  <g fill="#5a5a5a" stroke="#1f1a14" stroke-width="2" stroke-linejoin="round">
+    <!-- Body, head, horns, legs and tail. -->
+    <path d="M30 56C30 44 44 38 60 38C74 38 82 44 86 52L96 52C102 52 104 58 102 64L98 72C96 76 90 76 86 74L84 74L84 82H76L75 72H46L44 82H36L35 70C31 67 30 62 30 56Z"/>
+    <path d="M98 54L106 40L104 56Z"/>
+    <path d="M92 52L95 44L97 52Z"/>
+    <path d="M30 54L24 62" fill="none"/>
+  </g>
+  <circle cx="90" cy="58" r="2" fill="#1f1a14"/>
+  <path d="M80 46L84 40L86 47" fill="#5a5a5a" stroke="#1f1a14" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M33 94C45 100 75 100 87 94" fill="none" stroke="#2c7a3f" stroke-width="4" stroke-linecap="round"/>
+</svg>
