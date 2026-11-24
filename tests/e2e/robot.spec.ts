@@ -266,4 +266,25 @@ test.describe('Robot tab (M4 step 2)', () => {
     await page.getByLabel('World', { exact: true }).selectOption('rhino-patrol-senior');
     await expect.poll(ratio).toBeCloseTo(5 / 6, 2);
   });
+
+  test('Season 1 courses are grouped in the picker and show the season badge', async ({ page }) => {
+    await page.goto('/code/');
+    await page.getByRole('button', { name: 'Robot', exact: true }).click();
+    const picker = page.getByLabel('World', { exact: true });
+    const group = picker.locator('optgroup[label="Season 1: Rhino Patrol"] option');
+    await expect(group).toHaveText([
+      'Rhino Patrol Junior (Grade 3–4)',
+      'Rhino Patrol (Grade 5–6)',
+      'Rhino Patrol Senior (Grade 7–9)'
+    ]);
+    // A world outside the season has no banner; a season course has the badge and its state.
+    await expect(page.locator('.robot-world .season')).toHaveCount(0);
+    await picker.selectOption('rhino-patrol-senior');
+    const banner = page.locator('.robot-world .season');
+    await expect(banner).toContainText('Season 1: Rhino Patrol');
+    await expect(banner).toContainText(/This season|Starts soon|Past season/);
+    await expect
+      .poll(() => banner.locator('img').evaluate((el: HTMLImageElement) => el.naturalWidth))
+      .toBeGreaterThan(0);
+  });
 });

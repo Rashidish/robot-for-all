@@ -17,13 +17,18 @@
     monitorSample,
     type Pushes,
     saveReport,
+    pickerGroups,
+    type SeasonEntry,
     squareAt,
     withMaze,
     WorldLink
   } from '../code/world-link';
+  import { saDate, seasonState } from '../../../../packages/sim/src/season';
 
   interface Props {
     worlds: World[];
+    /** Seasons (FR-20), newest first, each with its badge. */
+    seasons: SeasonEntry[];
     /** Each world's spec by id, so a maze course can be rebuilt with another maze number. */
     specs: Record<string, unknown>;
     labels: Record<string, string>;
@@ -32,12 +37,17 @@
     /** Sends the world's sensor answers into the on-screen micro:bit. */
     push: (pushes: Pushes) => void;
   }
-  let { worlds, specs, labels, visible, push }: Props = $props();
+  let { worlds, seasons, specs, labels, visible, push }: Props = $props();
   const t = (key: string) => labels[key] ?? key;
   const key = (id: string) => id.replaceAll('-', '_');
 
   let worldId = $state(worlds[0]?.id ?? '');
   const baseWorld = $derived(worlds.find((w) => w.id === worldId) ?? worlds[0]);
+
+  // Seasons (FR-20): their courses are grouped in the picker; a season course shows its badge.
+  const groups = $derived(pickerGroups(worlds, seasons));
+  const season = $derived(seasons.find((e) => Object.values(e.season.courses).includes(worldId)));
+  const seasonNow = $derived(season ? seasonState(season.season, saDate(new Date())) : null);
 
   // Maze courses (FR-18): a maze number and size give one exact maze, the same on every device.
   let mazeNumber = $state(1);
@@ -320,11 +330,25 @@
       value={worldId}
       onchange={(e) => chooseWorld(e.currentTarget.value)}
     >
-      {#each worlds as w (w.id)}
-        <option value={w.id}>{t(`world_${key(w.id)}_name`)}</option>
+      {#each groups as g (g.season?.id ?? '')}
+        <optgroup label={g.season ? t(g.season.name) : t('sim_worlds_group')}>
+          {#each g.worlds as w (w.id)}
+            <option value={w.id}>{t(`world_${key(w.id)}_name`)}</option>
+          {/each}
+        </optgroup>
       {/each}
     </select>
   </div>
+  {#if season && seasonNow}
+    <div class="season">
+      <img src={season.badge} alt="" width="48" height="48" />
+      <p>
+        <strong>{t(season.season.name)}</strong>
+        <span class="season-state">{t(`sim_season_${seasonNow}`)}</span>
+        <span>{t(season.season.about)}</span>
+      </p>
+    </div>
+  {/if}
   {#if world?.challenge}
     <p class="challenge">{t(world.challenge)}</p>
   {/if}
@@ -481,6 +505,29 @@
   .challenge {
     margin: 0;
     font-size: 0.9rem;
+  }
+  .season {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #2c7a3f;
+    border-radius: 6px;
+    background: #f4efe3;
+    color: #1f1a14;
+    font-size: 0.85rem;
+  }
+  .season img {
+    flex: none;
+  }
+  .season p {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+  .season-state {
+    font-weight: 600;
+    color: #1d5a2c;
   }
   .stage {
     width: 100%;

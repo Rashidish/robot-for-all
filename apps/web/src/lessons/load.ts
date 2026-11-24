@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { findTemplate } from '../templates/load';
 import { findProgram } from './programs';
 import { checkLinks, checkPrimm, isVisible } from './schema';
+import { seasonProblems } from './seasons';
 import { worldIds, worldProblems } from './worlds';
 
 export type LessonEntry = CollectionEntry<'lessons'>;
@@ -46,7 +47,7 @@ export async function getLessons(): Promise<LessonEntry[]> {
   }
   // Robot worlds are content too: a broken world, or a lesson naming one that doesn't exist,
   // fails the build (M4 spec FR-4, FR-8).
-  problems.push(...worldProblems());
+  problems.push(...worldProblems(), ...seasonProblems());
   const worlds = worldIds();
   for (const lesson of all) {
     const world = lesson.data.world;

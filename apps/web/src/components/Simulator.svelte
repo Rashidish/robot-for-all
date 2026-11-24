@@ -10,7 +10,7 @@
     type SensorName
   } from '../../../../packages/robots/src/simulator';
   import RobotWorld from './RobotWorld.svelte';
-  import { loadWorlds, type Pushes, specsById } from '../code/world-link';
+  import { loadSeasons, loadWorlds, type Pushes, specsById } from '../code/world-link';
 
   // Worlds and courses from content/worlds, checked when the page is built (M4 spec FR-4).
   const worldFiles = import.meta.glob('../../../../content/worlds/*.json', {
@@ -19,6 +19,16 @@
   });
   const worlds = loadWorlds(worldFiles);
   const worldSpecs = specsById(worldFiles);
+  // Seasons (FR-20): each with its badge, served from our own site.
+  const seasons = loadSeasons(
+    import.meta.glob('../../../../content/seasons/*.json', { eager: true, import: 'default' }),
+    import.meta.glob<string>('../../../../content/seasons/*.svg', {
+      eager: true,
+      query: '?url',
+      import: 'default'
+    }),
+    worlds
+  );
 
   interface Props {
     src: string;
@@ -331,6 +341,7 @@
     <RobotWorld
       bind:this={robotWorld}
       {worlds}
+      {seasons}
       specs={worldSpecs}
       {labels}
       visible={view === 'robot'}

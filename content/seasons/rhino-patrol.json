@@ -1,0 +1,11 @@
+{
+  "id": "rhino-patrol",
+  "number": 1,
+  "from": "2027-01-13",
+  "to": "2027-12-08",
+  "courses": {
+    "grade-3-4": "rhino-patrol-junior",
+    "grade-5-6": "rhino-patrol",
+    "grade-7-9": "rhino-patrol-senior"
+  }
+}
