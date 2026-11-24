@@ -12,6 +12,7 @@ const path = Astro.url.pathname;
 const nav = [
   { href: '/', label: 'Home', show: roles.length > 0 },
   { href: '/lessons/', label: 'Lessons', show: canSeeLessons(roles) },
+  { href: '/worlds/', label: 'Worlds', show: canSeeLessons(roles) },
   { href: '/withdrawn/', label: 'Withdrawn', show: canWithdraw(roles) },
   { href: '/seasons/', label: 'Seasons', show: canEditSeasons(roles) },
   { href: '/site/', label: 'Site', show: canManagePeople(roles) },

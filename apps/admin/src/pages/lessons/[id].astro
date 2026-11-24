@@ -12,6 +12,7 @@ import {
   type Decision,
   DECISION_LABELS,
   decide,
+  LESSON,
   lessonPath,
   possibleDecisions,
   pullsByLesson
@@ -62,8 +63,8 @@ if (gh && Astro.request.method === 'POST') {
         decision === 'approved'
           ? Object.fromEntries(CHECKLIST.map((c) => [c.key, form.get(`tick_${c.key}`) === 'on']))
           : null;
-      const url = await decide(gh, supabase, {
-        lessonId: id,
+      const url = await decide(gh, supabase, LESSON, {
+        id,
         decision,
         checklist,
         notes: String(form.get('notes') ?? '').trim(),

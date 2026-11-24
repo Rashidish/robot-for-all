@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { buildWorld, cellAt, checkWorld, parseCell, WorldError, worldHash } from './world';
+import {
+  buildWorld,
+  cellAt,
+  checkWorld,
+  parseCell,
+  WorldError,
+  worldHash,
+  worldReview
+} from './world';
 
 const base = {
   id: 'test',
@@ -208,5 +216,42 @@ describe('random maze courses (FR-18)', () => {
 
   it('rejects a maze size outside 3–6', () => {
     expect(checkWorld(maze('walls'), { mazeSize: 9 }).map((p) => p.path)).toEqual(['mazeSize']);
+  });
+});
+
+describe('world review status (more content spec §2.2)', () => {
+  const base = {
+    id: 'tiny-world',
+    version: 1,
+    challenge: null,
+    size: { w: 400, h: 400 },
+    start: { x: 200, y: 200, heading: 0 }
+  };
+
+  it('is optional for the engine and kept out of the world and its fingerprint', () => {
+    const plain = buildWorld(base);
+    const reviewed = buildWorld({
+      ...base,
+      status: 'published',
+      reviewed_by: 'R. Ishmail',
+      build_tested_by: null
+    });
+    expect(worldHash(plain)).toBe(worldHash(reviewed));
+    expect(worldReview(base)).toEqual({ status: 'draft', reviewedBy: null, buildTestedBy: null });
+    expect(worldReview({ ...base, status: 'published', reviewed_by: 'R. Ishmail' })).toEqual({
+      status: 'published',
+      reviewedBy: 'R. Ishmail',
+      buildTestedBy: null
+    });
+  });
+
+  it('refuses a published world without a reviewer, an unknown status and a bad name', () => {
+    expect(
+      checkWorld({ ...base, status: 'published', reviewed_by: null }).map((p) => p.path)
+    ).toContain('$.reviewed_by');
+    expect(checkWorld({ ...base, status: 'live' }).map((p) => p.path)).toContain('$.status');
+    expect(
+      checkWorld({ ...base, status: 'draft', build_tested_by: 'x' }).map((p) => p.path)
+    ).toContain('$.build_tested_by');
   });
 });

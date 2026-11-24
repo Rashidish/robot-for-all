@@ -1,6 +1,9 @@
 {
   "id": "simple-maze",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_simple_maze_challenge",
   "size": { "w": 1600, "h": 1200 },
   "walls": [{ "x": 300, "y": 300, "w": 1000, "h": 600 }],

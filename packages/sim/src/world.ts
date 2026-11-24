@@ -139,6 +139,41 @@ export function buildWorld(spec: unknown, opts: BuildOptions = {}): World {
   return world;
 }
 
+// --- Review (more content spec §2.2) ------------------------------------------------------
+
+export type WorldStatus = 'draft' | 'in_review' | 'published';
+export interface WorldReview {
+  status: WorldStatus;
+  reviewedBy: string | null;
+  buildTestedBy: string | null;
+}
+
+const STATUSES = ['draft', 'in_review', 'published'] as const;
+
+function checkReview(c: Checker, o: Record<string, unknown>): void {
+  if (o.status !== undefined) c.oneOf(o.status, '$.status', STATUSES);
+  for (const k of ['reviewed_by', 'build_tested_by'] as const) {
+    const v = o[k];
+    if (v !== undefined && v !== null && (typeof v !== 'string' || v.trim().length < 2))
+      c.err(`$.${k}`, 'must be a name (at least 2 characters) or null');
+  }
+  if (
+    o.status === 'published' &&
+    (typeof o.reviewed_by !== 'string' || o.reviewed_by.trim() === '')
+  )
+    c.err('$.reviewed_by', 'a published world needs reviewed_by (a person must review it first)');
+}
+
+/** A world file's review status. Files without one are drafts (content files must state it). */
+export function worldReview(spec: unknown): WorldReview {
+  const o = (spec ?? {}) as Record<string, unknown>;
+  const name = (v: unknown) => (typeof v === 'string' && v.trim() !== '' ? v : null);
+  const status = (STATUSES as readonly unknown[]).includes(o.status)
+    ? (o.status as WorldStatus)
+    : 'draft';
+  return { status, reviewedBy: name(o.reviewed_by), buildTestedBy: name(o.build_tested_by) };
+}
+
 /** A short fingerprint of exactly this world (after a maze is expanded). */
 export function worldHash(world: World): string {
   return hashText(canonicalJson(world));
@@ -259,7 +294,12 @@ const WORLD_KEYS = [
   'noBumps',
   'missions',
   'scoring',
-  'maze'
+  'maze',
+  // Review (more content spec §2.2). Checked here, kept out of the World itself, so a review
+  // never changes a world's fingerprint or a run report.
+  'status',
+  'reviewed_by',
+  'build_tested_by'
 ] as const;
 
 function parse(spec: unknown, opts: BuildOptions): { world: World | null; problems: Problem[] } {
@@ -279,6 +319,7 @@ function parse(spec: unknown, opts: BuildOptions): { world: World | null; proble
       'must be an i18n key such as world_dark_tunnel_challenge'
     );
   }
+  checkReview(c, o);
   const light =
     o.light === undefined
       ? DEFAULT_LIGHT

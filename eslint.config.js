@@ -30,7 +30,7 @@ export default tseslint.config(
   },
   {
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node }
+      globals: { ...globals.browser, ...globals.node, __RFA_SHOW_DRAFTS__: 'readonly' }
     }
   },
   {

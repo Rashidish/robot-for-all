@@ -1,6 +1,9 @@
 {
   "id": "rhino-patrol-junior",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_rhino_patrol_junior_challenge",
   "grid": { "cols": 4, "rows": 3 },
   "pieces": [{ "piece": "tunnel", "id": "thicket", "cell": "B3", "dir": "ew" }],

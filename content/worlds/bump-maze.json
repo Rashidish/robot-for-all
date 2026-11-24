@@ -1,6 +1,9 @@
 {
   "id": "bump-maze",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_bump_maze_challenge",
   "maze": { "kind": "walls", "size": 4 },
   "bump": "whiskers",

@@ -1,6 +1,6 @@
 # Spec: Back office — Review and publishing for templates, worlds and courses, and translations
 
-> **Version:** 0.2 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
+> **Version:** 0.3 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24): option B, a withdraw function for all live content, isiZulu first
 > Extends `docs/specs/back-office-content-review.md` (lessons, built) to the other content types, as the owner asked (2026-11-24, "go ahead with 1"). Same rules: ADR-0004, ADR-0009, ADR-0012.
 
 ## 1. Purpose
@@ -26,7 +26,7 @@ part of the lesson: they are reviewed **with it**, and are public **only when th
 - Each world file gains `status` (`draft` / `in_review` / `published`) and `reviewed_by`, checked by `packages/sim` like lessons. Production shows only published worlds; the drafts preview shows all.
 - **Build rules:** a published lesson may only open a published world; a season can only be current if its three courses are published; a published course must print (Print course) without errors.
 - **Review checklist** (reviewer ticks): the challenge text is clear for the grade band; a sensible program can finish it on screen (the unit tests prove one exists); missions and points are fair; it fits a classroom floor when printed (size and tile count shown); for seasons, the theme and words are right for children.
-- **Build test (optional for worlds, required for courses):** someone builds it on the floor from Print course; `build_tested_by` as for lessons.
+- **Build test (recorded when done, not required to publish):** someone builds it on the floor from Print course; `build_tested_by` as for lessons. Not required, because the live courses stay published under decision B without one; the floor check is test-plan row B21.
 - **Back office:** **Content → Worlds & courses**, the same screens and flow as Lessons (send for review, approve, ask for changes, build test, unpublish, merge with the ADR-0012 checks, which extend to "only the status lines of one world file").
 
 ### 2.3 Translations (screens built when the first second language starts)
@@ -47,17 +47,28 @@ Any live item can be taken down quickly and brought back later, without editing 
 - **Fast and safe:** withdrawing changes only one entry in that list; the ADR-0012 merge check accepts "one item added to or removed from the withdrawn list", so it goes live as soon as CI passes (about 5 minutes), without a second approval on GitHub. Every withdraw and restore is in `content_reviews` (decisions `withdrawn`, `restored`) and the audit log.
 - Unpublishing a lesson (status back to draft) still exists for "needs more work"; withdrawing is for "take it down now, unchanged".
 
+### 2.5 Add and remove languages (owner request 2026-11-24)
+**Content → Languages** (owners; translators can see it) lists every language with its status
+(`draft` / `in_review` / `published`, or withdrawn), how much of the interface is translated, and
+how many lessons are translated and approved.
+- **Add a language:** pick it (South Africa's official languages are offered by name; any other by its ISO code), give its name in English and in the language itself (e.g. "isiZulu"). The back office opens a pull request adding it to `content/i18n/languages.json` as `draft`, with an empty interface file. A draft language is never offered to learners on production; the drafts preview shows it so translators and reviewers can work.
+- **Publish a language:** when every interface word is translated and a reviewer who reads it approves, the language turns `published` and learners can switch to it. Lesson translations are approved one by one (§2.3); untranslated lessons show in English.
+- **Take a language off the site:** **Withdraw** (§2.4) hides it at once and keeps everything.
+- **Remove a language:** owners only, after typing its name to confirm. If it was never published, the pull request deletes its files (they stay in Git history and can be restored); if it was published, it must be withdrawn first. Removal is recorded (decision `removed`) and in the audit log.
+- English (the source) can't be removed or withdrawn.
+
 ## 3. Requirements
 
 | ID | Requirement |
 |---|---|
 | MC-1 | Production builds template pages only for published lessons (drafts preview: all); already true, guarded by a test |
 | MC-2 | The lesson checklist has the templates tick; approve needs it |
-| MC-3 | World files have `status` and `reviewed_by` (and `build_tested_by` for courses); the build refuses a published lesson pointing to an unpublished world |
+| MC-3 | World files have `status`, `reviewed_by` and `build_tested_by`; a published world needs `reviewed_by`; a published lesson whose world isn't published opens the plain micro:bit instead (as for withdrawn worlds) |
 | MC-4 | Production's Robot tab lists only published worlds and courses; a season shows as current only when its three courses are published |
 | MC-5 | Content → Worlds & courses works like Content → Lessons, with its own checklist, and the ADR-0012 merge check accepts "status lines of one world file" |
 | MC-6 | Translations: per-file status for lessons, per-language status for interface words, reviewers with that language only, translator can't approve their own; screens built with the first second language |
 | MC-7 | Every decision is in `content_reviews` (content type `lesson`, `world`, `template`, `season` or `translation`) and the audit log |
+| MC-9 | Content → Languages: add a language (draft, empty interface file), publish when complete and approved, withdraw, and remove (owners, confirmed by typing its name; published ones withdrawn first); English can't be removed |
 | MC-8 | Withdraw / restore any live lesson, template, world, season or language through `content/site/withdrawn.json`; production leaves withdrawn items out; reason required; Content → Withdrawn lists them |
 
 ## 4. Security, privacy and child safety
@@ -73,7 +84,7 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 - [ ] Approving a lesson needs the templates tick.
 - [ ] A world marked published shows on production; a draft one only on the drafts preview.
 - [ ] The build fails if a published lesson opens a draft world.
-- [ ] A world goes through send for review → approve (→ build test for courses) → merge in the back office, with the same refusals as lessons.
+- [ ] A world goes through send for review → approve → merge in the back office (a build test can be recorded any time), with the same refusals as lessons.
 - [ ] (isiZulu) a translated lesson shows only after a reviewer who reads isiZulu approves it; the isiZulu interface is off on production until the language is approved.
 - [ ] Withdrawing a template, lesson, world, season or language from the back office takes it off production after CI, and Restore brings it back; both are recorded.
 
@@ -81,8 +92,8 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 
 1. ✅ Owner decisions (§7).
 2. ✅ *(built 2026-11-24)* **Withdraw** for every content type (`content/site/withdrawn.json`, build filters, back-office Withdraw / Restore / Withdrawn list, merge check), the seventh (templates) tick, and a test that production builds templates only for published lessons.
-3. **World status** in `packages/sim` and the build: the 14 live worlds and courses marked `published` with `reviewed_by: "Owner (initial set)"`; Content → Worlds & courses screens.
-4. **isiZulu:** the language switch and per-language status (off on production until approved); profile languages and the database rules; translation screens; then **AI-drafted isiZulu translations** of the interface words and lessons as **drafts** (`ai_generated: true`), each needing a reviewer who reads isiZulu before it shows.
+3. ✅ *(built 2026-11-24)* **World status** in `packages/sim` and the build: the 14 live worlds and courses marked `published` with `reviewed_by: "Owner (initial set)"`; Content → Worlds & courses screens.
+4. **Languages and isiZulu:** Content → Languages (add, publish, withdraw, remove; §2.5); the language switch and per-language status (off on production until approved); profile languages and the database rules; translation screens; then **AI-drafted isiZulu translations** of the interface words and lessons as **drafts** (`ai_generated: true`), each needing a reviewer who reads isiZulu before it shows.
 
 ## 7. Owner decisions (2026-11-24)
 
@@ -96,3 +107,4 @@ checklist's "safety notes exact" tick is required, and only a reviewer who reads
 |---|---|---|
 | 0.1 | 2026-11-24 | First draft |
 | 0.2 | 2026-11-24 | Correction: templates already follow their lesson on production. Approved: B (live worlds stay published as the initial set), withdraw for all live content (§2.4), isiZulu first |
+| 0.3 | 2026-11-24 | §2.5 add and remove languages (owner request) |

@@ -1,6 +1,9 @@
 {
   "id": "follow-the-line",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_follow_the_line_challenge",
   "size": { "w": 2400, "h": 1200 },
   "lines": [

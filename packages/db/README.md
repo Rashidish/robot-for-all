@@ -10,6 +10,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0003_content_reviews.sql` | Content review: `admin_profiles` (public reviewer names), append-only `content_reviews`, `record_review` (roles, ticks, notes, not your own), `approved_pull_request` |
 | `0004_decided_pull_requests.sql` | ADR-0012 condition 4: any recorded decision lets its own pull request merge |
 | `0005_withdraw_and_more_content.sql` | Withdraw / restore (`record_withdrawal`), content types template/world/season/language, the seventh (templates) tick |
+| `0006_world_reviews.sql` | Worlds and courses are reviewed with their own checklist (`review_checklist_keys_for`); `record_review` for lessons and worlds |
 
 ## Tests
 

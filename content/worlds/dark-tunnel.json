@@ -1,6 +1,9 @@
 {
   "id": "dark-tunnel",
   "version": 1,
+  "status": "published",
+  "reviewed_by": "Owner (initial set)",
+  "build_tested_by": null,
   "challenge": "world_dark_tunnel_challenge",
   "size": { "w": 2000, "h": 800 },
   "areas": [
