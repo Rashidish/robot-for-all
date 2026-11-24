@@ -43,7 +43,7 @@ assessment:
   - I can make my robot back away and turn when a whisker touches a wall
   - I can test my bumper and make one improvement
 prerequisites: [p2-motor-03]
-next: null
+next: p2-line-01
 templates: [whisker-bumper]
 status: draft
 ai_generated: true

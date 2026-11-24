@@ -180,7 +180,7 @@ Blocks / typed Python ──► rfa_robot calls ──► on-screen micro:bit (M
 - [x] Bumping a wall gives a shake and stops the robot at the wall (unit test).
 - [x] A world with a mistake is rejected with the path to each problem (unit test); build-time check in step 3.
 - [x] "Robot that reacts" starter program on the on-screen micro:bit stops the robot inside the tunnel world (e2e, step 2). *(`tests/e2e/robot.spec.ts`.)*
-- [ ] A line-follow program written with the left/right line-sensor blocks finishes the line world (e2e, step 4).
+- [x] A line-follow program written with the left/right line-sensor blocks finishes the line world (e2e, step 4). *(The `p2-line-01` starter, `tests/e2e/robot.spec.ts`.)*
 - [ ] The robot world adds < 30 KB compressed; Lighthouse 90+ on `/code/`; works offline (e2e, step 2). *(Step 2, part 1: +13 KB gzip, `/code/` 278 KB of its 450 KB budget; Lighthouse and offline checked by CI.)*
 - [x] (v0.3) "Pen down" draws, "pen up" doesn't; four "forward + turn 90°" draw a closed square within 2 % on a plain floor (unit test). *(Art floor; the gap is under 2 % of the perimeter, `replay.test.ts`.)*
 - [x] (v0.3) Grid readout names the right square at each corner and the centre of the grid world (unit test). *(Grid map, `replay.test.ts`; also the dark tunnel, `world-link.test.ts`.)*

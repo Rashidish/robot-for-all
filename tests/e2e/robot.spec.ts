@@ -193,4 +193,18 @@ test.describe('Robot tab (M4 step 2)', () => {
       timeout: 60_000
     });
   });
+
+  test('"Follow the line": the starter, built from line-sensor blocks, finishes the line world', async ({
+    page
+  }) => {
+    test.setTimeout(90_000);
+    await page.goto('/lessons/p2-line-01/');
+    await page.getByRole('link', { name: 'Open the starter program in the code editor' }).click();
+    await expect(page.locator('.blocklySvg').first()).toBeVisible();
+    await expect(page.getByLabel('World', { exact: true })).toHaveValue('follow-the-line');
+    await page.locator('.simulator').getByRole('button', { name: 'Run' }).click();
+    await expect(page.locator('.robot-world .result')).toHaveText(/Challenge done!/, {
+      timeout: 60_000
+    });
+  });
 });
