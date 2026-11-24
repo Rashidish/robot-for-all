@@ -80,6 +80,8 @@ export interface Piece {
   length?: 1 | 2;
   id?: string;
   dir?: 'ew' | 'ns';
+  /** Where it stands on the floor (mm), for the printed tiles and build sheet. */
+  rect: Rect;
 }
 
 export interface World {
@@ -500,22 +502,24 @@ function parse(spec: unknown, opts: BuildOptions): { world: World | null; proble
         c.err(`${path}.length`, 'goes off the grid');
         return;
       }
-      solids.push({ ...edgeRect(cell, edge, grid.cell * length, true), kind: 'wall' });
-      pieces.push({ piece: 'wall', cell: cellRef, edge, length });
+      const rect = edgeRect(cell, edge, grid.cell * length, true);
+      solids.push({ ...rect, kind: 'wall' });
+      pieces.push({ piece: 'wall', cell: cellRef, edge, length, rect });
     } else if (kind === 'target') {
       c.known(p, path, ['piece', 'id', 'cell', 'edge']);
       const tid = claimId(p.id, `${path}.id`);
       const edge = c.oneOf(p.edge, `${path}.edge`, EDGES);
       if (!cell || !edge || !tid) return;
-      solids.push({ ...edgeRect(cell, edge, TARGET_LENGTH_MM, false), kind: 'target', id: tid });
-      pieces.push({ piece: 'target', id: tid, cell: cellRef, edge });
+      const rect = edgeRect(cell, edge, TARGET_LENGTH_MM, false);
+      solids.push({ ...rect, kind: 'target', id: tid });
+      pieces.push({ piece: 'target', id: tid, cell: cellRef, edge, rect });
     } else {
       c.known(p, path, ['piece', 'id', 'cell', 'dir']);
       const tid = claimId(p.id, `${path}.id`);
       const dir = c.oneOf(p.dir, `${path}.dir`, ['ew', 'ns'] as const);
       if (!cell || !tid || !dir) return;
       areas.push({ ...cell, id: tid, light: TUNNEL_LIGHT, pattern: 'checks' });
-      pieces.push({ piece: 'tunnel', id: tid, cell: cellRef, dir });
+      pieces.push({ piece: 'tunnel', id: tid, cell: cellRef, dir, rect: { ...cell } });
     }
   });
 
@@ -737,7 +741,7 @@ function expandMaze(
         ? { x: x - t / 2, y: (edge === 'S' ? y + cell : y) - t / 2, w: cell + t, h: t }
         : { x: (edge === 'E' ? x + cell : x) - t / 2, y: y - t / 2, w: t, h: cell + t };
     solids.push({ ...rect, kind: 'wall' });
-    pieces.push({ piece: 'wall', cell: cellName(c, r), edge, length: 1 });
+    pieces.push({ piece: 'wall', cell: cellName(c, r), edge, length: 1, rect });
   };
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {

@@ -1,7 +1,7 @@
 <script lang="ts">
   // The Robot tab (M4 spec step 2, FR-1–FR-7): a 2D world from above, driven by the robot calls
   // of the program running on the on-screen micro:bit. The world answers the robot's sensors.
-  import { onDestroy } from 'svelte';
+  import { onDestroy, tick } from 'svelte';
   import type { RobotCall } from '../../../../packages/robots/src/index';
   import type { World } from '../../../../packages/sim/src/index';
   import { drawWorld } from '../code/world-draw';
@@ -247,6 +247,48 @@
     chooseWorld(id);
   }
 
+  // Print course (FR-19): the page code is loaded only when a learner taps Print (spec §5).
+  let printPages = $state<string[]>([]);
+  let printing = $state(false);
+
+  async function printCourse() {
+    if (!world || printing) return;
+    printing = true;
+    try {
+      const { coursePages } = await import('../../../../packages/sim/src/print');
+      const name = t(`world_${key(world.id)}_name`);
+      const title = world.maze ? `${name} ${mazeNumber} (${mazeSize} × ${mazeSize})` : name;
+      printPages = coursePages(world, {
+        title,
+        printAt100: t('sim_print_actual_size'),
+        calibration: t('sim_print_calibration'),
+        size: t('sim_print_size'),
+        assembly: t('sim_print_assembly'),
+        tile: t('sim_print_tile'),
+        tiles: t('sim_print_tiles'),
+        buildSheet: t('sim_print_build_sheet'),
+        pieces: {
+          wall: t('sim_print_piece_wall'),
+          target: t('sim_print_piece_target'),
+          tunnel: t('sim_print_piece_tunnel')
+        },
+        edges: {
+          N: t('sim_print_edge_north'),
+          E: t('sim_print_edge_east'),
+          S: t('sim_print_edge_south'),
+          W: t('sim_print_edge_west')
+        },
+        noPrinter: t('sim_print_no_printer')
+      });
+      await tick();
+      document.documentElement.classList.add('printing-course');
+      window.print();
+    } finally {
+      document.documentElement.classList.remove('printing-course');
+      printing = false;
+    }
+  }
+
   function chooseWorld(id: string) {
     stop();
     link = null;
@@ -370,6 +412,17 @@
       <span>{t('sim_grid')}</span>
     </label>
     <button type="button" class="plain" onclick={where}>{t('sim_where')}</button>
+    <button type="button" class="plain print-course" onclick={printCourse} disabled={printing}>
+      {t('sim_print_course')}
+    </button>
+  </div>
+
+  <!-- Course pages for the printer only: true A4 size, 1 unit = 1 mm. -->
+  <div class="print-pages" aria-hidden="true">
+    {#each printPages as svg, i (i)}
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -- our own SVG; all text is escaped -->
+      {@html svg}
+    {/each}
   </div>
 
   <details class="monitor">
@@ -496,6 +549,34 @@
   .points {
     font-variant-numeric: tabular-nums;
     color: #555555;
+  }
+  .print-pages {
+    display: none;
+  }
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    :global(html.printing-course body *) {
+      visibility: hidden;
+    }
+    :global(html.printing-course) .print-pages,
+    :global(html.printing-course) .print-pages :global(*) {
+      visibility: visible;
+    }
+    :global(html.printing-course) .print-pages {
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .print-pages :global(svg) {
+      display: block;
+      width: 210mm;
+      height: 297mm;
+      break-after: page;
+    }
   }
   .readout {
     margin: 0;

@@ -448,5 +448,21 @@
   "world_grid_map_name": "Grid map",
   "world_grid_map_challenge": "Drive from A1 to square C4 and stop there. Plan your moves on the grid first: each square is 200 mm.",
   "world_art_floor_name": "Art floor",
-  "world_art_floor_challenge": "Put the pen down and draw a square, a triangle or the first letter of your name."
+  "world_art_floor_challenge": "Put the pen down and draw a square, a triangle or the first letter of your name.",
+  "sim_print_course": "Print course",
+  "sim_print_actual_size": "Print at 100 % (actual size), not \"fit to page\".",
+  "sim_print_calibration": "This square must measure 100 mm on each side.",
+  "sim_print_size": "Size",
+  "sim_print_assembly": "How the tiles join",
+  "sim_print_tile": "Tile",
+  "sim_print_tiles": "tiles",
+  "sim_print_build_sheet": "Build sheet: cardboard pieces and where they go",
+  "sim_print_piece_wall": "Wall",
+  "sim_print_piece_target": "Gate flap",
+  "sim_print_piece_tunnel": "Tunnel",
+  "sim_print_edge_north": "north edge",
+  "sim_print_edge_east": "east edge",
+  "sim_print_edge_south": "south edge",
+  "sim_print_edge_west": "west edge",
+  "sim_print_no_printer": "No printer? Draw the grid on the floor with chalk or masking tape: squares of 200 mm."
 }
