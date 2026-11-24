@@ -1,0 +1,119 @@
+{
+  "format": "robot-for-all-program",
+  "version": 1,
+  "name": "Bump maze",
+  "program": {
+    "version": 1,
+    "handlers": [
+      {
+        "type": "on_start",
+        "body": [
+          {
+            "type": "show_icon",
+            "icon": "HAPPY"
+          }
+        ]
+      },
+      {
+        "type": "forever",
+        "body": [
+          {
+            "type": "if",
+            "cond": {
+              "type": "logic",
+              "op": "or",
+              "a": {
+                "type": "x_whisker",
+                "side": "left"
+              },
+              "b": {
+                "type": "x_whisker",
+                "side": "right"
+              }
+            },
+            "then": [
+              {
+                "type": "show_icon",
+                "icon": "SURPRISED"
+              },
+              {
+                "type": "x_drive",
+                "motor": "A",
+                "dir": "backward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "B",
+                "dir": "backward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "pause",
+                "ms": {
+                  "type": "number",
+                  "value": 300
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "A",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "B",
+                "dir": "backward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              },
+              {
+                "type": "pause",
+                "ms": {
+                  "type": "number",
+                  "value": 500
+                }
+              },
+              {
+                "type": "show_icon",
+                "icon": "HAPPY"
+              }
+            ],
+            "else": [
+              {
+                "type": "x_drive",
+                "motor": "A",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 18
+                }
+              },
+              {
+                "type": "x_drive",
+                "motor": "B",
+                "dir": "forward",
+                "speed": {
+                  "type": "number",
+                  "value": 60
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
