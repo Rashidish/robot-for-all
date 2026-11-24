@@ -19,7 +19,21 @@ assessment:
   - Ngiyakwazi ukuchaza ukuthi kungani izinzipho zihamba ibanga elide kunezibambo
   - Ngiyakwazi ukulinganisa ukuthi izinzipho zihamba ibanga elingakanani uma izibambo zihamba u-2 cm
   - Ngiyakwazi ukusho irobhothi noma umshini osebenzisa isibambi
-translated_from: 291b66db661abcb1
+templates:
+  grabber-parts:
+    title: "Isibambi esinwebekayo: izingxenye"
+    parts:
+      - name: Uthi lokuxhuma 1
+      - name: Uthi lokuxhuma 2
+      - name: Uthi lokuxhuma 3
+      - name: Uthi lokuxhuma 4
+      - name: Uthi lokuxhuma 5
+      - name: Uthi lokuxhuma 6
+      - name: Uzipho 1
+        notes: ["uzipho olunjengehuku; imbobo ekugcineni okuqondile"]
+      - name: Uzipho 2
+        notes: ["uzipho olunjengehuku; imbobo ekugcineni okuqondile"]
+translated_from: 5e928f67fbe3154e
 status: draft
 ai_generated: true
 reviewed_by: null

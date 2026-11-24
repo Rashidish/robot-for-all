@@ -491,5 +491,14 @@
   "language_switch_label": "Language",
   "lesson_in_english_notice": "This lesson is not translated yet, so it is shown in English.",
   "lesson_translation_draft_notice": "Draft translation: not reviewed yet.",
-  "lesson_translation_stale_notice": "The English lesson has changed since this was translated. It needs checking again."
+  "lesson_translation_stale_notice": "The English lesson has changed since this was translated. It needs checking again.",
+  "template_fact_strip": "{name}: {length} mm long, {width} mm wide",
+  "template_fact_strip_holes": "{count} holes, {inset} mm from each end, {spacing} mm apart",
+  "template_fact_strip_middle_hole": "1 hole in the middle",
+  "template_fact_disc": "{name}: circle {diameter} mm across, hole in the centre",
+  "template_fact_disc_holes": "extra holes {offsets} mm from the centre",
+  "template_fact_gear": "{name}: {teeth} teeth, {tips} mm across the tips",
+  "template_fact_gear_spacing": "axles of meshing gears sit {radius} mm + the other gear's pitch radius apart",
+  "template_fact_cam": "{name}: egg shape {base} mm wide, {height} mm tall, axle hole near the round end",
+  "template_fact_shape": "{name}: about {width} × {height} mm"
 }

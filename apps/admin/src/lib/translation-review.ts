@@ -34,6 +34,8 @@ export interface TranslationItem extends Item {
   /** The English text it was translated from (16 hex characters). */
   translatedFrom: string | null;
   aiGenerated: boolean;
+  /** Template sheets it has words for (the keys under `templates:`). */
+  templates: string[];
 }
 
 const FRONT = /^---\n([\s\S]*?)\n---\n/;
@@ -43,6 +45,20 @@ function field(front: string, key: string): string | null {
   const v = m ? (m[1] ?? '').trim() : null;
   if (v === null || v === '' || v === 'null' || v === '~') return null;
   return v.replace(/^(['"])(.*)\1$/, '$2');
+}
+
+/** The sheet names under `templates:` in a translation's front matter. */
+function sheetNames(front: string): string[] {
+  const lines = front.split('\n');
+  const start = lines.indexOf('templates:');
+  if (start < 0) return [];
+  const out: string[] = [];
+  for (const line of lines.slice(start + 1)) {
+    if (!line.startsWith(' ')) break;
+    const m = /^ {2}([a-z0-9-]+):\s*$/.exec(line);
+    if (m?.[1]) out.push(m[1]);
+  }
+  return out;
 }
 
 export function summariseTranslation(id: string, text: string): TranslationItem {
@@ -56,7 +72,8 @@ export function summariseTranslation(id: string, text: string): TranslationItem 
     // A translation has no build test: "n/a" keeps that decision off the page.
     buildTestedBy: 'n/a',
     translatedFrom: field(front, 'translated_from'),
-    aiGenerated: field(front, 'ai_generated') === 'true'
+    aiGenerated: field(front, 'ai_generated') === 'true',
+    templates: sheetNames(front)
   };
 }
 
@@ -123,4 +140,26 @@ export function lessonParts(text: string): { heading: string; text: string }[] {
     parts.push({ heading: h[1] ?? '', text: chunk.slice((h.index ?? 0) + h[0].length).trim() });
   }
   return parts;
+}
+
+/** A template sheet's words as written in its source file: the title, part names and notes. */
+export function sheetSourceWords(source: string): string {
+  return source
+    .split('\n')
+    .filter((l) => /\b(title|name):/.test(l) || /^\s*(measurements: )?\[?'/.test(l))
+    .map((l) => l.trim())
+    .join('\n');
+}
+
+/** One sheet's block under `templates:` in a translation's front matter, as written. */
+export function translatedSheet(front: string, sheet: string): string {
+  const lines = front.replace(/\r\n/g, '\n').split('\n');
+  const start = lines.findIndex((l) => l === `  ${sheet}:`);
+  if (start < 0 || !lines.slice(0, start).some((l) => l === 'templates:')) return '';
+  const out: string[] = [];
+  for (const line of lines.slice(start + 1)) {
+    if (!line.startsWith('    ')) break;
+    out.push(line.slice(4));
+  }
+  return out.join('\n').trim();
 }

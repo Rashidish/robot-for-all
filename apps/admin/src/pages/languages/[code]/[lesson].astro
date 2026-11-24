@@ -18,11 +18,14 @@ import {
 import { canSeeLanguages, hasRole } from '../../../lib/roles';
 import {
   lessonParts,
+  sheetSourceWords,
+  translatedSheet,
   TRANSLATION,
   TRANSLATION_CHECKLIST,
   type TranslationItem
 } from '../../../lib/translation-review';
 import { translationHash } from '../../../../../../packages/settings/src/translation';
+import { templatePaths } from '../../../lib/translation-files';
 
 const { supabase, user, roles } = Astro.locals;
 if (!canSeeLanguages(roles)) return Astro.redirect('/', 303);
@@ -54,6 +57,8 @@ interface Loaded {
   parts: { english: string; heading: string; translated: string; translatedHeading: string }[];
   stale: boolean;
   currentHash: string;
+  /** Each template sheet's English words (from its source) beside the translation's (spec §2.7). */
+  sheets: { name: string; english: string; translated: string }[];
   pull: Pull | undefined;
   check: MergeCheck | null;
 }
@@ -63,20 +68,28 @@ const empty: Loaded = {
   parts: [],
   stale: false,
   currentHash: '',
+  sheets: [],
   pull: undefined,
   check: null
 };
 
 async function load(): Promise<Loaded> {
   if (!gh) return empty;
-  const [en, mine] = await Promise.all([
+  const [en, mine, tree] = await Promise.all([
     gh.readFile(`content/lessons/${lesson}/index.md`),
-    gh.readFile(TRANSLATION.path(id))
+    gh.readFile(TRANSLATION.path(id)),
+    gh.listTree(`content/projects/${lesson}`).catch(() => [] as string[])
   ]);
+  const templates = await Promise.all(
+    templatePaths(tree, lesson).map(async (p) => ({
+      name: p.split('/').pop() ?? p,
+      text: (await gh.readFile(p)).text
+    }))
+  );
   const item = TRANSLATION.summarise(id, mine.text);
   const a = lessonParts(en.text);
   const b = lessonParts(mine.text);
-  const currentHash = await translationHash(en.text);
+  const currentHash = await translationHash(en.text, templates);
   const pull = pullsFor('translation', await gh.openAdminPulls()).get(id);
   return {
     item,
@@ -89,6 +102,11 @@ async function load(): Promise<Loaded> {
     })),
     stale: item.translatedFrom !== currentHash,
     currentHash,
+    sheets: templates.map((t) => ({
+      name: t.name.replace(/\.ts$/, ''),
+      english: sheetSourceWords(t.text),
+      translated: translatedSheet(b[0]?.text ?? '', t.name.replace(/\.ts$/, ''))
+    })),
     pull,
     check: pull ? await checkMerge(gh, pull.number, mergeOpts) : null
   };
@@ -159,7 +177,7 @@ let history: {
     .limit(20);
   history = (data ?? []) as typeof history;
 }
-const { item, englishTitle, parts, stale, currentHash, pull, check } = loaded;
+const { item, englishTitle, parts, stale, currentHash, sheets, pull, check } = loaded;
 const options = item && !pull ? possibleDecisions(item).filter((d) => d !== 'build_tested') : [];
 const can: Record<Decision, boolean> = {
   sent_for_review: hasRole(roles, 'translator') || hasRole(roles, 'content_editor'),
@@ -293,6 +311,37 @@ const when = (iso: string) =>
       </tbody>
     </table>
   </div>
+
+  {sheets.length > 0 && (
+    <>
+      <h2>Template sheets</h2>
+      <p>The words printed on each sheet. Empty on the right means the sheet prints in English.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">English (from the sheet)</th>
+              <th scope="col">Translation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sheets.map((s) => (
+              <tr>
+                <td>
+                  <strong>{s.name}</strong>
+                  <pre class="text">{s.english}</pre>
+                </td>
+                <td lang={code}>
+                  <strong>{s.name}</strong>
+                  <pre class="text">{s.translated || '—'}</pre>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
 
   <h2>History</h2>
   {history.length === 0 ? (

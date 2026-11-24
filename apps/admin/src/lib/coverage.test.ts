@@ -54,4 +54,27 @@ describe('what still needs translating', () => {
       ['p2-art-01', 'not_translated', false]
     ]);
   });
+
+  it('flags a published translation whose sheets still print in English', () => {
+    const [row] = lessonCoverage(
+      [
+        {
+          id: 'p1-crank-01',
+          title: 'Rhino',
+          status: 'published',
+          hash: 'a',
+          templates: ['rhino-parts', 'spare']
+        }
+      ],
+      [
+        {
+          lesson: 'p1-crank-01',
+          status: 'published',
+          translatedFrom: 'a',
+          templates: ['rhino-parts']
+        }
+      ]
+    );
+    expect(row).toMatchObject({ state: 'published', englishSheets: ['spare'], flagged: true });
+  });
 });

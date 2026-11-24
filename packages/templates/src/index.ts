@@ -26,6 +26,25 @@ export interface Line {
   y2: number;
 }
 
+/**
+ * A measurement of a part, as numbers. The words come from the translation file (`Say`), so a
+ * part can be drawn by hand from its measurements in any language (translate-templates spec §2.2).
+ * Numbers are already rounded and formatted as text ("12.5").
+ */
+export type Fact =
+  | { kind: 'strip'; length: string; width: string }
+  | { kind: 'strip_holes'; count: number; inset: string; spacing: string }
+  | { kind: 'strip_middle_hole' }
+  | { kind: 'disc'; diameter: string }
+  | { kind: 'disc_holes'; offsets: string }
+  | { kind: 'gear'; teeth: number; tips: string }
+  | { kind: 'gear_spacing'; radius: string }
+  | { kind: 'cam'; base: string; height: string }
+  | { kind: 'shape'; width: string; height: string };
+
+/** Turns a fact about the part called `name` into a sentence in the page's language. */
+export type Say = (fact: Fact, name: string) => string;
+
 /** A part to cut out, drawn with its top-left corner at (0, 0). Sizes in mm. */
 export interface Part {
   name: string;
@@ -35,14 +54,25 @@ export interface Part {
   outline: string;
   holes: Hole[];
   folds: Line[];
-  /** Plain-language measurements so a part can be drawn by hand with a ruler. */
-  measurements: string[];
+  /** Measurements so a part can be drawn by hand with a ruler; turned into words by `Say`. */
+  facts: Fact[];
+  /** Extra notes written for this part (e.g. where its holes go), in English; translated in the lesson translation. */
+  notes: string[];
 }
 
 /** Words printed on the sheet; supplied from the translation file. */
 export interface SheetLabels {
   checkSquare: string;
   key: string;
+}
+
+/**
+ * A sheet's own words in another language (from the lesson translation): its title, and each
+ * part's name and notes in the same order as the sheet. Missing ones stay as written.
+ */
+export interface SheetWords {
+  title?: string | undefined;
+  parts?: ({ name?: string | undefined; notes?: string[] | undefined } | undefined)[] | undefined;
 }
 
 export interface SheetDefinition {
@@ -84,13 +114,13 @@ export function strip(opts: {
     y: r2(width / 2),
     d: holeDiameter
   }));
-  const measurements = [`${name}: ${fmt(length)} mm long, ${fmt(width)} mm wide`];
+  const facts: Fact[] = [{ kind: 'strip', length: fmt(length), width: fmt(width) }];
   if (holes > 1) {
-    measurements.push(`${holes} holes, ${fmt(inset)} mm from each end, ${fmt(spacing)} mm apart`);
+    facts.push({ kind: 'strip_holes', count: holes, inset: fmt(inset), spacing: fmt(spacing) });
   } else if (holes === 1) {
-    measurements.push('1 hole in the middle');
+    facts.push({ kind: 'strip_middle_hole' });
   }
-  return { name, width: length, height: width, outline, holes: list, folds: [], measurements };
+  return { name, width: length, height: width, outline, holes: list, folds: [], facts, notes: [] };
 }
 
 /** A round disc (wheel or crank disc) with a centre axle hole and optional off-centre holes. */
@@ -112,10 +142,8 @@ export function disc(opts: {
     { x: r, y: r, d: axleHole },
     ...offsets.map((o) => ({ x: r2(r + o), y: r, d: pinHole }))
   ];
-  const measurements = [`${name}: circle ${fmt(diameter)} mm across, hole in the centre`];
-  if (offsets.length) {
-    measurements.push(`extra holes ${offsets.map(fmt).join(' mm, ')} mm from the centre`);
-  }
+  const facts: Fact[] = [{ kind: 'disc', diameter: fmt(diameter) }];
+  if (offsets.length) facts.push({ kind: 'disc_holes', offsets: offsets.map(fmt).join(', ') });
   return {
     name,
     width: diameter,
@@ -123,7 +151,8 @@ export function disc(opts: {
     outline: circlePath(r, r, r),
     holes,
     folds: [],
-    measurements
+    facts,
+    notes: []
   };
 }
 
@@ -166,10 +195,11 @@ export function gear(opts: {
     outline,
     holes: [{ x: r2(tip), y: r2(tip), d: axleHole }],
     folds: [],
-    measurements: [
-      `${name}: ${teeth} teeth, ${fmt(2 * tip)} mm across the tips`,
-      `axles of meshing gears sit ${fmt(pitchRadius)} mm + the other gear's pitch radius apart`
-    ]
+    facts: [
+      { kind: 'gear', teeth, tips: fmt(2 * tip) },
+      { kind: 'gear_spacing', radius: fmt(pitchRadius) }
+    ],
+    notes: []
   };
 }
 
@@ -198,9 +228,8 @@ export function cam(opts: { name: string; base: number; lift: number; axleHole?:
     outline,
     holes: [{ x: r, y: r2(r + lift), d: axleHole }],
     folds: [],
-    measurements: [
-      `${name}: egg shape ${fmt(base)} mm wide, ${fmt(height)} mm tall, axle hole near the round end`
-    ]
+    facts: [{ kind: 'cam', base: fmt(base), height: fmt(height) }],
+    notes: []
   };
 }
 
@@ -212,6 +241,7 @@ export function shape(opts: {
   path: string;
   holes?: Hole[];
   folds?: Line[];
+  /** Notes for drawing it by hand (e.g. where the holes go); translated in the lesson translation. */
   measurements?: string[];
 }): Part {
   const { name, width, height, path, holes = [], folds = [], measurements = [] } = opts;
@@ -229,7 +259,8 @@ export function shape(opts: {
     outline: path,
     holes,
     folds,
-    measurements: [`${name}: about ${fmt(width)} × ${fmt(height)} mm`, ...measurements]
+    facts: [{ kind: 'shape', width: fmt(width), height: fmt(height) }],
+    notes: measurements
   };
 }
 
@@ -300,6 +331,18 @@ export function wrap(text: string, width: number, fontSize: number): string[] {
   return lines;
 }
 
+/** The sheet with a language's own words in place of the English ones (same shapes and sizes). */
+export function inWords(sheet: SheetDefinition, words?: SheetWords): SheetDefinition {
+  if (!words) return sheet;
+  return {
+    title: words.title ?? sheet.title,
+    parts: sheet.parts.map((p, i) => {
+      const w = words.parts?.[i];
+      return { ...p, name: w?.name ?? p.name, notes: w?.notes ?? p.notes };
+    })
+  };
+}
+
 /** Renders a sheet as a true-scale A4 SVG (1 unit = 1 mm). */
 export function renderSheet(sheet: SheetDefinition, labels: SheetLabels): string {
   const placed = layout(sheet.parts);
@@ -344,9 +387,9 @@ export function renderSheet(sheet: SheetDefinition, labels: SheetLabels): string
   return out.join('\n');
 }
 
-/** All measurements on a sheet, for drawing parts by hand without a printer. */
-export function measurements(sheet: SheetDefinition): string[] {
-  return sheet.parts.flatMap((p) => p.measurements);
+/** All measurements on a sheet, in words, for drawing parts by hand without a printer. */
+export function measurements(sheet: SheetDefinition, say: Say): string[] {
+  return sheet.parts.flatMap((p) => [...p.facts.map((f) => say(f, p.name)), ...p.notes]);
 }
 
 /** Helper for template files: keeps them typed. */

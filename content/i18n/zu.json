@@ -491,5 +491,14 @@
   "language_switch_label": "Ulimi",
   "lesson_in_english_notice": "Lesi sifundo asikahunyushwa, ngakho siboniswa ngesiNgisi.",
   "lesson_translation_draft_notice": "Ukuhumusha okusalungiswa: akukabuyekezwa.",
-  "lesson_translation_stale_notice": "Isifundo sesiNgisi sishintshile kusukela kwahunyushwa lokhu. Kudinga ukuhlolwa futhi."
+  "lesson_translation_stale_notice": "Isifundo sesiNgisi sishintshile kusukela kwahunyushwa lokhu. Kudinga ukuhlolwa futhi.",
+  "template_fact_strip": "{name}: ubude obungu-{length} mm, ububanzi obungu-{width} mm",
+  "template_fact_strip_holes": "izimbobo ezingu-{count}, {inset} mm ukusuka ekugcineni ngakunye, {spacing} mm phakathi kwazo",
+  "template_fact_strip_middle_hole": "imbobo eyodwa maphakathi",
+  "template_fact_disc": "{name}: indilinga engu-{diameter} mm ububanzi, imbobo maphakathi",
+  "template_fact_disc_holes": "izimbobo ezengeziwe ezingu-{offsets} mm ukusuka maphakathi",
+  "template_fact_gear": "{name}: amazinyo angu-{teeth}, {tips} mm ububanzi kusukela kwesinye isihloko kuya kwesinye",
+  "template_fact_gear_spacing": "ama-ekseli amagiya abambanayo ahlukaniswa ngu-{radius} mm kanye nerediyasi yephitshi yelinye igiya",
+  "template_fact_cam": "{name}: isimo seqanda esingu-{base} mm ububanzi no-{height} mm ubude, imbobo ye-ekseli eduze kohlangothi oluyindilinga",
+  "template_fact_shape": "{name}: cishe {width} × {height} mm"
 }

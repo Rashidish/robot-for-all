@@ -66,7 +66,9 @@ export interface LessonCoverage {
   title: string;
   englishStatus: 'draft' | 'in_review' | 'published';
   state: LessonState;
-  /** Live in English but not in this language: learners see it in English. */
+  /** Template sheets the translation has no words for: they print in English (spec §2.1). */
+  englishSheets: string[];
+  /** Live in English but not (fully) in this language: learners see some of it in English. */
   flagged: boolean;
 }
 
@@ -76,11 +78,15 @@ export function lessonCoverage(
     title: string;
     status: 'draft' | 'in_review' | 'published';
     hash: string;
+    /** The lesson's template sheet names. */
+    templates?: string[];
   }[],
   translations: {
     lesson: string;
     status: 'draft' | 'in_review' | 'published';
     translatedFrom: string | null;
+    /** Sheets the translation has words for. */
+    templates?: string[];
   }[]
 ): LessonCoverage[] {
   const byLesson = new Map(translations.map((t) => [t.lesson, t]));
@@ -91,12 +97,16 @@ export function lessonCoverage(
       : t.translatedFrom !== l.hash
         ? 'needs_updating'
         : t.status;
+    const englishSheets = t
+      ? (l.templates ?? []).filter((s) => !(t.templates ?? []).includes(s))
+      : (l.templates ?? []);
     return {
       id: l.id,
       title: l.title,
       englishStatus: l.status,
       state,
-      flagged: l.status === 'published' && state !== 'published'
+      englishSheets,
+      flagged: l.status === 'published' && (state !== 'published' || englishSheets.length > 0)
     };
   });
 }
@@ -114,14 +124,6 @@ export const LESSON_STATE_LABELS: Record<LessonState, string> = {
  * language until it is made translatable (a later change).
  */
 export const NOT_TRANSLATABLE: { what: string; where: string }[] = [
-  {
-    what: 'Template sheets: titles, part names and measurement notes',
-    where: 'content/projects/<lesson>/templates/*.ts'
-  },
-  {
-    what: 'Words drawn inside lesson diagrams (mostly wiring labels in Phase 2)',
-    where: 'content/lessons/<lesson>/images/*.svg'
-  },
   {
     what: 'Starter program names (shown in the code editor)',
     where: 'content/lessons/<lesson>/programs/*.rfa.json'

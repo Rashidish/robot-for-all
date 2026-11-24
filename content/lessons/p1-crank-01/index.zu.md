@@ -21,7 +21,18 @@ assessment:
   - Ngiyakwazi ukuchaza ukuthi ukuphendula isibambo kwenza kanjani ikhanda linyakaze liye phezulu naphansi
   - Ngiyakwazi ukushintsha imbobo yesikhonkwane se-crank ukuze ikhanda linqekuze kakhulu
   - Ngiyakwazi ukusho into esekhaya esebenzisa i-crank
-translated_from: a483e3a74b23a3b8
+templates:
+  rhino-parts:
+    title: "Ubhejane olunqekuzisa ikhanda: izingxenye"
+    parts:
+      - name: Umzimba kabhejane
+        notes: ["imbobo yephivothi yekhanda ngaphambili phezulu; imbobo ye-ekseli ye-crank maphakathi"]
+      - name: Ikhanda
+        notes: ["imbobo yephivothi ngemuva kwekhanda; imbobo yenduku yokusunduza ngaphansi kophondo"]
+      - name: Idiski ye-crank
+      - name: Induku yokusunduza
+      - name: Isibambo
+translated_from: d3a66fe607fb612f
 status: draft
 ai_generated: true
 reviewed_by: null

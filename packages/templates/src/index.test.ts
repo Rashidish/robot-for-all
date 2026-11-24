@@ -6,10 +6,12 @@ import {
   disc,
   gear,
   gearCentreDistance,
+  inWords,
   layout,
   MARGIN,
   measurements,
   renderSheet,
+  type Say,
   shape,
   strip,
   wrap
@@ -124,10 +126,36 @@ describe('rendered sheet', () => {
     expect(svg).not.toMatch(/<script|<style|style=|href=|on[a-z]+=/i);
   });
 
-  it('lists measurements for drawing by hand', () => {
-    expect(measurements({ title: 'x', parts: [disc({ name: 'Wheel', diameter: 50 })] })).toEqual([
-      'Wheel: circle 50 mm across, hole in the centre'
-    ]);
+  it('lists measurements for drawing by hand, in the words given', () => {
+    const say: Say = (f, name) =>
+      f.kind === 'disc' ? `${name}: circle ${f.diameter} mm across` : `${name}: ${f.kind}`;
+    const part = shape({
+      name: 'Body',
+      width: 40,
+      height: 20,
+      path: 'M0 0H40V20H0Z',
+      measurements: ['hole near the front']
+    });
+    expect(
+      measurements({ title: 'x', parts: [disc({ name: 'Wheel', diameter: 50 }), part] }, say)
+    ).toEqual(['Wheel: circle 50 mm across', 'Body: shape', 'hole near the front']);
+  });
+
+  it('a sheet in other words keeps exactly the same shapes and sizes', () => {
+    const sheet = {
+      title: 'Cart',
+      parts: [
+        strip({ name: 'Axle', length: 80, width: 12, holes: 2 }),
+        disc({ name: 'Wheel', diameter: 50 })
+      ]
+    };
+    const zu = inWords(sheet, { title: 'Inqola', parts: [{ name: 'I-ekseli' }, undefined] });
+    expect(zu.parts.map((p) => p.name)).toEqual(['I-ekseli', 'Wheel']);
+    const shapes = (svg: string) =>
+      svg.replace(/<text[^>]*>[^<]*<\/text>|<title>[^<]*<\/title>/g, '');
+    expect(shapes(renderSheet(zu, labels))).toBe(shapes(renderSheet(sheet, labels)));
+    expect(renderSheet(zu, labels)).toContain('Inqola');
+    expect(inWords(sheet)).toBe(sheet);
   });
 });
 

@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.25 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.26 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -173,7 +173,7 @@ ai_generated: true
 reviewed_by: null        # required to publish
 build_tested_by: null    # required to publish: who built it from the printed lesson
 ```
-A translation, `index.<lang>.md`, holds only the translated words (`title`, `outcomes`, `concepts`, `parts` item/substitute, `safety_notes`, `assessment`, the body with the same `##` sections) plus `status`, `ai_generated`, `reviewed_by` and `translated_from` (`npm run translation-hash -- <id>`); facts come from `index.md` (spec `docs/specs/back-office-more-content.md` §2.7).
+A translation, `index.<lang>.md`, holds only the translated words (`title`, `outcomes`, `concepts`, `parts` item/substitute, `safety_notes`, `assessment`, `templates` (each sheet's title and part names/notes), the body with the same `##` sections) plus `status`, `ai_generated`, `reviewed_by` and `translated_from` (`npm run translation-hash -- <id>`, covering `index.md` and the lesson's template files); facts come from `index.md` (spec `docs/specs/back-office-more-content.md` §2.7).
 
 The body holds the five PRIMM steps as `##` headings in order: Predict, Run, Investigate, Modify, Make, optionally followed by `## Teacher notes`. Links to other lessons must point to lessons that exist (build fails otherwise).
 Languages are worked out from the files present, never typed by hand.
@@ -292,3 +292,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.23 | 2026-11-24 | `content/i18n/languages.json`: languages added and removed from the back office (more content spec §2.5) |
 | 0.24 | 2026-11-24 | Lesson translations `index.<lang>.md`: words only, `translated_from` (more content spec §2.7) |
 | 0.25 | 2026-11-24 | Lesson pictures carry no words (translate-templates-and-programs spec §2.5) |
+| 0.26 | 2026-11-24 | Template sheets in other languages: `templates` in lesson translations (translate-templates spec §2.1–2.4) |
