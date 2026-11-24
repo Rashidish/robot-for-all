@@ -34,6 +34,11 @@ App; the App is on the bypass list **only** for the "1 approval" rule.
 - The App's merge power is narrow and checked twice: by the server's rules above and by CI.
 - Season dates and site settings get the same one-step flow, still with green CI.
 
+## Notes (2026-11-24, while building)
+- Condition 4 covers every decision, not only approvals: each status change (send for review, approve, ask for changes, build test, unpublish) is its own pull request, and the decision recorded for it by a person with the role that decision needs (checked by `record_review`) is what lets it merge (migration 0004).
+- GitHub applies a bypass to a whole ruleset, so `main` has two rulesets: CI for everyone (no bypass) and one approval (App on the bypass list) — `docs/deploy.md` §5.
+- Merging is a "Merge now" button on the lesson's page, shown once all four conditions hold; the server checks them again at that moment, at the exact commit it merges.
+
 ## Consequences
 - Owner set-up: give the App **Pull requests: write** (already) and add it to the `main` ruleset's bypass list for the approval rule only (`docs/deploy.md` §5).
 - The back office checks the pull request's files and CI status through the API before merging; tests cover each refusal.

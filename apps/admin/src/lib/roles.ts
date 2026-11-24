@@ -56,3 +56,7 @@ export const canManagePeople = (mine: readonly Role[]): boolean => hasRole(mine,
 /** Season dates: competition managers and owners (docs/specs/back-office.md §6.5). */
 export const canEditSeasons = (mine: readonly Role[]): boolean =>
   hasRole(mine, 'competition_manager') || hasRole(mine, 'owner');
+
+/** The Lessons screens: content editors, reviewers, build testers and owners. */
+export const canSeeLessons = (mine: readonly Role[]): boolean =>
+  (['content_editor', 'reviewer', 'build_tester', 'owner'] as const).some((r) => hasRole(mine, r));

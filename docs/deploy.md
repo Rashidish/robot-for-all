@@ -112,11 +112,23 @@ Do these once, in this order:
    npx wrangler secret put GITHUB_INSTALLATION_ID
    npx wrangler secret put GITHUB_APP_PRIVATE_KEY < app-key.pem
    ```
-7. **Protect `main`** (so the App can never change the live site by itself): repository →
-   Settings → Rules → **New branch ruleset** for `main`: require a pull request with 1 approval,
-   require the CI checks to pass, block force pushes, and leave the bypass list empty (the App
-   must not be on it).
-8. **Sign in:** open `admin.robotsforall.org.za`, pass Access with the emailed PIN, sign in with
+7. **Protect `main`** with **two** rulesets (repository → Settings → Rules → New branch ruleset,
+   target `main`), because a bypass applies to a whole ruleset:
+   - **"CI for everyone"**: require status checks to pass (the CI jobs), block force pushes and
+     deletion; **bypass list empty**, so nobody, the App included, merges red.
+   - **"A person approves"**: require a pull request with 1 approval; bypass list: **only the
+     back-office App**. The back office still merges only its own status-only pull requests after
+     a recorded decision and green CI (ADR-0012); everything else needs a person on GitHub.
+   Give the App these permissions: Contents and Pull requests **Read and write**, Checks **Read**.
+   Set its login as a Worker secret (it is the App's name in lower case with `[bot]`, e.g.
+   `robots-for-all-back-office[bot]`): `npx wrangler secret put GITHUB_APP_LOGIN`.
+8. **Drafts preview** (content review spec §6.2): pushes to `main` also deploy a copy with drafts
+   to the Pages branch `drafts`. In Workers & Pages → `robot-for-all` → **Settings → General →
+   Access policy: Enable for preview deployments** (this also covers pull request previews,
+   which show drafts). Then add the custom domain `drafts.robotsforall.org.za` as a CNAME to
+   `drafts.robot-for-all.pages.dev`, and add it to the same Cloudflare Access application as the
+   back office.
+9. **Sign in:** open `admin.robotsforall.org.za`, pass Access with the emailed PIN, sign in with
    your Supabase account and set up your authenticator app.
 
 Without `ACCESS_TEAM` and `ACCESS_AUD` the app refuses every request, and without the Supabase

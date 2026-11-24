@@ -77,6 +77,24 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Build the drafts preview (main with drafts shown, for reviewers)
+        if: env.HAS_TOKEN == 'true' && github.event_name == 'push'
+        # Content review spec §6.2: reviewers read drafts as learners will. Deployed to the
+        # "drafts" alias, which Cloudflare Access protects (docs/deploy.md §5). Never production.
+        run: npm run build
+        env:
+          SHOW_DRAFTS: 'true'
+      - name: Publish the drafts preview
+        if: env.HAS_TOKEN == 'true' && github.event_name == 'push'
+        run: >
+          npx wrangler pages deploy apps/web/dist
+          --project-name=robot-for-all
+          --branch=drafts
+          --commit-hash=${{ github.sha }}
+          --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Check security headers on the live site
         if: env.HAS_TOKEN == 'true'
         # The local test server copies Cloudflare's _headers rules; this checks Cloudflare agrees.

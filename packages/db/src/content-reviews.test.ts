@@ -171,17 +171,25 @@ describe('nobody approves their own lesson', () => {
 });
 
 describe('the merge check and the record', () => {
-  it('a pull request counts as approved only after an approval for it', async () => {
-    const approved = async () =>
+  it('a pull request can be merged only once a decision is recorded for it', async () => {
+    const decided = async (url: string) =>
       (
-        await t.as<{ ok: boolean }>(REVIEWER, `select public.approved_pull_request($1) as ok`, [PR])
+        await t.as<{ ok: boolean }>(REVIEWER, `select public.approved_pull_request($1) as ok`, [
+          url
+        ])
       )[0]?.ok;
+    expect(await decided(PR)).toBe(false);
     await review(EDITOR, 'sent_for_review');
-    expect(await approved()).toBe(false);
-    await review(REVIEWER, 'changes_requested', { notes: 'Please add the wiring photo.' });
-    expect(await approved()).toBe(false);
-    await review(REVIEWER, 'approved', { checklist: ALL_TICKS });
-    expect(await approved()).toBe(true);
+    expect(await decided(PR)).toBe(true);
+    expect(await decided('https://github.com/Rashidish/robots-for-all/pull/999')).toBe(false);
+    // Without MFA, nothing counts.
+    const noMfa = await t.as<{ ok: boolean }>(
+      REVIEWER,
+      `select public.approved_pull_request($1) as ok`,
+      [PR],
+      { mfa: false }
+    );
+    expect(noMfa[0]?.ok).toBe(false);
   });
 
   it("decisions can't be changed, deleted or written directly", async () => {

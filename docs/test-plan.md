@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.26 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.27 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -78,6 +78,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B24 | **Back-office roles**: an owner gives Reviewer to a signed-up account by email and takes it away; an owner can't give Owner; a super admin can; the last super admin can't be removed; the vaulted break-glass account signs in from the vault; every change shows in the audit log | |
 | B25 | **Season dates from the back office**: a competition manager changes Season 1's start date on a phone and saves; a pull request opens that changes only `content/seasons/rhino-patrol.json` and names them; an end before the start is refused on the page; after the merge the Robot tab's season banner shows the new state; a reviewer without the competition manager or owner role doesn't see Seasons | |
 | B26 | **Banner and switches from the back office**: an owner sets a banner for today to next week with a link and saves; after the merge it shows on a phone on the home page, a lesson and the code editor; TalkBack reads it as "Announcement"; closing it keeps it closed after a reload; switching Print course off hides the button after the merge; a competition manager does not see Site | |
+| B27 | **Publish a lesson from the back office**: set reviewer names on Profile; an editor sends `p2-art-01` for review and merges once checks pass; a different reviewer opens the drafts preview (refused without Access), ticks all six items and approves; the editor-reviewer can't approve their own; a build tester records "built and works"; the lesson appears on the production site after the last merge; Unpublish takes it down; every step is in the history and the audit log; all on a phone at 360 px | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -125,3 +126,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.24 | 2026-11-24 | B23–B24 back office |
 | 0.25 | 2026-11-24 | B25 season dates from the back office |
 | 0.26 | 2026-11-24 | B26 banner and switches |
+| 0.27 | 2026-11-24 | B27 publish a lesson from the back office |

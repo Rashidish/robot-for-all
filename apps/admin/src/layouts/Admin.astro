@@ -1,7 +1,7 @@
 ---
 // Back-office page frame: English only (admins), accessible, no scripts (ADR-0009).
 import '../styles/admin.css';
-import { canEditSeasons, canManagePeople } from '../lib/roles';
+import { canEditSeasons, canManagePeople, canSeeLessons } from '../lib/roles';
 
 interface Props {
   title: string;
@@ -11,9 +11,11 @@ const { user, roles } = Astro.locals;
 const path = Astro.url.pathname;
 const nav = [
   { href: '/', label: 'Home', show: roles.length > 0 },
+  { href: '/lessons/', label: 'Lessons', show: canSeeLessons(roles) },
   { href: '/seasons/', label: 'Seasons', show: canEditSeasons(roles) },
   { href: '/site/', label: 'Site', show: canManagePeople(roles) },
-  { href: '/people/', label: 'People', show: canManagePeople(roles) }
+  { href: '/people/', label: 'People', show: canManagePeople(roles) },
+  { href: '/profile/', label: 'Profile', show: roles.length > 0 }
 ].filter((n) => n.show);
 ---
 

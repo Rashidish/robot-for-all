@@ -99,9 +99,9 @@ reviewers that is a second step outside the back office.
 ## 9. Work plan
 
 1. ✅ Owner decisions (§10); ADR-0012.
-2. Database: `content_reviews`, `reviewer_name`, decision functions with the "not your own" rule (PGlite tests).
-3. Drafts preview deploy behind Access.
-4. Back office: Lessons list and review queue, checklist, approve / changes / build test / unpublish, pull requests (and merging, if Option B).
+2. ✅ Database: `content_reviews`, `reviewer_name`, decision functions with the "not your own" rule (PGlite tests). *(2026-11-24, migrations 0003–0004)*
+3. ✅ Drafts preview deploy behind Access. *(2026-11-24, `deploy.yml`; owner set-up `docs/deploy.md` §5 step 8)*
+4. ✅ Back office: Lessons list and review queue, checklist, approve / changes / build test / unpublish, pull requests and merging (Option B). *(2026-11-24: `/lessons/`, `/lessons/<id>/`, `/profile/`)*
 5. Test-plan rows; then the same flow for templates, worlds and translations.
 
 ## 10. Owner decisions (2026-11-24)
