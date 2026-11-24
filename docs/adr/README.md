@@ -13,5 +13,5 @@ Copy `0000-template.md`. Never edit an accepted ADR's decision; write a new ADR 
 | 0006 | [On-screen micro:bit](0006-on-screen-microbit.md): real MicroPython simulator, built from source | Accepted |
 | 0007 | [Robot world](0007-robot-world-on-the-on-screen-microbit.md): reuse the on-screen micro:bit (pin link replaced by ADR-0008) | Accepted |
 | 0008 | [Robot profiles](../ADR-0008-robot-profiles_v1.0.md): code the robot, not the board | Accepted |
-| 0009 | [Back-office architecture](0009-back-office-architecture.md): own admin app on its own hostname, behind Cloudflare Access; content through pull requests | Proposed |
-| 0010 | [Accounts and roles](0010-accounts-and-roles.md): Supabase with MFA, row-level security, super admin, audit log | Proposed |
+| 0009 | [Back-office architecture](0009-back-office-architecture.md): own admin app on its own hostname, behind Cloudflare Access; content through pull requests | Accepted |
+| 0010 | [Accounts and roles](0010-accounts-and-roles.md): Supabase with MFA, row-level security, super admin, audit log | Accepted |

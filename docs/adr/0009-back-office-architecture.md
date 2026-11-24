@@ -1,6 +1,6 @@
 # ADR-0009: Back-office architecture
 
-- **Status:** Proposed (back-office spec v0.4 approved by the owner, 2026-11-24; this ADR waits for review)
+- **Status:** Accepted (owner, 2026-11-24)
 - **Date:** 2026-11-24
 - **Decider:** Rashid Ishmail
 

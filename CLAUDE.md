@@ -278,4 +278,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.16 | 2026-11-23 | Renamed to Robots For All in user-facing text; hostname `robotsforall.org.za`, other domains redirect |
 | 0.17 | 2026-11-23 | Lesson format: `world` (the robot world a starter program opens in, M4) |
 | 0.18 | 2026-11-24 | `content/seasons` (M4 FR-20) |
-| 0.19 | 2026-11-24 | Back office approved (spec `docs/specs/back-office.md`): admin app, Supabase accounts and roles (ADR-0009, ADR-0010 proposed) |
+| 0.19 | 2026-11-24 | Back office approved (spec `docs/specs/back-office.md`): admin app, Supabase accounts and roles (ADR-0009, ADR-0010 accepted) |

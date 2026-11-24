@@ -1,6 +1,6 @@
 # ADR-0010: Accounts, roles and the audit log
 
-- **Status:** Proposed (back-office spec v0.4 approved by the owner, 2026-11-24; this ADR waits for review)
+- **Status:** Accepted (owner, 2026-11-24)
 - **Date:** 2026-11-24
 - **Decider:** Rashid Ishmail
 
@@ -34,7 +34,7 @@ app) is required** for every back-office account. Roles live in the database and
 - Owners may grant roles below owner; only a super admin may grant `owner` or `super_admin`. A database rule keeps **at least one super admin**.
 - `audit_log (id, at, user_id, action, target, before, after, override_reason)`: insert-only: `UPDATE` and `DELETE` are revoked from every database role, the service role included, so only a reviewed migration could ever change it; owners and super admins can read it.
 - **Overrides** (approve own work, publish without a second reviewer, reopen a closed competition, unlock an account) go through one server function that requires a super admin, a written reason, and writes the audit entry with `override_reason`. The admin home lists recent overrides to every owner.
-- **Break-glass:** a second super admin account, sealed (holder decided by the owner, spec §13). Its sign-in sends an alert to every owner.
+- **Break-glass:** a second super admin account whose password and MFA recovery codes are kept in a password-manager vault (owner decision, 2026-11-24). Its sign-in sends an alert to every owner.
 
 ## Why
 - Permissions are checked in the database itself, so a missed check in a page can't leak or change data.

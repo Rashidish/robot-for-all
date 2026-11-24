@@ -1,6 +1,6 @@
 # Spec: Back office — foundation and module map
 
-> **Version:** 0.4 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24); ADR-0009 and ADR-0010 written
+> **Version:** 0.5 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-24); ADR-0009 and ADR-0010 accepted
 > Replaces v0.1 "Back office — Season dates" (one screen only).
 
 ## 1. Purpose
@@ -34,7 +34,7 @@ Least privilege: each person gets only the roles they need. One person can hold 
 
 | Role | Can |
 |---|---|
-| **Super admin** | Everything every other role can do, plus: give and take away any role (including owner), and **override** the normal checks when there is nobody else to do them (approve their own work, publish without a second reviewer, reopen a closed competition, unlock an account). Every override needs a written reason and is marked in the audit log. The owner (Rashid Ishmail) is the first super admin and so is also the first owner and reviewer. Plus one sealed **break-glass** super admin account for emergencies, used only if the main one is lost |
+| **Super admin** | Everything every other role can do, plus: give and take away any role (including owner), and **override** the normal checks when there is nobody else to do them (approve their own work, publish without a second reviewer, reopen a closed competition, unlock an account). Every override needs a written reason and is marked in the audit log. The owner (Rashid Ishmail) is the first super admin and so is also the first owner and reviewer. Plus one **break-glass** super admin account for emergencies, kept in a password-manager vault (owner decision 2026-11-24), used only if the main one is lost |
 | **Owner** | Run the platform day to day: give and take away roles below owner, change settings, see the audit log |
 | **Content editor** | Draft and edit lessons, templates, worlds, courses, seasons, robot profiles and translations; send them for review |
 | **Reviewer** | Approve content for publishing (sets `reviewed_by`); can't approve their own drafts (only a super admin can override this) |
@@ -155,7 +155,7 @@ Every back-office action (sign-in, role change, approval, setting change, publis
   - *Stolen admin password* → MFA required; Cloudflare Access as an extra gate; sessions expire; sign-ins in the audit log.
   - *Insider misuse* → least-privilege roles; reviewers can't approve their own work; every action audited.
   - *Super admin overrides* → a written reason is required; overrides are marked in the audit log and listed on the admin home for every owner to see; the super admin account needs MFA with a hardware key or authenticator app and its sign-ins alert the owners.
-  - *Locked out (lost phone, lost account)* → a sealed break-glass super admin account; using it alerts every owner and is reviewed afterwards.
+  - *Locked out (lost phone, lost account)* → a vaulted break-glass super admin account (password and MFA recovery codes in a password-manager vault); using it alerts every owner and is reviewed afterwards.
   - *A role check missed in the page* → every permission enforced in the database (row-level security) and API, not the UI; tests for each role.
   - *Leaked GitHub App key* → the App is installed on this one repository; branch protection stops it writing to `main`, so merges still need a person and a green CI; rotate the key on suspicion.
   - *Leaked database service key* → never in the browser; only in Cloudflare secrets; least-privilege database roles.
@@ -176,7 +176,7 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 
 ## 9. Work plan for Claude Code
 
-1. ✅ **ADR-0009 + ADR-0010** written (2026-11-24). ⏸ owner review.
+1. ✅ **ADR-0009 + ADR-0010** accepted (2026-11-24).
 2. **Foundation**: `apps/admin` skeleton (sign-in page with MFA, admin home, role checks with the super admin and its overrides, audit log), People → Back-office roles, database migrations for roles and audit log, CI job and tests per role. ⏸ owner actions (§13), then the owner signs in.
 3. **Configuration → Seasons** (§6.5) and **Site** settings, with the GitHub App. ⏸ owner changes a date end to end.
 4. **Content review & publishing**: short spec first, then build. ⏸
@@ -191,7 +191,7 @@ Every back-office action (sign-in, role change, approval, setting change, publis
   1. ✅ Content in Git through pull requests; operational data in Supabase (brought forward from M5, for back-office accounts first).
   2. ✅ Roles as in §3, with a super admin who covers the first owner and reviewer and can override checks with a reason.
   3. ✅ Cloudflare Access in front of the admin hostname.
-  4. ⏳ Who holds the sealed break-glass super admin account (needed before step 2 goes live; a trusted second person, or a sealed envelope with the owner's lawyer or accountant).
+  4. ✅ The break-glass super admin account is **vaulted**: its password and MFA recovery codes are kept in a password-manager vault that only the owner (and a named deputy, if any) can open; opening it is itself logged by the vault, and using the account alerts every owner.
 - **Owner actions (before step 2):** create the Supabase project (free tier, the region nearest South Africa); add `admin.robotsforall.org.za` to a new Cloudflare Pages project; install a GitHub App on this repository only (contents: write, pull requests: write) and protect `main` (required review and green CI, no bypass); put the keys into Cloudflare secrets; require 2FA for everyone with write access to the repository.
 
 ## Version history
@@ -202,3 +202,4 @@ Every back-office action (sign-in, role change, approval, setting change, publis
 | 0.2 | 2026-11-24 | Owner: the back office runs all administration and configuration (lesson approval, users and access, competitions). Rewritten as the foundation and module map; seasons become its first module; Decap dropped (it edits files only, can't manage people or competitions) |
 | 0.3 | 2026-11-24 | Owner: a super admin covers the first owner and reviewer and can override checks (with a reason, audited); module map extended to every front-office capability and everything discussed (§4.1); more roles (build tester, translator, shop manager, communications, data protection officer) |
 | 0.4 | 2026-11-24 | Approved by the owner, with Cloudflare Access in front; decisions recorded in §13; ADR-0009 and ADR-0010 |
+| 0.5 | 2026-11-24 | Break-glass account vaulted (owner); ADR-0009 and ADR-0010 accepted |
