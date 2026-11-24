@@ -6,7 +6,7 @@
 import { createHash } from 'node:crypto';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PrintButton from '../../../components/PrintButton.astro';
-import { m } from '../../../i18n';
+import { localHref, m } from '../../../i18n';
 import { getLessons, type LessonEntry } from '../../../lessons/load';
 import { answerSheet, sheetIsDense } from '../../../lessons/answers';
 
@@ -33,7 +33,7 @@ let number = 0;
 
 <BaseLayout title={m.sheet_title({ title: data.title })}>
   <p class="back">
-    <a href={`/lessons/${lesson.id}/`}>← {data.title}</a>
+    <a href={localHref(`/lessons/${lesson.id}/`)}>← {data.title}</a>
   </p>
   <PrintButton label={m.sheet_print()} />
 

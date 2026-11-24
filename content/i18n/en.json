@@ -487,5 +487,6 @@
   "banner_label": "Announcement",
   "banner_more": "Read more",
   "banner_close": "Close the announcement",
-  "lesson_withdrawn_notice": "Withdrawn: this lesson is not on the live site at the moment."
+  "lesson_withdrawn_notice": "Withdrawn: this lesson is not on the live site at the moment.",
+  "language_switch_label": "Language"
 }

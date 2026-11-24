@@ -6,11 +6,16 @@ import type { GitHub } from './github';
 import { addLanguage, filesForAdd, filesForRemove, removeLanguage } from './languages';
 
 const root = join(import.meta.dirname, '../../../../');
-const list = JSON.parse(
+// An English-only starting point (the repository's own list may already have more languages).
+const repoList = JSON.parse(
   readFileSync(join(root, 'content/i18n/languages.json'), 'utf8')
 ) as LanguageList;
-const inlang = JSON.parse(readFileSync(join(root, 'project.inlang/settings.json'), 'utf8')) as {
-  locales: string[];
+const list: LanguageList = { languages: repoList.languages.filter((l) => l.code === 'en') };
+const inlang = {
+  ...(JSON.parse(readFileSync(join(root, 'project.inlang/settings.json'), 'utf8')) as {
+    locales: string[];
+  }),
+  locales: ['en']
 };
 const zu = { code: 'zu', name: 'isiZulu', native: 'isiZulu' };
 

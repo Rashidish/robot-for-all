@@ -7,6 +7,13 @@
       "status": "published",
       "source": true,
       "reviewed_by": null
+    },
+    {
+      "code": "zu",
+      "name": "isiZulu",
+      "native": "isiZulu",
+      "status": "draft",
+      "reviewed_by": null
     }
   ]
 }

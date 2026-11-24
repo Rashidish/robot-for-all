@@ -1,14 +1,14 @@
 ---
 // Shown by the service worker when a page isn't saved on this device and there's no connection.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { m } from '../i18n';
+import { localHref, m } from '../i18n';
 ---
 
 <BaseLayout title={m.offline_title()}>
   <h1>{m.offline_title()}</h1>
   <p>{m.offline_body()}</p>
   <p class="actions">
-    <a class="button" href="/lessons/">
+    <a class="button" href={localHref('/lessons/')}>
       {m.lessons_title()}
     </a>
     <a href="">{m.offline_retry()}</a>
