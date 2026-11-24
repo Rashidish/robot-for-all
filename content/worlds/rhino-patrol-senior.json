@@ -1,0 +1,58 @@
+{
+  "id": "rhino-patrol-senior",
+  "version": 1,
+  "challenge": "world_rhino_patrol_senior_challenge",
+  "grid": { "cols": 6, "rows": 5 },
+  "lines": [
+    {
+      "cells": [
+        "F5",
+        "F4",
+        "F3",
+        "F2",
+        "F1",
+        "E1",
+        "D1",
+        "C1",
+        "B1",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "B5",
+        "C5"
+      ]
+    }
+  ],
+  "pieces": [
+    { "piece": "tunnel", "id": "thicket", "cell": "D1", "dir": "ew" },
+    { "piece": "target", "id": "gate", "cell": "C5", "edge": "E" },
+    { "piece": "wall", "cell": "C3", "edge": "N" },
+    { "piece": "wall", "cell": "C3", "edge": "W" },
+    { "piece": "wall", "cell": "C3", "edge": "E" }
+  ],
+  "areas": [
+    { "id": "station", "cell": "F5", "pattern": "dots" },
+    { "id": "post-east", "cell": "F3", "pattern": "hatch" },
+    { "id": "post-north", "cell": "B1", "pattern": "hatch" },
+    { "id": "post-west", "cell": "A3", "pattern": "hatch" },
+    { "id": "waterhole", "cell": "C3", "pattern": "checks" }
+  ],
+  "start": { "cell": "F5", "heading": 270 },
+  "bump": "whiskers",
+  "missions": [
+    {
+      "id": "patrol",
+      "type": "checkpoints",
+      "zones": ["post-east", "post-north", "post-west"],
+      "points": 50
+    },
+    { "id": "thicket", "type": "passTunnel", "tunnel": "thicket", "points": 30 },
+    { "id": "gate", "type": "touchTarget", "target": "gate", "points": 30 },
+    { "id": "waterhole", "type": "stopInZone", "zone": "waterhole", "points": 40 },
+    { "id": "home", "type": "returnHome", "zone": "station", "points": 20 }
+  ],
+  "scoring": { "timeBonus": 30, "wallTouch": -5 },
+  "timeLimitMs": 120000
+}

@@ -254,4 +254,16 @@ test.describe('Robot tab (M4 step 2)', () => {
       timeout: 120_000
     });
   });
+
+  test("switching worlds redraws the canvas in the new world's shape", async ({ page }) => {
+    await page.goto('/code/');
+    await page.getByRole('button', { name: 'Robot', exact: true }).click();
+    const canvas = page.locator('.robot-world canvas').first();
+    const ratio = () => canvas.evaluate((c: HTMLCanvasElement) => c.height / c.width);
+    // Rhino Patrol Junior is 4 × 3 cells, Senior 6 × 5: same width on screen, different height.
+    await page.getByLabel('World', { exact: true }).selectOption('rhino-patrol-junior');
+    await expect.poll(ratio).toBeCloseTo(3 / 4, 2);
+    await page.getByLabel('World', { exact: true }).selectOption('rhino-patrol-senior');
+    await expect.poll(ratio).toBeCloseTo(5 / 6, 2);
+  });
 });

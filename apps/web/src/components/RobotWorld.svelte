@@ -198,9 +198,12 @@
     const ctx = canvas?.getContext('2d');
     if (!ctx || !canvas || !world) return;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
-    if (canvas.width !== Math.round(width * dpr)) {
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
+    // Worlds differ in shape, so check the height too (a new world can have the same width).
+    const w = Math.round(width * dpr);
+    const h = Math.round(height * dpr);
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
     }
     const grid = showGrid ? gridFor(world) : null;
     if (link)

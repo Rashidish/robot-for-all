@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.21 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.22 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -72,6 +72,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B18 | **Robot tab on a budget Android phone**: the robot moves smoothly (about 30 frames a second) in the follow-the-line world with the micro:bit running; "Where is the robot?" and the challenge result are read out by TalkBack; the Monitor table is read row by row and the grid letters are readable | |
 | B19 | **Surprise maze on two devices**: type the same maze number and size on two different phones; the mazes look the same. The mission checklist is read out by TalkBack, with "done" or "not done yet" for each mission | |
 | B20 | **Print course on two different printers**: print bump maze 4817 (4 × 4) at 100 % from a phone or laptop; the calibration square measures **100 mm ± 1 mm** on both; the 15 tiles join with the corner marks lined up, following the assembly map; the build sheet's 25 walls match the walls on screen; lines and zones are readable on a black-and-white printer | |
+| B21 | **Season 1 "Rhino Patrol" on the floor**: print and build the three courses (Junior 4 × 3, Grade 5–6 5 × 4, Senior 6 × 5) from Print course; each fits a classroom floor or a corridor; the tunnel, gate flap and waterhole walls stand up; a Grade 3–4 group finishes Junior with timed moves, and a Grade 7–9 group finishes Senior with sensors; teachers say the mission names and difficulty suit each grade band | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -114,3 +115,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.19 | 2026-11-24 | Lesson p2-maze-01 Bump maze |
 | 0.20 | 2026-11-24 | Lesson p2-art-01 Pen art |
 | 0.21 | 2026-11-24 | Lesson p3-linemaze-01 Line maze |
+| 0.22 | 2026-11-24 | B21 Season 1 courses on the floor |

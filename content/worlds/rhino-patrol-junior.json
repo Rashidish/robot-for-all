@@ -1,0 +1,21 @@
+{
+  "id": "rhino-patrol-junior",
+  "version": 1,
+  "challenge": "world_rhino_patrol_junior_challenge",
+  "grid": { "cols": 4, "rows": 3 },
+  "pieces": [{ "piece": "tunnel", "id": "thicket", "cell": "B3", "dir": "ew" }],
+  "areas": [
+    { "id": "station", "cell": "A3", "pattern": "dots" },
+    { "id": "waterhole", "cell": "C3", "pattern": "checks" },
+    { "id": "lookout", "cell": "D1", "pattern": "hatch" }
+  ],
+  "start": { "cell": "A3", "heading": 0 },
+  "missions": [
+    { "id": "thicket", "type": "passTunnel", "tunnel": "thicket", "points": 30 },
+    { "id": "waterhole", "type": "stopInZone", "zone": "waterhole", "points": 40 },
+    { "id": "lookout", "type": "reachZone", "zone": "lookout", "points": 30 },
+    { "id": "home", "type": "returnHome", "zone": "station", "points": 20 }
+  ],
+  "scoring": { "timeBonus": 30, "wallTouch": -5 },
+  "timeLimitMs": 120000
+}
