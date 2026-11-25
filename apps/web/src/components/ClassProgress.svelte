@@ -28,6 +28,11 @@
   let sheets = $state<Record<string, SheetSummary>>({});
   let phase = $state<number | null>(null);
   let open = $state<{ learner: string; lesson: string } | null>(null);
+  // Badges (M5 step 7d, FR-15): "badges need a check" for this class, and each learner's badges
+  // with a way to revoke one awarded by mistake.
+  let needCheck = $state(false);
+  let awards = $state<{ id: string; learner_id: string; badge_id: string }[]>([]);
+  const badgeName = (id: string) => t(`badge_${id.replace(/-/g, '_')}_name`);
   let busy = $state(false);
   let error = $state('');
 
@@ -47,7 +52,18 @@
     roster = rows
       .map((r) => ({ id: r.learner_id, nickname: r.learners?.nickname ?? '' }))
       .sort((a, b) => a.nickname.localeCompare(b.nickname));
+    const [cls] = await client.select<{ badges_need_check: boolean }>(
+      'classes',
+      'badges_need_check',
+      `id=eq.${classId}`
+    );
+    needCheck = cls?.badges_need_check ?? false;
     if (roster.length > 0) {
+      awards = await client.select<{ id: string; learner_id: string; badge_id: string }>(
+        'badge_awards',
+        'id,learner_id,badge_id',
+        `learner_id=in.(${roster.map((r) => r.id).join(',')})&revoked_at=is.null`
+      );
       records = await client.select<ProgressRecord>(
         'sheet_records',
         'id,learner_id,lesson_id,sheet_code,steps_done,i_can,built_working,team_sheet,recorded_at,checked_at,revoked_at',
@@ -78,6 +94,21 @@
     if (revoke && !confirm(t('progress_revoke_confirm'))) return;
     return run(async () => {
       await client.rpc('check_record', { p_record: c.record.id, p_revoke: revoke });
+      await load();
+    });
+  };
+
+  const setNeedCheck = (on: boolean) =>
+    run(async () => {
+      await client.rpc('set_badges_need_check', { p_class: classId, p_on: on });
+      needCheck = on;
+    });
+
+  const revokeBadge = (a: { id: string; badge_id: string }, nickname: string) => {
+    if (!confirm(`${t('progress_revoke_badge_confirm')} ${badgeName(a.badge_id)} (${nickname})`))
+      return;
+    return run(async () => {
+      await client.rpc('revoke_badge', { p_award: a.id });
       await load();
     });
   };
@@ -119,6 +150,15 @@
       <option value="2">2</option>
       <option value="3">3</option>
     </select>
+    <label class="check">
+      <input
+        type="checkbox"
+        checked={needCheck}
+        disabled={busy}
+        onchange={(e) => setNeedCheck((e.currentTarget as HTMLInputElement).checked)}
+      />
+      {t('progress_need_check')}
+    </label>
     <p class="muted legend">{t('progress_legend')}</p>
     {#if lessons.length === 0}
       <p class="muted">{t('progress_no_records')}</p>
@@ -206,6 +246,29 @@
       </section>
     {/if}
   {/if}
+  {#if roster && awards.length > 0}
+    <h4>{t('badge_mine')}</h4>
+    <ul class="awards">
+      {#each roster.filter((l) => awards.some((a) => a.learner_id === l.id)) as l (l.id)}
+        <li>
+          <strong>{l.nickname}:</strong>
+          {#each awards.filter((a) => a.learner_id === l.id) as a (a.id)}
+            <span class="award">
+              {badgeName(a.badge_id)}
+              <button
+                type="button"
+                class="plain"
+                disabled={busy}
+                onclick={() => revokeBadge(a, l.nickname)}
+              >
+                {t('progress_revoke_badge')}
+              </button>
+            </span>
+          {/each}
+        </li>
+      {/each}
+    </ul>
+  {/if}
   {#if error}<p class="error" role="alert">{error}</p>{/if}
 </details>
 
@@ -269,6 +332,24 @@
     font-weight: 600;
     min-height: 44px;
     cursor: pointer;
+  }
+  .check {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    min-height: 44px;
+  }
+  .awards li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    align-items: center;
+    padding-block: 0.25rem;
+  }
+  .award {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
   }
   .error {
     color: var(--color-error, #b3261e);

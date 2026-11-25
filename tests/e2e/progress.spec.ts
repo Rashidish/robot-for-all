@@ -33,6 +33,7 @@ test.describe('progress (M5)', () => {
     await page.addInitScript((s) => localStorage.setItem('rfa-session', s), SESSION);
     let records = [record({}), record({ id: 'r2', learner_id: 'l2', i_can: [true, false, true] })];
     const calls: unknown[] = [];
+    let awards = [{ id: 'a1', learner_id: 'l1', badge_id: 'first-build' }];
     await page.route('**/db/**', async (route) => {
       const url = new URL(route.request().url());
       switch (url.pathname) {
@@ -77,6 +78,15 @@ test.describe('progress (M5)', () => {
           );
         case '/db/rest/v1/sheet_records':
           return route.fulfill(json(records));
+        case '/db/rest/v1/badge_awards':
+          return route.fulfill(json(awards));
+        case '/db/rest/v1/rpc/set_badges_need_check':
+          calls.push({ needCheck: route.request().postDataJSON() });
+          return route.fulfill(json(null));
+        case '/db/rest/v1/rpc/revoke_badge':
+          calls.push({ revoke: route.request().postDataJSON() });
+          awards = [];
+          return route.fulfill(json(null));
         case '/db/rest/v1/rpc/check_record': {
           const body = route.request().postDataJSON() as { p_record: string; p_revoke: boolean };
           calls.push(body);
@@ -111,11 +121,20 @@ test.describe('progress (M5)', () => {
     await table.getByRole('button', { name: /Rocket/ }).click();
     await expect(page.getByText(/^Not yet: /)).toBeVisible();
     page.once('dialog', (d) => void d.accept());
-    await page.getByRole('button', { name: /Revoke/ }).click();
+    await page.getByRole('button', { name: /Revoke \(it/ }).click();
     await expect(table.getByRole('button', { name: /Rocket/ })).toHaveCount(0);
+    // Badges need a check, for this class.
+    await page.getByLabel(/Badges need a teacher’s check/).check();
+    // A badge awarded by mistake is revoked.
+    await expect(page.getByText(/Thandi R:.*First Build/)).toBeVisible();
+    page.once('dialog', (d) => void d.accept());
+    await page.getByRole('button', { name: 'Revoke', exact: true }).click();
+    await expect(page.getByText(/Thandi R:.*First Build/)).toHaveCount(0);
     expect(calls).toEqual([
       { p_record: 'r1', p_revoke: false },
-      { p_record: 'r2', p_revoke: true }
+      { p_record: 'r2', p_revoke: true },
+      { needCheck: { p_class: 'c1', p_on: true } },
+      { revoke: { p_award: 'a1' } }
     ]);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > 360);
     expect(overflow).toBe(false);

@@ -37,6 +37,7 @@ export const RPC = new Set([
   'class_learner_status',
   'create_sign_in_cards',
   'revoke_sign_in_cards',
+  'set_badges_need_check',
   'check_record',
   'revoke_badge',
   'verify_certificate',
