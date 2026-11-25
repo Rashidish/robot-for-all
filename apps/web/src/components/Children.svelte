@@ -37,6 +37,8 @@
   // Each child's progress (FR-16): their lessons, what is "Not yet", what a teacher checked.
   let progress = $state<Record<string, ProgressRecord[]>>({});
   let sheets = $state<Record<string, SheetSummary>>({});
+  let childBadges = $state<Record<string, { badge_id: string }[]>>({});
+  const badgeName = (id: string) => t(`badge_${id.replace(/-/g, '_')}_name`);
   async function loadProgress(child: Child) {
     if (progress[child.id]) return;
     if (Object.keys(sheets).length === 0) {
@@ -47,6 +49,11 @@
         sheets = {};
       }
     }
+    childBadges[child.id] = await client.select<{ badge_id: string }>(
+      'badge_awards',
+      'badge_id',
+      `learner_id=eq.${child.id}&revoked_at=is.null`
+    );
     progress[child.id] = await client.select<ProgressRecord>(
       'sheet_records',
       'id,learner_id,lesson_id,sheet_code,steps_done,i_can,built_working,team_sheet,recorded_at,checked_at,revoked_at',
@@ -214,6 +221,16 @@
             (e.currentTarget as HTMLDetailsElement).open && run(() => loadProgress(child))}
         >
           <summary>{t('progress_child_title')}</summary>
+          {#if (childBadges[child.id] ?? []).length > 0}
+            <ul class="child-badges" aria-label={t('badge_mine')}>
+              {#each childBadges[child.id] ?? [] as b (b.badge_id)}
+                <li>
+                  <img src={`/badges/${b.badge_id}.svg`} alt="" width="48" height="58" />
+                  {badgeName(b.badge_id)}
+                </li>
+              {/each}
+            </ul>
+          {/if}
           {#if progress[child.id] && cellsFor(child).length === 0}
             <p class="muted">{t('progress_child_none')}</p>
           {:else if progress[child.id]}
@@ -323,6 +340,19 @@
     gap: var(--space-2);
     align-items: center;
     margin-block: var(--space-2);
+  }
+  .child-badges {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+  }
+  .child-badges li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
   }
   .name form {
     display: grid;

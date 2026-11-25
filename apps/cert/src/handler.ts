@@ -6,9 +6,11 @@
 //                          (FR-5a): name and parent email locked, the parent emailed a link
 //   POST /cert/pending     the parent opening that link sees which school and class it is
 //   POST /cert/confirm     the parent confirms; the name moves to the child's profile
+//   POST /cert/badges      a learner (their own session) asks for new badges to be awarded
 // Certificates and badge files (step 7) come later. Names are never logged, cached or echoed in
 // errors; every answer is no-store.
 import { cleanName, decryptName, encryptName, fromBytea, loadKeys, toBytea } from './crypto';
+import { checkLearner } from './badges';
 import { type MailEnv, type Mailer, mailerFrom, words } from './mail';
 
 export interface Env extends MailEnv {
@@ -125,7 +127,14 @@ async function readJson(request: Request): Promise<Record<string, unknown> | nul
   }
 }
 
-const ROUTES = ['/cert/name', '/cert/show-names', '/cert/enrol', '/cert/pending', '/cert/confirm'];
+const ROUTES = [
+  '/cert/name',
+  '/cert/show-names',
+  '/cert/enrol',
+  '/cert/pending',
+  '/cert/confirm',
+  '/cert/badges'
+];
 
 const hex = (b: ArrayBuffer) =>
   Array.from(new Uint8Array(b), (x) => x.toString(16).padStart(2, '0')).join('');
@@ -152,6 +161,17 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   if (!ROUTES.includes(pathname)) return fail(404, 'not found');
   const body = await readJson(request);
   if (!body) return fail(400, 'send JSON');
+  if (pathname === '/cert/badges') {
+    // A learner session (ADR-0013): the database says whose it is.
+    const token = /^Bearer ([\w-]+\.[\w-]+\.[\w-]+)$/.exec(
+      request.headers.get('authorization') ?? ''
+    )?.[1];
+    if (!token) return fail(401, 'Please sign in again.');
+    const me = await rpc<string | null>(env, deps, 'whoami_learner', {}, token);
+    if (!me.ok || !me.body) return fail(401, 'Please sign in again.');
+    const mailer = deps.mailer === undefined ? mailerFrom(env) : deps.mailer;
+    return reply(200, { awarded: await checkLearner(me.body, env, deps, mailer) });
+  }
   const who = await caller(request, env, deps);
   if (!who) return fail(401, 'Please sign in again.');
   const keys = await loadKeys(env.NAME_KEYS);

@@ -781,5 +781,9 @@
   "badge_robot_coder_about": "Uqede izifundo ezintathu zeSigaba 2: wenza i-micro:bit ilawule izibani, izinkinobho noma amamotho.",
   "badges_title": "Amabheji",
   "badges_intro": "Abafundi bathola amabheji ngokuqeda izifundo nangokubhala amashidi abo ezimpendulo: zonke izinyathelo zenziwe, konke okuthi “Ngiyakwazi” kunguYebo, futhi isakhiwo siyasebenza. “Hhayi okwamanje” kulungile: kukhombisa okufanele kusebenzwe kukho ngokulandelayo, kodwa akubalwa ebhejini.",
-  "badges_none": "Amabheji ayeza maduze."
+  "badges_none": "Amabheji ayeza maduze.",
+  "email_badge_subject": "U-{nickname} uthole ibheji ku-Robots For All",
+  "email_badge_body": "Sawubona,\n\nU-{nickname} uthole: {badges}.\n\nNgena ukuze ulibone: {link}\n\nRobots For All",
+  "badge_earned": "🎉 Uthole ibheji:",
+  "badge_mine": "Amabheji"
 }

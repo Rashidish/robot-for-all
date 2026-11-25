@@ -71,12 +71,40 @@
     location.href = '/class/';
   };
 
+  // Badges (M5 step 7b): earned automatically from sent sheets; shown with the nickname only.
+  let badges = $state<{ badge_id: string; awarded_at: string }[]>([]);
+  const badgeName = (id: string) => t(`badge_${id.replace(/-/g, '_')}_name`);
+
   async function refresh() {
     if (!me) return;
     waiting = await outbox.pending(me.learnerId);
     if (!navigator.onLine) return;
     const r = await sendOutbox(outbox, me.learnerId, me.token, fetch);
     if (r.signedOut) message = t('record_sign_in_again');
+    if (r.sent > 0) {
+      try {
+        const res = await fetch('/cert/badges', {
+          method: 'POST',
+          headers: { authorization: `Bearer ${me.token}`, 'content-type': 'application/json' },
+          body: '{}'
+        });
+        const { awarded } = res.ok
+          ? ((await res.json()) as { awarded: string[] })
+          : { awarded: [] };
+        if (awarded.length) message = `${t('badge_earned')} ${awarded.map(badgeName).join(', ')}`;
+      } catch {
+        // The nightly check awards it instead.
+      }
+    }
+    try {
+      const res = await fetch(
+        '/db/rest/v1/badge_awards?select=badge_id,awarded_at&revoked_at=is.null&order=awarded_at',
+        { headers: { authorization: `Bearer ${me.token}`, accept: 'application/json' } }
+      );
+      if (res.ok) badges = await res.json();
+    } catch {
+      // Offline: badges show next time.
+    }
     waiting = await outbox.pending(me.learnerId);
     try {
       const res = await fetch(
@@ -261,6 +289,20 @@
       {/if}
     </section>
 
+    {#if badges.length > 0}
+      <section aria-labelledby="badges-title">
+        <h3 id="badges-title">{t('badge_mine')}</h3>
+        <ul class="badges">
+          {#each badges as b (b.badge_id)}
+            <li>
+              <img src={`/badges/${b.badge_id}.svg`} alt="" width="64" height="77" />
+              <span>{badgeName(b.badge_id)}</span>
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
+
     {#if rows.length > 0}
       <section aria-labelledby="mine-title">
         <h3 id="mine-title">{t('record_mine')}</h3>
@@ -343,6 +385,20 @@
   }
   .ican span {
     flex-basis: 100%;
+  }
+  .badges {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  .badges li {
+    display: grid;
+    justify-items: center;
+    max-width: 6rem;
+    text-align: center;
+    font-weight: 600;
   }
   .records {
     padding-left: 1.2rem;
