@@ -82,3 +82,7 @@ export const canSeeLanguages = (mine: readonly Role[]): boolean =>
 /** People → Organisations (M5 spec §7.4): coach verifiers and support verify schools and clubs. */
 export const canVerifyOrganisations = (mine: readonly Role[]): boolean =>
   hasRole(mine, 'coach_verifier') || hasRole(mine, 'support');
+
+/** Privacy → Due for deletion (M5 spec v0.5 §7.5): the data protection officer confirms. */
+export const canConfirmDeletions = (mine: readonly Role[]): boolean =>
+  hasRole(mine, 'data_protection_officer');

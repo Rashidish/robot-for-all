@@ -142,6 +142,7 @@ Accounts stay off until the site switch **accounts** is on (back office → Site
 2. In Supabase → **Authentication → Providers → Email**: email sign-in on, "Confirm email" on; **Email templates → Magic Link**: show the `{{ .Token }}` code (our sign-in page asks for the code, not a link).
 3. Apply the M5 migrations, `0010_teach.sql` onwards, in order (packages/db/README.md).
 4. Update the privacy page for M5 (M5 spec §7.1) before switching **accounts** on.
+5. Give the **Data protection officer** role (back office → People) to whoever confirms deletions (the Information Officer, or someone they name). Only that role sees Privacy → Due for deletion.
 
 `/db/` answers 503 until step 1 is done, so nothing breaks before then.
 

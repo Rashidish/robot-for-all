@@ -1,0 +1,143 @@
+---
+// Privacy → Due for deletion (M5 spec v0.5 §7.5, owner decisions 2026-11-25). Accounts nobody
+// has signed in to for 12 months are listed by what they are linked to (the school or club, or
+// the adult's chosen display name), never with a child's name or anyone's contact details. The
+// data protection officer confirms the list (untick to leave one for now) or keeps an account
+// with a reason. Unconfirmed after 30 days: locked for 30 days, then deleted by the daily job.
+// The database checks the role and writes the audit log (migration 0015).
+import Admin from '../layouts/Admin.astro';
+import { daysLeft, type DueRow, STAGE_LABELS, stageOf, tickedUsers } from '../lib/privacy';
+import { canConfirmDeletions } from '../lib/roles';
+
+const { supabase, roles } = Astro.locals;
+if (!canConfirmDeletions(roles)) return Astro.redirect('/', 303);
+
+async function readList() {
+  const { data, error } = await supabase.rpc('deletion_due_list');
+  return { rows: (data ?? []) as DueRow[], failed: Boolean(error) };
+}
+
+let notice = '';
+let error = '';
+let { rows, failed } = await readList();
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const action = String(form.get('action') ?? '');
+  if (action === 'confirm') {
+    const users = tickedUsers(form, rows);
+    if (form.get('confirmed') !== 'on') {
+      error = 'Tick the box to confirm you checked the list.';
+    } else if (users.length === 0) {
+      error = 'No accounts were ticked.';
+    } else {
+      const { data, error: e } = await supabase.rpc('confirm_deletions', { p_users: users });
+      if (e) error = e.message;
+      else notice = `Deleted ${String(data)} account(s). The audit log records the count.`;
+    }
+  } else if (action === 'keep') {
+    const user = String(form.get('user') ?? '');
+    const reason = String(form.get('reason') ?? '');
+    const { error: e } = await supabase.rpc('keep_account', { p_user: user, p_reason: reason });
+    if (e) error = e.message;
+    else notice = 'Kept. Its year starts again, and the reason is in the audit log.';
+  }
+  if (error) Astro.response.status = 400;
+  ({ rows, failed } = await readList());
+}
+if (failed) error ||= 'Could not read the list. Try again in a minute.';
+const day = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+---
+
+<Admin title="Due for deletion">
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  <p>
+    Accounts nobody has signed in to for 12 months, after two warning messages. Confirm to delete
+    them now. Any not confirmed within 30 days are locked for 30 days (nobody can use them or sign
+    their learners in), then deleted. Keep an account only for a reason, such as a complaint or
+    request under way.
+  </p>
+
+  {rows.length === 0 ? (
+    <p>Nothing is due for deletion.</p>
+  ) : (
+    <>
+      <form method="post">
+        <input type="hidden" name="action" value="confirm" />
+        <table>
+          <caption>Due for deletion ({rows.length})</caption>
+          <thead>
+            <tr>
+              <th scope="col">Delete</th>
+              <th scope="col">Account</th>
+              <th scope="col">Linked to</th>
+              <th scope="col">Last sign-in</th>
+              <th scope="col">Learners who would go</th>
+              <th scope="col">Stage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const stage = stageOf(r);
+              return (
+                <tr>
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="user"
+                      value={r.user_id}
+                      checked
+                      aria-label={`Delete ${r.display_name}`}
+                    />
+                  </td>
+                  <td>
+                    {r.display_name} ({r.account_kind})
+                  </td>
+                  <td>{r.linked_to}</td>
+                  <td>{day(r.last_seen_at)}</td>
+                  <td>{r.learners_to_go}</td>
+                  <td>
+                    {stage !== 'waiting' && <strong class="flag">⚑ </strong>}
+                    {STAGE_LABELS[stage]} ·{' '}
+                    {stage === 'locked'
+                      ? `deleted in ${daysLeft(r)} day(s)`
+                      : `locked in ${daysLeft(r)} day(s)`}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <label class="check">
+          <input type="checkbox" name="confirmed" required /> I checked this list. Delete the ticked
+          accounts now.
+        </label>
+        <div class="actions">
+          <button type="submit">Delete the ticked accounts</button>
+        </div>
+      </form>
+
+      <h2>Keep an account</h2>
+      {rows.map((r) => (
+        <form method="post" class="keep">
+          <input type="hidden" name="action" value="keep" />
+          <input type="hidden" name="user" value={r.user_id} />
+          <label>
+            Why keep {r.display_name} ({r.linked_to})?
+            <input name="reason" required minlength="5" maxlength="200" />
+          </label>
+          <button type="submit">Keep</button>
+        </form>
+      ))}
+    </>
+  )}
+</Admin>

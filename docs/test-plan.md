@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.42 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.43 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -96,6 +96,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B42 | **Show names**: a teacher at a verified school taps Show names on a phone, sees the names for 2 minutes, leaves the app and returns (names gone); a teacher whose sign-in is older than 12 hours is asked to sign in again; a teacher of another class can't see them; Support sees each reveal in `name_reveals` without names | |
 | B43 | **School enrolment by email**: with a real email provider, a teacher enrols three learners (one with a mistyped email); two parents receive the email in their inbox (not spam), the message has no child's name, the link opens on a phone; the mistyped one is reported and stays in the form; the teacher withdraws one waiting request | |
 | B44 | **Parent confirms**: the parent opens the link, signs in with the same email, confirms with and without keeping the school's name; opening the link signed in with another email is refused; an expired link (after 14 days) says so | |
+| B45 | **Due for deletion**: the data protection officer (with MFA) sees an aged test account on Privacy → Due for deletion with its school or display name and no child's name or contact; keeps one with a reason and deletes another; both show in the audit log as counts or reasons only; the home page flags the list after 7 days; a locked test account's sign-in is refused with the locked message | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -159,3 +160,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.40 | 2026-11-25 | B40 parent manages a child |
 | 0.41 | 2026-11-25 | B41 certificate name end to end, B42 Show names |
 | 0.42 | 2026-11-25 | B43 school enrolment by email, B44 parent confirms |
+| 0.43 | 2026-11-25 | B45 Due for deletion |
