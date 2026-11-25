@@ -1,6 +1,6 @@
 # Spec: M5 — Family groups and personal learners
 
-> **Version:** 0.1 (draft for approval) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail · **Status:** Draft
+> **Version:** 0.2 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-25): §9 decisions 1, 3 and 4 as proposed; decision 2 changed (no "Self-recorded learning" wording)
 > Builds on: `docs/specs/M5-teach.md` (accounts, consent, badges, certificates), ADR-0013 (learner sign-in), ADR-0015 (certificate names), CLAUDE.md §7 (POPIA).
 > **Owner direction (2026-11-25):** homeschool families get a **family group**. Adults learning on their own are **personal learners**, and a personal learner is **not a group**.
 
@@ -48,7 +48,7 @@ Today a learner can only be made through a school or club class link (M5 FR-5). 
 |---|---|
 | FF-1 | A family group belongs to the parent who made it. **No verification**: it is not listed to the back office's verifiers and gets no "not yet verified" mark. |
 | FF-2 | **Only that family's children:** a child joins only if the parent adding them is the child's guardian. There is **no enrolment link, QR code, school enrolment, staff invitation or QR sign-in cards**, so a family group can't be used to run a club. |
-| FF-3 | **At most 8 children** (owner to confirm the number). More than that is a club. |
+| FF-3 | **At most 8 children** (owner decision). More than that is a club. |
 | FF-4 | Learners sign in with the group's **code and picture PIN** as in a class (ADR-0013). Optionally, **Learn as <child>** on a parent's signed-in phone gives the child a session through the sign-in service without the PIN. |
 | FF-5 | **No check switch:** nobody in a family group is an independent checker, so records are **self-recorded** and the "badges need a check" switch isn't offered. Parents can't mark records checked. |
 | FF-6 | **The stricter class still wins** (owner decision): if the child is also in a school or club class with the switch on, their badges wait for that teacher's or coach's check. |
@@ -69,7 +69,7 @@ Today a learner can only be made through a school or club class link (M5 FR-5). 
 ### 4.3 Certificates and verification
 | ID | Requirement |
 |---|---|
-| FC-1 | A certificate from a family group or a personal learner says **"Self-recorded learning"** in place of the school or club name. The `/verify/` page shows the same, so it can't pass as a school-checked certificate. |
+| FC-1 | **No "self-recorded" wording (owner decision):** a certificate from a family group or a personal learner carries no special label. Where a school or club certificate names the school or club, it names **no organisation** (only Robots For All), and `/verify/` shows the badge and date with no organisation. |
 | FC-2 | A certificate whose records were **checked** by a school or club teacher or coach names that school or club, whoever recorded them. |
 
 ## 5. Data (what changes)
@@ -80,13 +80,13 @@ Today a learner can only be made through a school or club class link (M5 FR-5). 
 ## 6. Acceptance criteria
 - A parent starts a family group, adds two children (one new, one already at a school), and each child signs in on the family phone and records a sheet. Badges are awarded self-recorded. A ninth child is refused.
 - A family group offers no enrolment link, QR code, cards, check switch or staff invitation, and a parent can't mark a record checked.
-- An adult adds "I'm learning myself", records a sheet from their account offline, earns a badge, and gets a certificate marked "Self-recorded learning", as shown by `/verify/`.
+- An adult adds "I'm learning myself", records a sheet from their account offline, earns a badge, and gets a certificate naming no school or club; `/verify/` shows the badge and date only.
 - A child in a family group and a school class with the switch on gets badges only after the teacher checks.
 - Deleting the parent's account follows M5 §7.5. Deleting an adult's account deletes their learner profile.
 
 ## 7. Threat notes
 - **Running an unverified club as a "family":** prevented by guardians-only membership, the 8-child cap, and no links, QR codes or cards. The back office can see family groups by count (not names) to spot misuse.
-- **Self-recorded badges and certificates presented as checked ones:** prevented by "Self-recorded learning" on the certificate and on `/verify/` (FC-1).
+- **Self-recorded badges and certificates presented as checked ones:** with no special wording (owner decision), the remaining signal is that such a certificate names **no school or club**, and `/verify/` confirms that. The verification code still proves the badge was awarded on Robots For All.
 - **A child posing as an adult:** the 18+ tick is a declaration, not proof. The honest limit is that it collects no more data. A personal learner is never in a class without that class's teacher or coach seeing them, and nothing in the product lets adults and children message each other (CLAUDE.md §7).
 - **"Learn as <child>":** it only works on the guardian's own signed-in session, so it exposes nothing beyond what the guardian can already see.
 - **Second guardian:** the one-time link plus the first parent's confirmation stop anyone with a forwarded link from becoming a guardian on their own.
@@ -95,15 +95,16 @@ Today a learner can only be made through a school or club class link (M5 FR-5). 
 1. Database: the `family` kind, the cap, guardians-only membership, `self_user_id`, and the second guardian. PGlite tests.
 2. Family group pages in Your account; "Learn as <child>" through the sign-in service.
 3. Personal learner: "I'm learning myself", recording from Your account.
-4. With certificates (M5 step 8): "Self-recorded learning" on certificates and on `/verify/`.
+4. With certificates (M5 step 8): family and personal certificates name no organisation (FC-1).
 
-## 9. Owner decisions needed
-1. **The cap:** 8 children per family group?
-2. **Wording:** "Self-recorded learning" on certificates and `/verify/`?
-3. **"Learn as <child>"** on a parent's phone: yes, or always the picture PIN?
-4. **A second guardian** by invitation: yes?
+## 9. Owner decisions (2026-11-25)
+1. **The cap:** yes, at most 8 children per family group.
+2. **Wording:** changed. There is **no "Self-recorded learning" wording**; family and personal certificates name no school or club (FC-1).
+3. **"Learn as <child>"** on a parent's own phone: yes.
+4. **A second guardian** by invitation: yes.
 
 ## Version history
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-25 | First draft (owner: family group yes; a personal learner is not a group) |
+| 0.2 | 2026-11-25 | Approved: cap 8, "Learn as <child>", second guardian; no "Self-recorded learning" wording (family and personal certificates name no organisation) |

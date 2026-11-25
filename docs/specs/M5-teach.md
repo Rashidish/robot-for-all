@@ -286,6 +286,8 @@ One PR per step; ⏸ marks a stop for review.
 8. **Certificates:** the certificate service (decrypt in memory, PDF), automatic certificates on award, class and event batches in the background, verification codes and `/verify/`; the name-leak tests.
 9. ⏸ **People checks** (test plan): enrolment by parents on cheap phones, sign-in with Grade 3 learners, a printed certificate batch at a school.
 
+*Added 2026-11-25:* family groups (homeschool) and personal learners (adults on their own) are specified in `docs/specs/M5-family-and-personal.md` (approved), built after step 8 or alongside it.
+
 ## 10. AI opportunities
 None in M5. Nothing about learners, and never a name, goes to any AI (CLAUDE.md §7).
 
