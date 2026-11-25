@@ -77,6 +77,7 @@ self.addEventListener('fetch', (event) => {
   // network: never cached or answered here.
   if (url.pathname.startsWith('/db/')) return;
   if (url.pathname.startsWith('/cert/')) return;
+  if (url.pathname.startsWith('/signin/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(handlePage(event));

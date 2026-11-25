@@ -20,7 +20,12 @@ async function asLearner<T = Record<string, unknown>>(
   sql: string,
   params: unknown[] = []
 ): Promise<T[]> {
-  const claims = JSON.stringify({ role: 'authenticated', kind: 'learner', learner_id: learner });
+  const claims = JSON.stringify({
+    role: 'authenticated',
+    kind: 'learner',
+    learner_id: learner,
+    sv: 1
+  });
   await t.db.query(`select set_config('request.jwt.claims', $1, false)`, [claims]);
   await t.db.exec('set role authenticated');
   try {

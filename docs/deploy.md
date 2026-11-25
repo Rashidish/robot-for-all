@@ -187,6 +187,31 @@ Logs are switched off for this Worker (`observability` false), so no request, er
 
 **The daily job** runs on this Worker every day at 03:17 South African time (Cron Trigger in `apps/cert/wrangler.jsonc`): it expires and reminds waiting school enrolments, sends dormancy warnings, runs the deletion steps (due, lock, delete; M5 spec §7.5) and emails the back office every 7 days while accounts wait. Set where that notice goes: `npx wrangler secret put PRIVACY_NOTICE_EMAIL` (the Information Officer's address). The deletion steps run even before email is set up.
 
+### 8. The learner sign-in service (M5, ADR-0013)
+A small **Cloudflare Worker** (`robots-for-all-signin`, `apps/signin`) answers `robotsforall.org.za/signin/*`.
+Learners sign in with the class code, their nickname and four secret pictures; it gives each a 30-day
+session on that phone. It is the only thing that holds Supabase's **JWT secret**, which can create any
+session, so treat it like the name key. Do these once:
+
+1. **Worker secrets** (from `apps/signin`):
+   ```
+   npx wrangler secret put SUPABASE_URL
+   npx wrangler secret put SUPABASE_SERVICE_KEY
+   npx wrangler secret put SUPABASE_JWT_SECRET
+   ```
+   `SUPABASE_JWT_SECRET` is in Supabase → Settings → API → JWT Settings ("JWT Secret", the HS256 secret
+   that also signs the anon and service keys). Vault a copy with the name key.
+2. **Switch the deploy on:** GitHub → Settings → Secrets and variables → Actions → **Variables** →
+   `SIGNIN_DEPLOY` = `true`. It uses the same `CLOUDFLARE_ADMIN_API_TOKEN`. The deploy checks that the
+   live service refuses a bad request.
+
+Rate limits (30 tries a minute per address, 100 per class) come from Workers rate limiting; 5 wrong
+PINs lock a learner for 5 minutes in the database. Logs are off.
+
+**If the JWT secret leaks:** roll it in Supabase (this also changes the anon and service keys), then
+update the secrets here, in the certificate service and in the Pages project. Every learner then signs
+in again.
+
 ## Security notes
 - The Pages token can only deploy Pages; the back-office token (`CLOUDFLARE_ADMIN_API_TOKEN`) is limited to Workers (and, if needed, DNS for the admin custom domain) on this account and zone.
 - Secrets are never exposed to pull requests from forks.

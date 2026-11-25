@@ -30,3 +30,17 @@ M5 (`docs/specs/M5-teach.md` §6.4) needs learners from Grade 3 to sign in, ofte
 - Easier: no learner email or phone; quick sign-in; works offline after the first sign-in.
 - Harder: a small PIN space depends on rate limiting, so the Worker must be tested for it; teachers handle forgotten PINs (one-tap reset).
 - Watch: shared phones keep several learners' tokens; the "who's using this phone?" screen must make switching obvious, with sign-out after 10 minutes idle.
+
+## Amendment 1 (owner decision, 2026-11-25)
+Supabase accepts only sessions signed with its own JWT secret, so the learner session is **signed with
+that secret (HS256)**, not an Ed25519 key of our own. The owner chose this over having the sign-in service
+write records with the service key, so that **the database's own rules** keep each learner to their own
+rows (migrations 0010 and 0017).
+- **Where the secret lives:** only in a separate small Worker, `apps/signin` on `/signin/`, never in the
+  certificate service, the Pages project or a browser; vaulted with the name key (docs/deploy.md §8).
+- **The token:** role `authenticated`, kind `learner`, `learner_id`, and `sv`, the learner's session
+  version. A teacher, coach or parent's **sign out everywhere** bumps the version, and the database then
+  refuses older tokens.
+- **PINs:** PBKDF2-SHA256 with a random salt, bound to the learner. A first PIN (or one after a reset)
+  can be chosen only while none is set.
+- **Limits:** the per-class limit is 100 tries a minute, not 50, so a class of 40 can sign in together.

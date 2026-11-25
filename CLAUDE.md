@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.31 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.32 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -122,6 +122,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /apps/web            Public front office (PWA)
 /apps/admin          Back office (admin only)
 /apps/cert           Certificate service: the only holder of the name key (Cloudflare Worker on /cert/, ADR-0015)
+/apps/signin         Learner sign-in service: the only holder of Supabase's JWT secret (Worker on /signin/, ADR-0013)
 /packages/ui         Shared, accessible UI components
 /packages/sim        2D simulator
 /packages/db         Supabase migrations (back-office roles, audit log), tested on PGlite
@@ -299,3 +300,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.29 | 2026-11-25 | Account data through `/db/` on our own domain (ADR-0017) |
 | 0.30 | 2026-11-25 | M5 spec v0.5: email-only confirmations for now, names also on badges and the teacher's console, one vaulted key, confirmed deletion of dormant accounts |
 | 0.31 | 2026-11-25 | `apps/cert`: the certificate service (name key, Show names) |
+| 0.32 | 2026-11-25 | `apps/signin`: learner sign-in (ADR-0013 amendment: sessions signed with Supabase's JWT secret) |
