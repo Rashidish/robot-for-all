@@ -786,7 +786,7 @@
   "email_badge_body": "Hello,\n\n{nickname} earned: {badges}.\n\nSign in to see it: {link}\n\nRobots For All",
   "badge_earned": "🎉 You earned a badge:",
   "badge_mine": "Badges",
-  "progress_need_check": "Badges need a teacher’s check (only records marked checked count towards badges)",
+  "progress_need_check": "Badges need a teacher’s or coach’s check (only records marked checked count towards badges)",
   "progress_revoke_badge": "Revoke",
   "progress_revoke_badge_confirm": "Revoke this badge? It is taken away and won’t be awarded again:"
 }

@@ -124,7 +124,7 @@ test.describe('progress (M5)', () => {
     await page.getByRole('button', { name: /Revoke \(it/ }).click();
     await expect(table.getByRole('button', { name: /Rocket/ })).toHaveCount(0);
     // Badges need a check, for this class.
-    await page.getByLabel(/Badges need a teacher’s check/).check();
+    await page.getByLabel(/Badges need a teacher’s or coach’s check/).check();
     // A badge awarded by mistake is revoked.
     await expect(page.getByText(/Thandi R:.*First Build/)).toBeVisible();
     page.once('dialog', (d) => void d.accept());
