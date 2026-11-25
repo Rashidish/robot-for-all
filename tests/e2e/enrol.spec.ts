@@ -152,7 +152,7 @@ test.describe('enrol your child (M5)', () => {
 
     await page.getByRole('button', { name: 'Take out of this class' }).click();
     await expect(page.getByText(/Not in a class/)).toBeVisible();
-    expect(calls.at(-2)).toEqual({
+    expect(calls.find((c) => c.fn === 'withdraw_consent')).toEqual({
       fn: 'withdraw_consent',
       body: { p_learner: 'l1', p_control: 'class', p_class: 'c1' }
     });

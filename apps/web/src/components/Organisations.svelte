@@ -3,7 +3,7 @@
   // back office), make classes, and share each class's enrolment link and QR code with parents.
   // Every rule (staff only, one trial class, 40 learners) is checked by the database.
   import { onMount } from 'svelte';
-  import type { AccountClient } from '../account/client';
+  import { AccountError, type AccountClient } from '../account/client';
   import {
     enrolLink,
     GRADE_BANDS,
@@ -214,6 +214,56 @@
     });
   };
 
+  // Show names (FR-22a): the certificate service decrypts this class's names for this screen
+  // only. They live in memory, never in storage, and go after 2 minutes or when the page is left.
+  const NAMES_SHOWN_FOR = 2 * 60 * 1000;
+  let names = $state<Record<string, { nickname: string; name: string }[]>>({});
+  // Timers only, not shown: a plain object, so no reactivity is needed.
+  const hideTimers: Record<string, ReturnType<typeof setTimeout> | undefined> = {};
+  function hideNames(id?: string) {
+    for (const key of id ? [id] : Object.keys(names)) {
+      clearTimeout(hideTimers[key]);
+      hideTimers[key] = undefined;
+    }
+    names = id ? Object.fromEntries(Object.entries(names).filter(([k]) => k !== id)) : {};
+  }
+  onMount(() => {
+    const hideAll = () => hideNames();
+    const onVisibility = () => document.visibilityState === 'hidden' && hideNames();
+    addEventListener('pagehide', hideAll);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      hideNames();
+      removeEventListener('pagehide', hideAll);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  });
+  const showNames = (c: ClassRow) =>
+    run(async () => {
+      let shown: { names: { learner: string; name: string }[] };
+      try {
+        shown = await client.cert('show-names', { class: c.id });
+      } catch (err) {
+        if (err instanceof AccountError && err.message === 'recent sign-in needed') {
+          throw new Error(t('account_names_recent'), { cause: err });
+        }
+        throw err;
+      }
+      const roster = await client.select<{
+        learner_id: string;
+        learners: { nickname: string } | null;
+      }>('class_learners', 'learner_id,learners(nickname)', `class_id=eq.${c.id}`);
+      const byLearner = new Map(shown.names.map((n) => [n.learner, n.name]));
+      names[c.id] = roster
+        .map((r) => ({
+          nickname: r.learners?.nickname ?? '',
+          name: byLearner.get(r.learner_id) ?? ''
+        }))
+        .sort((a, b) => a.nickname.localeCompare(b.nickname));
+      clearTimeout(hideTimers[c.id]);
+      hideTimers[c.id] = setTimeout(() => hideNames(c.id), NAMES_SHOWN_FOR);
+    });
+
   async function showQr(c: ClassRow) {
     if (qr[c.id]) return;
     // The QR code library loads only here, when a teacher opens a class.
@@ -277,6 +327,37 @@
                 {t('account_class_whatsapp')}
               </a>
             </p>
+            <div class="names">
+              {#if !org.verified}
+                <p class="muted">{t('account_names_after_verify')}</p>
+              {:else if names[c.id]}
+                <table>
+                  <caption>{t('account_names_caption')}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{t('account_names_nickname')}</th><th scope="col">
+                        {t('account_names_name')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {#each names[c.id] ?? [] as n (n.nickname)}
+                      <tr>
+                        <td>{n.nickname}</td><td>{n.name || t('account_names_not_given')}</td>
+                      </tr>
+                    {/each}
+                  </tbody>
+                </table>
+                <button type="button" class="button" onclick={() => hideNames(c.id)}>
+                  {t('account_names_hide')}
+                </button>
+              {:else}
+                <button type="button" class="button" disabled={busy} onclick={() => showNames(c)}>
+                  {t('account_names_show')}
+                </button>
+                <p class="muted">{t('account_names_note')}</p>
+              {/if}
+            </div>
             {#if qr[c.id]}
               <img class="qr" src={qr[c.id]} alt={t('account_class_qr')} width="200" height="200" />
             {/if}
@@ -503,6 +584,22 @@
     gap: var(--space-2);
     align-items: center;
     min-height: 44px;
+  }
+  .names table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-block: var(--space-2);
+  }
+  .names caption {
+    text-align: left;
+    font-weight: 600;
+  }
+  .names th,
+  .names td {
+    text-align: left;
+    padding: 0.4rem;
+    border-bottom: 1px solid var(--color-border);
+    overflow-wrap: anywhere;
   }
   .qr {
     display: block;

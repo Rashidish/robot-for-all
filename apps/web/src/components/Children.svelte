@@ -14,7 +14,8 @@
     portfolioFileName,
     withClasses
   } from '../account/children';
-  import { AVATARS } from '../account/enrol';
+  import { AccountError } from '../account/client';
+  import { AVATARS, NOTICE_VERSION } from '../account/enrol';
 
   interface Props {
     client: AccountClient;
@@ -31,6 +32,11 @@
   let error = $state('');
   let message = $state('');
   const view = $derived(withClasses(children, classes));
+  // The certificate name (FR-20 to FR-22): typed here, sent only to the certificate service,
+  // never read back. We only learn whether one is stored.
+  let hasName = $state<Record<string, boolean>>({});
+  let nameDraft = $state<Record<string, string>>({});
+  let nameConsent = $state<Record<string, boolean>>({});
 
   async function load() {
     const [kids, rows] = await Promise.all([
@@ -39,7 +45,40 @@
     ]);
     children = kids ?? [];
     classes = rows ?? [];
+    const flags = await Promise.all(
+      children.map((c) => client.rpc<boolean | null>('has_certificate_name', { p_learner: c.id }))
+    );
+    hasName = Object.fromEntries(children.map((c, i) => [c.id, flags[i] === true]));
   }
+
+  const saveName = (e: SubmitEvent, child: Child) => {
+    e.preventDefault();
+    return run(async () => {
+      try {
+        await client.cert('name', {
+          learner: child.id,
+          name: nameDraft[child.id] ?? '',
+          notice: NOTICE_VERSION
+        });
+      } catch (err) {
+        if (err instanceof AccountError && err.status === 422) {
+          throw new Error(t('children_name_invalid'), { cause: err });
+        }
+        throw err;
+      }
+      nameDraft[child.id] = '';
+      nameConsent[child.id] = false;
+      hasName[child.id] = true;
+      message = t('children_name_saved');
+    });
+  };
+
+  const removeName = (child: Child) =>
+    run(async () => {
+      await client.rpc('withdraw_consent', { p_learner: child.id, p_control: 'name' });
+      hasName[child.id] = false;
+      message = t('children_name_removed');
+    });
 
   onMount(() => {
     load().catch(() => {
@@ -144,6 +183,46 @@
             {/each}
           </ul>
         {/if}
+        <details class="name">
+          <summary>
+            {t('children_name_title')}:
+            <strong>
+              {hasName[child.id] ? t('children_name_added') : t('children_name_none')}
+            </strong>
+          </summary>
+          <p class="muted">{t('children_name_about')}</p>
+          <form onsubmit={(e) => saveName(e, child)}>
+            <label for={`name-${child.id}`}>
+              {hasName[child.id] ? t('children_name_replace') : t('children_name_label')}
+            </label>
+            <input
+              id={`name-${child.id}`}
+              autocomplete="off"
+              spellcheck="false"
+              required
+              minlength="2"
+              maxlength="80"
+              bind:value={nameDraft[child.id]}
+            />
+            <label class="check">
+              <input type="checkbox" required bind:checked={nameConsent[child.id]} />
+              {t('children_name_consent')}
+            </label>
+            <button class="button" type="submit" disabled={busy || !nameConsent[child.id]}>
+              {t('children_name_save')}
+            </button>
+          </form>
+          {#if hasName[child.id]}
+            <button
+              class="button secondary"
+              type="button"
+              disabled={busy}
+              onclick={() => removeName(child)}
+            >
+              {t('children_name_remove')}
+            </button>
+          {/if}
+        </details>
         <div class="actions">
           <button
             class="button secondary"
@@ -196,6 +275,28 @@
     gap: var(--space-2);
     align-items: center;
     margin-block: var(--space-2);
+  }
+  .name form {
+    display: grid;
+    gap: var(--space-2);
+    margin-block: var(--space-2);
+  }
+  .name input:not([type='checkbox']) {
+    font: inherit;
+    padding: 0.6rem;
+    min-height: 44px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+  .name summary {
+    min-height: 44px;
+    padding-block: 0.6rem;
+    cursor: pointer;
+  }
+  .check {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
   }
   .actions {
     display: flex;

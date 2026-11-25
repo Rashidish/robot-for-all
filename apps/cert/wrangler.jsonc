@@ -1,0 +1,14 @@
+// The certificate service (ADR-0015): holds the name key; nothing else does. Deployed by
+// .github/workflows/deploy.yml from main only, once the owner has set it up (docs/deploy.md §7).
+// Secrets (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_KEY, NAME_KEYS) are set with
+// `wrangler secret put`, never written here. Logs are off: nothing about a name may be kept.
+{
+  "name": "robots-for-all-cert",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "routes": [{ "pattern": "robotsforall.org.za/cert/*", "zone_name": "robotsforall.org.za" }],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "vars": { "NAME_KEY_CURRENT": "1" }
+}

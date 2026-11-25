@@ -27,8 +27,8 @@ export class AccountError extends Error {
   }
 }
 
-async function call<T>(deps: Deps, path: string, init: RequestInit): Promise<T> {
-  const res = await deps.fetch(`${BASE}/${path}`, init);
+async function call<T>(deps: Deps, path: string, init: RequestInit, base = BASE): Promise<T> {
+  const res = await deps.fetch(`${base}/${path}`, init);
   const text = await res.text();
   const body: unknown = text ? JSON.parse(text) : null;
   if (!res.ok) {
@@ -136,6 +136,16 @@ export function accountClient(deps: Deps) {
         method: 'GET',
         headers: { authorization: `Bearer ${await token()}`, accept: 'application/json' }
       });
+    },
+    /**
+     * Calls the certificate service (/cert/, ADR-0015), the only place names are encrypted or
+     * decrypted. What it returns is never stored by this client.
+     */
+    async cert<T = unknown>(
+      path: 'name' | 'show-names',
+      body: Record<string, unknown>
+    ): Promise<T> {
+      return call<T>(deps, path, json(body, await token()), '/cert');
     }
   };
 }

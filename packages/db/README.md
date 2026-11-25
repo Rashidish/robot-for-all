@@ -17,6 +17,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0010_teach.sql` | M5 Teach (spec `docs/specs/M5-teach.md`): organisations (verified once), classes with class codes and enrolment links, learners by nickname with the certificate name only as ciphertext (ADR-0015), guardians, consent controls, school/club enrolments pending a parent's confirmation (14 days), answer-sheet records written by the learner's own session (ADR-0013, ADR-0014), spot-checks, automatic badges, verification codes that outlive the learner, and deletion when no longer needed (dormancy messages at 10 and 11 months, deletion at 12) |
 | `0011_staff_invitations.sql` | Staff join a school or club by a one-time invitation link the admin shares themselves (only the secret's hash is kept; 7 days; works once); the staff list by chosen names; removing staff, never the last admin |
 | `0012_parent_view.sql` | A parent sees the classes (and school or club names) of their own children only, through `my_children_classes()`; parents still can't read classes or their codes |
+| `0013_show_names.sql` | Show names (M5 FR-22a): the certificate service (service role only) gets a class's encrypted names for its own staff at a verified school or club, only with all three consents; each reveal is logged without the names (`name_reveals`, readable by Support) |
 
 ## Tests
 

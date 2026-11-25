@@ -145,6 +145,43 @@ Accounts stay off until the site switch **accounts** is on (back office → Site
 
 `/db/` answers 503 until step 1 is done, so nothing breaks before then.
 
+### 7. The certificate service and the name key (M5, ADR-0015)
+A small **Cloudflare Worker** (`robots-for-all-cert`, `apps/cert`) answers `robotsforall.org.za/cert/*`.
+It is the only thing that holds the **name key**: it locks (encrypts) the names parents give for
+certificates and unlocks them only for a certificate, a badge, or a class's teacher who taps
+**Show names**. Until it is set up, `/cert/` does not answer and the name form says it could not save.
+Do these once, in this order:
+
+1. **Make the key** on your own computer (never on a shared one), and keep the output only in the vault:
+   ```
+   node -e "console.log(JSON.stringify({ 1: require('crypto').randomBytes(32).toString('base64') }))"
+   ```
+   It prints something like `{"1":"q3…="}`. That whole line is the key.
+2. **Vault it, twice:** save the line in your password-manager vault (item "Robots For All name key v1"),
+   and give a sealed printed copy to a second trusted person. **If every copy is lost, the names can't be
+   recovered** and parents would have to add them again.
+3. **Worker secrets** (from `apps/cert`; you paste each value when asked):
+   ```
+   npx wrangler secret put NAME_KEYS
+   npx wrangler secret put SUPABASE_URL
+   npx wrangler secret put SUPABASE_ANON_KEY
+   npx wrangler secret put SUPABASE_SERVICE_KEY
+   ```
+   `SUPABASE_SERVICE_KEY` is the project's **service_role** key (Supabase → Settings → API). It lives only
+   here, never in the Pages project, the back office or the repository. Then clear the key from your
+   clipboard and your terminal history.
+4. **Deploy token:** reuse `CLOUDFLARE_ADMIN_API_TOKEN` (it can edit Workers on this zone).
+5. **Switch the deploy on:** GitHub → Settings → Secrets and variables → Actions → **Variables** →
+   `CERT_DEPLOY` = `true`. The next push to `main` deploys the Worker on its route and checks that
+   `/cert/` refuses a request without a sign-in.
+
+**A new key each year** (or at once if a leak is suspected): make key 2 the same way, set `NAME_KEYS` to
+`{"1":"…old…","2":"…new…"}` and `NAME_KEY_CURRENT` to `2` in `apps/cert/wrangler.jsonc`. New names use
+key 2; old ones still unlock with key 1 until they are re-locked (a later step), after which key 1 is
+removed. Vault every version until it is removed.
+
+Logs are switched off for this Worker (`observability` false), so no request, error or name is kept.
+
 ## Security notes
 - The Pages token can only deploy Pages; the back-office token (`CLOUDFLARE_ADMIN_API_TOKEN`) is limited to Workers (and, if needed, DNS for the admin custom domain) on this account and zone.
 - Secrets are never exposed to pull requests from forks.
