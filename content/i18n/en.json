@@ -558,5 +558,14 @@
   "account_class_end": "End this class",
   "account_class_end_confirm": "End this class? Its links and enrolments are deleted. Learners keep their own badges and records.",
   "enrol_title": "Enrol your child",
-  "enrol_soon": "Enrolment opens soon. When it does, this link will let you enrol your child in their class and choose what we keep about them."
+  "enrol_soon": "Enrolment opens soon. When it does, this link will let you enrol your child in their class and choose what we keep about them.",
+  "account_staff_title": "Staff",
+  "account_staff_invite": "Invite a colleague",
+  "account_staff_role": "Their role",
+  "account_staff_make_link": "Make an invitation link",
+  "account_staff_link_note": "Send this link to your colleague (WhatsApp or email). It works once, for 7 days. They sign in and join.",
+  "account_staff_share_text": "Join us on Robots For All as staff of",
+  "account_staff_remove": "Remove",
+  "account_staff_remove_confirm": "Remove this person from your school or club? They lose access to its classes.",
+  "account_staff_joined": "You’ve joined. The school or club is now in your list."
 }

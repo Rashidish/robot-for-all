@@ -7,6 +7,7 @@
   import {
     enrolLink,
     GRADE_BANDS,
+    inviteLink,
     type OrganisationForm,
     organisationProblems,
     PROVINCES,
@@ -61,6 +62,48 @@
   let message = $state('');
   let error = $state('');
   let copied = $state('');
+
+  // Staff of each organisation (step 3d), loaded when its Staff section is opened.
+  interface StaffRow {
+    user_id: string;
+    display_name: string;
+    role: Org['role'];
+  }
+  let staff = $state<Record<string, StaffRow[]>>({});
+  let inviteRole = $state<Record<string, Org['role']>>({});
+  let invites = $state<Record<string, string>>({});
+
+  async function loadStaff(org: string) {
+    staff[org] = await client.rpc<StaffRow[]>('organisation_staff_list', { p_org: org });
+  }
+
+  const invite = (e: SubmitEvent, org: string) => {
+    e.preventDefault();
+    return run(async () => {
+      const token = await client.rpc<string>('create_staff_invitation', {
+        p_org: org,
+        p_role: inviteRole[org] ?? 'teacher'
+      });
+      invites[org] = inviteLink(location.origin, token);
+    });
+  };
+
+  const removeStaff = (org: string, user: string) => {
+    if (!confirm(t('account_staff_remove_confirm'))) return;
+    return run(async () => {
+      await client.rpc('remove_staff', { p_org: org, p_user: user });
+      await loadStaff(org);
+    });
+  };
+
+  async function copyText(text: string, key: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = key;
+    } catch {
+      copied = '';
+    }
+  }
 
   let form = $state<OrganisationForm>({
     kind: 'school',
@@ -249,6 +292,67 @@
             </p>
           </details>
         {/each}
+        <details
+          class="class"
+          ontoggle={(e) => (e.currentTarget as HTMLDetailsElement).open && loadStaff(org.id)}
+        >
+          <summary>{t('account_staff_title')}</summary>
+          {#if staff[org.id]}
+            <ul>
+              {#each staff[org.id] ?? [] as p (p.user_id)}
+                <li>
+                  {p.display_name} · {t(`account_role_${p.role}`)}
+                  {#if org.role === 'admin' && p.role !== 'admin'}
+                    <button
+                      type="button"
+                      class="plain danger"
+                      disabled={busy}
+                      onclick={() => removeStaff(org.id, p.user_id)}
+                    >
+                      {t('account_staff_remove')}
+                    </button>
+                  {/if}
+                </li>
+              {/each}
+            </ul>
+          {/if}
+          {#if org.role === 'admin'}
+            <form onsubmit={(e) => invite(e, org.id)}>
+              <h4>{t('account_staff_invite')}</h4>
+              <label for={`inv-role-${org.id}`}>{t('account_staff_role')}</label>
+              <select id={`inv-role-${org.id}`} bind:value={inviteRole[org.id]}>
+                <option value="teacher">{t('account_role_teacher')}</option>
+                <option value="coach">{t('account_role_coach')}</option>
+                <option value="admin">{t('account_role_admin')}</option>
+              </select>
+              <button class="button" type="submit" disabled={busy}>
+                {t('account_staff_make_link')}
+              </button>
+            </form>
+            {#if invites[org.id]}
+              {@const link = invites[org.id] ?? ''}
+              <p>{t('account_staff_link_note')}</p>
+              <p class="link">{link}</p>
+              <p class="actions">
+                <button
+                  type="button"
+                  class="button"
+                  onclick={() => copyText(link, `inv-${org.id}`)}
+                >
+                  {copied === `inv-${org.id}` ? t('account_class_copied') : t('account_class_copy')}
+                </button>
+                <a
+                  class="plain"
+                  href={whatsappShare(`${t('account_staff_share_text')} ${org.name}: ${link}`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('account_class_whatsapp')}
+                </a>
+              </p>
+            {/if}
+          {/if}
+        </details>
         <form onsubmit={(e) => makeClass(e, org)}>
           <h4>{t('account_class_new')}</h4>
           <label for={`cls-name-${org.id}`}>{t('account_class_name')}</label>

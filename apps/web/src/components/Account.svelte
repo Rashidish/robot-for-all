@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import { type AccountClient, browserClient } from '../account/client';
   import Organisations from './Organisations.svelte';
+  import { inviteFromHash } from '../account/classes';
 
   interface Props {
     labels: Record<string, string>;
@@ -23,14 +24,36 @@
 
   onMount(async () => {
     client = browserClient();
+    // An invitation link opened while this page is already open changes only the # part.
+    window.addEventListener('hashchange', () => {
+      if (step === 'signed-in') void acceptInvite();
+    });
     try {
       const s = await client.session();
       step = s ? 'signed-in' : 'email';
-      if (s) await loadName();
+      if (s) {
+        await acceptInvite();
+        await loadName();
+      }
     } catch {
       step = 'email';
     }
   });
+
+  /** A colleague's invitation link (#invite=…): joined once signed in (M5 step 3d). */
+  let joined = $state(false);
+  async function acceptInvite() {
+    const token = inviteFromHash(location.hash);
+    if (!token || !client) return;
+    history.replaceState(null, '', location.pathname);
+    try {
+      await client.rpc('accept_staff_invitation', { p_token: token });
+      joined = true;
+      message = t('account_staff_joined');
+    } catch (err) {
+      error = err instanceof Error && err.message ? err.message : t('account_error');
+    }
+  }
 
   async function loadName() {
     const rows = await client?.select<{ display_name: string }>('adults', 'display_name');
@@ -69,6 +92,7 @@
       await client?.verifyCode(email, code);
       // Creates the account's row and stops any dormancy countdown (M5 spec §7.5).
       await client?.rpc('touch_adult', {});
+      await acceptInvite();
       await loadName();
       code = '';
       step = 'signed-in';
@@ -124,7 +148,9 @@
       <button class="button" type="submit" disabled={busy}>{t('account_save')}</button>
     </form>
     <p><button type="button" class="plain" onclick={signOut}>{t('account_sign_out')}</button></p>
-    {#if client}<Organisations {client} {labels} {languages} />{/if}
+    {#if client}
+      {#key joined}<Organisations {client} {labels} {languages} />{/key}
+    {/if}
   {/if}
   {#if message}<p class="message" role="status">{message}</p>{/if}
   {#if error}<p class="error" role="alert">{error}</p>{/if}
