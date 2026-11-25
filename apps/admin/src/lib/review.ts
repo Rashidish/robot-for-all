@@ -133,7 +133,7 @@ export const readLessons = (gh: GitHub) => readItems(gh, LESSON);
 
 /** The open back-office pull request for each item of a kind, by id. */
 export function pullsFor(
-  type: 'lesson' | 'world' | 'language' | 'translation',
+  type: 'lesson' | 'world' | 'language' | 'translation' | 'badge',
   pulls: Pull[]
 ): Map<string, Pull> {
   const map = new Map<string, Pull>();

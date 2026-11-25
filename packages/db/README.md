@@ -24,6 +24,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0017_learner_sign_in.sql` | Learner sessions (ADR-0013 amendment): `session_version` checked by `current_learner()` so "sign out everywhere" (`revoke_learner_sessions`) ends old tokens; for the sign-in service only, `learner_for_sign_in` (one learner on one class's roster) and `choose_learner_pin` (only while none is set) |
 | `0018_cards_and_learner_status.sql` | The teacher's view of sign-in (`class_learner_status`: has pictures, locked; never the PIN) and QR sign-in cards (`sign_in_cards`, only the secret's hash; `create_sign_in_cards` replaces old ones, `revoke_sign_in_cards`; `card_for_sign_in` for the sign-in service only) |
 | `0019_badge_awarding.sql` | For awarding badges (service only): `badge_records` (not revoked; only checked where a class needs a check), `learners_with_new_records`, `learner_guardian_emails` (nickname and language, never the name); `whoami_learner` for a learner session |
+| `0020_badge_reviews.sql` | Badges reviewed like worlds: content type `badge`, its checklist (`picture_clear`, `no_words`, `words_right`, `rule_fair`, `child_safe`), no build test |
 
 ## Tests
 

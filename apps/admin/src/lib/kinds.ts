@@ -1,4 +1,5 @@
-// Content kinds the back office reviews (lessons, worlds and courses; more later). Each kind says
+// Content kinds the back office reviews (lessons, worlds and courses, languages, translations,
+// badges). Each kind says
 // where its files are, how to read and change its status lines, what a decision does, and which
 // checklist a reviewer ticks. The flow (pull request + record + merge check) is shared.
 
@@ -21,7 +22,7 @@ export interface Item {
 }
 
 export interface ContentKind<T extends Item> {
-  type: 'lesson' | 'world' | 'language' | 'translation';
+  type: 'lesson' | 'world' | 'language' | 'translation' | 'badge';
   noun: string;
   path(id: string): string;
   /** The folder whose entries are the items (sub-folders for lessons, .json files for worlds). */
