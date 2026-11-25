@@ -18,6 +18,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0011_staff_invitations.sql` | Staff join a school or club by a one-time invitation link the admin shares themselves (only the secret's hash is kept; 7 days; works once); the staff list by chosen names; removing staff, never the last admin |
 | `0012_parent_view.sql` | A parent sees the classes (and school or club names) of their own children only, through `my_children_classes()`; parents still can't read classes or their codes |
 | `0013_show_names.sql` | Show names (M5 FR-22a): the certificate service (service role only) gets a class's encrypted names for its own staff at a verified school or club, only with all three consents; each reveal is logged without the names (`name_reveals`, readable by Support) |
+| `0014_school_enrolment.sql` | School and club enrolment (M5 FR-5a): service-only helpers for the certificate service (`class_label`, `pending_for_token`, `drop_pending_enrolment`) and `cancel_pending_enrolment` for a class's staff |
 
 ## Tests
 

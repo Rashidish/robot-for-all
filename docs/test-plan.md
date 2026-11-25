@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.41 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.42 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -94,6 +94,8 @@ How to use this list: add a row whenever a step adds something only a person can
 | B40 | **Parent manages a child**: on a phone, a parent opens Your account, sees their child's class and school, saves a copy of the records and opens the file, takes the child out of a class (the teacher no longer sees the child), then deletes the profile after the warning; the deleted child can no longer sign in | |
 | B41 | **Certificate name, end to end**: with the live certificate service, a parent adds a child's name; in Supabase's table editor the `certificate_name` column shows only unreadable bytes; Supabase logs and the browser's storage hold no trace of the name; the parent replaces it, then removes it | |
 | B42 | **Show names**: a teacher at a verified school taps Show names on a phone, sees the names for 2 minutes, leaves the app and returns (names gone); a teacher whose sign-in is older than 12 hours is asked to sign in again; a teacher of another class can't see them; Support sees each reveal in `name_reveals` without names | |
+| B43 | **School enrolment by email**: with a real email provider, a teacher enrols three learners (one with a mistyped email); two parents receive the email in their inbox (not spam), the message has no child's name, the link opens on a phone; the mistyped one is reported and stays in the form; the teacher withdraws one waiting request | |
+| B44 | **Parent confirms**: the parent opens the link, signs in with the same email, confirms with and without keeping the school's name; opening the link signed in with another email is refused; an expired link (after 14 days) says so | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -156,3 +158,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.39 | 2026-11-25 | B39 parent enrols a child |
 | 0.40 | 2026-11-25 | B40 parent manages a child |
 | 0.41 | 2026-11-25 | B41 certificate name end to end, B42 Show names |
+| 0.42 | 2026-11-25 | B43 school enrolment by email, B44 parent confirms |

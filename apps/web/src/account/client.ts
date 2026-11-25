@@ -142,7 +142,7 @@ export function accountClient(deps: Deps) {
      * decrypted. What it returns is never stored by this client.
      */
     async cert<T = unknown>(
-      path: 'name' | 'show-names',
+      path: 'name' | 'show-names' | 'enrol' | 'pending' | 'confirm',
       body: Record<string, unknown>
     ): Promise<T> {
       return call<T>(deps, path, json(body, await token()), '/cert');

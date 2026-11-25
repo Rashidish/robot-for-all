@@ -120,6 +120,64 @@
       {}
     );
 
+  // A school or club enrols learners for their parents to confirm (step 4b, FR-5a). The
+  // names and emails typed here go only to the certificate service, which locks them and
+  // emails each parent; they stay in this page's memory only until sent.
+  interface PendingRow {
+    id: string;
+    class_id: string;
+    grade: number;
+    requested_at: string;
+    expires_at: string;
+  }
+  interface EnrolRow {
+    name: string;
+    grade: number;
+    email: string;
+  }
+  let pending = $state<PendingRow[]>([]);
+  let enrolRows = $state<Record<string, EnrolRow[]>>({});
+  const blankRow = (): EnrolRow => ({ name: '', grade: 4, email: '' });
+  const rowsFor = (id: string) => enrolRows[id] ?? [blankRow()];
+  const addRow = (id: string) => (enrolRows[id] = [...rowsFor(id), blankRow()]);
+  const removeRow = (id: string, i: number) =>
+    (enrolRows[id] = rowsFor(id).filter((_, j) => j !== i));
+  const day = (iso: string) =>
+    new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+
+  const sendEnrolment = (e: SubmitEvent, c: ClassRow) => {
+    e.preventDefault();
+    const rows = rowsFor(c.id);
+    return run(async () => {
+      let r: { sent: number; failed: number[] };
+      try {
+        r = await client.cert('enrol', {
+          class: c.id,
+          learners: rows.map((x) => ({ name: x.name, grade: Number(x.grade), email: x.email }))
+        });
+      } catch (err) {
+        if (err instanceof AccountError && err.status === 503) {
+          throw new Error(t('account_enrol_email_off'), { cause: err });
+        }
+        if (err instanceof AccountError && err.status === 422) {
+          throw new Error(t('account_enrol_check_rows'), { cause: err });
+        }
+        throw err;
+      }
+      // Sent rows are forgotten at once; rows that failed stay for another try.
+      const kept = r.failed.flatMap((i) => (rows[i] ? [rows[i]] : []));
+      enrolRows[c.id] = kept.length ? kept : [blankRow()];
+      message =
+        `${t('account_enrol_sent')} ${r.sent}.` +
+        (kept.length ? ` ${t('account_enrol_failed')}` : '');
+    });
+  };
+
+  const cancelPending = (id: string) =>
+    run(async () => {
+      await client.rpc('cancel_pending_enrolment', { p_id: id });
+    });
+
   async function load() {
     const [o, c, l, w] = await Promise.all([
       client.select<Org>('organisation_staff', 'role,organisations(id,name,kind,verified_at)'),
@@ -129,7 +187,7 @@
         'order=created_at'
       ),
       client.select<{ class_id: string }>('class_learners', 'class_id'),
-      client.select<{ class_id: string }>('pending_enrolments', 'class_id')
+      client.select<PendingRow>('pending_enrolments', 'id,class_id,grade,requested_at,expires_at')
     ]);
     const before = new Map(orgs.map((x) => [x.id, x.form]));
     orgs = o.flatMap((x) =>
@@ -151,8 +209,11 @@
         : []
     );
     classes = c;
+    // Each class starts with one empty learner row (kept if a teacher is half-way through one).
+    enrolRows = Object.fromEntries(c.map((x) => [x.id, enrolRows[x.id] ?? [blankRow()]]));
     learners = count(l);
     waiting = count(w);
+    pending = w;
   }
 
   onMount(async () => {
@@ -361,6 +422,75 @@
             {#if qr[c.id]}
               <img class="qr" src={qr[c.id]} alt={t('account_class_qr')} width="200" height="200" />
             {/if}
+            <details class="enrol-for">
+              <summary>{t('account_enrol_title')}</summary>
+              <p class="muted">{t('account_enrol_about')}</p>
+              <form onsubmit={(e) => sendEnrolment(e, c)}>
+                {#each rowsFor(c.id) as row, i (i)}
+                  <fieldset>
+                    <legend>{t('account_enrol_learner')} {i + 1}</legend>
+                    <label for={`en-name-${c.id}-${i}`}>{t('account_enrol_name')}</label>
+                    <input
+                      id={`en-name-${c.id}-${i}`}
+                      autocomplete="off"
+                      required
+                      minlength="2"
+                      maxlength="80"
+                      bind:value={row.name}
+                    />
+                    <label for={`en-grade-${c.id}-${i}`}>{t('account_enrol_grade')}</label>
+                    <select id={`en-grade-${c.id}-${i}`} bind:value={row.grade}>
+                      {#each Array.from({ length: 12 }, (_, g) => g + 1) as g (g)}
+                        <option value={g}>{g}</option>
+                      {/each}
+                    </select>
+                    <label for={`en-email-${c.id}-${i}`}>{t('account_enrol_email')}</label>
+                    <input
+                      id={`en-email-${c.id}-${i}`}
+                      type="email"
+                      autocomplete="off"
+                      required
+                      bind:value={row.email}
+                    />
+                    {#if rowsFor(c.id).length > 1}
+                      <button type="button" class="plain" onclick={() => removeRow(c.id, i)}>
+                        {t('account_enrol_remove_row')}
+                      </button>
+                    {/if}
+                  </fieldset>
+                {/each}
+                <p class="actions">
+                  <button type="button" class="plain" onclick={() => addRow(c.id)}>
+                    {t('account_enrol_add_row')}
+                  </button>
+                  <button type="submit" class="button" disabled={busy}>
+                    {t('account_enrol_send')}
+                  </button>
+                </p>
+              </form>
+              {#if pending.some((p) => p.class_id === c.id)}
+                <h4>{t('account_enrol_waiting')}</h4>
+                <ul class="waiting">
+                  {#each pending.filter((p) => p.class_id === c.id) as p (p.id)}
+                    <li>
+                      {t('account_enrol_grade')}
+                      {p.grade} · {t('account_enrol_asked')}
+                      {day(p.requested_at)} ·
+                      {t('account_enrol_until')}
+                      {day(p.expires_at)}
+                      <button
+                        type="button"
+                        class="plain"
+                        disabled={busy}
+                        onclick={() => cancelPending(p.id)}
+                      >
+                        {t('account_enrol_withdraw')}
+                      </button>
+                    </li>
+                  {/each}
+                </ul>
+              {/if}
+            </details>
             <p>
               <button
                 type="button"
@@ -584,6 +714,35 @@
     gap: var(--space-2);
     align-items: center;
     min-height: 44px;
+  }
+  .enrol-for form {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .enrol-for fieldset {
+    display: grid;
+    gap: var(--space-1, 0.25rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+  .enrol-for input,
+  .enrol-for select {
+    font: inherit;
+    padding: 0.6rem;
+    min-height: 44px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+  .enrol-for summary {
+    min-height: 44px;
+    padding-block: 0.6rem;
+    cursor: pointer;
+  }
+  .waiting li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
   }
   .names table {
     border-collapse: collapse;
