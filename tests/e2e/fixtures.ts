@@ -13,7 +13,7 @@ export const test = base.extend<{ problems: string[] }>({
       // page shows its own message, which the tests check.
       const accountRefusal = (msg: import('@playwright/test').ConsoleMessage) =>
         /^Failed to load resource/.test(msg.text()) &&
-        /\/(db|cert)\//.test(new URL(msg.location().url || 'about:blank', origin).pathname);
+        /\/(db|cert|signin)\//.test(new URL(msg.location().url || 'about:blank', origin).pathname);
       page.on('console', (msg) => {
         if (msg.type() === 'error' && !expected.test(msg.text()) && !accountRefusal(msg)) {
           problems.push(`console: ${msg.text()}`);
