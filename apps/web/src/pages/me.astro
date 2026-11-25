@@ -8,7 +8,7 @@ import { featureOn } from '../site';
 const open = featureOn('accounts') || __RFA_SHOW_DRAFTS__;
 const labels = Object.fromEntries(
   Object.entries(m)
-    .filter(([key]) => /^learner_|^enrol_avatar_/.test(key))
+    .filter(([key]) => /^learner_|^record_|^enrol_avatar_/.test(key))
     .map(([key, message]) => [key, (message as () => string)()])
 );
 ---

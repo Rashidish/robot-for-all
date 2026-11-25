@@ -26,6 +26,7 @@
     "lighthouse": "lhci autorun",
     "build:production": "SHOW_DRAFTS=false npm run build",
     "build:admin": "npm run build -w apps/admin",
+    "sheet-codes": "node scripts/sheet-codes.mjs",
     "translation-hash": "node --experimental-strip-types scripts/translation-hash.ts"
   },
   "devDependencies": {

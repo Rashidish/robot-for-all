@@ -19,7 +19,9 @@ export function precacheList(distFiles: readonly string[]): string[] {
         (f.startsWith('_astro/') && !EDITOR_ASSET.test(f)) ||
         f.startsWith('icons/') ||
         f === 'favicon.svg' ||
-        f === 'manifest.webmanifest'
+        f === 'manifest.webmanifest' ||
+        // Answer sheet codes, so learners can record a sheet offline (answer-sheets Part B).
+        f === 'sheets.json'
     )
     .map((f) => `/${f}`);
   return [...SHELL_PAGES, ...assets.sort()];
