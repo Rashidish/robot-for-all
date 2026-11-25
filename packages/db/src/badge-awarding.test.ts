@@ -107,3 +107,31 @@ describe('badge awarding (migration 0019)', () => {
     ).rejects.toThrow(/permission denied/);
   });
 });
+
+describe('badges need a check, and revoking a badge (migration 0021)', () => {
+  it('a class’s teacher switches it; others can’t; a revoked badge stays revoked', async () => {
+    await t.as(TEACHER, `select public.set_badges_need_check($1, true)`, [cls]);
+    expect(
+      await t.as(TEACHER, `select badges_need_check from public.classes where id = $1`, [cls])
+    ).toEqual([{ badges_need_check: true }]);
+    await expect(
+      t.as(PARENT, `select public.set_badges_need_check($1, false)`, [cls])
+    ).rejects.toThrow(/only the class/);
+
+    const { id } = await one(
+      t.service<{ id: string }>(`select public.award_badge($1, 'first-build', '1') as id`, [
+        learner
+      ])
+    );
+    await t.as(TEACHER, `select public.revoke_badge($1)`, [id]);
+    const again = await one(
+      t.service<{ id: string | null }>(`select public.award_badge($1, 'first-build', '1') as id`, [
+        learner
+      ])
+    );
+    expect(again.id).toBeNull();
+    expect(
+      await t.as(PARENT, `select revoked_at is not null as revoked from public.badge_awards`)
+    ).toEqual([{ revoked: true }]);
+  });
+});

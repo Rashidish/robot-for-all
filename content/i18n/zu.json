@@ -785,5 +785,8 @@
   "email_badge_subject": "U-{nickname} uthole ibheji ku-Robots For All",
   "email_badge_body": "Sawubona,\n\nU-{nickname} uthole: {badges}.\n\nNgena ukuze ulibone: {link}\n\nRobots For All",
   "badge_earned": "🎉 Uthole ibheji:",
-  "badge_mine": "Amabheji"
+  "badge_mine": "Amabheji",
+  "progress_need_check": "Amabheji adinga ukuhlolwa nguthisha noma umqeqeshi (amarekhodi amakwe ukuthi ahloliwe kuphela abalwa emabhejini)",
+  "progress_revoke_badge": "Hoxisa",
+  "progress_revoke_badge_confirm": "Uhoxise leli bheji? Liyasuswa futhi ngeke liphinde linikezwe:"
 }

@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.34 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.35 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -307,3 +307,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.32 | 2026-11-25 | `apps/signin`: learner sign-in (ADR-0013 amendment: sessions signed with Supabase's JWT secret) |
 | 0.33 | 2026-11-25 | `content/sheets` and `npm run sheet-codes`: answer sheet codes for recording sheets (M5 step 5b) |
 | 0.34 | 2026-11-25 | `content/badges` and `packages/badges` (M5 step 7a) |
+| 0.35 | 2026-11-25 | Family groups and personal learners approved (`docs/specs/M5-family-and-personal.md`) |
