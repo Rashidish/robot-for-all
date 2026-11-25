@@ -73,8 +73,10 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  // Account data (M5, ADR-0017) goes straight to the network: never cached or answered here.
+  // Account data (M5, ADR-0017) and the certificate service (ADR-0015) go straight to the
+  // network: never cached or answered here.
   if (url.pathname.startsWith('/db/')) return;
+  if (url.pathname.startsWith('/cert/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(handlePage(event));

@@ -54,6 +54,7 @@ describe('service worker', () => {
 
   it('never answers or stores account data (/db/, ADR-0017)', () => {
     expect(template).toMatch(/pathname\.startsWith\('\/db\/'\)\) return;/);
+    expect(template).toMatch(/pathname\.startsWith\('\/cert\/'\)\) return;/);
   });
 
   it('only handles same-origin GET requests', () => {

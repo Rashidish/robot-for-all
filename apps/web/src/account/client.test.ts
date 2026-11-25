@@ -85,4 +85,19 @@ describe('account client', () => {
     const last = f.calls.at(-1);
     expect(new Headers(last?.init.headers).get('authorization')).toBe('Bearer a1');
   });
+
+  it('calls the certificate service at /cert/ with the session, and keeps nothing it returns', async () => {
+    const f = fakeDeps({
+      '/db/auth/v1/verify': { body: tokens('a1') },
+      '/cert/show-names': { body: { names: [{ learner: 'l1', name: 'Thandiwe Radebe' }] } }
+    });
+    const c = accountClient(f.deps);
+    await c.verifyCode('t@example.org', '222222');
+    const r = await c.cert<{ names: unknown[] }>('show-names', { class: 'c1' });
+    expect(r.names).toHaveLength(1);
+    const last = f.calls.at(-1);
+    expect(last?.url).toBe('/cert/show-names');
+    expect(new Headers(last?.init.headers).get('authorization')).toBe('Bearer a1');
+    expect([...f.store.values()].join()).not.toContain('Thandiwe');
+  });
 });

@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.40 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.41 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -92,6 +92,8 @@ How to use this list: add a row whenever a step adds something only a person can
 | B38 | **Verify an organisation**: a coach verifier opens People → Organisations, sees a waiting school with its EMIS hint, calls the DBE-listed number, verifies by "official phone"; an unregistered club is verified by two phone-confirmed references; the audit log shows both | |
 | B39 | **Parent enrols a child**: on a low-end phone, a parent opens a class's enrolment link (or scans its QR code), signs in with the emailed code, reads the notice and understands it (ask them to say back what is kept and who sees it), enrols their child; the isiZulu notice and consent words are reviewed by a first-language speaker; the child appears in the teacher's class | |
 | B40 | **Parent manages a child**: on a phone, a parent opens Your account, sees their child's class and school, saves a copy of the records and opens the file, takes the child out of a class (the teacher no longer sees the child), then deletes the profile after the warning; the deleted child can no longer sign in | |
+| B41 | **Certificate name, end to end**: with the live certificate service, a parent adds a child's name; in Supabase's table editor the `certificate_name` column shows only unreadable bytes; Supabase logs and the browser's storage hold no trace of the name; the parent replaces it, then removes it | |
+| B42 | **Show names**: a teacher at a verified school taps Show names on a phone, sees the names for 2 minutes, leaves the app and returns (names gone); a teacher whose sign-in is older than 12 hours is asked to sign in again; a teacher of another class can't see them; Support sees each reveal in `name_reveals` without names | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -153,3 +155,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.38 | 2026-11-25 | B38 verify an organisation |
 | 0.39 | 2026-11-25 | B39 parent enrols a child |
 | 0.40 | 2026-11-25 | B40 parent manages a child |
+| 0.41 | 2026-11-25 | B41 certificate name end to end, B42 Show names |
