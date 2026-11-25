@@ -22,6 +22,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0015_confirmed_deletion.sql` | Dormant accounts deleted only once the data protection officer confirms (`deletion_due_list`, `confirm_deletions`, `keep_account` with a reason); the daily job's `mark_due_for_deletion`, `lock_unconfirmed_deletions` (30 days), `delete_after_lock` (30 more); locked accounts can't be used and their learners can't sign in; replaces `delete_dormant_accounts` |
 | `0016_daily_job.sql` | For the daily job: the enrolment link's secret kept locked for reminders (`store_pending_token`, `pending_reminders_due`, `pending_reminder_sent`), `dormancy_warnings_due` with the adult's own email, `job_due` so the back-office notice goes every 7 days |
 | `0017_learner_sign_in.sql` | Learner sessions (ADR-0013 amendment): `session_version` checked by `current_learner()` so "sign out everywhere" (`revoke_learner_sessions`) ends old tokens; for the sign-in service only, `learner_for_sign_in` (one learner on one class's roster) and `choose_learner_pin` (only while none is set) |
+| `0018_cards_and_learner_status.sql` | The teacher's view of sign-in (`class_learner_status`: has pictures, locked; never the PIN) and QR sign-in cards (`sign_in_cards`, only the secret's hash; `create_sign_in_cards` replaces old ones, `revoke_sign_in_cards`; `card_for_sign_in` for the sign-in service only) |
 
 ## Tests
 

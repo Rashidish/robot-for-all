@@ -9,7 +9,7 @@ import { siteLanguages } from '../site-languages';
 const open = featureOn('accounts') || __RFA_SHOW_DRAFTS__;
 const labels = Object.fromEntries(
   Object.entries(m)
-    .filter(([key]) => /^(account|children)_/.test(key) || key === 'enrol_grade')
+    .filter(([key]) => /^(account|children|signin)_/.test(key) || key === 'enrol_grade')
     .map(([key, message]) => [key, (message as () => string)()])
 );
 ---

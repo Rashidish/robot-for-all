@@ -4,6 +4,7 @@
   // Every rule (staff only, one trial class, 40 learners) is checked by the database.
   import { onMount } from 'svelte';
   import { AccountError, type AccountClient } from '../account/client';
+  import ClassSignIn from './ClassSignIn.svelte';
   import {
     enrolLink,
     GRADE_BANDS,
@@ -422,6 +423,7 @@
             {#if qr[c.id]}
               <img class="qr" src={qr[c.id]} alt={t('account_class_qr')} width="200" height="200" />
             {/if}
+            <ClassSignIn {client} {labels} classId={c.id} className={c.name} />
             <details class="enrol-for">
               <summary>{t('account_enrol_title')}</summary>
               <p class="muted">{t('account_enrol_about')}</p>

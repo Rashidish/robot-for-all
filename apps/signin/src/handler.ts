@@ -3,6 +3,7 @@
 //   POST /signin/roster  {class_code}            the class's nicknames and pictures
 //   POST /signin/pin     {class_code, learner, pin, choose?}
 //        checks the picture PIN (or sets a first one) and returns a 30-day learner session
+//   POST /signin/card    {secret}   a printed QR sign-in card (events): the same session
 // Limits: 5 wrong PINs lock the learner for 5 minutes (database); per address and per class
 // rate limits here. Answers are no-store and carry no more than the sign-in screen shows.
 import { learnerToken } from './jwt';
@@ -68,7 +69,7 @@ interface SignInRow {
 export async function handle(request: Request, env: Env, deps: Deps): Promise<Response> {
   const { pathname } = new URL(request.url);
   if (request.method !== 'POST') return reply(405, { message: 'POST only' });
-  if (pathname !== '/signin/roster' && pathname !== '/signin/pin') {
+  if (!['/signin/roster', '/signin/pin', '/signin/card'].includes(pathname)) {
     return reply(404, { message: 'not found' });
   }
   let body: Record<string, unknown>;
@@ -77,6 +78,7 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   } catch {
     return reply(400, { message: 'send JSON' });
   }
+  if (pathname === '/signin/card') return card(request, body, env, deps);
   const code = typeof body['class_code'] === 'string' ? body['class_code'].replace(/\s/g, '') : '';
   if (!CODE.test(code)) return reply(400, { message: 'class code' });
   const address = request.headers.get('cf-connecting-ip') ?? 'unknown';
@@ -135,6 +137,45 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   const session = await learnerToken(
     env.SUPABASE_JWT_SECRET,
     learner,
+    row.session_version,
+    Math.floor(deps.now() / 1000)
+  );
+  return reply(200, {
+    token: session.token,
+    expires_at: session.expiresAt,
+    learner: { id: row.learner_id, nickname: row.nickname, avatar: row.avatar }
+  });
+}
+
+const sha256 = async (s: string) =>
+  Array.from(
+    new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s))),
+    (b) => b.toString(16).padStart(2, '0')
+  ).join('');
+
+/** A QR sign-in card: its secret (never the PIN) names one learner while the card is live. */
+async function card(
+  request: Request,
+  body: Record<string, unknown>,
+  env: Env,
+  deps: Deps
+): Promise<Response> {
+  const secret = body['secret'];
+  if (typeof secret !== 'string' || !/^[0-9a-f]{64}$/.test(secret)) {
+    return reply(400, { message: 'card' });
+  }
+  const address = request.headers.get('cf-connecting-ip') ?? 'unknown';
+  if (env.BY_ADDRESS && !(await env.BY_ADDRESS.limit({ key: `a:${address}` })).success) {
+    return reply(429, { message: 'too many tries' });
+  }
+  const rows = await rpc<
+    { learner_id: string; nickname: string; avatar: string; session_version: number }[]
+  >(env, deps, 'card_for_sign_in', { p_hash: await sha256(secret) });
+  const row = rows?.[0];
+  if (!row) return reply(404, { message: 'card not valid' });
+  const session = await learnerToken(
+    env.SUPABASE_JWT_SECRET,
+    row.learner_id,
     row.session_version,
     Math.floor(deps.now() / 1000)
   );

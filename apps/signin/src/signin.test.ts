@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { type Env, handle, type RateLimiter } from './handler';
 import { learnerToken, SESSION_SECONDS } from './jwt';
@@ -6,6 +7,8 @@ import { checkPin, hashPin, validPin } from './pin';
 const LEARNER = '11111111-1111-4111-8111-111111111111';
 const NOW = 1_800_000_000_000;
 const SECRET = 'super-secret-jwt-signing-key-for-tests-only';
+const CARD = 'ab'.repeat(32);
+const CARD_HASH = createHash('sha256').update(CARD).digest('hex');
 const env: Env = {
   SUPABASE_URL: 'https://db.example',
   SUPABASE_SERVICE_KEY: 'service',
@@ -29,6 +32,8 @@ const fakeFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
       if (row['pin_hash'] !== null) return Response.json(false);
       row['pin_hash'] = body['p_hash'];
       return Response.json(true);
+    case 'card_for_sign_in':
+      return Response.json(body['p_hash'] === CARD_HASH ? [{ ...row, learner_id: LEARNER }] : []);
     case 'record_pin_attempt':
       if (body['p_ok']) failures = 0;
       else failures += 1;
@@ -213,5 +218,15 @@ describe('the sign-in service', () => {
     expect(res.status).toBe(429);
     expect(seen).toEqual(['a:198.51.100.7', 'c:BCDFGH']);
     expect(calls).toEqual([]);
+  });
+
+  it('signs a learner in with a live QR card; anything else is refused', async () => {
+    const res = await post('/signin/card', { secret: CARD });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { token: string; learner: { nickname: string } };
+    expect(claims(body.token)['learner_id']).toBe(LEARNER);
+    expect(body.learner.nickname).toBe('Thandi R');
+    expect((await post('/signin/card', { secret: 'cd'.repeat(32) })).status).toBe(404);
+    expect((await post('/signin/card', { secret: 'short' })).status).toBe(400);
   });
 });
