@@ -185,6 +185,8 @@ Logs are switched off for this Worker (`observability` false), so no request, er
 
 **Email to parents** (school and club enrolment, M5 FR-5a) also goes through this service. Until an email provider is chosen and its adapter added (`apps/cert/src/mail.ts`, owner action 5 in the M5 spec), the service refuses school enrolments and keeps nothing; parents can still enrol with the class link. Once chosen, set `EMAIL_PROVIDER` and the provider's key as secrets here.
 
+**The daily job** runs on this Worker every day at 03:17 South African time (Cron Trigger in `apps/cert/wrangler.jsonc`): it expires and reminds waiting school enrolments, sends dormancy warnings, runs the deletion steps (due, lock, delete; M5 spec §7.5) and emails the back office every 7 days while accounts wait. Set where that notice goes: `npx wrangler secret put PRIVACY_NOTICE_EMAIL` (the Information Officer's address). The deletion steps run even before email is set up.
+
 ## Security notes
 - The Pages token can only deploy Pages; the back-office token (`CLOUDFLARE_ADMIN_API_TOKEN`) is limited to Workers (and, if needed, DNS for the admin custom domain) on this account and zone.
 - Secrets are never exposed to pull requests from forks.

@@ -20,6 +20,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0013_show_names.sql` | Show names (M5 FR-22a): the certificate service (service role only) gets a class's encrypted names for its own staff at a verified school or club, only with all three consents; each reveal is logged without the names (`name_reveals`, readable by Support) |
 | `0014_school_enrolment.sql` | School and club enrolment (M5 FR-5a): service-only helpers for the certificate service (`class_label`, `pending_for_token`, `drop_pending_enrolment`) and `cancel_pending_enrolment` for a class's staff |
 | `0015_confirmed_deletion.sql` | Dormant accounts deleted only once the data protection officer confirms (`deletion_due_list`, `confirm_deletions`, `keep_account` with a reason); the daily job's `mark_due_for_deletion`, `lock_unconfirmed_deletions` (30 days), `delete_after_lock` (30 more); locked accounts can't be used and their learners can't sign in; replaces `delete_dormant_accounts` |
+| `0016_daily_job.sql` | For the daily job: the enrolment link's secret kept locked for reminders (`store_pending_token`, `pending_reminders_due`, `pending_reminder_sent`), `dormancy_warnings_due` with the adult's own email, `job_due` so the back-office notice goes every 7 days |
 
 ## Tests
 

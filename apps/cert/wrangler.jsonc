@@ -10,5 +10,11 @@
   "workers_dev": false,
   "preview_urls": false,
   "observability": { "enabled": false },
-  "vars": { "NAME_KEY_CURRENT": "1" }
+  // The daily job (src/daily.ts): 01:17 UTC, 03:17 in South Africa.
+  "triggers": { "crons": ["17 1 * * *"] },
+  "vars": {
+    "NAME_KEY_CURRENT": "1",
+    "SITE_URL": "https://robotsforall.org.za",
+    "ADMIN_URL": "https://admin.robotsforall.org.za"
+  }
 }

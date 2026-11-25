@@ -658,5 +658,10 @@
   "confirm_sign_in_first": "Ngena ngekheli le-imeyili lesi sixhumanisi esathunyelwa kulo. Sikuthumelela ikhodi; awudingi iphasiwedi.",
   "confirm_asked": "icele ukubhalisa ingane yakho ku-",
   "confirm_keep_name": "Gcina igama elithayishwe yisikole noma iklabhu, ezitifiketini nasemabhejini engane yami (ligcinwa likhiyiwe; othisha bekilasi layo bangalibona). Ungalishintsha noma ulisuse kamuva.",
-  "confirm_submit": "Qinisekisa futhi ubhalise ingane yami"
+  "confirm_submit": "Qinisekisa futhi ubhalise ingane yami",
+  "email_enrol_reminder_subject": "Isikhumbuzo: sicela uqinisekise ukubhaliswa kwengane yakho ku-Robots For All",
+  "email_dormant_subject": "I-akhawunti yakho ye-Robots For All izosuswa ngaphandle uma ungena",
+  "email_dormant_body": "Sawubona,\n\nAkekho ongene ku-akhawunti yakho ye-Robots For All izinyanga ezingu-{months}. Sigcina imininingwane kuphela uma isadingeka, ngakho i-akhawunti izosuswa emva kwezinyanga eziyi-12 ingangenwanga, kanye nanoma iyiphi iphrofayela yengane engekho ekilasini.\n\nUkuze uyigcine, vele ungene: {link}\n\nNgaphambi kwalokho ungagcina nekhophi yamarekhodi engane yakho ku-akhawunti yakho.\n\nRobots For All",
+  "email_privacy_notice_subject": "Robots For All: ama-akhawunti alindele ukususwa",
+  "email_privacy_notice_body": "Ama-akhawunti afanele ukususwa: {due} ({overdue} alinde ngaphezu kwezinsuku ezi-7). Akhiyiwe futhi azosuswa uma ukukhiya kuphela: {locked}.\n\nSicela uwabuyekeze: {link}\n\nLesi saziso siza njalo ezinsukwini ezi-7 uma kusekhona ama-akhawunti alindile noma akhiyiwe."
 }
