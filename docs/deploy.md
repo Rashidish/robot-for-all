@@ -182,6 +182,8 @@ removed. Vault every version until it is removed.
 
 Logs are switched off for this Worker (`observability` false), so no request, error or name is kept.
 
+**Email to parents** (school and club enrolment, M5 FR-5a) also goes through this service. Until an email provider is chosen and its adapter added (`apps/cert/src/mail.ts`, owner action 5 in the M5 spec), the service refuses school enrolments and keeps nothing; parents can still enrol with the class link. Once chosen, set `EMAIL_PROVIDER` and the provider's key as secrets here.
+
 ## Security notes
 - The Pages token can only deploy Pages; the back-office token (`CLOUDFLARE_ADMIN_API_TOKEN`) is limited to Workers (and, if needed, DNS for the admin custom domain) on this account and zone.
 - Secrets are never exposed to pull requests from forks.
