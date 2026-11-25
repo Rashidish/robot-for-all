@@ -2,7 +2,11 @@
 import { mount } from 'svelte';
 import Account from '../components/Account.svelte';
 
-export function start(target: HTMLElement, labels: Record<string, string>): void {
+export function start(
+  target: HTMLElement,
+  labels: Record<string, string>,
+  languages: { code: string; native: string }[]
+): void {
   target.replaceChildren();
-  mount(Account, { target, props: { labels } });
+  mount(Account, { target, props: { labels, languages } });
 }

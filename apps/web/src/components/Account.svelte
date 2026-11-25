@@ -3,11 +3,13 @@
   // sign out. Learners don't need an account for lessons, templates or the code editor.
   import { onMount } from 'svelte';
   import { type AccountClient, browserClient } from '../account/client';
+  import Organisations from './Organisations.svelte';
 
   interface Props {
     labels: Record<string, string>;
+    languages: { code: string; native: string }[];
   }
-  let { labels }: Props = $props();
+  let { labels, languages }: Props = $props();
   const t = (key: string) => labels[key] ?? key;
 
   let client: AccountClient | undefined;
@@ -122,6 +124,7 @@
       <button class="button" type="submit" disabled={busy}>{t('account_save')}</button>
     </form>
     <p><button type="button" class="plain" onclick={signOut}>{t('account_sign_out')}</button></p>
+    {#if client}<Organisations {client} {labels} {languages} />{/if}
   {/if}
   {#if message}<p class="message" role="status">{message}</p>{/if}
   {#if error}<p class="error" role="alert">{error}</p>{/if}
