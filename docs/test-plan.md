@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.38 · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.39 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -90,6 +90,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B36 | **Translation flags**: the back-office home and Content → Languages → isiZulu flag live lessons without a published isiZulu translation, a translation that needs updating after an English edit, missing interface words by area (worlds and challenges included), and the not-yet-translatable text | |
 | B37 | **isiZulu template sheet printed**: print `rhino-parts.zu.svg` at 100 %; the 50 mm square measures 50 mm, parts match the English sheet exactly, every word on it is isiZulu and fits its space | |
 | B38 | **Verify an organisation**: a coach verifier opens People → Organisations, sees a waiting school with its EMIS hint, calls the DBE-listed number, verifies by "official phone"; an unregistered club is verified by two phone-confirmed references; the audit log shows both | |
+| B39 | **Parent enrols a child**: on a low-end phone, a parent opens a class's enrolment link (or scans its QR code), signs in with the emailed code, reads the notice and understands it (ask them to say back what is kept and who sees it), enrols their child; the isiZulu notice and consent words are reviewed by a first-language speaker; the child appears in the teacher's class | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -149,3 +150,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.36 | 2026-11-24 | B36 translation flags |
 | 0.37 | 2026-11-24 | B37 isiZulu template sheet printed |
 | 0.38 | 2026-11-25 | B38 verify an organisation |
+| 0.39 | 2026-11-25 | B39 parent enrols a child |
