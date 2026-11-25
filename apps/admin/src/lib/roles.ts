@@ -78,3 +78,7 @@ export const withdrawTypesFor = (
 /** Content → Languages: owners, translators and reviewers see it; only owners add or remove. */
 export const canSeeLanguages = (mine: readonly Role[]): boolean =>
   (['owner', 'translator', 'reviewer'] as const).some((r) => hasRole(mine, r));
+
+/** People → Organisations (M5 spec §7.4): coach verifiers and support verify schools and clubs. */
+export const canVerifyOrganisations = (mine: readonly Role[]): boolean =>
+  hasRole(mine, 'coach_verifier') || hasRole(mine, 'support');
