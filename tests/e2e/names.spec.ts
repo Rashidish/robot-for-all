@@ -21,6 +21,24 @@ async function storedEverywhere(page: import('@playwright/test').Page) {
     for (const name of await caches.keys()) {
       for (const req of await (await caches.open(name)).keys()) parts.push(req.url);
     }
+    // IndexedDB too: learner sessions and outboxes live there (ADR-0013, ADR-0014).
+    for (const info of await indexedDB.databases()) {
+      if (!info.name) continue;
+      const db = await new Promise<IDBDatabase>((resolve, reject) => {
+        const req = indexedDB.open(info.name as string);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error as Error);
+      });
+      for (const store of Array.from(db.objectStoreNames)) {
+        const all = await new Promise<unknown[]>((resolve, reject) => {
+          const req = db.transaction(store).objectStore(store).getAll();
+          req.onsuccess = () => resolve(req.result as unknown[]);
+          req.onerror = () => reject(req.error as Error);
+        });
+        parts.push(JSON.stringify(all));
+      }
+      db.close();
+    }
     return parts.join('\n');
   });
 }

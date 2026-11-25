@@ -73,7 +73,9 @@ describe('the daily job', () => {
       deleted: 3,
       noticeSent: false,
       emailSetUp: false,
-      badges: 0
+      badges: 0,
+      rekeyed: 0,
+      unreadable: 0
     });
     expect(calls).not.toContain('pending_reminders_due');
     expect(calls).not.toContain('dormancy_warnings_due');
