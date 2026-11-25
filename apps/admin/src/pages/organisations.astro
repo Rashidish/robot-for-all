@@ -1,0 +1,127 @@
+---
+// People → Organisations (M5 spec §7.4): every school and club, waiting ones first. A coach
+// verifier or support verifies each one once, by a route that fits it; the database checks the
+// role and the route (verify_organisation, migration 0010) and writes the audit log. No ID copies
+// or photos are kept: only which route was used, by whom and when.
+import Admin from '../layouts/Admin.astro';
+import { canVerifyOrganisations } from '../lib/roles';
+import {
+  lookUpHint,
+  type OrganisationRow,
+  ROUTE_LABELS,
+  routesFor,
+  STATE_LABELS,
+  stateOf,
+  type VerificationRoute
+} from '../lib/organisations';
+
+const { supabase, roles } = Astro.locals;
+if (!canVerifyOrganisations(roles)) return Astro.redirect('/', 303);
+
+let notice = '';
+let error = '';
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const id = String(form.get('organisation') ?? '');
+  const route = String(form.get('route') ?? '') as VerificationRoute;
+  const confirmed = form.get('confirmed') === 'on';
+  if (!confirmed) {
+    error = 'Tick the box to confirm you did the check yourself.';
+  } else {
+    const { error: e } = await supabase.rpc('verify_organisation', { p_org: id, p_route: route });
+    if (e) error = e.message;
+    else
+      notice =
+        'Verified. Its admin can now make classes and invite staff, and certificates are no longer marked "not yet verified".';
+  }
+  if (error) Astro.response.status = 400;
+}
+
+const { data, error: readError } = await supabase
+  .from('organisations')
+  .select(
+    'id, kind, name, province, emis, register_no, registered, verified_at, verified_route, reverify_by, created_at'
+  )
+  .order('created_at', { ascending: true });
+if (readError) error ||= 'Could not read the organisations. Try again in a minute.';
+const today = new Date().toISOString().slice(0, 10);
+const rows = ((data ?? []) as OrganisationRow[]).map((o) => ({ ...o, state: stateOf(o, today) }));
+const order = { waiting: 0, recheck_due: 1, verified: 2 } as const;
+rows.sort((a, b) => order[a.state] - order[b.state]);
+const when = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+---
+
+<Admin title="Organisations">
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  <p>
+    Verify each school or club once (M5 spec §7.4). Use the official details from the DBE list or
+    the public register, never contact details the organisation gave you. Keep no copies of letters
+    or IDs.
+  </p>
+
+  {rows.length === 0 ? (
+    <p>No organisations yet.</p>
+  ) : (
+    rows.map((o) => (
+      <section aria-labelledby={`org-${o.id}`}>
+        <h2 id={`org-${o.id}`}>
+          {o.name}{' '}
+          <small>
+            (
+            {o.kind === 'school'
+              ? 'school'
+              : o.registered
+                ? 'registered club'
+                : 'unregistered club'}
+            )
+          </small>
+        </h2>
+        <p>
+          <strong>{STATE_LABELS[o.state]}</strong>
+          {o.province && ` · ${o.province}`}
+          {o.emis && ` · EMIS ${o.emis}`}
+          {o.register_no && ` · Reg. ${o.register_no}`}· registered on the site {when(o.created_at)}
+          {o.verified_at && o.verified_route && (
+            <>
+              {' '}
+              · verified {when(o.verified_at)} by: {ROUTE_LABELS[o.verified_route]}
+              {o.reverify_by && ` · re-check by ${o.reverify_by}`}
+            </>
+          )}
+        </p>
+        {o.state !== 'verified' && (
+          <form method="post">
+            <p>{lookUpHint(o)}</p>
+            <input type="hidden" name="organisation" value={o.id} />
+            <fieldset>
+              <legend>How did you confirm it?</legend>
+              {routesFor(o.kind, o.registered).map((r, i) => (
+                <label class="check">
+                  <input type="radio" name="route" value={r} required checked={i === 0} />{' '}
+                  {ROUTE_LABELS[r]}
+                </label>
+              ))}
+            </fieldset>
+            <label class="check">
+              <input type="checkbox" name="confirmed" required /> I did this check myself, using
+              official details, and kept no copies.
+            </label>
+            <div class="actions">
+              <button type="submit">{o.state === 'waiting' ? 'Verify' : 'Re-confirm'}</button>
+            </div>
+          </form>
+        )}
+      </section>
+    ))
+  )}
+</Admin>

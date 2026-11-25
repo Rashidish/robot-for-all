@@ -6,6 +6,7 @@ import {
   canManagePeople,
   canSeeLanguages,
   canSeeLessons,
+  canVerifyOrganisations,
   canWithdraw
 } from '../lib/roles';
 
@@ -24,6 +25,7 @@ const nav = [
   { href: '/seasons/', label: 'Seasons', show: canEditSeasons(roles) },
   { href: '/site/', label: 'Site', show: canManagePeople(roles) },
   { href: '/people/', label: 'People', show: canManagePeople(roles) },
+  { href: '/organisations/', label: 'Organisations', show: canVerifyOrganisations(roles) },
   { href: '/profile/', label: 'Profile', show: roles.length > 0 }
 ].filter((n) => n.show);
 ---
