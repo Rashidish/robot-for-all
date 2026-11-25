@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.50 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.51 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -104,6 +104,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B50 | **Progress views**: a teacher opens a class of 30 on a phone, filters to Phase 1, reads the grid (scrolls sideways inside it, not the page), spot-checks a record against its signed paper sheet and revokes a wrong one; a parent sees their child's lessons and "Not yet" items in their language; a screen reader reads each cell's meaning | |
 | B51 | **Badge review** (back office → Badges): a reviewer looks at each draft badge's picture (printed and on a phone, readable to Grade 3 learners, no words), its English and isiZulu name and description, and whether its rule is fair; then publishes it (status `published`, `reviewed_by`) | |
 | B52 | **Earning a badge**: with live services, a learner records a complete sheet on a phone and sees "You earned a badge" with its picture; the parent gets the email (nickname and badge, no real name) and sees the badge in Your children; a class with "badges need a check" (switched on in the class's Progress) awards only after the teacher marks it checked; a revoked record doesn't award; a teacher revokes a badge given by mistake and it isn't given again | |
+| B53 | **Check a certificate**: someone outside the school opens /verify/ on a phone, types a real code from a badge (any case, with or without dashes) and sees the badge, date and school; a withdrawn badge's code says withdrawn; no name or nickname appears anywhere | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -175,3 +176,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.48 | 2026-11-25 | B50 progress views |
 | 0.49 | 2026-11-25 | B51 badge review |
 | 0.50 | 2026-11-25 | B52 earning a badge |
+| 0.51 | 2026-11-25 | B53 check a certificate |

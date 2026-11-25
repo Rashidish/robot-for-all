@@ -1,6 +1,6 @@
 // Awarding badges automatically (M5 FR-19a, step 7b). The rules live in packages/badges; the
 // live badges, lessons and sheet totals come from the site's /badges.json, so only what the site
-// shows is awarded. A badge is awarded once (award_badge ignores repeats; a revoked one stays
+// shows is awarded. Each award gets a verification code. A badge is awarded once (award_badge ignores repeats; a revoked one stays
 // revoked), and each parent is emailed "<nickname> earned <badge>", never the certificate name.
 import {
   earns,
@@ -91,7 +91,15 @@ export async function checkLearner(
       p_badge: badge.id,
       p_rule_version: await ruleVersion(badge.rule)
     });
-    if (made.ok && made.body) awarded.push(badge.id);
+    if (made.ok && made.body) {
+      awarded.push(badge.id);
+      // Its verification code (FR-29), naming the school or club (or Robots For All).
+      const label = await rpc<string>(env, deps, 'certificate_label', { p_learner: learner });
+      await rpc(env, deps, 'issue_certificate_code', {
+        p_award: made.body,
+        p_label: label.ok && label.body ? label.body : 'Robots For All'
+      });
+    }
   }
   if (awarded.length > 0 && mailer) {
     const parents = await rpc<{ email: string; nickname: string; language: string }[]>(

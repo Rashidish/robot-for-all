@@ -788,5 +788,17 @@
   "badge_mine": "Amabheji",
   "progress_need_check": "Amabheji adinga ukuhlolwa nguthisha noma umqeqeshi (amarekhodi amakwe ukuthi ahloliwe kuphela abalwa emabhejini)",
   "progress_revoke_badge": "Hoxisa",
-  "progress_revoke_badge_confirm": "Uhoxise leli bheji? Liyasuswa futhi ngeke liphinde linikezwe:"
+  "progress_revoke_badge_confirm": "Uhoxise leli bheji? Liyasuswa futhi ngeke liphinde linikezwe:",
+  "verify_title": "Hlola isitifiketi",
+  "verify_intro": "Thayipha ikhodi ephrintwe esitifiketini noma ekhadini lebheji le-Robots For All (ifana no-RFA-ABCD-23), noma uhlole ikhodi yayo ye-QR.",
+  "verify_code": "Ikhodi yesitifiketi",
+  "verify_check": "Hlola",
+  "verify_valid": "✓ Lesi sitifiketi siyiqiniso.",
+  "verify_revoked": "✗ Lesi sitifiketi sahoxiswa futhi asisabalwa.",
+  "verify_date": "Sinikezwe ngo-",
+  "verify_school": "Isikole noma iklabhu:",
+  "verify_awarded_by_rfa": "Sinikezwe yi-Robots For All",
+  "verify_no_names": "Ngenxa yobumfihlo, leli khasi alilokothi libonise igama lomfundi.",
+  "verify_unknown": "Asiyazi leyo khodi. Yihlole esitifiketini: ifana no-RFA-ABCD-23.",
+  "verify_error": "Asikwazanga ukuhlola manje. Zama futhi uma usuxhunyiwe ku-inthanethi."
 }

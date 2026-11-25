@@ -26,6 +26,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0019_badge_awarding.sql` | For awarding badges (service only): `badge_records` (not revoked; only checked where a class needs a check), `learners_with_new_records`, `learner_guardian_emails` (nickname and language, never the name); `whoami_learner` for a learner session |
 | `0020_badge_reviews.sql` | Badges reviewed like worlds: content type `badge`, its checklist (`picture_clear`, `no_words`, `words_right`, `rule_fair`, `child_safe`), no build test |
 | `0021_badges_need_check.sql` | `set_badges_need_check`: a class's teachers and coaches decide whether only checked records count towards badges (FR-15) |
+| `0022_certificate_label.sql` | `certificate_label`: which school or club a certificate names (the one whose teacher checked a record, else the newest class; "(not yet verified)" until verified; "Robots For All" if none) |
 
 ## Tests
 
