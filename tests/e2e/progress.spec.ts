@@ -123,6 +123,17 @@ test.describe('progress (M5)', () => {
     page.once('dialog', (d) => void d.accept());
     await page.getByRole('button', { name: /Revoke \(it/ }).click();
     await expect(table.getByRole('button', { name: /Rocket/ })).toHaveCount(0);
+    // The class's badge cards, as one PDF.
+    let printed: unknown = null;
+    await page.route('**/cert/certificates', (route) => {
+      printed = route.request().postDataJSON();
+      return route.fulfill({ status: 200, contentType: 'application/pdf', body: '%PDF-1.7' });
+    });
+    await page.getByLabel('What to print').selectOption('card');
+    const cards = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    expect((await cards).suggestedFilename()).toBe('badge-cards.pdf');
+    expect(printed).toEqual({ class: 'c1', kind: 'card', language: 'en' });
     // Badges need a check, for this class.
     await page.getByLabel(/Badges need a teacher’s or coach’s check/).check();
     // A badge awarded by mistake is revoked.
@@ -160,7 +171,7 @@ test.describe('progress (M5)', () => {
       if (url.pathname === '/db/rest/v1/sheet_records')
         return route.fulfill(json([record({ i_can: [true, false, true] })]));
       if (url.pathname === '/db/rest/v1/badge_awards')
-        return route.fulfill(json([{ badge_id: 'i-can' }]));
+        return route.fulfill(json([{ id: 'a9', badge_id: 'i-can' }]));
       return route.fulfill(json(url.pathname.includes('/rpc/') ? null : []));
     });
     await page.goto('/account/');
@@ -169,5 +180,20 @@ test.describe('progress (M5)', () => {
     await expect(item).toBeVisible();
     await expect(item).toContainText('Crank');
     await expect(page.getByRole('list', { name: 'Badges' })).toContainText('I Can!');
+    // The certificate goes straight to downloads; the page never shows the name (FR-24).
+    const asked: unknown[] = [];
+    await page.route('**/cert/certificate', (route) => {
+      asked.push(route.request().postDataJSON());
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/pdf',
+        body: '%PDF-1.7 Thandiwe Radebe'
+      });
+    });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Certificate (PDF)' }).click();
+    expect((await download).suggestedFilename()).toBe('certificate.pdf');
+    expect(asked).toEqual([{ award: 'a9', kind: 'certificate' }]);
+    expect(await page.content()).not.toContain('Thandiwe');
   });
 });

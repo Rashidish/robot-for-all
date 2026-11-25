@@ -5,6 +5,7 @@
   // it is wrong. Checking is optional, never a gate. The database allows this only for the
   // learner's own teachers and coaches (check_record).
   import type { AccountClient } from '../account/client';
+  import { saveFile } from '../account/download';
   import {
     type Cell,
     gridLessons,
@@ -112,6 +113,19 @@
       await load();
     });
   };
+
+  let printBadge = $state('');
+  let printKind = $state<'certificate' | 'card'>('certificate');
+  const printClass = () =>
+    run(async () => {
+      const pdf = await client.certPdf('certificates', {
+        class: classId,
+        kind: printKind,
+        language,
+        ...(printBadge ? { badge: printBadge } : {})
+      });
+      saveFile(pdf, printKind === 'card' ? 'badge-cards.pdf' : 'certificates.pdf');
+    });
 
   const symbol = (c: Cell | undefined) =>
     !c ? '·' : c.done ? (c.checked ? '✔' : '✓') : c.notYet.length ? `◐${c.notYet.length}` : '…';
@@ -248,6 +262,24 @@
   {/if}
   {#if roster && awards.length > 0}
     <h4>{t('badge_mine')}</h4>
+    <div class="print">
+      <label for={`pb-${classId}`}>{t('progress_print_badge')}</label>
+      <select id={`pb-${classId}`} bind:value={printBadge}>
+        <option value="">{t('progress_print_all')}</option>
+        {#each [...new Set(awards.map((a) => a.badge_id))] as id (id)}
+          <option value={id}>{badgeName(id)}</option>
+        {/each}
+      </select>
+      <label for={`pk-${classId}`}>{t('progress_print_kind')}</label>
+      <select id={`pk-${classId}`} bind:value={printKind}>
+        <option value="certificate">{t('progress_print_certificates')}</option>
+        <option value="card">{t('progress_print_cards')}</option>
+      </select>
+      <button type="button" class="button" disabled={busy} onclick={printClass}>
+        {t('progress_print_download')}
+      </button>
+      <p class="muted">{t('progress_print_note')}</p>
+    </div>
     <ul class="awards">
       {#each roster.filter((l) => awards.some((a) => a.learner_id === l.id)) as l (l.id)}
         <li>
@@ -338,6 +370,12 @@
     gap: var(--space-2);
     align-items: center;
     min-height: 44px;
+  }
+  .print {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 24rem;
+    margin-block: var(--space-2);
   }
   .awards li {
     display: flex;

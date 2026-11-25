@@ -27,6 +27,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0020_badge_reviews.sql` | Badges reviewed like worlds: content type `badge`, its checklist (`picture_clear`, `no_words`, `words_right`, `rule_fair`, `child_safe`), no build test |
 | `0021_badges_need_check.sql` | `set_badges_need_check`: a class's teachers and coaches decide whether only checked records count towards badges (FR-15) |
 | `0022_certificate_label.sql` | `certificate_label`: which school or club a certificate names (the one whose teacher checked a record, else the newest class; "(not yet verified)" until verified; "Robots For All" if none) |
+| `0023_certificates_for.sql` | `certificates_for` (service only): which awards an adult may print (their child's, or a class they teach), with the encrypted name only under consent b; never revoked badges |
 
 ## Tests
 

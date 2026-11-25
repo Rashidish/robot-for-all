@@ -7,10 +7,13 @@
 //   POST /cert/pending     the parent opening that link sees which school and class it is
 //   POST /cert/confirm     the parent confirms; the name moves to the child's profile
 //   POST /cert/badges      a learner (their own session) asks for new badges to be awarded
+//   POST /cert/certificate, /cert/certificates   certificate and badge-card PDFs (certificates.ts)
 // Certificates and badge files (step 7) come later. Names are never logged, cached or echoed in
 // errors; every answer is no-store.
 import { cleanName, decryptName, encryptName, fromBytea, loadKeys, toBytea } from './crypto';
 import { checkLearner } from './badges';
+import { certificates } from './certificates';
+import type { Fonts } from './pdf';
 import { type MailEnv, type Mailer, mailerFrom, words } from './mail';
 
 export interface Env extends MailEnv {
@@ -34,6 +37,8 @@ export interface Deps {
   now: () => number;
   /** Defaults to the configured provider (none until the owner chooses one). */
   mailer?: Mailer | null;
+  /** The certificate fonts (bundled by wrangler; read from disk in tests). */
+  fonts?: () => Promise<Fonts>;
 }
 
 /** At most this many learners in one request (a class list). */
@@ -133,7 +138,9 @@ const ROUTES = [
   '/cert/enrol',
   '/cert/pending',
   '/cert/confirm',
-  '/cert/badges'
+  '/cert/badges',
+  '/cert/certificate',
+  '/cert/certificates'
 ];
 
 const hex = (b: ArrayBuffer) =>
@@ -198,6 +205,10 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   }
 
   if (pathname === '/cert/enrol') return enrol(url.origin, body, who, keys, env, deps);
+  if (pathname === '/cert/certificate' || pathname === '/cert/certificates') {
+    if (!deps.fonts) return fail(500, 'fonts');
+    return certificates(pathname, body, who.id, env, deps, deps.fonts);
+  }
   if (pathname === '/cert/pending' || pathname === '/cert/confirm') {
     const token = body['token'];
     if (typeof token !== 'string' || !TOKEN.test(token)) return fail(400, 'link');

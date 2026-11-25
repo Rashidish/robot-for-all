@@ -141,6 +141,19 @@ export function accountClient(deps: Deps) {
      * Calls the certificate service (/cert/, ADR-0015), the only place names are encrypted or
      * decrypted. What it returns is never stored by this client.
      */
+    /** A certificate or badge-card PDF from the certificate service; never stored by this client. */
+    async certPdf(
+      path: 'certificate' | 'certificates',
+      body: Record<string, unknown>
+    ): Promise<Blob> {
+      const res = await deps.fetch(`/cert/${path}`, json(body, await token()));
+      if (!res.ok) {
+        const text = await res.text();
+        const b = (text ? JSON.parse(text) : {}) as { message?: string };
+        throw new AccountError(b.message ?? res.statusText, res.status);
+      }
+      return res.blob();
+    },
     async cert<T = unknown>(
       path: 'name' | 'show-names' | 'enrol' | 'pending' | 'confirm',
       body: Record<string, unknown>

@@ -800,5 +800,19 @@
   "verify_awarded_by_rfa": "Sinikezwe yi-Robots For All",
   "verify_no_names": "Ngenxa yobumfihlo, leli khasi alilokothi libonise igama lomfundi.",
   "verify_unknown": "Asiyazi leyo khodi. Yihlole esitifiketini: ifana no-RFA-ABCD-23.",
-  "verify_error": "Asikwazanga ukuhlola manje. Zama futhi uma usuxhunyiwe ku-inthanethi."
+  "verify_error": "Asikwazanga ukuhlola manje. Zama futhi uma usuxhunyiwe ku-inthanethi.",
+  "cert_title": "Isitifiketi",
+  "cert_awarded_to": "Lesi sitifiketi sinikezwa u-",
+  "cert_for_badge": "ngokuthola ibheji",
+  "cert_check": "Hlola ukuthi lesi sitifiketi siyiqiniso ku-",
+  "children_certificate": "Isitifiketi (PDF)",
+  "children_badge_card": "Ikhadi lebheji (PDF)",
+  "children_cert_saved": "Kugcinwe kokulandiwe kwakho. Kuvule lapho ukuze uphrinte.",
+  "progress_print_badge": "Yimaphi amabheji",
+  "progress_print_all": "Wonke amabheji",
+  "progress_print_kind": "Okuzophrintwa",
+  "progress_print_certificates": "Izitifiketi (esisodwa ekhasini ngalinye)",
+  "progress_print_cards": "Amakhadi amabheji (amane ekhasini ngalinye)",
+  "progress_print_download": "Landa i-PDF",
+  "progress_print_note": "Amagama avela kuphela ku-PDF, lapho abazali bekuvumile; uma kungenjalo kunomugqa ongenalutho wokubhala kuwo. Ifayela aligcinwa ndawo ngaphandle kokulandiwe kwakho."
 }
