@@ -143,6 +143,12 @@ describe('family groups (migration 0024)', () => {
     await expect(
       t.as(STRANGER, `select public.accept_guardian_invitation($1)`, [token])
     ).rejects.toThrow(/already used/);
+    // The first parent sees who opened the link (their chosen name) before confirming.
+    await t.as(DAD, `select public.touch_adult('Mr Radebe')`);
+    expect(await t.as(MOM, `select display_name from public.family_invitations_waiting()`)).toEqual(
+      [{ display_name: 'Mr Radebe' }]
+    );
+    expect(await t.as(STRANGER, `select * from public.family_invitations_waiting()`)).toEqual([]);
     const { id: inv } = await one(
       t.as<{ id: string }>(MOM, `select id from public.family_invitations`)
     );

@@ -38,6 +38,15 @@ export const RPC = new Set([
   'create_sign_in_cards',
   'revoke_sign_in_cards',
   'set_badges_need_check',
+  'my_family_class',
+  'create_family_group',
+  'enrol_into_family',
+  'add_to_family',
+  'create_guardian_invitation',
+  'accept_guardian_invitation',
+  'confirm_guardian',
+  'family_invitations_waiting',
+  'create_personal_learner',
   'check_record',
   'revoke_badge',
   'verify_certificate',
@@ -58,7 +67,8 @@ export const TABLES = new Set([
   'pending_enrolments',
   'sheet_records',
   'badge_awards',
-  'staff_invitations'
+  'staff_invitations',
+  'family_invitations'
 ]);
 
 /** Tables a session may write directly: only a learner's own sheet records (ADR-0014). */

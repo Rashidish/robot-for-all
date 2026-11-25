@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.52 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.53 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -106,6 +106,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B52 | **Earning a badge**: with live services, a learner records a complete sheet on a phone and sees "You earned a badge" with its picture; the parent gets the email (nickname and badge, no real name) and sees the badge in Your children; a class with "badges need a check" (switched on in the class's Progress) awards only after the teacher marks it checked; a revoked record doesn't award; a teacher revokes a badge given by mistake and it isn't given again | |
 | B53 | **Check a certificate**: someone outside the school opens /verify/ on a phone, types a real code from a badge (any case, with or without dashes) and sees the badge, date and school; a withdrawn badge's code says withdrawn; no name or nickname appears anywhere | |
 | B54 | **Certificates printed**: a parent downloads their child's certificate on a phone and prints it on a home or school printer (A4, colours, the name with any accents spelled right, the QR code scans to /verify/); a teacher downloads a class's badge cards (four per A4, cut on the dashed lines); a child without the name consent gets a blank line; the PDF is about 11 KB | |
+| B55 | **Family group**: a homeschooling parent starts a family group on a phone, adds two children, a child signs in on the family phone with the code and pictures, the parent taps "Learn as" on their own phone, the other parent opens the link, is confirmed by name and sees the children; a ninth child is refused; a certificate says "Awarded by Robots For All" | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -179,3 +180,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.50 | 2026-11-25 | B52 earning a badge |
 | 0.51 | 2026-11-25 | B53 check a certificate |
 | 0.52 | 2026-11-25 | B54 certificates printed |
+| 0.53 | 2026-11-25 | B55 family group |

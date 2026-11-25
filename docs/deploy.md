@@ -198,7 +198,9 @@ session, so treat it like the name key. Do these once:
    npx wrangler secret put SUPABASE_URL
    npx wrangler secret put SUPABASE_SERVICE_KEY
    npx wrangler secret put SUPABASE_JWT_SECRET
+   npx wrangler secret put SUPABASE_ANON_KEY
    ```
+   `SUPABASE_ANON_KEY` (the public key) lets "Learn as <child>" ask the database as the parent.
    `SUPABASE_JWT_SECRET` is in Supabase → Settings → API → JWT Settings ("JWT Secret", the HS256 secret
    that also signs the anon and service keys). Vault a copy with the name key.
 2. **Switch the deploy on:** GitHub → Settings → Secrets and variables → Actions → **Variables** →

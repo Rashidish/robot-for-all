@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import { type AccountClient, browserClient } from '../account/client';
   import Children from './Children.svelte';
+  import Family from './Family.svelte';
   import Organisations from './Organisations.svelte';
   import { inviteFromHash } from '../account/classes';
 
@@ -27,13 +28,17 @@
     client = browserClient();
     // An invitation link opened while this page is already open changes only the # part.
     window.addEventListener('hashchange', () => {
-      if (step === 'signed-in') void acceptInvite();
+      if (step === 'signed-in') {
+        void acceptInvite();
+        void acceptGuardian();
+      }
     });
     try {
       const s = await client.session();
       step = s ? 'signed-in' : 'email';
       if (s) {
         await acceptInvite();
+        await acceptGuardian();
         await loadName();
       }
     } catch {
@@ -43,6 +48,19 @@
 
   /** A colleague's invitation link (#invite=…): joined once signed in (M5 step 3d). */
   let joined = $state(false);
+  // A second parent or guardian opening the family group's link (family spec FF-7).
+  async function acceptGuardian() {
+    const token = /^#guardian=([0-9a-f]{64})$/.exec(location.hash)?.[1];
+    if (!token || !client) return;
+    history.replaceState(null, '', location.pathname);
+    try {
+      await client.rpc('accept_guardian_invitation', { p_token: token });
+      message = t('family_guardian_waiting');
+    } catch (err) {
+      error = err instanceof Error && err.message ? err.message : t('account_error');
+    }
+  }
+
   async function acceptInvite() {
     const token = inviteFromHash(location.hash);
     if (!token || !client) return;
@@ -94,6 +112,7 @@
       // Creates the account's row and stops any dormancy countdown (M5 spec §7.5).
       await client?.rpc('touch_adult', {});
       await acceptInvite();
+      await acceptGuardian();
       await loadName();
       code = '';
       step = 'signed-in';
@@ -151,6 +170,7 @@
     <p><button type="button" class="plain" onclick={signOut}>{t('account_sign_out')}</button></p>
     {#if client}
       <Children {client} {labels} />
+      <Family {client} {labels} {languages} />
       {#key joined}<Organisations {client} {labels} {languages} />{/key}
     {/if}
   {/if}

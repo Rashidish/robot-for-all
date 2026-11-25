@@ -93,7 +93,7 @@ Today a learner can only be made through a school or club class link (M5 FR-5). 
 
 ## 8. Work plan (each its own PR, after approval)
 1. *(built 2026-11-25: migration 0024; the family rules are triggers on the tables, so no other route gets round them)* Database: the `family` kind, the cap, guardians-only membership, `self_user_id`, and the second guardian. PGlite tests.
-2. Family group pages in Your account; "Learn as <child>" through the sign-in service.
+2. *(built 2026-11-25: Your account → Family group: start, add new or existing children, the family code, invite a second parent and confirm them by the name they chose (migration 0025); "Learn as <child>" in Your children through the sign-in service's `/signin/as`, which uses the parent's own session)* Family group pages in Your account; "Learn as <child>" through the sign-in service.
 3. Personal learner: "I'm learning myself", recording from Your account.
 4. With certificates (M5 step 8): family and personal certificates say "Awarded by Robots For All" (FC-1).
 
