@@ -16,6 +16,8 @@
   } from '../account/children';
   import { AccountError } from '../account/client';
   import { AVATARS, NOTICE_VERSION } from '../account/enrol';
+  import { lessonTitle, type ProgressRecord, progressGrid } from '../account/progress';
+  import type { SheetSummary } from '../lessons/answers';
 
   interface Props {
     client: AccountClient;
@@ -32,6 +34,29 @@
   let error = $state('');
   let message = $state('');
   const view = $derived(withClasses(children, classes));
+  // Each child's progress (FR-16): their lessons, what is "Not yet", what a teacher checked.
+  let progress = $state<Record<string, ProgressRecord[]>>({});
+  let sheets = $state<Record<string, SheetSummary>>({});
+  async function loadProgress(child: Child) {
+    if (progress[child.id]) return;
+    if (Object.keys(sheets).length === 0) {
+      try {
+        const res = await fetch('/sheets.json');
+        if (res.ok) sheets = ((await res.json()) as { sheets: typeof sheets }).sheets;
+      } catch {
+        sheets = {};
+      }
+    }
+    progress[child.id] = await client.select<ProgressRecord>(
+      'sheet_records',
+      'id,learner_id,lesson_id,sheet_code,steps_done,i_can,built_working,team_sheet,recorded_at,checked_at,revoked_at',
+      `learner_id=eq.${child.id}`
+    );
+  }
+  const cellsFor = (child: Child) =>
+    [...(progressGrid(progress[child.id] ?? [], sheets).get(child.id) ?? new Map()).entries()].sort(
+      ([a], [b]) => a.localeCompare(b)
+    );
   // The certificate name (FR-20 to FR-22): typed here, sent only to the certificate service,
   // never read back. We only learn whether one is stored.
   let hasName = $state<Record<string, boolean>>({});
@@ -183,6 +208,29 @@
             {/each}
           </ul>
         {/if}
+        <details
+          class="name"
+          ontoggle={(e) =>
+            (e.currentTarget as HTMLDetailsElement).open && run(() => loadProgress(child))}
+        >
+          <summary>{t('progress_child_title')}</summary>
+          {#if progress[child.id] && cellsFor(child).length === 0}
+            <p class="muted">{t('progress_child_none')}</p>
+          {:else if progress[child.id]}
+            <ul class="lessons">
+              {#each cellsFor(child) as [lesson, c] (lesson)}
+                <li>
+                  <strong>{lessonTitle(lesson, sheets, child.language)}</strong>:
+                  {c.done ? t('progress_done') : c.notYet.length ? '' : t('progress_started')}
+                  {#if c.notYet.length}{t('progress_not_yet_items')} {c.notYet.join('; ')}{/if}
+                  {#if c.checked}· {t('progress_checked')}{/if}
+                </li>
+              {/each}
+            </ul>
+          {:else}
+            <p>{t('account_loading')}</p>
+          {/if}
+        </details>
         <details class="name">
           <summary>
             {t('children_name_title')}:

@@ -69,6 +69,8 @@ Many classes work from printed lessons with one shared phone or none. Learners n
 - Every sheet code, with its section headings, numbered step boxes and "I can" checks (never its questions), is in `/sheets.json`, built from the lessons and kept offline by the service worker. Codes of older versions of a lesson stay in `content/sheets/codes.json`, which only grows: after changing a lesson, run `npm run build && npm run sheet-codes` and commit the file (a test fails otherwise).
 - `steps_done` counts every ticked box (each section's own box and its numbered steps); the total for a sheet comes from its summary.
 - Recording the same sheet again adds a new record; the newest counts.
+- A lesson is **done** when every box is ticked, every "I can" is Yes, and it is built and working; "Not yet" answers are listed for the learner, teacher and parent, never counted as done.
+- Teachers mark records **checked** or **revoke** them from the class's Progress grid (FR-B7, M5 step 6).
 
 **Acceptance criteria (Part B, later)**
 - A learner records a sheet offline on a phone; it syncs when online; their progress shows the lesson as done.
