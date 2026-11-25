@@ -15,6 +15,7 @@
     withClasses
   } from '../account/children';
   import { AccountError } from '../account/client';
+  import { saveFile } from '../account/download';
   import { AVATARS, NOTICE_VERSION } from '../account/enrol';
   import { lessonTitle, type ProgressRecord, progressGrid } from '../account/progress';
   import type { SheetSummary } from '../lessons/answers';
@@ -37,7 +38,13 @@
   // Each child's progress (FR-16): their lessons, what is "Not yet", what a teacher checked.
   let progress = $state<Record<string, ProgressRecord[]>>({});
   let sheets = $state<Record<string, SheetSummary>>({});
-  let childBadges = $state<Record<string, { badge_id: string }[]>>({});
+  let childBadges = $state<Record<string, { id: string; badge_id: string }[]>>({});
+  const downloadCertificate = (award: string, kind: 'certificate' | 'card') =>
+    run(async () => {
+      const pdf = await client.certPdf('certificate', { award, kind });
+      saveFile(pdf, kind === 'card' ? 'badge-card.pdf' : 'certificate.pdf');
+      message = t('children_cert_saved');
+    });
   const badgeName = (id: string) => t(`badge_${id.replace(/-/g, '_')}_name`);
   async function loadProgress(child: Child) {
     if (progress[child.id]) return;
@@ -49,9 +56,9 @@
         sheets = {};
       }
     }
-    childBadges[child.id] = await client.select<{ badge_id: string }>(
+    childBadges[child.id] = await client.select<{ id: string; badge_id: string }>(
       'badge_awards',
-      'badge_id',
+      'id,badge_id',
       `learner_id=eq.${child.id}&revoked_at=is.null`
     );
     progress[child.id] = await client.select<ProgressRecord>(
@@ -223,10 +230,26 @@
           <summary>{t('progress_child_title')}</summary>
           {#if (childBadges[child.id] ?? []).length > 0}
             <ul class="child-badges" aria-label={t('badge_mine')}>
-              {#each childBadges[child.id] ?? [] as b (b.badge_id)}
+              {#each childBadges[child.id] ?? [] as b (b.id)}
                 <li>
                   <img src={`/badges/${b.badge_id}.svg`} alt="" width="48" height="58" />
                   {badgeName(b.badge_id)}
+                  <button
+                    type="button"
+                    class="plain"
+                    disabled={busy}
+                    onclick={() => downloadCertificate(b.id, 'certificate')}
+                  >
+                    {t('children_certificate')}
+                  </button>
+                  <button
+                    type="button"
+                    class="plain"
+                    disabled={busy}
+                    onclick={() => downloadCertificate(b.id, 'card')}
+                  >
+                    {t('children_badge_card')}
+                  </button>
                 </li>
               {/each}
             </ul>

@@ -52,6 +52,15 @@ export function badgeProblems(all: LessonFacts[], live: LessonFacts[]): string[]
     else if (/<text[\s>]/.test(svg)) {
       problems.push(`content/badges/${id}.svg: badge pictures carry no words`);
     }
+    // Certificates draw the picture as PDF shapes (apps/cert/src/svg.ts): only these elements.
+    const other = [...(svg ?? '').matchAll(/<([a-zA-Z]+)\b/g)]
+      .map((m) => m[1] ?? '')
+      .filter((t) => !['svg', 'g', 'path', 'circle', 'rect'].includes(t));
+    if (svg && other.length) {
+      problems.push(
+        `content/badges/${id}.svg: certificates can draw only svg, g, path, circle and rect (found ${[...new Set(other)].join(', ')})`
+      );
+    }
     for (const part of ['name', 'about']) {
       if (!words[`badge_${badgeKey(id)}_${part}`]) {
         problems.push(`content/badges/${file}: words badge_${badgeKey(id)}_${part} are missing`);

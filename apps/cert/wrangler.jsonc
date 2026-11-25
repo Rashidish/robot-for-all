@@ -10,6 +10,8 @@
   "workers_dev": false,
   "preview_urls": false,
   "observability": { "enabled": false },
+  // The certificate fonts (fonts/, Noto Sans, OFL) as binary data for pdf.ts.
+  "rules": [{ "type": "Data", "globs": ["**/*.ttf"], "fallthrough": false }],
   // The daily job (src/daily.ts): 01:17 UTC, 03:17 in South Africa.
   "triggers": { "crons": ["17 1 * * *"] },
   "vars": {

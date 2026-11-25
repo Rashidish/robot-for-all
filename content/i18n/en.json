@@ -800,5 +800,19 @@
   "verify_awarded_by_rfa": "Awarded by Robots For All",
   "verify_no_names": "For privacy, this page never shows the learner’s name.",
   "verify_unknown": "We don’t know that code. Check it against the certificate: it looks like RFA-ABCD-23.",
-  "verify_error": "Couldn’t check right now. Try again when you’re online."
+  "verify_error": "Couldn’t check right now. Try again when you’re online.",
+  "cert_title": "Certificate",
+  "cert_awarded_to": "This certificate is awarded to",
+  "cert_for_badge": "for earning the badge",
+  "cert_check": "Check that this certificate is real at",
+  "children_certificate": "Certificate (PDF)",
+  "children_badge_card": "Badge card (PDF)",
+  "children_cert_saved": "Saved to your downloads. Open it there to print.",
+  "progress_print_badge": "Which badges",
+  "progress_print_all": "All badges",
+  "progress_print_kind": "What to print",
+  "progress_print_certificates": "Certificates (one per page)",
+  "progress_print_cards": "Badge cards (four per page)",
+  "progress_print_download": "Download the PDF",
+  "progress_print_note": "Names appear only in the PDF, where parents allowed it; otherwise there is a blank line to write on. The file isn’t kept anywhere but your downloads."
 }
