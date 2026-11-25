@@ -788,5 +788,17 @@
   "badge_mine": "Badges",
   "progress_need_check": "Badges need a teacher’s or coach’s check (only records marked checked count towards badges)",
   "progress_revoke_badge": "Revoke",
-  "progress_revoke_badge_confirm": "Revoke this badge? It is taken away and won’t be awarded again:"
+  "progress_revoke_badge_confirm": "Revoke this badge? It is taken away and won’t be awarded again:",
+  "verify_title": "Check a certificate",
+  "verify_intro": "Type the code printed on a Robots For All certificate or badge card (it looks like RFA-ABCD-23), or scan its QR code.",
+  "verify_code": "Certificate code",
+  "verify_check": "Check",
+  "verify_valid": "✓ This certificate is real.",
+  "verify_revoked": "✗ This certificate was withdrawn and no longer counts.",
+  "verify_date": "Awarded on",
+  "verify_school": "School or club:",
+  "verify_awarded_by_rfa": "Awarded by Robots For All",
+  "verify_no_names": "For privacy, this page never shows the learner’s name.",
+  "verify_unknown": "We don’t know that code. Check it against the certificate: it looks like RFA-ABCD-23.",
+  "verify_error": "Couldn’t check right now. Try again when you’re online."
 }

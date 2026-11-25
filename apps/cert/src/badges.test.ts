@@ -38,6 +38,7 @@ let records: Record<string, unknown>[];
 let awarded: Set<string>;
 let calls: { fn: string; auth: string | null }[];
 let mail: { to: string; subject: string; text: string }[];
+let codes: Record<string, unknown>[];
 const mailer: Mailer = {
   send: async (to, subject, text) => {
     mail.push({ to, subject, text });
@@ -63,6 +64,11 @@ const fakeFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
       awarded.add(id);
       return Response.json(`award-${id}`);
     }
+    case 'certificate_label':
+      return Response.json('Sizwe Primary');
+    case 'issue_certificate_code':
+      codes.push(body);
+      return Response.json('RFA-ABCD-23');
     case 'learner_guardian_emails':
       return Response.json([{ email: 'mom@example.org', nickname: 'Thandi R', language: 'en' }]);
     default:
@@ -77,6 +83,7 @@ beforeEach(() => {
   awarded = new Set();
   calls = [];
   mail = [];
+  codes = [];
 });
 
 describe('badge awarding', () => {
@@ -104,6 +111,8 @@ describe('badge awarding', () => {
     records = [rec()];
     expect(await checkLearner(LEARNER, env, deps, mailer)).toEqual(['first-build']);
     expect(await checkLearner(LEARNER, env, deps, mailer)).toEqual([]);
+    // One verification code for the one award, naming the school.
+    expect(codes).toEqual([{ p_award: 'award-first-build', p_label: 'Sizwe Primary' }]);
     expect(mail).toHaveLength(1);
     expect(mail[0]?.to).toBe('mom@example.org');
     expect(mail[0]?.subject).toBe('Thandi R earned a badge on Robots For All');

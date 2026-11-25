@@ -17,6 +17,7 @@ const pages = [
   '/class/',
   '/me/',
   '/badges/',
+  '/verify/',
   '/offline/',
   '/no-such-page/',
   // A translated lesson, and one shown in English on an isiZulu page (more content spec §2.7)
