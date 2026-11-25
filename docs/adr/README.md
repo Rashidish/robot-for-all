@@ -17,3 +17,7 @@ Copy `0000-template.md`. Never edit an accepted ADR's decision; write a new ADR 
 | 0010 | [Accounts and roles](0010-accounts-and-roles.md): Supabase with MFA, row-level security, super admin, audit log | Accepted |
 | 0011 | [Admin app on Workers](0011-admin-on-workers.md): the back office runs as a Cloudflare Worker (replaces ADR-0009's Pages hosting) | Accepted |
 | 0012 | [Back office merges reviewed content](0012-back-office-merges-reviewed-content.md): only its own status-only pull requests, after green CI and a recorded approval | Accepted |
+| 0013 | [Learner sign-in](0013-learner-sign-in.md): class code, nickname and picture PIN; QR cards for events | Accepted |
+| 0014 | [Offline learner records](0014-offline-learner-records.md): a per-learner outbox in IndexedDB | Accepted |
+| 0015 | [Encrypted certificate names](0015-encrypted-certificate-names.md): AES-256-GCM in a certificate Worker; key never in the database | Accepted |
+| 0016 | [Messages](0016-message-provider.md): WhatsApp and SMS through a South African provider, email through Supabase | Accepted (provider still to choose) |
