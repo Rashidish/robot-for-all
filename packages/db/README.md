@@ -28,6 +28,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0021_badges_need_check.sql` | `set_badges_need_check`: a class's teachers and coaches decide whether only checked records count towards badges (FR-15) |
 | `0022_certificate_label.sql` | `certificate_label`: which school or club a certificate names (the one whose teacher checked a record, else the newest class; "(not yet verified)" until verified; "Robots For All" if none) |
 | `0023_certificates_for.sql` | `certificates_for` (service only): which awards an adult may print (their child's, or a class they teach), with the encrypted name only under consent b; never revoked badges |
+| `0024_family_and_personal.sql` | Family groups (organisation kind `family`, one class, the parent's own children only, at most 8; no enrolment link, cards, staff, school enrolments, verification or check marks, enforced by triggers; a second parent by a confirmed one-time link) and personal learners (`learners.self_user_id`, 18+, own consent); `guardian_learner_session` for "Learn as <child>"; family certificates name Robots For All |
 
 ## Tests
 

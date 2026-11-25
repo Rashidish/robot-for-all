@@ -42,6 +42,8 @@ const { data, error: readError } = await supabase
   .select(
     'id, kind, name, province, emis, register_no, registered, verified_at, verified_route, reverify_by, created_at'
   )
+  // Family groups aren't verified and aren't listed (M5 family spec FF-1).
+  .neq('kind', 'family')
   .order('created_at', { ascending: true });
 if (readError) error ||= 'Could not read the organisations. Try again in a minute.';
 const today = new Date().toISOString().slice(0, 10);
