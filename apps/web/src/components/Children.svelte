@@ -16,6 +16,7 @@
   } from '../account/children';
   import { AccountError } from '../account/client';
   import { saveFile } from '../account/download';
+  import { learnAs } from '../learner/learn-as';
   import { AVATARS, NOTICE_VERSION } from '../account/enrol';
   import { lessonTitle, type ProgressRecord, progressGrid } from '../account/progress';
   import type { SheetSummary } from '../lessons/answers';
@@ -82,7 +83,8 @@
       client.select<Child>('learners', 'id,nickname,grade,avatar,language,created_at'),
       client.rpc<ChildClass[] | null>('my_children_classes')
     ]);
-    children = kids ?? [];
+    const self = await client.rpc<string | null>('my_personal_learner').catch(() => null);
+    children = (kids ?? []).filter((k) => k.id !== self);
     classes = rows ?? [];
     const flags = await Promise.all(
       children.map((c) => client.rpc<boolean | null>('has_certificate_name', { p_learner: c.id }))
@@ -311,6 +313,20 @@
             </button>
           {/if}
         </details>
+        <p>
+          <button
+            type="button"
+            class="button"
+            disabled={busy}
+            onclick={() =>
+              run(async () => {
+                if (!(await learnAs(client, child.id))) error = t('account_error');
+              })}
+          >
+            {t('family_learn_as')}
+            {child.nickname}
+          </button>
+        </p>
         <div class="actions">
           <button
             class="button secondary"

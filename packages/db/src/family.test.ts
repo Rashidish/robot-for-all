@@ -143,6 +143,12 @@ describe('family groups (migration 0024)', () => {
     await expect(
       t.as(STRANGER, `select public.accept_guardian_invitation($1)`, [token])
     ).rejects.toThrow(/already used/);
+    // The first parent sees who opened the link (their chosen name) before confirming.
+    await t.as(DAD, `select public.touch_adult('Mr Radebe')`);
+    expect(await t.as(MOM, `select display_name from public.family_invitations_waiting()`)).toEqual(
+      [{ display_name: 'Mr Radebe' }]
+    );
+    expect(await t.as(STRANGER, `select * from public.family_invitations_waiting()`)).toEqual([]);
     const { id: inv } = await one(
       t.as<{ id: string }>(MOM, `select id from public.family_invitations`)
     );
@@ -197,5 +203,8 @@ describe('personal learners (migration 0024)', () => {
     expect(
       await t.owner(`select 1 from public.class_learners where learner_id = $1`, [id])
     ).toEqual([]);
+    // The account page knows it's theirs, and nobody else sees it as theirs.
+    expect(await t.as(ADULT, `select public.my_personal_learner() as id`)).toEqual([{ id }]);
+    expect(await t.as(MOM, `select public.my_personal_learner() as id`)).toEqual([{ id: null }]);
   });
 });

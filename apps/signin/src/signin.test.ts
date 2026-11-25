@@ -34,6 +34,12 @@ const fakeFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
       return Response.json(true);
     case 'card_for_sign_in':
       return Response.json(body['p_hash'] === CARD_HASH ? [{ ...row, learner_id: LEARNER }] : []);
+    case 'guardian_learner_session': {
+      const auth = new Headers(init?.headers).get('authorization') ?? '';
+      if (!auth.includes('parent'))
+        return new Response('{"message":"only the parent"}', { status: 400 });
+      return Response.json([{ ...row, learner_id: LEARNER }]);
+    }
     case 'record_pin_attempt':
       if (body['p_ok']) failures = 0;
       else failures += 1;
@@ -228,5 +234,27 @@ describe('the sign-in service', () => {
     expect(body.learner.nickname).toBe('Thandi R');
     expect((await post('/signin/card', { secret: 'cd'.repeat(32) })).status).toBe(404);
     expect((await post('/signin/card', { secret: 'short' })).status).toBe(400);
+  });
+
+  it('"Learn as <child>": with the parent’s own session, for their own child only', async () => {
+    const as = (token: string | null, e: Env = { ...env, SUPABASE_ANON_KEY: 'anon' }) =>
+      handle(
+        new Request('https://robotsforall.org.za/signin/as', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            ...(token ? { authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({ learner: LEARNER })
+        }),
+        e,
+        { fetch: fakeFetch, now: () => NOW }
+      );
+    const ok = await as('a.parent.token');
+    expect(ok.status).toBe(200);
+    const body = (await ok.json()) as { token: string };
+    expect(claims(body.token)).toMatchObject({ kind: 'learner', learner_id: LEARNER, sv: 3 });
+    expect((await as('a.stranger.token')).status).toBe(403);
+    expect((await as(null)).status).toBe(401);
   });
 });

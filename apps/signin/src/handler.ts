@@ -4,6 +4,9 @@
 //   POST /signin/pin     {class_code, learner, pin, choose?}
 //        checks the picture PIN (or sets a first one) and returns a 30-day learner session
 //   POST /signin/card    {secret}   a printed QR sign-in card (events): the same session
+//   POST /signin/as      {learner}  "Learn as <child>" on a parent's own phone, or a personal
+//                                   learner's own session (family spec FF-4, FP-4): with the
+//                                   adult's own session; the database checks they're the guardian
 // Limits: 5 wrong PINs lock the learner for 5 minutes (database); per address and per class
 // rate limits here. Answers are no-store and carry no more than the sign-in screen shows.
 import { learnerToken } from './jwt';
@@ -15,6 +18,8 @@ export interface RateLimiter {
 
 export interface Env {
   SUPABASE_URL: string;
+  /** The public key, to ask the database as the signed-in adult ("Learn as"). */
+  SUPABASE_ANON_KEY?: string;
   SUPABASE_SERVICE_KEY: string;
   /** Supabase's JWT secret (Settings → API → JWT secret); a Cloudflare secret. */
   SUPABASE_JWT_SECRET: string;
@@ -69,7 +74,7 @@ interface SignInRow {
 export async function handle(request: Request, env: Env, deps: Deps): Promise<Response> {
   const { pathname } = new URL(request.url);
   if (request.method !== 'POST') return reply(405, { message: 'POST only' });
-  if (!['/signin/roster', '/signin/pin', '/signin/card'].includes(pathname)) {
+  if (!['/signin/roster', '/signin/pin', '/signin/card', '/signin/as'].includes(pathname)) {
     return reply(404, { message: 'not found' });
   }
   let body: Record<string, unknown>;
@@ -79,6 +84,7 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
     return reply(400, { message: 'send JSON' });
   }
   if (pathname === '/signin/card') return card(request, body, env, deps);
+  if (pathname === '/signin/as') return learnAs(request, body, env, deps);
   const code = typeof body['class_code'] === 'string' ? body['class_code'].replace(/\s/g, '') : '';
   if (!CODE.test(code)) return reply(400, { message: 'class code' });
   const address = request.headers.get('cf-connecting-ip') ?? 'unknown';
@@ -173,6 +179,49 @@ async function card(
   >(env, deps, 'card_for_sign_in', { p_hash: await sha256(secret) });
   const row = rows?.[0];
   if (!row) return reply(404, { message: 'card not valid' });
+  const session = await learnerToken(
+    env.SUPABASE_JWT_SECRET,
+    row.learner_id,
+    row.session_version,
+    Math.floor(deps.now() / 1000)
+  );
+  return reply(200, {
+    token: session.token,
+    expires_at: session.expiresAt,
+    learner: { id: row.learner_id, nickname: row.nickname, avatar: row.avatar }
+  });
+}
+
+/** "Learn as <child>": the adult's own session asks; the database answers only for a guardian. */
+async function learnAs(
+  request: Request,
+  body: Record<string, unknown>,
+  env: Env,
+  deps: Deps
+): Promise<Response> {
+  const learner = body['learner'];
+  if (typeof learner !== 'string' || !UUID.test(learner))
+    return reply(400, { message: 'which child?' });
+  const token = /^Bearer ([\w-]+\.[\w-]+\.[\w-]+)$/.exec(
+    request.headers.get('authorization') ?? ''
+  )?.[1];
+  if (!token || !env.SUPABASE_ANON_KEY) return reply(401, { message: 'sign in first' });
+  const res = await deps.fetch(`${env.SUPABASE_URL}/rest/v1/rpc/guardian_learner_session`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_ANON_KEY,
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({ p_learner: learner })
+  });
+  if (res.status === 401) return reply(401, { message: 'sign in first' });
+  if (!res.ok) return reply(403, { message: 'not your child' });
+  const row = (
+    (await res.json()) as
+      { learner_id: string; nickname: string; avatar: string; session_version: number }[] | null
+  )?.[0];
+  if (!row) return reply(403, { message: 'not your child' });
   const session = await learnerToken(
     env.SUPABASE_JWT_SECRET,
     row.learner_id,

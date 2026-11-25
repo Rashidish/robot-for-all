@@ -9,9 +9,7 @@ import { siteLanguages } from '../site-languages';
 const open = featureOn('accounts') || __RFA_SHOW_DRAFTS__;
 const labels = Object.fromEntries(
   Object.entries(m)
-    .filter(
-      ([key]) => /^(account|children|signin|progress|badge)_/.test(key) || key === 'enrol_grade'
-    )
+    .filter(([key]) => /^(account|children|signin|progress|badge|family|enrol|personal)_/.test(key))
     .map(([key, message]) => [key, (message as () => string)()])
 );
 ---

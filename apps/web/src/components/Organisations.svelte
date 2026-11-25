@@ -31,7 +31,7 @@
     organisations: {
       id: string;
       name: string;
-      kind: 'school' | 'club';
+      kind: 'school' | 'club' | 'family';
       verified_at: string | null;
     } | null;
   }
@@ -192,13 +192,14 @@
       client.select<PendingRow>('pending_enrolments', 'id,class_id,grade,requested_at,expires_at')
     ]);
     const before = new Map(orgs.map((x) => [x.id, x.form]));
+    // Family groups are shown in their own section (Family.svelte), not as schools or clubs.
     orgs = o.flatMap((x) =>
-      x.organisations
+      x.organisations && x.organisations.kind !== 'family'
         ? [
             {
               id: x.organisations.id,
               name: x.organisations.name,
-              kind: x.organisations.kind,
+              kind: x.organisations.kind as 'school' | 'club',
               verified: x.organisations.verified_at !== null,
               role: x.role,
               form: before.get(x.organisations.id) ?? {
