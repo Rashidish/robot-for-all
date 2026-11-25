@@ -1,0 +1,827 @@
+{
+  "p1-cam-01-034835": {
+    "lesson": "p1-cam-01",
+    "lang": "en",
+    "title": "Bouncing animal box",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 7
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 2
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to the cam, the follower and the axle on my toy",
+      "I can explain how turning the handle makes the animal go up and down",
+      "I can say which cam shape makes the animal jump highest",
+      "I can measure the lift of a cam in millimetres"
+    ]
+  },
+  "p1-crank-01-81feed": {
+    "lesson": "p1-crank-01",
+    "lang": "en",
+    "title": "Crank-powered waving rhino",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 7
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 2
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to the crank, the axle, the push rod and the pivot on my rhino",
+      "I can explain how turning the handle makes the head move up and down",
+      "I can change the crank pin hole to make the head nod further",
+      "I can name something at home that uses a crank"
+    ]
+  },
+  "p1-crank-01-zu-d55fee": {
+    "lesson": "p1-crank-01",
+    "lang": "zu",
+    "title": "Ubhejane olunqekuzisa ikhanda nge-crank",
+    "sections": [
+      {
+        "label": "Bikezela",
+        "steps": 0
+      },
+      {
+        "label": "Qalisa",
+        "steps": 7
+      },
+      {
+        "label": "Phenya",
+        "steps": 1
+      },
+      {
+        "label": "Shintsha",
+        "steps": 2
+      },
+      {
+        "label": "Yenza",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "Ngiyakwazi ukukhomba i-crank, i-ekseli, induku yokusunduza nephivothi kubhejane lwami",
+      "Ngiyakwazi ukuchaza ukuthi ukuphendula isibambo kwenza kanjani ikhanda linyakaze liye phezulu naphansi",
+      "Ngiyakwazi ukushintsha imbobo yesikhonkwane se-crank ukuze ikhanda linqekuze kakhulu",
+      "Ngiyakwazi ukusho into esekhaya esebenzisa i-crank"
+    ]
+  },
+  "p1-gear-01-e8ba3b": {
+    "lesson": "p1-gear-01",
+    "lang": "en",
+    "title": "Spinning gear train",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 7
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can show that two meshing gears turn in opposite directions",
+      "I can count how many times the small gear turns for one turn of the big gear",
+      "I can write the gear ratio as a fraction",
+      "I can predict which way and how fast the last gear in my gear train turns"
+    ]
+  },
+  "p1-lever-01-b6bdc4": {
+    "lesson": "p1-lever-01",
+    "lang": "en",
+    "title": "Snapping crocodile",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 7
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 3
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to the pivot, the effort and the load on my crocodile",
+      "I can explain what happens to the jaws when I squeeze the handles",
+      "I can say which pivot hole makes the mouth open widest",
+      "I can name one tool at home that is a lever"
+    ]
+  },
+  "p1-lever-02-89727a": {
+    "lesson": "p1-lever-02",
+    "lang": "en",
+    "title": "Robot arm with three lever types",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 9
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can name the three types of lever and give an example of each",
+      "I can balance the lever bench and explain why it balances",
+      "I can predict where to put coins to balance a load, then test it",
+      "I can explain which type of lever my robot arm uses"
+    ]
+  },
+  "p1-linkage-01-67a782": {
+    "lesson": "p1-linkage-01",
+    "lang": "en",
+    "title": "Extending grabber",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 7
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 2
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to a link, a joint and a pivot on my grabber",
+      "I can explain why the claws move further than the handles",
+      "I can measure how far the claws move when the handles move 2 cm",
+      "I can name a robot or machine that uses a gripper"
+    ]
+  },
+  "p1-linkage-01-zu-7a20dd": {
+    "lesson": "p1-linkage-01",
+    "lang": "zu",
+    "title": "Isibambi esinwebekayo",
+    "sections": [
+      {
+        "label": "Bikezela",
+        "steps": 0
+      },
+      {
+        "label": "Qalisa",
+        "steps": 7
+      },
+      {
+        "label": "Phenya",
+        "steps": 0
+      },
+      {
+        "label": "Shintsha",
+        "steps": 2
+      },
+      {
+        "label": "Yenza",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "Ngiyakwazi ukukhomba uthi lokuxhuma, ilunga nephivothi esibambini sami",
+      "Ngiyakwazi ukuchaza ukuthi kungani izinzipho zihamba ibanga elide kunezibambo",
+      "Ngiyakwazi ukulinganisa ukuthi izinzipho zihamba ibanga elingakanani uma izibambo zihamba u-2 cm",
+      "Ngiyakwazi ukusho irobhothi noma umshini osebenzisa isibambi"
+    ]
+  },
+  "p1-linkage-02-26e204": {
+    "lesson": "p1-linkage-02",
+    "lang": "en",
+    "title": "Waving robot (four-bar linkage)",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 6
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to the fixed link, the crank, the coupler and the rocker",
+      "I can explain how a full turn of the crank makes the arm swing back and forth",
+      "I can measure the angle the arm swings through",
+      "I can change one link and describe what happens to the wave"
+    ]
+  },
+  "p1-motor-01-a27ad2": {
+    "lesson": "p1-motor-01",
+    "lang": "en",
+    "title": "One-motor scribble robot",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 1
+      },
+      {
+        "label": "Run",
+        "steps": 8
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 0
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can draw the circuit and name the battery, switch, wires and motor",
+      "I can explain why the robot doesn't move when the weight is in the centre",
+      "I can change one thing and describe how the drawing changes",
+      "I can explain how energy goes from the battery to the moving robot"
+    ]
+  },
+  "p1-pulley-01-3fb0d4": {
+    "lesson": "p1-pulley-01",
+    "lang": "en",
+    "title": "Rubber-band pulley lift",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 8
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 2
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to the drive pulley, the driven pulley and the belt",
+      "I can count how many times the small pulley turns for one turn of the big pulley",
+      "I can explain which setup lifts the load faster and which lifts it more easily",
+      "I can compare a belt and pulley with a gear train"
+    ]
+  },
+  "p1-wheel-01-011945": {
+    "lesson": "p1-wheel-01",
+    "lang": "en",
+    "title": "Rolling cardboard cart",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 6
+      },
+      {
+        "label": "Investigate",
+        "steps": 2
+      },
+      {
+        "label": "Modify",
+        "steps": 0
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to the wheels and the axles on my cart",
+      "I can explain why wheels make it easier to move a load",
+      "I can measure how far my cart rolls in centimetres",
+      "I can say what I kept the same to make my test fair"
+    ]
+  },
+  "p1-wheel-01-zu-20a785": {
+    "lesson": "p1-wheel-01",
+    "lang": "zu",
+    "title": "Inqola yekhadibhodi egingqikayo",
+    "sections": [
+      {
+        "label": "Bikezela",
+        "steps": 0
+      },
+      {
+        "label": "Qalisa",
+        "steps": 6
+      },
+      {
+        "label": "Phenya",
+        "steps": 2
+      },
+      {
+        "label": "Shintsha",
+        "steps": 0
+      },
+      {
+        "label": "Yenza",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "Ngiyakwazi ukukhomba amasondo nama-ekseli enqoleni yami",
+      "Ngiyakwazi ukuchaza ukuthi kungani amasondo enza kube lula ukuhambisa umthwalo",
+      "Ngiyakwazi ukulinganisa ngamasentimitha ukuthi inqola yami igingqika ibanga elingakanani",
+      "Ngiyakwazi ukusho ukuthi yini engingayishintshanga ukuze ukuhlola kwami kube kulungile"
+    ]
+  },
+  "p2-art-01-098569": {
+    "lesson": "p2-art-01",
+    "lang": "en",
+    "title": "Pen art",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 2
+      },
+      {
+        "label": "Run",
+        "steps": 5
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 2
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain why the robot turns four times to draw a square",
+      "I can use a repeat block so I don't write the same blocks again",
+      "I can make my robot draw a shape with a different number of sides",
+      "I can lift and lower the pen with the pen blocks"
+    ]
+  },
+  "p2-button-01-9dfa41": {
+    "lesson": "p2-button-01",
+    "lang": "en",
+    "title": "Button-controlled faces",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 2
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 3
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can name the inputs and outputs in my program",
+      "I can explain what happens when button A is pressed, and why",
+      "I can add a new event that shows a different face",
+      "I can plan a program with a table of inputs and outputs before I code it"
+    ]
+  },
+  "p2-display-01-a1c9a9": {
+    "lesson": "p2-display-01",
+    "lang": "en",
+    "title": "Blink a heart",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 1
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 0
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can say what each block in my program does, in order",
+      "I can explain why the heart keeps blinking without stopping",
+      "I can make the heart blink faster and slower by changing numbers",
+      "I can show my own picture blinking on the micro:bit"
+    ]
+  },
+  "p2-light-01-7af5b5": {
+    "lesson": "p2-light-01",
+    "lang": "en",
+    "title": "Automatic night light",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 2
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain what the light level number tells the micro:bit",
+      "I can say what the program does when it is dark and when it is light",
+      "I can change the threshold and explain what happens",
+      "I can describe a real machine that switches on or off by itself using a sensor"
+    ]
+  },
+  "p2-line-01-fd744f": {
+    "lesson": "p2-line-01",
+    "lang": "en",
+    "title": "Follow the line",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 2
+      },
+      {
+        "label": "Run",
+        "steps": 4
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 3
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain how a line sensor sees the difference between dark and light",
+      "I can say what my robot does when the line is under the left sensor, the right sensor, or neither",
+      "I can make my robot follow a curved line to the end",
+      "I can change a speed, test it and say if it got better"
+    ]
+  },
+  "p2-maze-01-57840a": {
+    "lesson": "p2-maze-01",
+    "lang": "en",
+    "title": "Bump maze",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 3
+      },
+      {
+        "label": "Run",
+        "steps": 3
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 3
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain what my robot does when a whisker touches a wall",
+      "I can explain why curving towards one wall helps the robot get out of a maze",
+      "I can build a wall piece that stands up by itself",
+      "I can change one number, test again and say whether it helped"
+    ]
+  },
+  "p2-motor-01-373a03": {
+    "lesson": "p2-motor-01",
+    "lang": "en",
+    "title": "Go and stop",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 1
+      },
+      {
+        "label": "Run",
+        "steps": 3
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 3
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can point to the micro:bit, the motor driver, the motor and the motor batteries in the wiring diagram",
+      "I can explain why the motor has its own batteries",
+      "I can make the motor start with button A and stop with button B",
+      "I can explain how the motor block's signal reaches the motor through the wires, the motor driver and the batteries"
+    ]
+  },
+  "p2-motor-02-495bc3": {
+    "lesson": "p2-motor-02",
+    "lang": "en",
+    "title": "Forward, stop, reverse",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 3
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 2
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can fill in the table of motor speeds for forward, stop and backward",
+      "I can write an algorithm for a motor as numbered steps",
+      "I can find and fix a bug in a motor program",
+      "I can make my model go forward and come back"
+    ]
+  },
+  "p2-motor-03-ff9fda": {
+    "lesson": "p2-motor-03",
+    "lang": "en",
+    "title": "Two motors: turning",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 3
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 2
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain how two motors make a robot turn left or right",
+      "I can make my robot spin on the spot and drive in a curve",
+      "I can use repeat to make my robot drive a square",
+      "I can change the speeds and say what changed"
+    ]
+  },
+  "p2-robot-01-371afb": {
+    "lesson": "p2-robot-01",
+    "lang": "en",
+    "title": "Robot that reacts",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 2
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 3
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain sense, decide and act using my robot as the example",
+      "I can say what the variable driving remembers, and why the robot needs it",
+      "I can make my robot stop by itself in a dark tunnel",
+      "I can change one thing in my robot and test if it made it better"
+    ]
+  },
+  "p2-whisker-01-d6a5e5": {
+    "lesson": "p2-whisker-01",
+    "lang": "en",
+    "title": "Whisker bumper",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 1
+      },
+      {
+        "label": "Run",
+        "steps": 4
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 3
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain how my whisker switch opens and closes a circuit",
+      "I can say what the micro:bit reads when a whisker is pressed and when it is not",
+      "I can make my robot back away and turn when a whisker touches a wall",
+      "I can test my bumper and make one improvement"
+    ]
+  },
+  "p3-linemaze-01-fe47ec": {
+    "lesson": "p3-linemaze-01",
+    "lang": "en",
+    "title": "Line maze",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 1
+      },
+      {
+        "label": "Run",
+        "steps": 3
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can explain the left-hand rule and why it gets out of a maze",
+      "I can say which blocks run when the line is under the left sensor, the right sensor, or neither",
+      "I can make my robot reach the finish of a line maze",
+      "I can build a line maze and test it with another team's robot"
+    ]
+  }
+}

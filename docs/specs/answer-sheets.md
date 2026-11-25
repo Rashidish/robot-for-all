@@ -32,7 +32,7 @@ Many classes work from printed lessons with one shared phone or none. Learners n
 - **FR-A5** Name fields ask only for a nickname or team name and first names or nicknames: no surnames (CLAUDE.md §7).
 - All text goes through i18n. Step names follow the lesson's own headings, so a translated lesson gives a translated sheet.
 
-## 4. Part B: recording a sheet in the app (draft, for review)
+## 4. Part B: recording a sheet in the app (learner recording built with M5 step 5b, 2026-11-25; the teacher's check mark comes with M5 step 6)
 
 **Owner decisions (2026-11-23)**
 1. **Learners record their own sheets** in their own learner profile.
@@ -64,6 +64,11 @@ Many classes work from printed lessons with one shared phone or none. Learners n
   - sheet codes are not secret and grant nothing;
   - there are no free-text fields, so no personal information can be typed into a record by mistake;
   - self-recorded results can be wrong. The teacher's check mark (FR-B7) is the safeguard, and the badges spec decides when it is required.
+
+**How it is built (M5 step 5b)**
+- Every sheet code, with its section headings, numbered step boxes and "I can" checks (never its questions), is in `/sheets.json`, built from the lessons and kept offline by the service worker. Codes of older versions of a lesson stay in `content/sheets/codes.json`, which only grows: after changing a lesson, run `npm run build && npm run sheet-codes` and commit the file (a test fails otherwise).
+- `steps_done` counts every ticked box (each section's own box and its numbered steps); the total for a sheet comes from its summary.
+- Recording the same sheet again adds a new record; the newest counts.
 
 **Acceptance criteria (Part B, later)**
 - A learner records a sheet offline on a phone; it syncs when online; their progress shows the lesson as done.

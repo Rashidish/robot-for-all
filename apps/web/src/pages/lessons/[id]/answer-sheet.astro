@@ -3,13 +3,12 @@
 // lesson text, so the sheet always matches its lesson. Learners write a nickname or team name,
 // never a surname (CLAUDE.md §7). The sheet code says which version of the questions was used,
 // so answers can later be entered in the app against the right lesson.
-import { createHash } from 'node:crypto';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PrintButton from '../../../components/PrintButton.astro';
 import { localHref, m, pageLang } from '../../../i18n';
 import { localLesson } from '../../../lessons/translations';
 import { getLessons, type LessonEntry } from '../../../lessons/load';
-import { answerSheet, sheetIsDense } from '../../../lessons/answers';
+import { answerSheet, sheetCode, sheetIsDense } from '../../../lessons/answers';
 
 export async function getStaticPaths() {
   const lessons = await getLessons();
@@ -28,18 +27,7 @@ const { data } = local;
 const textLang = local.lang === pageLang() ? undefined : local.lang;
 const sections = answerSheet(local.body, local.steps);
 const dense = sheetIsDense(sections);
-const version = createHash('sha256')
-  // English sheet codes stay as they were; a translated sheet also hashes its headings.
-  .update(
-    JSON.stringify([
-      sections.map(({ label, ...s }) => (local.lang === 'en' ? s : { ...s, label })),
-      data.assessment
-    ])
-  )
-  .digest('hex')
-  .slice(0, 6);
-const code =
-  local.lang === 'en' ? `${lesson.id}-${version}` : `${lesson.id}-${local.lang}-${version}`;
+const code = await sheetCode(lesson.id, local.lang, sections, data.assessment);
 let number = 0;
 ---
 

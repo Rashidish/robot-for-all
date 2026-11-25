@@ -16,6 +16,7 @@ describe('precache list', () => {
     'icons/icon-192.png',
     'favicon.svg',
     'manifest.webmanifest',
+    'sheets.json',
     'sw.js',
     '404.html'
   ];
@@ -26,6 +27,8 @@ describe('precache list', () => {
     expect(list).toContain('/_astro/app.abc123.css');
     expect(list).toContain('/icons/icon-192.png');
     expect(list).toContain('/manifest.webmanifest');
+    // Learners record answer sheets offline (answer-sheets Part B).
+    expect(list).toContain('/sheets.json');
   });
 
   it('leaves out the code editor and firmware (cached when first used)', () => {

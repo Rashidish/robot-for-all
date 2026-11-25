@@ -142,3 +142,58 @@ export function sheetIsDense(sections: SheetSection[]): boolean {
   }
   return questions * 11 + (characters / 95 + questions) * 4.2 + tableRows * 5 > 170;
 }
+
+/**
+ * The sheet code printed on a sheet: `<lesson id>-<6 hex>` in English, `<lesson id>-<lang>-<6 hex>`
+ * in another language. The hex is a hash of the questions and "I can" checks, so a code names the
+ * exact version a learner answered (spec FR-A4). English codes don't hash the (English) headings.
+ */
+export async function sheetCode(
+  lessonId: string,
+  lang: string,
+  sections: SheetSection[],
+  assessment: readonly string[]
+): Promise<string> {
+  const text = JSON.stringify([
+    sections.map(({ label, ...s }) => (lang === 'en' ? s : { ...s, label })),
+    assessment
+  ]);
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  const version = Array.from(new Uint8Array(digest).slice(0, 3), (b) =>
+    b.toString(16).padStart(2, '0')
+  ).join('');
+  return lang === 'en' ? `${lessonId}-${version}` : `${lessonId}-${lang}-${version}`;
+}
+
+/** What the app needs to record a sheet (spec Part B): its steps and "I can" checks, no questions. */
+export interface SheetSummary {
+  lesson: string;
+  lang: string;
+  title: string;
+  /** Each PRIMM section's heading and how many numbered step boxes it has. */
+  sections: { label: string; steps: number }[];
+  ican: string[];
+}
+
+export function sheetSummary(
+  lesson: string,
+  lang: string,
+  title: string,
+  sections: SheetSection[],
+  assessment: readonly string[]
+): SheetSummary {
+  return {
+    lesson,
+    lang,
+    title,
+    sections: sections.map((s) => ({
+      label: s.label,
+      steps: s.items.reduce((n, i) => n + (i.kind === 'steps' ? i.count : 0), 0)
+    })),
+    ican: [...assessment]
+  };
+}
+
+/** Every box a learner can tick on a sheet: one per section plus its numbered steps. */
+export const sheetBoxes = (s: Pick<SheetSummary, 'sections'>): number =>
+  s.sections.reduce((n, x) => n + 1 + x.steps, 0);

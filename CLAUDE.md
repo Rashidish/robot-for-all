@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.32 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.33 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -133,6 +133,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /content/projects    Project data, parts lists, templates (SVG)
 /content/worlds      Robot worlds and courses for the simulator (JSON, checked)
 /content/seasons     Seasons: three courses per theme, one per grade band, plus badge (JSON + SVG)
+/content/sheets      Every answer sheet code ever printed (`npm run sheet-codes` after a build; only grows)
 /content/site        Site settings (banner, feature switches) and the withdrawn list (set from the back office)
 /content/i18n        Translations per language; languages.json lists the site's languages and their status
 /docs/specs          One spec per feature (write before building)
@@ -237,6 +238,7 @@ lint:      npm run lint           # npm run format to auto-fix formatting
 build:     npm run build          # static site in apps/web/dist
 admin:     npm run build:admin    # back office (Cloudflare Worker) in apps/admin/dist
 translate: npm run translation-hash -- <lesson id>   # translated_from for a lesson translation
+sheets:    npm run build && npm run sheet-codes   # after changing a lesson: keep its new sheet code
 ```
 Always commit `package-lock.json` changes; CI installs with `npm ci` and fails if it is out of date.
 
@@ -301,3 +303,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.30 | 2026-11-25 | M5 spec v0.5: email-only confirmations for now, names also on badges and the teacher's console, one vaulted key, confirmed deletion of dormant accounts |
 | 0.31 | 2026-11-25 | `apps/cert`: the certificate service (name key, Show names) |
 | 0.32 | 2026-11-25 | `apps/signin`: learner sign-in (ADR-0013 amendment: sessions signed with Supabase's JWT secret) |
+| 0.33 | 2026-11-25 | `content/sheets` and `npm run sheet-codes`: answer sheet codes for recording sheets (M5 step 5b) |

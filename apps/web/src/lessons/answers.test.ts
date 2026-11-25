@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { answerSheet, plainText, sheetIsDense } from './answers';
+import {
+  answerSheet,
+  plainText,
+  sheetBoxes,
+  sheetCode,
+  sheetIsDense,
+  sheetSummary
+} from './answers';
 
 const body = `
 ## Predict
@@ -127,5 +134,27 @@ describe('answer sheet', () => {
     expect(translated.map((s) => s.items)).toEqual(sheet.map((s) => s.items));
     // Without the English headings, translated sections aren't PRIMM steps.
     expect(answerSheet(zu)).toEqual([]);
+  });
+});
+
+describe('sheet codes and summaries (Part B)', () => {
+  it('keeps the printed code stable, and changes it when the questions change', async () => {
+    const sections = answerSheet(body);
+    const code = await sheetCode('p1-crank-01', 'en', sections, ['I can turn a crank']);
+    expect(code).toMatch(/^p1-crank-01-[0-9a-f]{6}$/);
+    expect(await sheetCode('p1-crank-01', 'en', sections, ['I can turn a crank'])).toBe(code);
+    expect(await sheetCode('p1-crank-01', 'en', sections, ['I can turn a lever'])).not.toBe(code);
+    expect(await sheetCode('p1-crank-01', 'zu', sections, ['I can turn a crank'])).toMatch(
+      /^p1-crank-01-zu-[0-9a-f]{6}$/
+    );
+  });
+
+  it('summarises a sheet as its tick boxes and "I can" checks, without the questions', () => {
+    const sections = answerSheet(body);
+    const s = sheetSummary('p1-crank-01', 'en', 'Crank', sections, ['I can a', 'I can b']);
+    expect(s.ican).toEqual(['I can a', 'I can b']);
+    expect(s.sections.map((x) => x.label)).toEqual(sections.map((x) => x.label));
+    expect(JSON.stringify(s)).not.toContain('partner');
+    expect(sheetBoxes(s)).toBe(s.sections.reduce((n, x) => n + 1 + x.steps, 0));
   });
 });
