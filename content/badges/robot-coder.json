@@ -1,0 +1,11 @@
+{
+  "id": "robot-coder",
+  "rule": {
+    "kind": "phase_done",
+    "phase": 2,
+    "count": 3
+  },
+  "status": "draft",
+  "ai_generated": true,
+  "reviewed_by": null
+}

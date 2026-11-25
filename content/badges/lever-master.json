@@ -1,0 +1,10 @@
+{
+  "id": "lever-master",
+  "rule": {
+    "kind": "mechanism_done",
+    "mechanism": "lever"
+  },
+  "status": "draft",
+  "ai_generated": true,
+  "reviewed_by": null
+}

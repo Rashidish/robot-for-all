@@ -19,7 +19,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "npm run i18n && npm run typecheck -w apps/web && npm run typecheck -w apps/admin && tsc -p packages/blocks && tsc -p packages/sim && tsc -p packages/robots && tsc -p packages/db && tsc -p packages/settings && tsc -p apps/cert && tsc -p apps/signin",
+    "typecheck": "npm run i18n && npm run typecheck -w apps/web && npm run typecheck -w apps/admin && tsc -p packages/blocks && tsc -p packages/sim && tsc -p packages/robots && tsc -p packages/db && tsc -p packages/settings && tsc -p packages/badges && tsc -p apps/cert && tsc -p apps/signin",
     "test": "npm run i18n && vitest run",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "e2e": "playwright test",

@@ -1,0 +1,57 @@
+---
+// Badges (M5 step 7): what each badge is for, so learners, teachers and parents know how to earn
+// them. Badges are earned automatically from recorded answer sheets; "Not yet" never counts.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { m } from '../../i18n';
+import { badgeKey, liveBadges } from '../../lessons/badges';
+import { showDrafts } from '../../lessons/load';
+
+const badges = liveBadges(showDrafts);
+const words = m as unknown as Record<string, () => string>;
+const word = (id: string, part: 'name' | 'about') =>
+  words[`badge_${badgeKey(id)}_${part}`]?.() ?? id;
+---
+
+<BaseLayout title={m.badges_title()}>
+  <h1>{m.badges_title()}</h1>
+  <p>{m.badges_intro()}</p>
+  {badges.length === 0 ? (
+    <p>{m.badges_none()}</p>
+  ) : (
+    <ul class="badges">
+      {badges.map((b) => (
+        <li>
+          <img src={`/badges/${b.id}.svg`} alt="" width="96" height="115" loading="lazy" />
+          <div>
+            <h2>{word(b.id, 'name')}</h2>
+            <p>{word(b.id, 'about')}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseLayout>
+
+<style>
+  .badges {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .badges li {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  .badges img {
+    flex: none;
+  }
+  .badges h2 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+  .badges p {
+    margin: 0.25rem 0 0;
+  }
+</style>

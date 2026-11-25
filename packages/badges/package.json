@@ -1,0 +1,10 @@
+{
+  "name": "@robots-for-all/badges",
+  "private": true,
+  "description": "Badges (M5 spec FR-17, FR-18): the badge file format, its checks, and the rules that award badges from recorded answer sheets, shared by the site and the certificate service",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/badge.ts"
+  }
+}

@@ -5,6 +5,7 @@ import { findProgram } from './programs';
 import { checkLinks, checkPrimm, isVisible } from './schema';
 import { isOff } from '../withdrawn';
 import { languageProblems } from './languages';
+import { badgeProblems } from './badges';
 import { seasonProblems } from './seasons';
 import { worldIds, worldProblems } from './worlds';
 
@@ -63,7 +64,14 @@ export async function getLessons(): Promise<LessonEntry[]> {
   if (problems.length > 0) {
     throw new Error(`Lesson problems:\n- ${problems.join('\n- ')}`);
   }
-  return all
+  const visible = all
     .filter((l) => isVisible(l.data, showDrafts) && !(isOff('lesson', l.id) && !showDrafts))
     .sort((a, b) => a.data.phase - b.data.phase || a.id.localeCompare(b.id));
+  // Badges (M5 FR-17): a published badge must be earnable from the lessons that are live.
+  const facts = (list: LessonEntry[]) =>
+    list.map((l) => ({ id: l.id, phase: l.data.phase, mechanism: l.data.mechanism }));
+  const live = facts(all.filter((l) => l.data.status === 'published' && !isOff('lesson', l.id)));
+  const badgeIssues = badgeProblems(facts(all), live);
+  if (badgeIssues.length > 0) throw new Error(`Badge problems:\n- ${badgeIssues.join('\n- ')}`);
+  return visible;
 }

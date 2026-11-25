@@ -1,0 +1,10 @@
+{
+  "id": "i-can",
+  "rule": {
+    "kind": "all_ican",
+    "count": 1
+  },
+  "status": "draft",
+  "ai_generated": true,
+  "reviewed_by": null
+}

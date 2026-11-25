@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.48 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.49 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -102,6 +102,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B48 | **Record a sheet offline**: a learner fills in a printed sheet, then on a phone in flight mode signs in (from "Who's using this phone?"), types the sheet code and records it; it shows "saved on this phone"; two learners do this on one phone; turning data on sends both, each under its own learner; the teacher sees them (step 6); a sheet printed before a lesson was changed still records | |
 | B49 | **QR cards at an event**: an organiser prints a class's cards on A4 (four across, each scans from a cheap phone's camera), learners sign in by scanning; after the event "Withdraw all cards" stops them; a teacher resets a locked learner's pictures and the learner chooses new ones | |
 | B50 | **Progress views**: a teacher opens a class of 30 on a phone, filters to Phase 1, reads the grid (scrolls sideways inside it, not the page), spot-checks a record against its signed paper sheet and revokes a wrong one; a parent sees their child's lessons and "Not yet" items in their language; a screen reader reads each cell's meaning | |
+| B51 | **Badge review**: a reviewer looks at each draft badge's picture (printed and on a phone, readable to Grade 3 learners, no words), its English and isiZulu name and description, and whether its rule is fair; then publishes it (status `published`, `reviewed_by`) | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
 | B9 | **micro:bit from Android**: Send to micro:bit over a USB-OTG cable in Chrome | |
 
@@ -171,3 +172,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.46 | 2026-11-25 | B48 record a sheet offline |
 | 0.47 | 2026-11-25 | B49 QR cards at an event |
 | 0.48 | 2026-11-25 | B50 progress views |
+| 0.49 | 2026-11-25 | B51 badge review |
