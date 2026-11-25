@@ -1,0 +1,73 @@
+---
+// Configuration → Badges (M5 step 7c): every badge with its rule, status, reviewer and any change
+// waiting to be merged. Badges are awarded automatically once published (M5 FR-19a).
+import en from '../../../../../content/i18n/en.json';
+import Admin from '../../layouts/Admin.astro';
+import type { Pull } from '../../lib/github';
+import { githubFromEnv } from '../../lib/github-env';
+import { pullsFor, readItems } from '../../lib/review';
+import { type BadgeSummary, makeBadgeKind } from '../../lib/badges';
+import { canSeeLessons } from '../../lib/roles';
+
+const { roles } = Astro.locals;
+if (!canSeeLessons(roles)) return Astro.redirect('/', 303);
+
+const STATUS_LABELS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+const gh = githubFromEnv();
+let badges: BadgeSummary[] = [];
+let pulls = new Map<string, Pull>();
+let error = '';
+if (gh) {
+  try {
+    const [all, open] = await Promise.all([
+      readItems(gh, makeBadgeKind(en as Record<string, string>)),
+      gh.openAdminPulls()
+    ]);
+    badges = all;
+    pulls = pullsFor('badge', open);
+  } catch {
+    error = 'Could not read the badges from GitHub. Try again in a minute.';
+  }
+}
+---
+
+<Admin title="Badges">
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {!gh && <p class="error">The GitHub App is not set up yet. See docs/deploy.md §5.</p>}
+  <p>
+    A badge goes live once a reviewer approves it here; from then it is awarded automatically when a
+    learner's recorded sheets meet its rule. "Not yet" answers never count.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Badge</th>
+          <th scope="col">How it is earned</th>
+          <th scope="col">Status</th>
+          <th scope="col">Reviewed</th>
+          <th scope="col">Waiting</th>
+        </tr>
+      </thead>
+      <tbody>
+        {badges.map((b) => (
+          <tr>
+            <td>
+              <a href={`/badges/${b.id}/`}>{b.title}</a>
+              <br />
+              <small>{b.id}</small>
+            </td>
+            <td>{b.rule}</td>
+            <td>{STATUS_LABELS[b.status]}</td>
+            <td>{b.reviewedBy ?? '—'}</td>
+            <td>{pulls.has(b.id) ? 'A change is waiting' : ''}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Admin>

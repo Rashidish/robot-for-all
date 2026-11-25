@@ -7,6 +7,7 @@
 import type { GitHub, Pull } from './github';
 import { onlyStatusChanged } from './lessons';
 import { onlyWorldStatusChanged } from './worlds';
+import { onlyBadgeStatusChanged } from './badges';
 import { onlyLanguageStatusChanged } from './language-review';
 import { LANGUAGES_PATH } from './languages';
 import { TRANSLATION_FILE } from './translation-files';
@@ -16,6 +17,7 @@ export const WITHDRAWN_PATH = 'content/site/withdrawn.json';
 
 const LESSON_FILE = /^content\/lessons\/[a-z0-9]+(?:-[a-z0-9]+)*\/index\.md$/;
 const WORLD_FILE = /^content\/worlds\/[a-z]+(?:-[a-z]+)*\.json$/;
+const BADGE_FILE = /^content\/badges\/[a-z]+(?:-[a-z]+)*\.json$/;
 
 export interface MergeCheck {
   ok: boolean;
@@ -53,15 +55,17 @@ export async function checkMerge(
         ? 'lesson'
         : WORLD_FILE.test(file.filename)
           ? 'world'
-          : file.filename === WITHDRAWN_PATH
-            ? 'withdrawn'
-            : file.filename === LANGUAGES_PATH
-              ? 'language'
-              : null
+          : BADGE_FILE.test(file.filename)
+            ? 'badge'
+            : file.filename === WITHDRAWN_PATH
+              ? 'withdrawn'
+              : file.filename === LANGUAGES_PATH
+                ? 'language'
+                : null
       : null;
   if (!file || !kind) {
     waiting.push(
-      'it changes more than one content file (lesson, translation, world, language status or the withdrawn list)'
+      'it changes more than one content file (lesson, translation, world, badge, language status or the withdrawn list)'
     );
   } else {
     const [before, after] = await Promise.all([
@@ -73,15 +77,17 @@ export async function checkMerge(
         ? onlyStatusChanged(before.text, after.text)
         : kind === 'world'
           ? onlyWorldStatusChanged(before.text, after.text)
-          : kind === 'language'
-            ? onlyLanguageStatusChanged(before.text, after.text)
-            : (() => {
-                try {
-                  return oneItemChanged(JSON.parse(before.text), JSON.parse(after.text));
-                } catch {
-                  return false;
-                }
-              })();
+          : kind === 'badge'
+            ? onlyBadgeStatusChanged(before.text, after.text)
+            : kind === 'language'
+              ? onlyLanguageStatusChanged(before.text, after.text)
+              : (() => {
+                  try {
+                    return oneItemChanged(JSON.parse(before.text), JSON.parse(after.text));
+                  } catch {
+                    return false;
+                  }
+                })();
     if (!ok) {
       waiting.push(
         kind !== 'withdrawn'

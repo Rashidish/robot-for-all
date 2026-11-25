@@ -1,0 +1,257 @@
+---
+// One badge (M5 step 7c): its picture, words and rule, the review checklist and decisions, the
+// history, and the change waiting to be merged (ADR-0012). Approving publishes it; from then it is
+// awarded automatically. A badge has no build test.
+import { DRAFTS_URL, GITHUB_APP_LOGIN, GITHUB_REPO } from 'astro:env/server';
+import Admin from '../../layouts/Admin.astro';
+import { GitHubError, type Pull } from '../../lib/github';
+import { githubFromEnv } from '../../lib/github-env';
+import en from '../../../../../content/i18n/en.json';
+import zu from '../../../../../content/i18n/zu.json';
+import { type BadgeSummary, makeBadgeKind } from '../../lib/badges';
+import { checkMerge, type MergeCheck, mergeIfReady } from '../../lib/merge';
+import {
+  type Decision,
+  DECISION_LABELS,
+  decide,
+  possibleDecisions,
+  pullsFor
+} from '../../lib/review';
+import { canSeeLessons, hasRole } from '../../lib/roles';
+
+const BADGE = makeBadgeKind(en as Record<string, string>);
+const CHECKLIST = BADGE.checklist;
+
+const { supabase, user, roles } = Astro.locals;
+if (!canSeeLessons(roles)) return Astro.redirect('/', 303);
+const id = Astro.params.id ?? '';
+if (!/^[a-z]+(-[a-z]+)*$/.test(id)) return Astro.redirect('/badges/', 303);
+
+const gh = githubFromEnv();
+const decided = async (url: string) =>
+  (await supabase.rpc('approved_pull_request', { p_pull_request: url })).data === true;
+const mergeOpts = { appLogin: GITHUB_APP_LOGIN ?? '', decided };
+
+let notice = '';
+let error = '';
+let badge: BadgeSummary | null = null;
+let picture = '';
+let pull: Pull | undefined;
+let check: MergeCheck | null = null;
+
+const { data: profile } = await supabase
+  .from('admin_profiles')
+  .select('reviewer_name')
+  .eq('user_id', user?.id ?? '')
+  .maybeSingle();
+const reviewerName = (profile as { reviewer_name: string } | null)?.reviewer_name ?? null;
+
+if (gh && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  try {
+    if (form.get('action') === 'merge') {
+      const n = Number(form.get('pull'));
+      const r = await mergeIfReady(gh, n, mergeOpts);
+      if (r.ok) {
+        notice = 'Merged. The site updates in a few minutes.';
+        await supabase.rpc('log_action', {
+          p_action: 'content.merged',
+          p_target: `badge:${id}`,
+          p_before: null,
+          p_after: { pull_request: r.pull.html_url }
+        });
+      } else error = `Not merged yet: ${r.waiting.join('; ')}.`;
+    } else {
+      const decision = String(form.get('decision')) as Decision;
+      const checklist =
+        decision === 'approved'
+          ? Object.fromEntries(CHECKLIST.map((c) => [c.key, form.get(`tick_${c.key}`) === 'on']))
+          : null;
+      const url = await decide(gh, supabase, BADGE, {
+        id,
+        decision,
+        checklist,
+        notes: String(form.get('notes') ?? '').trim(),
+        overrideReason: String(form.get('override') ?? '').trim(),
+        reviewerName,
+        who: reviewerName ?? user?.email ?? 'an admin'
+      });
+      notice = `${DECISION_LABELS[decision]}: a change is waiting (${url}). It can be merged once the automatic checks pass.`;
+    }
+  } catch (err) {
+    error =
+      err instanceof GitHubError && err.status === 409
+        ? 'Someone changed this badge in the meantime. Reload the page and try again.'
+        : err instanceof Error
+          ? err.message
+          : 'Something went wrong; nothing was changed.';
+  }
+  if (error) Astro.response.status = 400;
+}
+
+let history: {
+  at: string;
+  decision: Decision;
+  reviewer_name: string | null;
+  notes: string | null;
+  override_reason: string | null;
+}[] = [];
+if (gh) {
+  try {
+    badge = BADGE.summarise(id, (await gh.readFile(BADGE.path(id))).text);
+    const svg = (await gh.readFile(`content/badges/${id}.svg`)).text;
+    picture = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
+    pull = pullsFor('badge', await gh.openAdminPulls()).get(id);
+    if (pull) check = await checkMerge(gh, pull.number, mergeOpts);
+  } catch {
+    error ||= 'Could not read this badge from GitHub.';
+  }
+  const { data } = await supabase
+    .from('content_reviews')
+    .select('at, decision, reviewer_name, notes, override_reason')
+    .eq('content_type', 'badge')
+    .eq('content_id', id)
+    .order('at', { ascending: false })
+    .limit(20);
+  history = (data ?? []) as typeof history;
+}
+const options = badge && !pull ? possibleDecisions(badge) : [];
+const can: Record<Decision, boolean> = {
+  sent_for_review: hasRole(roles, 'content_editor'),
+  approved: hasRole(roles, 'reviewer'),
+  changes_requested: hasRole(roles, 'reviewer'),
+  build_tested: hasRole(roles, 'build_tester'),
+  unpublished: hasRole(roles, 'reviewer') || hasRole(roles, 'owner')
+};
+const when = (iso: string) =>
+  new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+const STATUS_LABELS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+const words = (list: Record<string, string>, part: 'name' | 'about') =>
+  list[`badge_${id.replaceAll('-', '_')}_${part}`] ?? '(missing)';
+---
+
+<Admin title={badge?.title ?? id}>
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {badge && (
+    <>
+      <p>
+        <strong>{STATUS_LABELS[badge.status]}</strong> · {id}
+        {badge.aiGenerated && ' · AI-drafted'}
+      </p>
+      <p>Reviewed by: {badge.reviewedBy ?? '—'}</p>
+      {picture && <img src={picture} alt={`The ${badge.title} badge picture`} width="160" />}
+      <dl>
+        <dt>How it is earned</dt>
+        <dd>{badge.rule}</dd>
+        <dt>Name and description (English)</dt>
+        <dd>
+          <strong>{words(en, 'name')}</strong>: {words(en, 'about')}
+        </dd>
+        <dt>Name and description (isiZulu)</dt>
+        <dd>
+          <strong>{words(zu, 'name')}</strong>: {words(zu, 'about')}
+        </dd>
+      </dl>
+      <ul>
+        <li>
+          <a href={`${DRAFTS_URL}/badges/`}>All badges on the drafts preview</a>
+        </li>
+        <li>
+          <a href={`https://github.com/${GITHUB_REPO}/blob/main/${BADGE.path(id)}`}>
+            The badge file on GitHub
+          </a>
+        </li>
+      </ul>
+    </>
+  )}
+
+  {pull && check && (
+    <section aria-labelledby="waiting">
+      <h2 id="waiting">A change is waiting</h2>
+      <p>
+        <a href={pull.html_url}>{pull.title}</a>
+      </p>
+      {check.ok ? (
+        <form method="post">
+          <input type="hidden" name="action" value="merge" />
+          <input type="hidden" name="pull" value={pull.number} />
+          <p>Every check has passed.</p>
+          <button type="submit">Merge now</button>
+        </form>
+      ) : (
+        <p>Waiting: {check.waiting.join('; ')}.</p>
+      )}
+    </section>
+  )}
+
+  {!reviewerName && roles.includes('reviewer') && (
+    <p class="error">
+      Choose your public reviewer name on your <a href="/profile/">Profile</a> before approving.
+    </p>
+  )}
+
+  {options
+    .filter((d) => can[d])
+    .map((d) => (
+      <section aria-labelledby={`do-${d}`}>
+        <h2 id={`do-${d}`}>{DECISION_LABELS[d]}</h2>
+        <form method="post">
+          <input type="hidden" name="decision" value={d} />
+          {d === 'approved' && (
+            <fieldset>
+              <legend>Checklist (all required)</legend>
+              {CHECKLIST.map((c) => (
+                <label class="check">
+                  <input type="checkbox" name={`tick_${c.key}`} required /> {c.label}
+                </label>
+              ))}
+            </fieldset>
+          )}
+          {d !== 'sent_for_review' && (
+            <>
+              <label for={`notes-${d}`}>
+                {d === 'approved' ? 'Note (optional)' : 'Note (at least 10 characters)'}
+              </label>
+              <textarea id={`notes-${d}`} name="notes" rows="3" required={d !== 'approved'} />
+            </>
+          )}
+          {d === 'approved' && roles.includes('super_admin') && (
+            <>
+              <label for="override">
+                Only if you sent it for review yourself: why no one else can approve it
+              </label>
+              <input id="override" name="override" />
+            </>
+          )}
+          <div class="actions">
+            <button type="submit">{DECISION_LABELS[d]}</button>
+          </div>
+        </form>
+      </section>
+    ))}
+
+  <h2>History</h2>
+  {history.length === 0 ? (
+    <p>No decisions yet.</p>
+  ) : (
+    <ul>
+      {history.map((h) => (
+        <li>
+          {when(h.at)}: <strong>{DECISION_LABELS[h.decision]}</strong>
+          {h.reviewer_name && ` by ${h.reviewer_name}`}
+          {h.notes && `: ${h.notes}`}
+          {h.override_reason && ` (override: ${h.override_reason})`}
+        </li>
+      ))}
+    </ul>
+  )}
+</Admin>
