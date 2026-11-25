@@ -1,6 +1,6 @@
 # ADR-0016: Messages by WhatsApp, SMS and email
 
-- **Status:** Proposed (provider to be chosen by the owner)
+- **Status:** Accepted (owner, 2026-11-25): the approach and the `send()` interface; the provider itself is still to be chosen by the owner
 - **Date:** 2026-11-24
 - **Decider:** Rashid Ishmail
 
@@ -14,7 +14,7 @@ M5 sends one-time sign-in codes, parent confirmation requests, dormancy notices 
 | B. Global provider (e.g. Twilio, Vonage) | WhatsApp, SMS, email | Outside SA (s72: adequate protection or consent) | Similar or higher in ZAR | Mature APIs |
 | C. Email only (Supabase mailer) | Email | Supabase's region | Free tier | Many parents don't use email; doesn't meet the owner decision |
 
-## Decision (proposed)
+## Decision
 **A**, with email through Supabase's mailer: a South African provider for WhatsApp and SMS, chosen by the owner on price and support. The code talks to a small `send(channel, to, template, values)` interface, so the provider can change without touching the app.
 
 ## How

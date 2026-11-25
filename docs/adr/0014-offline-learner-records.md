@@ -1,6 +1,6 @@
 # ADR-0014: Offline learner records
 
-- **Status:** Proposed
+- **Status:** Accepted (owner, 2026-11-25)
 - **Date:** 2026-11-24
 - **Decider:** Rashid Ishmail
 

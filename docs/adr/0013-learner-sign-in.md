@@ -1,6 +1,6 @@
 # ADR-0013: Learner sign-in on shared phones
 
-- **Status:** Proposed
+- **Status:** Accepted (owner, 2026-11-25)
 - **Date:** 2026-11-24
 - **Decider:** Rashid Ishmail
 

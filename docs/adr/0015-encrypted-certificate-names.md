@@ -1,6 +1,6 @@
 # ADR-0015: Encrypting the certificate name
 
-- **Status:** Proposed
+- **Status:** Accepted (owner, 2026-11-25)
 - **Date:** 2026-11-24
 - **Decider:** Rashid Ishmail
 
