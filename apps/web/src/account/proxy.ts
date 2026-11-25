@@ -47,6 +47,7 @@ export const RPC = new Set([
   'confirm_guardian',
   'family_invitations_waiting',
   'create_personal_learner',
+  'my_personal_learner',
   'check_record',
   'revoke_badge',
   'verify_certificate',

@@ -203,5 +203,8 @@ describe('personal learners (migration 0024)', () => {
     expect(
       await t.owner(`select 1 from public.class_learners where learner_id = $1`, [id])
     ).toEqual([]);
+    // The account page knows it's theirs, and nobody else sees it as theirs.
+    expect(await t.as(ADULT, `select public.my_personal_learner() as id`)).toEqual([{ id }]);
+    expect(await t.as(MOM, `select public.my_personal_learner() as id`)).toEqual([{ id: null }]);
   });
 });

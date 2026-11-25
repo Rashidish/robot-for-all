@@ -5,6 +5,7 @@
   import { type AccountClient, browserClient } from '../account/client';
   import Children from './Children.svelte';
   import Family from './Family.svelte';
+  import Personal from './Personal.svelte';
   import Organisations from './Organisations.svelte';
   import { inviteFromHash } from '../account/classes';
 
@@ -171,6 +172,7 @@
     {#if client}
       <Children {client} {labels} />
       <Family {client} {labels} {languages} />
+      <Personal {client} {labels} {languages} />
       {#key joined}<Organisations {client} {labels} {languages} />{/key}
     {/if}
   {/if}

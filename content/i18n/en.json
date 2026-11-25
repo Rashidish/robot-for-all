@@ -835,5 +835,17 @@
   "family_second_confirm": "Confirm",
   "family_guardian_confirmed": "Confirmed. They are now a parent or guardian in your family group.",
   "family_guardian_waiting": "Thank you. The parent who sent the link will confirm you, then you’ll see the children here.",
-  "family_learn_as": "Learn as"
+  "family_learn_as": "Learn as",
+  "personal_title": "Learning myself",
+  "personal_offer": "I’m learning myself (18 or older)",
+  "personal_about": "Make your own learner profile to record your answer sheets and earn badges and certificates. It belongs to you and is in no group; your certificates say “Awarded by Robots For All” unless you also join a school or club class.",
+  "personal_nickname": "Your nickname in the app",
+  "personal_adult": "I am 18 or older.",
+  "personal_consent": "Keep my lesson records and badges.",
+  "personal_create": "Make my learner profile",
+  "personal_under_age": "Under 18? A parent or guardian can start a family group for you.",
+  "personal_ready": "Your learner profile is ready. Record your answer sheets and see your badges on My page.",
+  "personal_start": "Start learning",
+  "personal_delete": "Delete my learner profile",
+  "personal_delete_confirm": "Delete your learner profile, records and badges for good?"
 }

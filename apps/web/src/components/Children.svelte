@@ -83,7 +83,8 @@
       client.select<Child>('learners', 'id,nickname,grade,avatar,language,created_at'),
       client.rpc<ChildClass[] | null>('my_children_classes')
     ]);
-    children = kids ?? [];
+    const self = await client.rpc<string | null>('my_personal_learner').catch(() => null);
+    children = (kids ?? []).filter((k) => k.id !== self);
     classes = rows ?? [];
     const flags = await Promise.all(
       children.map((c) => client.rpc<boolean | null>('has_certificate_name', { p_learner: c.id }))

@@ -171,4 +171,71 @@ test.describe('family group (M5)', () => {
     expect(accepted).toEqual([{ p_token: 'cd'.repeat(32) }]);
     expect(new URL(page.url()).hash).toBe('');
   });
+
+  test('an adult learning alone makes their own profile and starts learning', async ({ page }) => {
+    await page.addInitScript((s) => localStorage.setItem('rfa-session', s), SESSION);
+    let mine: string | null = null;
+    let created: unknown = null;
+    await page.route('**/db/**', async (route) => {
+      const url = new URL(route.request().url());
+      switch (url.pathname) {
+        case '/db/rest/v1/rpc/my_personal_learner':
+          return route.fulfill(json(mine));
+        case '/db/rest/v1/rpc/create_personal_learner':
+          created = route.request().postDataJSON();
+          mine = 'me1';
+          return route.fulfill(json('me1'));
+        case '/db/rest/v1/learners':
+          // Their own profile is theirs, not one of their children.
+          return route.fulfill(
+            json(
+              mine
+                ? [
+                    {
+                      id: 'me1',
+                      nickname: 'Sam',
+                      grade: 12,
+                      avatar: 'star',
+                      language: 'en',
+                      created_at: '2026-11-25'
+                    }
+                  ]
+                : []
+            )
+          );
+        default:
+          return route.fulfill(json(url.pathname.includes('/rpc/') ? null : []));
+      }
+    });
+    await page.route('**/signin/as', (route) =>
+      route.fulfill(
+        json({
+          token: 'learner.session.sig',
+          expires_at: Math.floor(Date.now() / 1000) + 86400,
+          learner: { id: 'me1', nickname: 'Sam', avatar: 'star' }
+        })
+      )
+    );
+    await page.goto('/account/');
+    const me = page.getByRole('region', { name: 'Learning myself' });
+    await me.locator('summary').click();
+    await me.getByLabel('Your nickname in the app').fill('Sam');
+    await me.getByLabel('Star').check();
+    const make = me.getByRole('button', { name: 'Make my learner profile' });
+    await me.getByLabel('Keep my lesson records and badges.').check();
+    await expect(make).toBeDisabled();
+    await me.getByLabel('I am 18 or older.').check();
+    await make.click();
+    expect(created).toEqual({
+      p_nickname: 'Sam',
+      p_avatar: 'star',
+      p_language: 'en',
+      p_notice: '1.0',
+      p_adult: true
+    });
+    await expect(page.getByRole('region', { name: 'Your children' })).toHaveCount(0);
+    await me.getByRole('button', { name: 'Start learning' }).click();
+    await expect(page).toHaveURL(/\/me\/$/);
+    await expect(page.getByRole('heading', { name: /Hello, Sam/ })).toBeVisible();
+  });
 });

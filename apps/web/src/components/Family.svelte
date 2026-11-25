@@ -40,7 +40,10 @@
 
   async function load() {
     classId = (await client.rpc<string | null>('my_family_class')) ?? null;
-    mine = await client.select<{ id: string; nickname: string }>('learners', 'id,nickname');
+    const self = await client.rpc<string | null>('my_personal_learner').catch(() => null);
+    mine = (
+      await client.select<{ id: string; nickname: string }>('learners', 'id,nickname')
+    ).filter((k) => k.id !== self);
     if (!classId) return;
     const [cls] = await client.select<{ class_code: string }>(
       'classes',

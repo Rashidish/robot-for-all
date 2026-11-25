@@ -835,5 +835,17 @@
   "family_second_confirm": "Qinisekisa",
   "family_guardian_confirmed": "Kuqinisekisiwe. Manje bangumzali noma umnakekeli eqenjini lakho lomndeni.",
   "family_guardian_waiting": "Siyabonga. Umzali othumele isixhumanisi uzokuqinisekisa, bese ubona izingane lapha.",
-  "family_learn_as": "Funda njengo-"
+  "family_learn_as": "Funda njengo-",
+  "personal_title": "Ngizifundela",
+  "personal_offer": "Ngizifundela (ngineminyaka eyi-18 noma ngaphezulu)",
+  "personal_about": "Yenza iphrofayela yakho yomfundi ukuze ubhale amashidi akho ezimpendulo futhi uthole amabheji nezitifiketi. Ingeyakho futhi ayikho eqenjini; izitifiketi zakho zithi “Sinikezwe yi-Robots For All” ngaphandle uma ujoyina nekilasi lesikole noma leklabhu.",
+  "personal_nickname": "Igama lakho lokudlala ku-app",
+  "personal_adult": "Ngineminyaka eyi-18 noma ngaphezulu.",
+  "personal_consent": "Gcina amarekhodi ezifundo zami namabheji ami.",
+  "personal_create": "Yenza iphrofayela yami yomfundi",
+  "personal_under_age": "Ungaphansi kweminyaka eyi-18? Umzali noma umnakekeli angakuqalela iqembu lomndeni.",
+  "personal_ready": "Iphrofayela yakho yomfundi isilungile. Bhala amashidi akho ezimpendulo futhi ubone amabheji akho ku-Ikhasi lami.",
+  "personal_start": "Qala ukufunda",
+  "personal_delete": "Susa iphrofayela yami yomfundi",
+  "personal_delete_confirm": "Ususe unomphela iphrofayela yakho yomfundi, amarekhodi namabheji?"
 }
