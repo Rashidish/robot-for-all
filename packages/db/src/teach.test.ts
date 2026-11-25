@@ -460,10 +460,11 @@ describe('deleting when no longer needed (spec §7.5)', () => {
     );
     expect(dormancy_notices).toBe(0);
 
-    // 12 months: the parent goes; their child stays while still in a class, then goes with it.
+    // 12 months: due for deletion (confirmed in the back office: privacy.test.ts).
     await t.owner(`update public.adults set last_seen_at = now() - interval '12 months 1 day'`);
-    await t.service(`select public.delete_dormant_accounts()`);
-    expect(await t.owner(`select 1 from auth.users where id = $1`, [PARENT])).toEqual([]);
+    await t.service(`select public.mark_due_for_deletion()`);
+    await t.service(`select public.delete_after_lock()`);
+    expect(await t.owner(`select 1 from auth.users where id = $1`, [PARENT])).toHaveLength(1);
     expect(await t.owner(`select 1 from public.learners where id = $1`, [rocket])).toHaveLength(1);
     await t.as(TEACHER, `select public.end_class($1)`, [cls]);
   });
@@ -474,7 +475,12 @@ describe('deleting when no longer needed (spec §7.5)', () => {
     const rocket = await enrol(token);
     await t.as(TEACHER, `select public.end_class($1)`, [cls]);
     await t.owner(`update public.adults set last_seen_at = now() - interval '13 months'`);
-    await t.service(`select public.delete_dormant_accounts()`);
+    await t.service(`select public.mark_due_for_deletion()`);
+    // Not confirmed: locked after 30 days, deleted when the 30-day lock runs out.
+    await t.owner(`update public.adults set deletion_due_at = now() - interval '31 days'`);
+    await t.service(`select public.lock_unconfirmed_deletions()`);
+    await t.owner(`update public.adults set locked_until = now() - interval '1 second'`);
+    await t.service(`select public.delete_after_lock()`);
     expect(await t.owner(`select 1 from public.learners where id = $1`, [rocket])).toEqual([]);
   });
 });

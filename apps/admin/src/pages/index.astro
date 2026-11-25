@@ -3,7 +3,8 @@
 import Admin from '../layouts/Admin.astro';
 import { githubFromEnv } from '../lib/github-env';
 import { type LanguageRow, readLanguages } from '../lib/languages';
-import { canManagePeople, canSeeLanguages, ROLE_LABELS } from '../lib/roles';
+import { type DueRow, stageOf } from '../lib/privacy';
+import { canConfirmDeletions, canManagePeople, canSeeLanguages, ROLE_LABELS } from '../lib/roles';
 
 const { supabase, user, roles } = Astro.locals;
 interface Override {
@@ -33,6 +34,17 @@ if (gh && canSeeLanguages(roles)) {
     languages = [];
   }
 }
+// Accounts due for deletion (M5 spec v0.5 §7.5): flagged here once any waits more than 7 days.
+let due = { total: 0, overdue: 0, locked: 0 };
+if (canConfirmDeletions(roles)) {
+  const { data } = await supabase.rpc('deletion_due_list');
+  const rows = (data ?? []) as DueRow[];
+  due = {
+    total: rows.length,
+    overdue: rows.filter((r) => stageOf(r) === 'overdue').length,
+    locked: rows.filter((r) => stageOf(r) === 'locked').length
+  };
+}
 const when = (iso: string) =>
   new Date(iso).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
 ---
@@ -47,6 +59,17 @@ const when = (iso: string) =>
       <li>{ROLE_LABELS[r]}</li>
     ))}
   </ul>
+  {due.total > 0 && (
+    <section aria-labelledby="due">
+      <h2 id="due">Due for deletion</h2>
+      <p>
+        {(due.overdue > 0 || due.locked > 0) && <strong class="flag">⚑ </strong>}
+        <a href="/privacy/">{due.total} account(s)</a> due for deletion
+        {due.overdue > 0 && `, ${due.overdue} waiting more than 7 days`}
+        {due.locked > 0 && `, ${due.locked} locked`}.
+      </p>
+    </section>
+  )}
   {languages.length > 0 && (
     <section aria-labelledby="translations">
       <h2 id="translations">Translations still to do</h2>
