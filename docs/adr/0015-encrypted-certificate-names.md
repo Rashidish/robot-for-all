@@ -29,3 +29,8 @@ Owner decision (M5 spec §4.5): a learner's real name is stored so certificates 
 - Easier: a database or backup leak reveals no names; back-office staff never see them.
 - Harder: search by name is impossible (by design); a second Worker to run; key management is an owner responsibility.
 - Watch: never add the name to error messages, analytics or AI prompts; code review checks every new use of the certificate Worker.
+
+## Amendment 1 (proposed 2026-11-25, owner direction)
+- **Where the name appears:** on certificates, on badge cards or images where the design needs it, and on the **teacher's console** when a class's teacher or coach taps **Show names** (M5 spec FR-22a). The console view comes from the certificate service, is never stored in the browser, hides after 2 minutes, needs a recent sign-in and a verified organisation, and every reveal is logged without the names.
+- **One key for all names** (not one per name): AES-256-GCM with a random 96-bit nonce per value and the learner id as associated data already makes every ciphertext unique and bound to its child. Keys per name would only add protection if stored apart from the database, at the cost of a second store to secure and back up.
+- **Vault:** the key is a Cloudflare secret (write-only); two offline copies (the owner's password-manager vault and a sealed copy with a second trusted person); a new key version yearly or on suspicion of a leak.

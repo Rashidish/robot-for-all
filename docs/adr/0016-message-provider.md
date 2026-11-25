@@ -28,3 +28,6 @@ M5 sends one-time sign-in codes, parent confirmation requests, dormancy notices 
 - Easier: parents can use what they already have (WhatsApp is common); codes double as sign-in.
 - Harder: a running cost per message; WhatsApp template approval; s72 notice for Meta processing in the privacy notice.
 - Owner action: choose the provider, agree an operator agreement (POPIA s21), and set the monthly message budget.
+
+## Amendment 1 (owner decision, 2026-11-25)
+Until the WhatsApp and SMS provider is chosen, parent confirmation requests and dormancy warnings go **by email only**. Supabase's built-in mailer is for testing (a few emails an hour), so live email needs an SMTP provider set in Supabase; choosing it is an owner action (cost; POPIA s72). The code still goes through `send()`, so WhatsApp and SMS slot in later without changes to the pages.
