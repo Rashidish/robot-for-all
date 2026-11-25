@@ -54,6 +54,8 @@ const fakeFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     case 'create_pending_enrolment':
       pending.push({ id: `p${pending.length}`, ...body });
       return Response.json(`p${pending.length - 1}`);
+    case 'store_pending_token':
+      return new Response(null, { status: 204 });
     case 'drop_pending_enrolment':
       pending = pending.filter((p) => p['id'] !== body['p_id']);
       return new Response(null, { status: 204 });
@@ -124,6 +126,10 @@ describe('a school enrols learners for their parents to confirm', () => {
     const token = /#([0-9a-f]{64})/.exec(mail[0]?.text ?? '')?.[1] ?? '';
     expect(pending[0]?.['p_token_hash']).toBe(await tokenHash(token));
     expect(JSON.stringify(pending)).not.toContain(token);
+    // Kept for the reminders, but locked.
+    const kept = calls.filter((c) => c.fn === 'store_pending_token');
+    expect(kept).toHaveLength(2);
+    expect(JSON.stringify(kept)).not.toContain(token);
   });
 
   it('stores nothing when email is not set up, or when any row is wrong', async () => {

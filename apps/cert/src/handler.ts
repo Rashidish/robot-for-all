@@ -19,6 +19,12 @@ export interface Env extends MailEnv {
   NAME_KEYS: string;
   /** The version new names are encrypted with. */
   NAME_KEY_CURRENT: string;
+  /** The site's address, for links in emails (a var in wrangler.jsonc). */
+  SITE_URL?: string;
+  /** The back office's address, for the weekly privacy notice. */
+  ADMIN_URL?: string;
+  /** Where the weekly privacy notice goes (the Information Officer); a secret. */
+  PRIVACY_NOTICE_EMAIL?: string;
 }
 
 export interface Deps {
@@ -83,7 +89,7 @@ async function caller(request: Request, env: Env, deps: Deps): Promise<Caller | 
  * Calls a database function: service-only ones with the service key (migrations 0010, 0013,
  * 0014), or, given a person's token, as that person, so the database's own checks apply.
  */
-async function rpc<T>(
+export async function rpc<T>(
   env: Env,
   deps: Deps,
   fn: string,
@@ -297,6 +303,14 @@ async function enrol(
       p_contact_key: version,
       p_token_hash: hash
     });
+    // The link's secret, locked, so the daily job's reminders can carry the same link.
+    if (made.ok) {
+      await rpc(env, deps, 'store_pending_token', {
+        p_id: made.body,
+        p_sealed: toBytea(await encryptName(key, `token:${hash}`, token)),
+        p_key: version
+      });
+    }
     if (!made.ok) {
       // Not this class's teacher, or the trial limit: stop and say so.
       if (sent === 0) return fail(made.status, made.message);
