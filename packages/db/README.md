@@ -14,6 +14,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0007_reviewer_languages.sql` | The languages each person reads (`admin_profiles.languages`, `set_reviewer_languages`, `reads_language`), for translation approvals |
 | `0008_language_reviews.sql` | Languages are reviewed: their own five ticks, only a reviewer who reads the language approves, translators send it for review, no build test |
 | `0009_translation_reviews.sql` | Lesson translations are reviewed (type `translation`, id `<lesson>/<language>`): the language ticks plus "I read every section", a reviewer who reads that language, no build test |
+| `0010_teach.sql` | M5 Teach (spec `docs/specs/M5-teach.md`): organisations (verified once), classes with class codes and enrolment links, learners by nickname with the certificate name only as ciphertext (ADR-0015), guardians, consent controls, school/club enrolments pending a parent's confirmation (14 days), answer-sheet records written by the learner's own session (ADR-0013, ADR-0014), spot-checks, automatic badges, verification codes that outlive the learner, and deletion when no longer needed (dormancy messages at 10 and 11 months, deletion at 12) |
 
 ## Tests
 
