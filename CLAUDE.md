@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.33 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.34 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -127,12 +127,14 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /packages/sim        2D simulator
 /packages/db         Supabase migrations (back-office roles, audit log), tested on PGlite
 /packages/settings   Site settings checks, shared by the public build and the back office
+/packages/badges     Badge file checks and the rules that award badges (site and certificate service)
 /packages/blocks     Blockly blocks and generators
 /packages/i18n       Translation keys and loaders
 /content/lessons     Lessons as Markdown + front matter (one folder per lesson)
 /content/projects    Project data, parts lists, templates (SVG)
 /content/worlds      Robot worlds and courses for the simulator (JSON, checked)
 /content/seasons     Seasons: three courses per theme, one per grade band, plus badge (JSON + SVG)
+/content/badges      Badges: rule (JSON) + picture without words (SVG); words in content/i18n as badge_<id>_name/_about
 /content/sheets      Every answer sheet code ever printed (`npm run sheet-codes` after a build; only grows)
 /content/site        Site settings (banner, feature switches) and the withdrawn list (set from the back office)
 /content/i18n        Translations per language; languages.json lists the site's languages and their status
@@ -304,3 +306,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.31 | 2026-11-25 | `apps/cert`: the certificate service (name key, Show names) |
 | 0.32 | 2026-11-25 | `apps/signin`: learner sign-in (ADR-0013 amendment: sessions signed with Supabase's JWT secret) |
 | 0.33 | 2026-11-25 | `content/sheets` and `npm run sheet-codes`: answer sheet codes for recording sheets (M5 step 5b) |
+| 0.34 | 2026-11-25 | `content/badges` and `packages/badges` (M5 step 7a) |

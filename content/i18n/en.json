@@ -768,5 +768,18 @@
   "progress_revoke_confirm": "Revoke this record? It will no longer count for progress or badges. The learner can record the sheet again.",
   "progress_close": "Close",
   "progress_child_title": "Progress",
-  "progress_child_none": "No answer sheets recorded yet."
+  "progress_child_none": "No answer sheets recorded yet.",
+  "badge_first_build_name": "First Build",
+  "badge_first_build_about": "Finished a whole lesson: every step done, every “I can” a Yes, and it works.",
+  "badge_i_can_name": "I Can!",
+  "badge_i_can_about": "Answered Yes to every “I can” on a lesson’s sheet.",
+  "badge_cardboard_builder_name": "Cardboard Builder",
+  "badge_cardboard_builder_about": "Finished five Phase 1 lessons: built five machines that work.",
+  "badge_lever_master_name": "Lever Master",
+  "badge_lever_master_about": "Finished every lever lesson.",
+  "badge_robot_coder_name": "Robot Coder",
+  "badge_robot_coder_about": "Finished three Phase 2 lessons: made a micro:bit control lights, buttons or motors.",
+  "badges_title": "Badges",
+  "badges_intro": "Learners earn badges by finishing lessons and recording their answer sheets: every step done, every “I can” a Yes, and the build working. “Not yet” is fine: it shows what to work on next, but it doesn’t count towards a badge.",
+  "badges_none": "Badges are coming soon."
 }

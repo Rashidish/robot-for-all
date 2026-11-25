@@ -1,0 +1,10 @@
+{
+  "id": "first-build",
+  "rule": {
+    "kind": "lessons_done",
+    "count": 1
+  },
+  "status": "draft",
+  "ai_generated": true,
+  "reviewed_by": null
+}

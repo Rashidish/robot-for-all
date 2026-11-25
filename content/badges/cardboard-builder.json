@@ -1,0 +1,11 @@
+{
+  "id": "cardboard-builder",
+  "rule": {
+    "kind": "phase_done",
+    "phase": 1,
+    "count": 5
+  },
+  "status": "draft",
+  "ai_generated": true,
+  "reviewed_by": null
+}

@@ -393,3 +393,19 @@ test.describe('a second language (more content spec §2.5)', () => {
     await expect(page.locator('#measure-title + ul li').first()).toContainText('cishe 120 × 70 mm');
   });
 });
+
+test('the badges page shows each badge with its picture and how to earn it', async ({ page }) => {
+  await page.goto('/badges/');
+  await expect(page.locator('h1')).toHaveText('Badges');
+  await expect(page.getByRole('heading', { name: 'Lever Master' })).toBeVisible();
+  const img = page.locator('img[src="/badges/lever-master.svg"]');
+  await expect(img).toBeVisible();
+  const res = await page.request.get('/badges/lever-master.svg');
+  expect(res.headers()['content-type']).toContain('image/svg+xml');
+  const data = (await (await page.request.get('/badges.json')).json()) as {
+    badges: { id: string }[];
+    lessons: unknown[];
+  };
+  expect(data.badges.map((b) => b.id)).toContain('lever-master');
+  expect(data.lessons.length).toBeGreaterThan(0);
+});

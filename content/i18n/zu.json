@@ -768,5 +768,18 @@
   "progress_revoke_confirm": "Uhoxise leli rekhodi? Ngeke lisabalwa enqubekeleni phambili noma emabhejini. Umfundi angaphinda alibhale ishidi.",
   "progress_close": "Vala",
   "progress_child_title": "Inqubekela phambili",
-  "progress_child_none": "Awekho amashidi ezimpendulo abhaliwe okwamanje."
+  "progress_child_none": "Awekho amashidi ezimpendulo abhaliwe okwamanje.",
+  "badge_first_build_name": "Isakhiwo Sokuqala",
+  "badge_first_build_about": "Uqede isifundo sonke: zonke izinyathelo zenziwe, konke okuthi “Ngiyakwazi” kunguYebo, futhi kuyasebenza.",
+  "badge_i_can_name": "Ngiyakwazi!",
+  "badge_i_can_about": "Uphendule ngoYebo kukho konke okuthi “Ngiyakwazi” eshidini lesifundo.",
+  "badge_cardboard_builder_name": "Umakhi Wekhadibhodi",
+  "badge_cardboard_builder_about": "Uqede izifundo ezinhlanu zeSigaba 1: wakha imishini emihlanu esebenzayo.",
+  "badge_lever_master_name": "Ingcweti Yelivi",
+  "badge_lever_master_about": "Uqede zonke izifundo zelivi.",
+  "badge_robot_coder_name": "Umhleli Werobhothi",
+  "badge_robot_coder_about": "Uqede izifundo ezintathu zeSigaba 2: wenza i-micro:bit ilawule izibani, izinkinobho noma amamotho.",
+  "badges_title": "Amabheji",
+  "badges_intro": "Abafundi bathola amabheji ngokuqeda izifundo nangokubhala amashidi abo ezimpendulo: zonke izinyathelo zenziwe, konke okuthi “Ngiyakwazi” kunguYebo, futhi isakhiwo siyasebenza. “Hhayi okwamanje” kulungile: kukhombisa okufanele kusebenzwe kukho ngokulandelayo, kodwa akubalwa ebhejini.",
+  "badges_none": "Amabheji ayeza maduze."
 }
