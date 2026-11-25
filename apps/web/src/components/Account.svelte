@@ -3,6 +3,7 @@
   // sign out. Learners don't need an account for lessons, templates or the code editor.
   import { onMount } from 'svelte';
   import { type AccountClient, browserClient } from '../account/client';
+  import Children from './Children.svelte';
   import Organisations from './Organisations.svelte';
   import { inviteFromHash } from '../account/classes';
 
@@ -149,6 +150,7 @@
     </form>
     <p><button type="button" class="plain" onclick={signOut}>{t('account_sign_out')}</button></p>
     {#if client}
+      <Children {client} {labels} />
       {#key joined}<Organisations {client} {labels} {languages} />{/key}
     {/if}
   {/if}
