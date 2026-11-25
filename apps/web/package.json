@@ -15,6 +15,7 @@
     "@microbit/microbit-universal-hex": "^0.3.1",
     "astro": "^7.4.13",
     "blockly": "^13.5.0",
+    "qrcode-generator": "2.0.4",
     "svelte": "^5.59.1"
   },
   "devDependencies": {

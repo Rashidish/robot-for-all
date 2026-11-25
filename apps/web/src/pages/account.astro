@@ -4,6 +4,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { m } from '../i18n';
 import { featureOn } from '../site';
+import { siteLanguages } from '../site-languages';
 
 const open = featureOn('accounts') || __RFA_SHOW_DRAFTS__;
 const labels = Object.fromEntries(
@@ -18,7 +19,13 @@ const labels = Object.fromEntries(
   <p>{m.account_intro()}</p>
   {open ? (
     <>
-      <div id="account" data-labels={JSON.stringify(labels)}>
+      <div
+        id="account"
+        data-labels={JSON.stringify(labels)}
+        data-languages={JSON.stringify(
+          siteLanguages.map((l) => ({ code: l.code, native: l.native }))
+        )}
+      >
         <p>{m.account_loading()}</p>
       </div>
       <p class="muted">{m.account_privacy()}</p>
@@ -32,6 +39,10 @@ const labels = Object.fromEntries(
   const target = document.getElementById('account');
   if (target) {
     const labels = JSON.parse(target.dataset['labels'] ?? '{}') as Record<string, string>;
-    void import('../account/start').then(({ start }) => start(target, labels));
+    const languages = JSON.parse(target.dataset['languages'] ?? '[]') as {
+      code: string;
+      native: string;
+    }[];
+    void import('../account/start').then(({ start }) => start(target, labels, languages));
   }
 </script>

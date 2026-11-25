@@ -1,0 +1,14 @@
+---
+// Enrolment (M5 step 4): parents open their class's link, /enrol/#<token>. Until enrolment opens,
+// this page explains what will happen; the token after # never reaches any server.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { m } from '../i18n';
+---
+
+<BaseLayout title={m.enrol_title()}>
+  <h1>{m.enrol_title()}</h1>
+  <p>{m.enrol_soon()}</p>
+  <p>
+    <a href="/lessons/">{m.home_browse()}</a>
+  </p>
+</BaseLayout>

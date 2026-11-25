@@ -28,6 +28,8 @@ test.describe('your account (M5)', () => {
       }
       if (url.pathname === '/db/rest/v1/adults') return reply(name ? [{ display_name: name }] : []);
       if (url.pathname === '/db/auth/v1/logout') return reply({});
+      // No schools or classes yet.
+      if (url.pathname.startsWith('/db/rest/v1/')) return reply([]);
       return route.fulfill({ status: 404, body: '{}' });
     });
 
@@ -64,5 +66,80 @@ test.describe('your account (M5)', () => {
     await page.goto('/lessons/p1-crank-01/');
     await page.waitForLoadState('networkidle');
     expect(scripts.some((s) => /Account|account/.test(s))).toBe(false);
+  });
+
+  test('a teacher sees their school, makes a class and shares its enrolment link', async ({
+    page
+  }) => {
+    const org = { id: 'o1', name: 'Sizwe Primary', kind: 'school', verified_at: null };
+    const classes: Record<string, unknown>[] = [];
+    const created: Record<string, unknown>[] = [];
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'rfa-session',
+        JSON.stringify({
+          accessToken: 'a1',
+          refreshToken: 'r1',
+          expiresAt: 4102444800,
+          userId: 'u1'
+        })
+      );
+    });
+    await page.route('**/db/**', async (route) => {
+      const url = new URL(route.request().url());
+      const reply = (body: unknown) =>
+        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+      switch (url.pathname) {
+        case '/db/rest/v1/adults':
+          return reply([{ display_name: 'Mrs Dlamini' }]);
+        case '/db/rest/v1/organisation_staff':
+          return reply([{ role: 'admin', organisations: org }]);
+        case '/db/rest/v1/classes':
+          return reply(classes);
+        case '/db/rest/v1/class_learners':
+          return reply([{ class_id: 'c1' }, { class_id: 'c1' }]);
+        case '/db/rest/v1/pending_enrolments':
+          return reply([{ class_id: 'c1' }]);
+        case '/db/rest/v1/rpc/create_class': {
+          const body = route.request().postDataJSON() as Record<string, unknown>;
+          created.push(body);
+          classes.push({
+            id: 'c1',
+            organisation_id: 'o1',
+            name: body['p_name'],
+            grade_band: body['p_grade_band'],
+            language: body['p_language'],
+            class_code: 'BCDFGH',
+            enrol_token: 'f'.repeat(32)
+          });
+          return reply('c1');
+        }
+        default:
+          return reply(null);
+      }
+    });
+
+    await page.goto('/account/');
+    await expect(page.getByRole('heading', { name: 'Sizwe Primary' })).toBeVisible();
+    await expect(page.getByText(/Waiting for verification/)).toBeVisible();
+    await page.getByLabel(/Class name/).fill('Grade 4B Robotics');
+    await page.getByRole('button', { name: 'Make the class' }).click();
+    expect(created[0]).toMatchObject({
+      p_org: 'o1',
+      p_name: 'Grade 4B Robotics',
+      p_grade_band: '3-4'
+    });
+
+    await page.locator('summary', { hasText: 'Grade 4B Robotics' }).click();
+    await expect(page.locator('.code')).toHaveText('BCD FGH');
+    await expect(page.getByText(/\/enrol\/#f{32}/)).toBeVisible();
+    await expect(page.getByText('Learners: 2')).toBeVisible();
+    await expect(page.getByRole('img', { name: /QR code/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Share on WhatsApp' })).toHaveAttribute(
+      'href',
+      /^https:\/\/wa\.me\/\?text=/
+    );
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > 360);
+    expect(overflow).toBe(false);
   });
 });
