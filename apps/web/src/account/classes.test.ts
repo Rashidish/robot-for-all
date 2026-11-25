@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   enrolLink,
+  inviteFromHash,
+  inviteLink,
   organisationProblems,
   registerArgs,
   spacedCode,
@@ -44,5 +46,15 @@ describe('schools, clubs and classes', () => {
     expect(whatsappShare('Enrol here: https://x/enrol/#t')).toBe(
       'https://wa.me/?text=Enrol%20here%3A%20https%3A%2F%2Fx%2Fenrol%2F%23t'
     );
+  });
+
+  it('invitation links carry the secret after #, and only a well-formed one is read back', () => {
+    const token = 'a'.repeat(64);
+    expect(inviteLink('https://robotsforall.org.za', token)).toBe(
+      `https://robotsforall.org.za/account/#invite=${token}`
+    );
+    expect(inviteFromHash(`#invite=${token}`)).toBe(token);
+    expect(inviteFromHash('#invite=nope')).toBeNull();
+    expect(inviteFromHash('')).toBeNull();
   });
 });

@@ -558,5 +558,14 @@
   "account_class_end": "Qeda leli kilasi",
   "account_class_end_confirm": "Qeda leli kilasi? Izixhumanisi nokubhalisa kwalo kuyasuswa. Abafundi bagcina amabheji namarekhodi abo.",
   "enrol_title": "Bhalisa ingane yakho",
-  "enrol_soon": "Ukubhalisa kuzovulwa maduze. Uma sekuvuliwe, lesi sixhumanisi sizokuvumela ukuthi ubhalise ingane yakho ekilasini layo futhi ukhethe esikugcinayo ngayo."
+  "enrol_soon": "Ukubhalisa kuzovulwa maduze. Uma sekuvuliwe, lesi sixhumanisi sizokuvumela ukuthi ubhalise ingane yakho ekilasini layo futhi ukhethe esikugcinayo ngayo.",
+  "account_staff_title": "Abasebenzi",
+  "account_staff_invite": "Mema uzakwenu",
+  "account_staff_role": "Indima yabo",
+  "account_staff_make_link": "Yenza isixhumanisi sesimemo",
+  "account_staff_link_note": "Thumela lesi sixhumanisi kozakwenu (nge-WhatsApp noma nge-imeyili). Sisebenza kanye, izinsuku eziyi-7. Bayangena bese bejoyina.",
+  "account_staff_share_text": "Joyina nathi ku-Robots For All njengomsebenzi wa",
+  "account_staff_remove": "Susa",
+  "account_staff_remove_confirm": "Susa lo muntu esikoleni noma ekilabhini yakho? Uzolahlekelwa ukufinyelela emakilasini ayo.",
+  "account_staff_joined": "Usujoyinile. Isikole noma ikilabhu manje isohlwini lwakho."
 }

@@ -142,4 +142,64 @@ test.describe('your account (M5)', () => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > 360);
     expect(overflow).toBe(false);
   });
+
+  test('an admin invites a colleague by link; the colleague opens it and joins', async ({
+    page
+  }) => {
+    const token = 'e'.repeat(64);
+    const accepted: string[] = [];
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'rfa-session',
+        JSON.stringify({
+          accessToken: 'a1',
+          refreshToken: 'r1',
+          expiresAt: 4102444800,
+          userId: 'u1'
+        })
+      );
+    });
+    await page.route('**/db/**', async (route) => {
+      const url = new URL(route.request().url());
+      const reply = (body: unknown) =>
+        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+      switch (url.pathname) {
+        case '/db/rest/v1/organisation_staff':
+          return reply([
+            {
+              role: 'admin',
+              organisations: {
+                id: 'o1',
+                name: 'Sizwe Primary',
+                kind: 'school',
+                verified_at: '2026-11-25'
+              }
+            }
+          ]);
+        case '/db/rest/v1/rpc/organisation_staff_list':
+          return reply([{ user_id: 'u1', display_name: 'Mr Khumalo', role: 'admin' }]);
+        case '/db/rest/v1/rpc/create_staff_invitation':
+          return reply(token);
+        case '/db/rest/v1/rpc/accept_staff_invitation':
+          accepted.push((route.request().postDataJSON() as { p_token: string }).p_token);
+          return reply('o1');
+        case '/db/rest/v1/adults':
+          return reply([{ display_name: 'Mr Khumalo' }]);
+        default:
+          return reply(url.pathname.startsWith('/db/rest/v1/rpc/') ? null : []);
+      }
+    });
+
+    await page.goto('/account/');
+    await page.locator('summary', { hasText: 'Staff' }).click();
+    await expect(page.getByText('Mr Khumalo · admin')).toBeVisible();
+    await page.getByRole('button', { name: 'Make an invitation link' }).click();
+    await expect(page.getByText(new RegExp(`/account/#invite=${token}`))).toBeVisible();
+
+    // The colleague opens the link while signed in: they join, and the secret leaves the address.
+    await page.goto(`/account/#invite=${token}`);
+    await expect(page.getByText('You’ve joined.', { exact: false })).toBeVisible();
+    expect(accepted).toEqual([token]);
+    expect(new URL(page.url()).hash).toBe('');
+  });
 });

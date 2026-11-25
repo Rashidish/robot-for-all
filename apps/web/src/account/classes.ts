@@ -52,6 +52,14 @@ export function registerArgs(f: OrganisationForm): Record<string, unknown> {
 export const enrolLink = (origin: string, token: string): string =>
   `${origin.replace(/\/$/, '')}/enrol/#${token}`;
 
+/** The link a colleague opens to join a school or club (the secret stays after #). */
+export const inviteLink = (origin: string, token: string): string =>
+  `${origin.replace(/\/$/, '')}/account/#invite=${token}`;
+
+/** The invitation secret in this page's address, if any. */
+export const inviteFromHash = (hash: string): string | null =>
+  /^#invite=([0-9a-f]{64})$/.exec(hash)?.[1] ?? null;
+
 /** The class code in two groups of three, easier to read aloud and type: "BCD FGH". */
 export const spacedCode = (code: string): string => `${code.slice(0, 3)} ${code.slice(3)}`;
 

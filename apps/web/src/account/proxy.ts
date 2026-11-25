@@ -16,6 +16,11 @@ export const RPC = new Set([
   'touch_adult',
   'register_organisation',
   'add_staff',
+  'create_staff_invitation',
+  'accept_staff_invitation',
+  'revoke_staff_invitation',
+  'organisation_staff_list',
+  'remove_staff',
   'create_class',
   'end_class',
   'rename_learner',
@@ -45,7 +50,8 @@ export const TABLES = new Set([
   'consents',
   'pending_enrolments',
   'sheet_records',
-  'badge_awards'
+  'badge_awards',
+  'staff_invitations'
 ]);
 
 /** Tables a session may write directly: only a learner's own sheet records (ADR-0014). */
