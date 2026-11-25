@@ -44,3 +44,4 @@ rows (migrations 0010 and 0017).
 - **PINs:** PBKDF2-SHA256 with a random salt, bound to the learner. A first PIN (or one after a reset)
   can be chosen only while none is set.
 - **Limits:** the per-class limit is 100 tries a minute, not 50, so a class of 40 can sign in together.
+- **Built (M5 step 5c):** QR cards as above (`/signin/card`, migration 0018), the teacher's view of locks and pictures, one-tap reset and "sign out everywhere".

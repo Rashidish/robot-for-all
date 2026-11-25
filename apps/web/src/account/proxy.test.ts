@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { allowedPath } from './proxy';
+import { allowedPath, RPC } from './proxy';
 
 describe('the /db/ proxy forwards only what the account pages need (ADR-0017)', () => {
   it('sign-in calls', () => {
@@ -34,5 +34,30 @@ describe('the /db/ proxy forwards only what the account pages need (ADR-0017)', 
     expect(allowedPath('GET', 'rest/v2/classes')).toBeNull();
     expect(allowedPath('GET', 'storage/v1/object')).toBeNull();
     expect(allowedPath('GET', '')).toBeNull();
+  });
+});
+
+describe('every database function the pages call is allowed', () => {
+  it('matches the allow-list', async () => {
+    const { readdirSync, readFileSync, statSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const files: string[] = [];
+    const walk = (dir: string) => {
+      for (const f of readdirSync(dir)) {
+        const p = join(dir, f);
+        if (statSync(p).isDirectory()) {
+          if (f !== 'paraglide') walk(p);
+        } else if (/\.(svelte|ts)$/.test(f) && !f.endsWith('.test.ts')) files.push(p);
+      }
+    };
+    walk(join(import.meta.dirname, '..'));
+    const called = new Set<string>();
+    for (const f of files) {
+      for (const m of readFileSync(f, 'utf8').matchAll(/\.rpc(?:<[^>]*>)?\(\s*'([a-z_]+)'/g)) {
+        if (m[1]) called.add(m[1]);
+      }
+    }
+    expect(called.size).toBeGreaterThan(10);
+    expect([...called].filter((fn) => !RPC.has(fn))).toEqual([]);
   });
 });

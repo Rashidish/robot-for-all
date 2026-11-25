@@ -35,9 +35,36 @@
   const store = browserStore();
 
   onMount(async () => {
+    // A scanned QR sign-in card (events): /class/#card=<secret>. The secret leaves the address
+    // at once and is sent only to the sign-in service.
+    const card = /^#card=([0-9a-f]{64})$/.exec(location.hash)?.[1];
+    if (card) {
+      history.replaceState(null, '', location.pathname);
+      await run(async () => {
+        const r = await call<SignedIn>('card', { secret: card });
+        if (r.status === 200) await signedIn(r.body);
+        else message = r.status === 429 ? t('learner_slow_down') : t('learner_card_invalid');
+      });
+    }
     saved = await liveSessions(store, Date.now() / 1000);
     step = saved.length ? 'who' : 'code';
   });
+
+  interface SignedIn {
+    token: string;
+    expires_at: number;
+    learner: { id: string; nickname: string; avatar: string };
+  }
+  async function signedIn(b: SignedIn) {
+    await store.put({
+      learnerId: b.learner.id,
+      nickname: b.learner.nickname,
+      avatar: b.learner.avatar,
+      token: b.token,
+      expiresAt: b.expires_at
+    });
+    goToMe(b.learner.id);
+  }
 
   const goToMe = (id: string) => {
     setCurrentLearner(sessionStorage, id, Date.now());
@@ -96,22 +123,15 @@
 
   async function send(choose: boolean) {
     if (!chosen) return;
-    const r = await call<{
-      token: string;
-      expires_at: number;
-      learner: { id: string; nickname: string; avatar: string };
-    }>('pin', { class_code: cleanCode(code), learner: chosen.learner_id, pin, choose });
+    const r = await call<SignedIn>('pin', {
+      class_code: cleanCode(code),
+      learner: chosen.learner_id,
+      pin,
+      choose
+    });
     pin = [];
-    if (r.status === 200) {
-      await store.put({
-        learnerId: r.body.learner.id,
-        nickname: r.body.learner.nickname,
-        avatar: r.body.learner.avatar,
-        token: r.body.token,
-        expiresAt: r.body.expires_at
-      });
-      goToMe(r.body.learner.id);
-    } else if (r.status === 409) {
+    if (r.status === 200) await signedIn(r.body);
+    else if (r.status === 409) {
       step = 'choose';
       message = t('learner_choose_first');
     } else if (r.status === 423) step = 'locked';
