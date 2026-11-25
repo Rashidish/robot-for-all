@@ -10,14 +10,17 @@ const form = (fields: Record<string, string>) => {
 const allOn = Object.fromEntries(FEATURES.map((f) => [`feature_${f}`, 'on']));
 
 describe('Configuration → Site', () => {
-  it('no banner and every part on gives the file in the repository', async () => {
+  it('no banner and every part on except accounts gives the file in the repository', async () => {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');
     const file = readFileSync(
       join(import.meta.dirname, '../../../../content/site/settings.json'),
       'utf8'
     );
-    expect(settingsFromForm(form(allOn))).toEqual({ text: file, problems: [] });
+    const repo = Object.fromEntries(
+      Object.entries(allOn).filter(([k]) => k !== 'feature_accounts')
+    );
+    expect(settingsFromForm(form(repo))).toEqual({ text: file, problems: [] });
   });
 
   it('a banner with dates, words and a link', () => {

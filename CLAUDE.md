@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.28 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
+> **Version:** 0.29 (draft) · **Date:** 2026-11-24 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -106,7 +106,7 @@ Reuse proven open source before writing our own.
 | micro:bit | **MicroPython** .hex built in the browser (microbit-fs) + WebUSB (microbit-connection); firmware served from our domain (ADR-0005) | No third-party domain; fits our lessons and i18n |
 | Python in browser | Pyodide (lazy-loaded, later milestones only) | No server cost |
 | Simulator | **On-screen micro:bit + our 2D robot world** in `packages/sim` (ADR-0007); programs use robot calls through robot profiles, never pins (ADR-0008) | One engine for screen and real robot; no physics library; 2D before 3D |
-| Database / auth | **Supabase** (Postgres + Auth, MFA for admins), roles by row-level security, audit log (ADR-0010); back-office accounts first, M5 accounts later | Free tier, row-level security, open source |
+| Database / auth | **Supabase** (Postgres + Auth, MFA for admins), roles by row-level security, audit log (ADR-0010); back-office accounts first, M5 accounts through `/db/` on our own domain (a Pages Function proxy with an allow-list, ADR-0017) | Free tier, row-level security, open source; zero-rated and same-origin |
 | Back office | **`apps/admin`**: Astro, server-rendered in a **Cloudflare Worker** on `admin.robotsforall.org.za`, behind Cloudflare Access; content changes as pull requests through a GitHub App (ADR-0009, ADR-0011; spec `docs/specs/back-office.md`) | Never exposed in the front office; review gate kept |
 | Hosting | **Cloudflare Pages**, one hostname for everything: `robotsforall.org.za` (ADR-0002) | Free unlimited static traffic; zero-rating friendly |
 | AI | Claude API via our own server only | Keys never reach the browser |
@@ -295,3 +295,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.26 | 2026-11-24 | Template sheets in other languages: `templates` in lesson translations (translate-templates spec §2.1–2.4) |
 | 0.27 | 2026-11-24 | `program_name` in lesson translations (translate-templates spec §2.6) |
 | 0.28 | 2026-11-24 | M5 spec approved (`docs/specs/M5-teach.md`) |
+| 0.29 | 2026-11-25 | Account data through `/db/` on our own domain (ADR-0017) |

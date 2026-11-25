@@ -16,7 +16,8 @@ const banner = {
 describe('site settings (back-office spec §6.7)', () => {
   it('the settings file in the repository is valid', () => {
     expect(checkSettings(file)).toEqual([]);
-    expect(buildSettings(file).features).toEqual(on);
+    // Everything on, except accounts (M5), which stays off until the owner opens it.
+    expect(buildSettings(file).features).toEqual({ ...on, accounts: false });
   });
 
   it('accepts a banner with a link to a page on this site', () => {

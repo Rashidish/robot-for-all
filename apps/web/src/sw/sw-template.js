@@ -73,6 +73,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // Account data (M5, ADR-0017) goes straight to the network: never cached or answered here.
+  if (url.pathname.startsWith('/db/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(handlePage(event));

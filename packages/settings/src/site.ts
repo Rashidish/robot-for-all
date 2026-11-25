@@ -3,7 +3,14 @@
 // public build fails on a bad file, and the back office refuses to send one.
 
 /** Parts of the public site that can be switched off. Off hides the part; nothing is deleted. */
-export const FEATURES = ['robot_world', 'print_course', 'seasons', 'send_to_microbit'] as const;
+export const FEATURES = [
+  'robot_world',
+  'print_course',
+  'seasons',
+  'send_to_microbit',
+  // M5: sign-in, classes and progress (off until the owner opens them; the drafts preview shows them).
+  'accounts'
+] as const;
 export type Feature = (typeof FEATURES)[number];
 
 /** Languages the banner may be written in; English is required (CLAUDE.md §2.4). */
