@@ -3,9 +3,12 @@
 //   2. dormancy warnings by email at 10 and 11 months without signing in;
 //   3. deletion: due at 12 months; locked 30 days later if nobody confirmed; deleted when the
 //      lock ends (migration 0015);
-//   4. the back office is emailed every 7 days while accounts wait or are locked.
+//   4. the back office is emailed every 7 days while accounts wait or are locked;
+//   5. badges: learners with new or newly checked records are checked against the badge rules
+//      (step 7b), in case their phone didn't ask straight away.
 // Steps 1, 3 never need email; 2 and 4 run once a provider is set up. Nothing personal is
 // returned or logged: only counts.
+import { checkLearner } from './badges';
 import { decryptName, fromBytea, loadKeys } from './crypto';
 import { type Deps, type Env, rpc } from './handler';
 import { mailerFrom, words } from './mail';
@@ -19,6 +22,7 @@ export interface DailyReport {
   deleted: number;
   noticeSent: boolean;
   emailSetUp: boolean;
+  badges: number;
 }
 
 interface ReminderRow {
@@ -48,7 +52,8 @@ export async function runDaily(env: Env, deps: Deps): Promise<DailyReport> {
     locked: 0,
     deleted: 0,
     noticeSent: false,
-    emailSetUp: mailer !== null
+    emailSetUp: mailer !== null,
+    badges: 0
   };
 
   if (mailer) {
@@ -144,6 +149,12 @@ export async function runDaily(env: Env, deps: Deps): Promise<DailyReport> {
           .catch(() => false);
       }
     }
+  }
+  const recent = await rpc<{ learner_id: string }[]>(env, deps, 'learners_with_new_records', {
+    p_since: '25 hours'
+  });
+  for (const r of recent.ok && recent.body ? recent.body : []) {
+    report.badges += (await checkLearner(r.learner_id, env, deps, mailer)).length;
   }
   return report;
 }

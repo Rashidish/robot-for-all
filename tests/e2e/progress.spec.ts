@@ -140,6 +140,8 @@ test.describe('progress (M5)', () => {
         );
       if (url.pathname === '/db/rest/v1/sheet_records')
         return route.fulfill(json([record({ i_can: [true, false, true] })]));
+      if (url.pathname === '/db/rest/v1/badge_awards')
+        return route.fulfill(json([{ badge_id: 'i-can' }]));
       return route.fulfill(json(url.pathname.includes('/rpc/') ? null : []));
     });
     await page.goto('/account/');
@@ -147,5 +149,6 @@ test.describe('progress (M5)', () => {
     const item = page.locator('li', { hasText: /Not yet: I can/ });
     await expect(item).toBeVisible();
     await expect(item).toContainText('Crank');
+    await expect(page.getByRole('list', { name: 'Badges' })).toContainText('I Can!');
   });
 });

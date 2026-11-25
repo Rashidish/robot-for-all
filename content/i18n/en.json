@@ -781,5 +781,9 @@
   "badge_robot_coder_about": "Finished three Phase 2 lessons: made a micro:bit control lights, buttons or motors.",
   "badges_title": "Badges",
   "badges_intro": "Learners earn badges by finishing lessons and recording their answer sheets: every step done, every “I can” a Yes, and the build working. “Not yet” is fine: it shows what to work on next, but it doesn’t count towards a badge.",
-  "badges_none": "Badges are coming soon."
+  "badges_none": "Badges are coming soon.",
+  "email_badge_subject": "{nickname} earned a badge on Robots For All",
+  "email_badge_body": "Hello,\n\n{nickname} earned: {badges}.\n\nSign in to see it: {link}\n\nRobots For All",
+  "badge_earned": "🎉 You earned a badge:",
+  "badge_mine": "Badges"
 }

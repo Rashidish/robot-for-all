@@ -26,6 +26,20 @@ test.describe('recording an answer sheet (M5)', () => {
         body: JSON.stringify(server)
       });
     });
+    let badges: { badge_id: string; awarded_at: string }[] = [];
+    const badgeAuth: (string | null)[] = [];
+    await page.route('**/cert/badges', async (route) => {
+      badgeAuth.push(route.request().headers()['authorization'] ?? null);
+      badges = [{ badge_id: 'first-build', awarded_at: '2026-11-25T10:00:00Z' }];
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ awarded: ['first-build'] })
+      });
+    });
+    await page.route('**/db/rest/v1/badge_awards*', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(badges) })
+    );
 
     // A learner signed in on this phone (as /class/ leaves it).
     await page.goto('/class/');
@@ -83,6 +97,11 @@ test.describe('recording an answer sheet (M5)', () => {
     // Back online: sent with this learner's own session.
     await context.setOffline(false);
     await expect(page.getByText('✓ sent')).toBeVisible();
+    // Sent: the badge check runs with the learner's own session, and the badge shows.
+    await expect(page.getByRole('status')).toContainText('You earned a badge: First Build');
+    expect(badgeAuth).toEqual([`Bearer ${TOKEN}`]);
+    await expect(page.getByRole('heading', { name: 'Badges' })).toBeVisible();
+    await expect(page.locator('img[src="/badges/first-build.svg"]')).toBeVisible();
     expect(posted).toHaveLength(1);
     expect(posted[0]?.auth).toBe(`Bearer ${TOKEN}`);
     expect(posted[0]?.body).toMatchObject({
