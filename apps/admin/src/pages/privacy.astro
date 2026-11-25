@@ -45,6 +45,9 @@ if (Astro.request.method === 'POST') {
   ({ rows, failed } = await readList());
 }
 if (failed) error ||= 'Could not read the list. Try again in a minute.';
+// Name key rotation (migration 0027): how many locked values each key version still holds.
+const { data: keyData } = await supabase.rpc('name_key_counts_for_officer');
+const keyCounts = (keyData ?? []) as { key_version: number; values_locked: number }[];
 const day = (iso: string) =>
   new Date(iso).toLocaleDateString('en-ZA', { timeZone: 'Africa/Johannesburg' });
 ---
@@ -139,5 +142,33 @@ const day = (iso: string) =>
         </form>
       ))}
     </>
+  )}
+
+  <h2>Name key</h2>
+  <p>
+    Certificate names, parents' emails and enrolment links are locked with the name key. After a new
+    key version is made current (docs/deploy.md §7), the daily job locks every value again with it.
+    Remove an old key only when it holds 0 values.
+  </p>
+  {keyCounts.length === 0 ? (
+    <p>No locked values yet.</p>
+  ) : (
+    <table>
+      <caption>Values locked with each key version</caption>
+      <thead>
+        <tr>
+          <th scope="col">Key version</th>
+          <th scope="col">Values</th>
+        </tr>
+      </thead>
+      <tbody>
+        {keyCounts.map((k) => (
+          <tr>
+            <td>{k.key_version}</td>
+            <td>{k.values_locked}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )}
 </Admin>

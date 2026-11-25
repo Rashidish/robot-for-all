@@ -31,6 +31,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0024_family_and_personal.sql` | Family groups (organisation kind `family`, one class, the parent's own children only, at most 8; no enrolment link, cards, staff, school enrolments, verification or check marks, enforced by triggers; a second parent by a confirmed one-time link) and personal learners (`learners.self_user_id`, 18+, own consent); `guardian_learner_session` for "Learn as <child>"; family certificates name Robots For All |
 | `0025_family_waiting.sql` | `family_invitations_waiting`: who opened a family group's second-parent link (their chosen name), for the first parent to confirm |
 | `0026_my_personal_learner.sql` | `my_personal_learner`: the adult's own learner profile, so the account page shows it as "Learning myself" and not as a child |
+| `0027_name_key_rotation.sql` | Name key rotation: `names_to_rekey` and `rekey_names` (service only; locked bytes only, saved only while still on the old key version, count audit-logged), `name_key_counts` and, for the data protection officer, `name_key_counts_for_officer` |
 
 ## Tests
 

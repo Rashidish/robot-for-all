@@ -176,10 +176,17 @@ Do these once, in this order:
    `CERT_DEPLOY` = `true`. The next push to `main` deploys the Worker on its route and checks that
    `/cert/` refuses a request without a sign-in.
 
-**A new key each year** (or at once if a leak is suspected): make key 2 the same way, set `NAME_KEYS` to
-`{"1":"…old…","2":"…new…"}` and `NAME_KEY_CURRENT` to `2` in `apps/cert/wrangler.jsonc`. New names use
-key 2; old ones still unlock with key 1 until they are re-locked (a later step), after which key 1 is
-removed. Vault every version until it is removed.
+**A new key each year** (or at once if a leak is suspected):
+1. Make key 2 the same way and vault it (item "Robots For All name key v2", and a sealed copy).
+2. Set `NAME_KEYS` to both, `{"1":"…old…","2":"…new…"}` (`npx wrangler secret put NAME_KEYS`), and
+   `NAME_KEY_CURRENT` to `2` in `apps/cert/wrangler.jsonc` (a pull request; it deploys on merge).
+   New names use key 2 at once; old ones still unlock with key 1.
+3. The **daily job** locks every older value again with key 2: names, parents' emails and the secrets
+   of waiting enrolment links, up to 5,000 a night (migration 0027). Watch back office
+   **Privacy → Name key**: it shows how many values each key version still holds.
+4. When key 1 shows 0 (or is gone from the table), set `NAME_KEYS` to `{"2":"…new…"}` only, then
+   destroy key 1's vault copies. If a value can't be opened, it stays on key 1; never remove a key
+   that still holds values, or those names are lost.
 
 Logs are switched off for this Worker (`observability` false), so no request, error or name is kept.
 

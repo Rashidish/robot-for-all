@@ -5,13 +5,16 @@
 //      lock ends (migration 0015);
 //   4. the back office is emailed every 7 days while accounts wait or are locked;
 //   5. badges: learners with new or newly checked records are checked against the badge rules
-//      (step 7b), in case their phone didn't ask straight away.
+//      (step 7b), in case their phone didn't ask straight away;
+//   6. name key rotation: values still locked with an older key are locked again with the
+//      current one (rekey.ts, migration 0027).
 // Steps 1, 3 never need email; 2 and 4 run once a provider is set up. Nothing personal is
 // returned or logged: only counts.
 import { checkLearner } from './badges';
 import { decryptName, fromBytea, loadKeys } from './crypto';
 import { type Deps, type Env, rpc } from './handler';
 import { mailerFrom, words } from './mail';
+import { rekeyNames } from './rekey';
 
 export interface DailyReport {
   expired: number;
@@ -23,6 +26,8 @@ export interface DailyReport {
   noticeSent: boolean;
   emailSetUp: boolean;
   badges: number;
+  rekeyed: number;
+  unreadable: number;
 }
 
 interface ReminderRow {
@@ -53,13 +58,15 @@ export async function runDaily(env: Env, deps: Deps): Promise<DailyReport> {
     deleted: 0,
     noticeSent: false,
     emailSetUp: mailer !== null,
-    badges: 0
+    badges: 0,
+    rekeyed: 0,
+    unreadable: 0
   };
 
   if (mailer) {
     // Reminders: the same link, in the class's language, still without the child's name.
     const due = await rpc<ReminderRow[]>(env, deps, 'pending_reminders_due', {});
-    for (const p of due.ok ? due.body : []) {
+    for (const p of (due.ok ? due.body : null) ?? []) {
       const key = keys.get(p.confirm_token_key_version);
       const contactKey = keys.get(p.parent_contact_key_version);
       if (!key || !contactKey) continue;
@@ -99,7 +106,7 @@ export async function runDaily(env: Env, deps: Deps): Promise<DailyReport> {
       'dormancy_warnings_due',
       {}
     );
-    for (const a of warn.ok ? warn.body : []) {
+    for (const a of (warn.ok ? warn.body : null) ?? []) {
       const values = { months: String(a.months), link: `${site}/account/` };
       const ok = await mailer
         .send(
@@ -156,5 +163,6 @@ export async function runDaily(env: Env, deps: Deps): Promise<DailyReport> {
   for (const r of recent.ok && recent.body ? recent.body : []) {
     report.badges += (await checkLearner(r.learner_id, env, deps, mailer)).length;
   }
+  Object.assign(report, await rekeyNames(env, deps, keys));
   return report;
 }
