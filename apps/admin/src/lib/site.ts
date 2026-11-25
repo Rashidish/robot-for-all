@@ -14,7 +14,8 @@ export const FEATURE_LABELS: Record<(typeof FEATURES)[number], string> = {
   robot_world: 'Robot tab in the code editor (robot worlds and courses)',
   print_course: 'Print course button',
   seasons: 'Seasons (grouping and banner in the Robot tab)',
-  send_to_microbit: 'Send to micro:bit button'
+  send_to_microbit: 'Send to micro:bit button',
+  accounts: 'Accounts: sign-in, classes and progress (M5)'
 };
 
 /** The settings file from the form's fields; problems are listed, nothing is thrown. */

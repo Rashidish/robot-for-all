@@ -21,3 +21,4 @@ Copy `0000-template.md`. Never edit an accepted ADR's decision; write a new ADR 
 | 0014 | [Offline learner records](0014-offline-learner-records.md): a per-learner outbox in IndexedDB | Accepted |
 | 0015 | [Encrypted certificate names](0015-encrypted-certificate-names.md): AES-256-GCM in a certificate Worker; key never in the database | Accepted |
 | 0016 | [Messages](0016-message-provider.md): WhatsApp and SMS through a South African provider, email through Supabase | Accepted (provider still to choose) |
+| 0017 | [Account data through our domain](0017-account-data-through-our-domain.md): a `/db/` proxy (Pages Function) with an allow-list; a small client, no supabase-js | Accepted |

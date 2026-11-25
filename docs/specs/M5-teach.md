@@ -273,7 +273,7 @@ Each piece is deleted when its reason ends, not on a fixed calendar:
 One PR per step; ⏸ marks a stop for review.
 1. ✅ *(spec approved 2026-11-24; ADR-0013 to 0016 accepted 2026-11-25, message provider still to choose)* **This spec** approved; then **ADR-0013** (learner sign-in), **ADR-0014** (offline records) and **ADR-0015** (encrypting the certificate name) for review.
 2. ✅ *(built 2026-11-25: migration `0010_teach.sql`, 22 PGlite tests)* **Database:** migrations for §6.1 with row-level security, consent controls and deletion; PGlite tests for every policy.
-3. *(3a built 2026-11-25: back office People → Organisations, verify once by a fitting route)* **Organisations and classes:** one-time-code sign-in by WhatsApp, SMS or email (provider chosen, ADR-0016), organisation registration with EMIS or register numbers and one-time verification (back-office People module), staff invitations, classes with enrolment links and QR codes.
+3. *(3a built 2026-11-25: back office People → Organisations, verify once by a fitting route; 3b built 2026-11-25: `/account/` sign-in with an emailed code, the `/db/` proxy (ADR-0017), the "accounts" site switch, off until the owner opens it)* **Organisations and classes:** one-time-code sign-in by WhatsApp, SMS or email (provider chosen, ADR-0016), organisation registration with EMIS or register numbers and one-time verification (back-office People module), staff invitations, classes with enrolment links and QR codes.
 4. **Enrolment:** parent enrolment by link; school and club enrolment by class list with parent confirmation requests; consent controls; the certificate-name encryption path; linking an existing profile; parent account page (consent, correct name, portfolio download, delete); automatic deletion jobs; back-office Privacy module.
 5. **Learner sign-in and records:** the sign-in Worker, picture PIN, QR cards, `/me/`, answer-sheet recording offline with per-learner outboxes.
 6. **Progress views:** the teacher/coach grid with spot-check and revoke; the parent view.
@@ -306,7 +306,8 @@ Core stays free. Later paid add-ons this makes possible: school dashboards acros
 **Owner actions:**
 1. Choose the WhatsApp and SMS provider (cost per message; where it stores data, POPIA s72); ADR-0016 records the choice.
 2. Confirm the reading of "ID for life" in §4.7: one profile per child that follows them across schools, clubs and events, kept while needed, taken over by the learner at 18, with a downloadable portfolio.
-3. Name the Information Officer (POPIA s55) for Robots For All, and register them with the Information Regulator before M5 goes live.
+3. Before switching **accounts** on (Site settings): update the privacy page (it says there are no accounts) with what M5 collects (§7.1), and set the Pages secrets (docs/deploy.md).
+4. Name the Information Officer (POPIA s55) for Robots For All, and register them with the Information Regulator before M5 goes live.
 
 ## Version history
 | Version | Date | Change |

@@ -134,6 +134,17 @@ Do these once, in this order:
 Without `ACCESS_TEAM` and `ACCESS_AUD` the app refuses every request, and without the Supabase
 secrets it shows an error: it never opens by accident.
 
+### 6. Accounts (M5, ADR-0017)
+Accounts stay off until the site switch **accounts** is on (back office → Site). Before switching it on:
+1. In Cloudflare → **Workers & Pages → robot-for-all → Settings → Variables and secrets**, add for Production and Preview:
+   - `SUPABASE_URL`: the project URL from Supabase → Settings → API (the same project as the back office);
+   - `SUPABASE_ANON_KEY` (as a **secret**): the project's public "anon" key from the same page. The service key is never used here.
+2. In Supabase → **Authentication → Providers → Email**: email sign-in on, "Confirm email" on; **Email templates → Magic Link**: show the `{{ .Token }}` code (our sign-in page asks for the code, not a link).
+3. Apply migration `0010_teach.sql` (packages/db/README.md).
+4. Update the privacy page for M5 (M5 spec §7.1) before switching **accounts** on.
+
+`/db/` answers 503 until step 1 is done, so nothing breaks before then.
+
 ## Security notes
 - The Pages token can only deploy Pages; the back-office token (`CLOUDFLARE_ADMIN_API_TOKEN`) is limited to Workers (and, if needed, DNS for the admin custom domain) on this account and zone.
 - Secrets are never exposed to pull requests from forks.

@@ -52,6 +52,10 @@ describe('service worker', () => {
     expect(template).toContain('caches.match(request).then((cached) => cached || fetch(request))');
   });
 
+  it('never answers or stores account data (/db/, ADR-0017)', () => {
+    expect(template).toMatch(/pathname\.startsWith\('\/db\/'\)\) return;/);
+  });
+
   it('only handles same-origin GET requests', () => {
     expect(template).toContain("request.method !== 'GET'");
     expect(template).toContain('url.origin !== self.location.origin');
