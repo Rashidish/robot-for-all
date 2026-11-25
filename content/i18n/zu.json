@@ -598,5 +598,16 @@
   "enrol_name_later": "Izitifiketi zingaba negama lengane yakho. Ungalengeza kamuva ku-akhawunti yakho; ligcinwa libethelwe futhi liphrintwa kuphela ezitifiketini.",
   "enrol_submit": "Bhalisa ingane yami",
   "enrol_done": "Kubhalisiwe:",
-  "enrol_done_next": "Ingane yakho ingena esikoleni ngekhodi yekilasi, igama layo lokudlala ne-PIN yesithombe. Ungabona inqubekela phambili yayo futhi ushintshe imvume yakho ku-akhawunti yakho."
+  "enrol_done_next": "Ingane yakho ingena esikoleni ngekhodi yekilasi, igama layo lokudlala ne-PIN yesithombe. Ungabona inqubekela phambili yayo futhi ushintshe imvume yakho ku-akhawunti yakho.",
+  "children_title": "Izingane zakho",
+  "children_no_class": "Akakho ekilasini okwamanje. Vula isixhumanisi sokubhalisa sekilasi ukuze umengeze.",
+  "children_leave_class": "Mkhiphe kuleli kilasi",
+  "children_left_class": "Kwenziwe. Othisha baleli kilasi abasakwazi ukubona ingane yakho.",
+  "children_download": "Gcina ikhophi yamarekhodi ayo",
+  "children_delete": "Susa iphrofayela yale ngane",
+  "children_delete_warning": "Lokhu kususa unomphela igama lokudlala lengane yakho, amarekhodi ezifundo namabheji. Akunakuhlehliswa.",
+  "children_delete_confirm": "Yebo, susa konke",
+  "children_cancel": "Khansela",
+  "children_deleted": "Kususiwe. Akukho lutho ngengane yakho olugcinwayo.",
+  "children_more": "Ukuze ubhalise ingane kwelinye ikilasi, vula isixhumanisi sokubhalisa esivela kuthisha noma kumqeqeshi waleli kilasi."
 }

@@ -30,6 +30,7 @@ export const RPC = new Set([
   'confirm_enrolment',
   'withdraw_consent',
   'delete_learner',
+  'my_children_classes',
   'reset_learner_pin',
   'check_record',
   'revoke_badge',

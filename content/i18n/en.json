@@ -598,5 +598,16 @@
   "enrol_name_later": "Certificates can carry your child’s name. You can add it later in your account; it is stored encrypted and printed only on certificates.",
   "enrol_submit": "Enrol my child",
   "enrol_done": "Enrolled:",
-  "enrol_done_next": "Your child signs in at school with the class code, their nickname and a picture PIN. You can see their progress and change your consent in your account."
+  "enrol_done_next": "Your child signs in at school with the class code, their nickname and a picture PIN. You can see their progress and change your consent in your account.",
+  "children_title": "Your children",
+  "children_no_class": "Not in a class at the moment. Open a class’s enrolment link to add them.",
+  "children_leave_class": "Take out of this class",
+  "children_left_class": "Done. That class’s teachers can no longer see your child.",
+  "children_download": "Save a copy of their records",
+  "children_delete": "Delete this child’s profile",
+  "children_delete_warning": "This deletes your child’s nickname, lesson records and badges for good. It cannot be undone.",
+  "children_delete_confirm": "Yes, delete everything",
+  "children_cancel": "Cancel",
+  "children_deleted": "Deleted. Nothing about your child is kept.",
+  "children_more": "To enrol a child in another class, open the enrolment link from that class’s teacher or coach."
 }
