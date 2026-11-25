@@ -1,14 +1,49 @@
 ---
-// Enrolment (M5 step 4): parents open their class's link, /enrol/#<token>. Until enrolment opens,
-// this page explains what will happen; the token after # never reaches any server.
+// Enrol your child (M5 step 4a): parents open their class's link, /enrol/#<token>. The token
+// after # never reaches any server. Off on the live site until "accounts" is switched on.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { m } from '../i18n';
+import { featureOn } from '../site';
+import { siteLanguages } from '../site-languages';
+
+const open = featureOn('accounts') || __RFA_SHOW_DRAFTS__;
+const labels = Object.fromEntries(
+  Object.entries(m)
+    .filter(([key]) => key.startsWith('account_') || key.startsWith('enrol_'))
+    .map(([key, message]) => [key, (message as () => string)()])
+);
 ---
 
 <BaseLayout title={m.enrol_title()}>
   <h1>{m.enrol_title()}</h1>
-  <p>{m.enrol_soon()}</p>
-  <p>
-    <a href="/lessons/">{m.home_browse()}</a>
-  </p>
+  {open ? (
+    <div
+      id="enrol"
+      data-labels={JSON.stringify(labels)}
+      data-languages={JSON.stringify(
+        siteLanguages.map((l) => ({ code: l.code, native: l.native }))
+      )}
+    >
+      <p>{m.account_loading()}</p>
+    </div>
+  ) : (
+    <>
+      <p>{m.enrol_soon()}</p>
+      <p>
+        <a href="/lessons/">{m.home_browse()}</a>
+      </p>
+    </>
+  )}
 </BaseLayout>
+
+<script>
+  const target = document.getElementById('enrol');
+  if (target) {
+    const labels = JSON.parse(target.dataset['labels'] ?? '{}') as Record<string, string>;
+    const languages = JSON.parse(target.dataset['languages'] ?? '[]') as {
+      code: string;
+      native: string;
+    }[];
+    void import('../account/enrol-start').then(({ start }) => start(target, labels, languages));
+  }
+</script>
