@@ -236,6 +236,13 @@ describe('back office: helper settings and usage (migration 0028)', () => {
     await expect(t.as(TEACHER, `select * from public.helper_usage_totals(7)`)).rejects.toThrow(
       /only the owner/
     );
+    // The month so far (migration 0029), for the owner only.
+    expect(await t.as(OWNER, `select questions from public.helper_month_for_owner()`)).toEqual([
+      { questions: 1 }
+    ]);
+    await expect(t.as(TEACHER, `select * from public.helper_month_for_owner()`)).rejects.toThrow(
+      /only the owner/
+    );
   });
 
   it('usage older than 31 days is deleted; a family group can’t be switched by staff', async () => {

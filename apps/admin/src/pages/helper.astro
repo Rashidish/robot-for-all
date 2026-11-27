@@ -1,0 +1,287 @@
+---
+// AI → Helper settings (M6 spec FR-28 to FR-30, ADR-0018): the switches, caps, budget, models
+// and instruction versions of the AI helper, and its usage. Changes take effect at once (the
+// helper reads them on every question); the database checks the owner role and keeps every change
+// in the audit log (migrations 0028, 0029). Usage shows counts only: no question or answer text,
+// no ids. The site switch "ai_helper" (Site) shows or hides the panel; the switch here stops or
+// starts the helper itself.
+import Admin from '../layouts/Admin.astro';
+import {
+  changesFromForm,
+  CHILD_MODELS,
+  type DayRow,
+  type HelperSettings,
+  MODELS,
+  NUMBER_FIELDS,
+  percent,
+  promptsFor,
+  totals
+} from '../lib/helper';
+import { canManagePeople } from '../lib/roles';
+
+const { supabase, roles } = Astro.locals;
+if (!canManagePeople(roles)) return Astro.redirect('/', 303);
+
+let notice = '';
+let problems: string[] = [];
+let error = '';
+
+async function readAll() {
+  const [s, u, m] = await Promise.all([
+    supabase.rpc('helper_settings_read'),
+    supabase.rpc('helper_usage_totals', { p_days: 30 }),
+    supabase.rpc('helper_month_for_owner')
+  ]);
+  return {
+    settings: (s.data ?? null) as HelperSettings | null,
+    usage: (u.data ?? []) as DayRow[],
+    month: (
+      (m.data ?? []) as {
+        questions: number;
+        spend_cents: number;
+        month_questions: number;
+        month_budget_cents: number;
+      }[]
+    )[0],
+    failed: Boolean(s.error || u.error || m.error)
+  };
+}
+
+let { settings, usage, month, failed } = await readAll();
+if (settings && Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const result = changesFromForm(form, settings);
+  problems = result.problems;
+  if (problems.length === 0) {
+    if (Object.keys(result.changes).length === 0) {
+      notice = 'Nothing changed.';
+    } else {
+      const { error: e } = await supabase.rpc('helper_settings_update', {
+        p_changes: result.changes
+      });
+      if (e) error = e.message;
+      else notice = 'Saved. The helper uses the new settings from its next question.';
+    }
+  }
+  if (problems.length || error) Astro.response.status = 400;
+  ({ settings, usage, month, failed } = await readAll());
+}
+if (failed) error ||= 'Could not read the helper settings. Try again in a minute.';
+const sum = totals(usage);
+const rand = (cents: number) => `R${(cents / 100).toFixed(2)}`;
+const audiences = [
+  ['adult', 'Adults'],
+  ['child', 'Children'],
+  ['faq', 'Common questions']
+] as const;
+---
+
+<Admin title="AI helper">
+  {notice && (
+    <p class="notice" role="status">
+      {notice}
+    </p>
+  )}
+  {(error || problems.length > 0) && (
+    <div class="error" role="alert">
+      {error && <p>{error}</p>}
+      {problems.length > 0 && (
+        <ul>
+          {problems.map((p) => (
+            <li>{p}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )}
+
+  <p>
+    The AI helper answers adults, and children on lesson pages when their parent allows it. These
+    settings take effect from the next question. The <a href="/site/">Site</a> switch "AI helper
+    panel" shows or hides the panel on the website; the switch below stops or starts the helper
+    itself (the kill switch).
+  </p>
+
+  {month && (
+    <section aria-labelledby="month-title">
+      <h2 id="month-title">This month</h2>
+      <ul>
+        <li>
+          Questions: {month.questions} of {month.month_questions}
+          {percent(month.questions, month.month_questions) !== null &&
+            ` (${percent(month.questions, month.month_questions)}%)`}
+        </li>
+        <li>
+          Estimated spend: {rand(month.spend_cents)} of {rand(month.month_budget_cents)}
+          {percent(month.spend_cents, month.month_budget_cents) !== null &&
+            ` (${percent(month.spend_cents, month.month_budget_cents)}%)`}
+        </li>
+      </ul>
+      <p class="hint">
+        At 100% of either, the helper stops asking the AI until next month; Common questions still
+        show.
+      </p>
+    </section>
+  )}
+
+  {settings && (
+    <form method="post">
+      <fieldset>
+        <legend>Switches</legend>
+        <label class="check">
+          <input type="checkbox" name="enabled" checked={settings.enabled} /> The helper is on
+        </label>
+        <label class="check">
+          <input type="checkbox" name="children_enabled" checked={settings.children_enabled} />{' '}
+          Children may ask (only those whose parent allowed it, on lesson pages)
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Limits</legend>
+        {NUMBER_FIELDS.map((f) => (
+          <label>
+            {f.label}
+            <input
+              name={f.key}
+              type="number"
+              inputmode="numeric"
+              min={f.min}
+              max={f.max}
+              required
+              value={String(settings[f.key])}
+            />
+          </label>
+        ))}
+        <label>
+          Monthly budget (rand, estimated from token prices)
+          <input
+            name="month_budget_rand"
+            inputmode="decimal"
+            required
+            pattern="\d+(\.\d{1,2})?"
+            value={(settings.month_budget_cents / 100).toFixed(2)}
+          />
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Models (from the allowed list; see apps/helper/providers/README.md)</legend>
+        <label>
+          Model for adults
+          <select name="adult_model">
+            {MODELS.map((mo) => (
+              <option value={mo} selected={mo === settings.adult_model}>
+                {mo}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Model for children (only providers that keep nothing)
+          <select name="child_model">
+            {CHILD_MODELS.map((mo) => (
+              <option value={mo} selected={mo === settings.child_model}>
+                {mo}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Model for Common questions
+          <select name="faq_model">
+            {CHILD_MODELS.map((mo) => (
+              <option value={mo} selected={mo === settings.faq_model}>
+                {mo}
+              </option>
+            ))}
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>
+          Instructions (versions in apps/helper/src/prompts.ts; run the safety test set first)
+        </legend>
+        {(['adult', 'child', 'faq'] as const).map((a) => (
+          <label>
+            {a === 'faq' ? 'Common questions' : a === 'adult' ? 'Adults' : 'Children'}
+            <select name={`${a}_prompt`}>
+              {promptsFor(a).map((p) => (
+                <option value={p} selected={p === settings[`${a}_prompt`]}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit">Save</button>
+      </div>
+    </form>
+  )}
+
+  <section aria-labelledby="usage-title">
+    <h2 id="usage-title">Usage, last 30 days</h2>
+    <p class="hint">Counts only: no questions, answers or names are kept.</p>
+    <table>
+      <caption>Totals</caption>
+      <thead>
+        <tr>
+          <th scope="col">Who</th>
+          <th scope="col">Asked</th>
+          <th scope="col">Refused</th>
+          <th scope="col">Blocked answers</th>
+          <th scope="col">👍</th>
+          <th scope="col">👎</th>
+        </tr>
+      </thead>
+      <tbody>
+        {audiences.map(([key, label]) => (
+          <tr>
+            <th scope="row">{label}</th>
+            <td>{sum[key].asked}</td>
+            <td>{sum[key].refused}</td>
+            <td>{sum[key].blocked}</td>
+            <td>{sum[key].thumbs_up}</td>
+            <td>{sum[key].thumbs_down}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {usage.length > 0 && (
+      <details>
+        <summary>By day</summary>
+        <table>
+          <caption>By day</caption>
+          <thead>
+            <tr>
+              <th scope="col">Day</th>
+              <th scope="col">Who</th>
+              <th scope="col">Asked</th>
+              <th scope="col">Refused</th>
+              <th scope="col">Blocked</th>
+              <th scope="col">👍</th>
+              <th scope="col">👎</th>
+            </tr>
+          </thead>
+          <tbody>
+            {usage.map((r) => (
+              <tr>
+                <td>{r.day}</td>
+                <td>{audiences.find(([k]) => k === r.audience)?.[1]}</td>
+                <td>{r.asked}</td>
+                <td>{r.refused}</td>
+                <td>{r.blocked}</td>
+                <td>{r.thumbs_up}</td>
+                <td>{r.thumbs_down}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+    )}
+  </section>
+</Admin>

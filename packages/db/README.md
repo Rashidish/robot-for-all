@@ -33,6 +33,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0026_my_personal_learner.sql` | `my_personal_learner`: the adult's own learner profile, so the account page shows it as "Learning myself" and not as a child |
 | `0027_name_key_rotation.sql` | Name key rotation: `names_to_rekey` and `rekey_names` (service only; locked bytes only, saved only while still on the old key version, count audit-logged), `name_key_counts` and, for the data protection officer, `name_key_counts_for_officer` |
 | `0028_ai_helper.sql` | The AI helper (M6): settings (off by default; caps, models and prompts per audience), `helper_take` (switches, consent control `ai_helper`, class switch `helper_allowed`, daily, class, month and budget caps, pause after refusals; returns the nicknames to strip), `helper_record`, Common questions with one 👎 per person (hidden at 3), owner-only settings and usage totals without ids; usage per person deleted after 31 days |
+| `0029_helper_month_for_owner.sql` | `helper_month_for_owner`: the month's questions and estimated spend against the caps, for back office AI → Helper settings (owner only) |
 
 ## Tests
 

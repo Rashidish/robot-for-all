@@ -225,8 +225,8 @@ in again.
 A small **Cloudflare Worker** (`robots-for-all-helper`, `apps/helper`) answers `robotsforall.org.za/helper/*`.
 It is the only thing that holds AI provider keys. It answers signed-in adults, and children on lesson pages
 when their parent allows it; it stores no question or answer text. It starts **off**: nothing is asked until
-the owner switches it on in the back office (AI → Helper settings, M6 step 7) or in the database
-(`helper_settings.enabled`). Do these once:
+the owner switches it on in the back office (**AI helper**, `/helper/`), where the limits, budget,
+models and instruction versions are set too; the Site switch "AI helper panel" shows the panel. Do these once:
 
 1. **An Anthropic API key** (console.anthropic.com → API keys), in a workspace with a monthly spend limit
    a little above the helper's budget. Vault a copy with the other keys.
