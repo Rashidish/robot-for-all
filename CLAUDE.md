@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.36 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.37 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -87,7 +87,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
-Current milestone: **M4** (spec: `docs/M4-simulate-spec_v0.5.md`; robot profiles: `docs/ADR-0008-robot-profiles_v1.0.md`). M2 lessons, the M3 editor and the six Phase 2 lessons are built and wait for the people checks in `docs/test-plan.md`. M4's build steps are done; next is **M5** (spec approved 2026-11-24: `docs/specs/M5-teach.md`; enrolment by school, club or parent with online parent consent, the learner's certificate name stored encrypted and printed only on certificates, automated badges and certificates, delete when no longer needed).
+Current milestone: **M6** (spec approved 2026-11-27: `docs/specs/M6-ai-helper.md`; ADR-0018). M2 lessons, the M3 editor, the six Phase 2 lessons, M4 and M5 (`docs/specs/M5-teach.md`, `docs/specs/M5-family-and-personal.md`) are built and wait for the people checks in `docs/test-plan.md`; M5's event batches in the background come with the competitions work.
 
 ---
 

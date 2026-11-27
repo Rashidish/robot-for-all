@@ -1,6 +1,6 @@
 # ADR-0018: The AI helper service
 
-- **Status:** Proposed
+- **Status:** Accepted (owner, 2026-11-27)
 - **Date:** 2026-11-27
 - **Decider:** Rashid Ishmail
 

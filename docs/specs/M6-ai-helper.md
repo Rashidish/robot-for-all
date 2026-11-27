@@ -1,6 +1,6 @@
 # Spec: M6 — AI helper
 
-> **Version:** 0.2 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Owner decisions recorded 2026-11-27 (§13); waiting for final approval with ADR-0018
+> **Version:** 0.2 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27), with ADR-0018
 > Builds on: CLAUDE.md §2 (low data, free core), §7 (no personal data to AI), §8 (AI rules, amended here); M5 (adult accounts, learner sign-in, consent controls, class switches, site switches); back-office spec ("AI → Helper settings"); ADR-0013 (learner sessions); ADR-0017 (same-origin services).
 > **Owner direction (2026-11-27):** answers are **ring-fenced to STEM education** (science, technology, engineering and mathematics, taught together to build critical thinking, problem-solving, creativity and collaboration), always with safety in mind. Adults ask from **their home page** and lesson pages; **children ask on lesson pages only**, with their use managed. **Common questions are drafted by AI with no human review**, shown with an "AI can be wrong" disclaimer, so they add no back-office work. Start with **Claude Haiku 5.5**; the settings allow **other AI providers**, including free models, to manage cost. Every safeguard proposed is accepted, and any other useful one added.
 
@@ -200,7 +200,7 @@ phone ──POST /helper/ask──▶ helper Worker (apps/helper, robotsforall.o
 
 ## 9. Work plan for Claude Code
 One PR per step; ⏸ marks a stop for review.
-1. ⏸ **This spec** and **ADR-0018**, with CLAUDE.md §5 and §8 updated to match.
+1. ✅ *(approved 2026-11-27)* **This spec** and **ADR-0018**, with CLAUDE.md §5 and §8 updated to match.
 2. **Database:** migration 0028 (usage, caps, consent control e, class switch, monthly totals, Common questions and votes, `helper_take`), PGlite tests.
 3. **Helper Worker, core:** adult and child sessions, limits, stripping, lesson JSON at build, the Claude adapter (faked in tests), answer check, counts, safety test set in CI; deploy switch `HELPER_DEPLOY`; `docs/deploy.md`.
 4. **Common questions:** the daily job, `/helper/faq/<lesson>`, 👎 hiding, offline caching.
@@ -251,3 +251,4 @@ The monthly budget starts at the Haiku figure for 20,000 questions plus Common q
 |---|---|---|
 | 0.1 | 2026-11-25 | First draft |
 | 0.2 | 2026-11-27 | Owner decisions: STEM-education ring-fence; adults on their home page and lesson pages; children on lesson pages with parent consent, class switch and caps; Common questions AI-drafted without review, with disclaimer and automatic checks; Claude Haiku 5.5 first, other providers including free ones behind a checklist; 20 a day per adult, 20,000 a month for the platform |
+| 0.3 | 2026-11-27 | Approved by the owner; ADR-0018 accepted |
