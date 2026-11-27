@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.35 (draft) · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.36 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -53,7 +53,7 @@ Every change must keep these true. If one can't be met, say so in the PR and pro
 - Block coding editor plus micro:bit flashing from the browser
 - 2D robot and sensor simulator
 - Teacher, coach and parent portal: classes, progress, badges
-- AI helper for teachers, coaches and parents (advice and troubleshooting only)
+- AI helper for teachers, coaches, parents and adult learners, and for children on lesson pages with a parent's consent (advice and troubleshooting, ring-fenced to STEM education)
 - Challenges and virtual competitions (learner vs learner, club vs club, school vs school)
 - Live group help sessions run by verified volunteer coaches
 - Kit and supplies ordering
@@ -109,7 +109,7 @@ Reuse proven open source before writing our own.
 | Database / auth | **Supabase** (Postgres + Auth, MFA for admins), roles by row-level security, audit log (ADR-0010); back-office accounts first, M5 accounts through `/db/` on our own domain (a Pages Function proxy with an allow-list, ADR-0017) | Free tier, row-level security, open source; zero-rated and same-origin |
 | Back office | **`apps/admin`**: Astro, server-rendered in a **Cloudflare Worker** on `admin.robotsforall.org.za`, behind Cloudflare Access; content changes as pull requests through a GitHub App (ADR-0009, ADR-0011; spec `docs/specs/back-office.md`) | Never exposed in the front office; review gate kept |
 | Hosting | **Cloudflare Pages**, one hostname for everything: `robotsforall.org.za` (ADR-0002) | Free unlimited static traffic; zero-rating friendly |
-| AI | Claude API via our own server only | Keys never reach the browser |
+| AI | **Claude Haiku 5.5** first, other providers (free ones included) once they pass the provider checklist, all through our own helper Worker on `/helper/` (ADR-0018) | Keys never reach the browser; cost managed; children never sent to a provider that keeps their words |
 | Offline platform option | Evaluate Kolibri for schools with no internet | Built for this case |
 
 Before adding any dependency, check: bundle size, licence, works offline, works on low-end Android. Write the result in the PR.
@@ -202,14 +202,17 @@ Teachers and content editors must be able to add a lesson without touching code.
 
 ## 8. AI rules
 
-**Front office (helper for teachers, coaches, parents)**
-- Advises and troubleshoots lessons and projects. It doesn't generate public content.
-- Child-safe system prompt, age-appropriate tone, stays on topic, refuses unsafe requests (e.g. mains electricity, sharp tools without adult supervision).
-- Cost caps per user per day, cached answers for common questions, graceful fallback when the cap is reached or the user is offline.
+**Front office (helper; spec `docs/specs/M6-ai-helper.md`)**
+- Adults (teachers, coaches, parents, adult learners) ask from their home page and lesson pages; children ask on lesson pages only, with a parent's consent and no class switched off.
+- Advises and troubleshoots, **ring-fenced to STEM education**, safety first. It doesn't generate lessons or other public content.
+- Child-safe system prompts (a stricter one for children), age-appropriate tone, refuses unsafe requests (e.g. mains electricity, coin cells, sharp tools without adult supervision); answers carry "Written by AI. AI can be wrong."
+- No question text stored; personal data stripped before every call.
+- Cost caps per person per day, a monthly cap for the platform, graceful fallback when a cap is reached or the user is offline.
+- **Common questions** per lesson are AI-drafted and shown **without human review** (owner decision 2026-11-27), with the disclaimer, automatic safety checks and hiding after 3 👎. This is the only exception to the review rule below.
 
 **Back office (generation)**
 - Generates designs, templates, wiring diagrams, documents, parts lists, CAPS links and translations.
-- **Nothing AI-generated is published without human review** (`status: in_review` → `published`, `reviewed_by` set).
+- **Nothing AI-generated is published without human review** (`status: in_review` → `published`, `reviewed_by` set), except the helper's Common questions (front office, above).
 - Electrical designs must be checked for safe voltages and current (battery-only, low voltage).
 
 ---
@@ -308,3 +311,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.33 | 2026-11-25 | `content/sheets` and `npm run sheet-codes`: answer sheet codes for recording sheets (M5 step 5b) |
 | 0.34 | 2026-11-25 | `content/badges` and `packages/badges` (M5 step 7a) |
 | 0.35 | 2026-11-25 | Family groups and personal learners approved (`docs/specs/M5-family-and-personal.md`) |
+| 0.36 | 2026-11-27 | M6 owner decisions: helper ring-fenced to STEM education; children on lesson pages with parent consent; Common questions without review; Claude Haiku 5.5 first, other providers behind a checklist (ADR-0018, proposed) |
