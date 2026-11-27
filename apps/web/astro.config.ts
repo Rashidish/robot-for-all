@@ -44,24 +44,38 @@ export default defineConfig({
       assetsInlineLimit: 0,
       rollupOptions: {
         output: {
-          // The code editor's libraries go in their own file so the service worker can leave
-          // them out of the install download: only learners who open /code/ pay for them.
-          manualChunks(id: string) {
-            // micro:bit file and USB code loads only on Download or Send (its own chunk).
-            if (
-              /[\\/]node_modules[\\/](@microbit|nrf-intel-hex)[\\/]/.test(id) ||
-              /[\\/]src[\\/]code[\\/]hex\.ts$/.test(id)
-            ) {
-              return 'microbit';
-            }
-            if (
-              /[\\/]node_modules[\\/]blockly[\\/]/.test(id) ||
-              /[\\/]src[\\/](code[\\/]|components[\\/]CodeEditor\.svelte)/.test(id) ||
-              /[\\/]packages[\\/]blocks[\\/]/.test(id)
-            ) {
-              return 'editor-vendor';
-            }
-            return undefined;
+          // Named chunks (rolldown code splitting; higher priority wins when a module would fit
+          // two groups, since a group also takes its modules' dependencies):
+          //  - micro:bit file and USB code: loads only on Download or Send;
+          //  - the Svelte runtime and Vite's preload helper, shared by every island, in a small
+          //    chunk of their own, so "Ask the helper" on a lesson page doesn't pull in the editor;
+          //  - the code editor's libraries: the service worker leaves them out of the install
+          //    download, so only learners who open /code/ pay for them.
+          codeSplitting: {
+            groups: [
+              {
+                name: 'microbit',
+                priority: 30,
+                test: (id: string) =>
+                  /[\\/]node_modules[\\/](@microbit|nrf-intel-hex)[\\/]/.test(id) ||
+                  /[\\/]src[\\/]code[\\/]hex\.ts$/.test(id)
+              },
+              {
+                name: 'svelte',
+                priority: 20,
+                test: (id: string) =>
+                  /[\\/]node_modules[\\/](svelte|esm-env|clsx)[\\/]/.test(id) ||
+                  id.includes('preload-helper')
+              },
+              {
+                name: 'editor-vendor',
+                priority: 10,
+                test: (id: string) =>
+                  /[\\/]node_modules[\\/]blockly[\\/]/.test(id) ||
+                  /[\\/]src[\\/](code[\\/]|components[\\/]CodeEditor\.svelte)/.test(id) ||
+                  /[\\/]packages[\\/]blocks[\\/]/.test(id)
+              }
+            ]
           }
         }
       }
