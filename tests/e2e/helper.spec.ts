@@ -247,8 +247,12 @@ test.describe('AI helper controls (M6 step 6)', () => {
     await page.goto('/account/');
     await page.locator('summary', { hasText: 'AI helper' }).click();
     await expect(page.getByText('AI helper: off')).toBeVisible();
-    await expect(page.getByText(/What is sent: the question with names/)).toBeVisible();
-    await expect(page.getByText(/Childline \(116\)/)).toBeVisible();
+    await expect(page.getByText(/What is sent: no personal information is shared/)).toBeVisible();
+    await expect(
+      page.getByText(/never send your child's name, nickname, school or account/)
+    ).toBeVisible();
+    await expect(page.getByText(/outside South Africa/)).toBeVisible();
+    await expect(page.getByText(/Childline is free on 116/)).toBeVisible();
     const turnOn = page.getByRole('button', { name: 'Turn the helper on' });
     await expect(turnOn).toBeDisabled();
     await page.getByLabel(/I allow my child to ask the AI helper/).check();

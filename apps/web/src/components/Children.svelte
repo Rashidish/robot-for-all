@@ -346,9 +346,12 @@
                 {helperOn[child.id] ? t('children_helper_on') : t('children_helper_off')}
               </strong>
             </summary>
-            <p class="muted">{t('children_helper_about')}</p>
-            <p class="muted">{t('children_helper_sent')}</p>
-            <p class="muted">{t('children_helper_kept')}</p>
+            {#each ['about', 'wrong', 'sent', 'kept', 'safety', 'charge'] as part (part)}
+              <p class="muted">
+                <strong>{t(`children_helper_${part}_title`)}</strong>
+                {t(`children_helper_${part}`)}
+              </p>
+            {/each}
             {#if helperOn[child.id]}
               <button
                 class="button secondary"
