@@ -2,6 +2,7 @@
 // Your account (M5 spec, step 3b): for teachers, coaches and parents. Off on the live site until
 // the owner switches "accounts" on (Site settings); the drafts preview shows it for trying.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HelperPanel from '../components/HelperPanel.astro';
 import { m } from '../i18n';
 import { featureOn } from '../site';
 import { siteLanguages } from '../site-languages';
@@ -28,6 +29,7 @@ const labels = Object.fromEntries(
       >
         <p>{m.account_loading()}</p>
       </div>
+      <HelperPanel />
       <p class="muted">{m.account_privacy()}</p>
     </>
   ) : (

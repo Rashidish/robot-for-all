@@ -15,7 +15,9 @@ export const FEATURE_LABELS: Record<(typeof FEATURES)[number], string> = {
   print_course: 'Print course button',
   seasons: 'Seasons (grouping and banner in the Robot tab)',
   send_to_microbit: 'Send to micro:bit button',
-  accounts: 'Accounts: sign-in, classes and progress (M5)'
+  accounts: 'Accounts: sign-in, classes and progress (M5)',
+  ai_helper:
+    'AI helper panel on the home page and lesson pages (M6; also switch it on in AI → Helper settings)'
 };
 
 /** The settings file from the form's fields; problems are listed, nothing is thrown. */

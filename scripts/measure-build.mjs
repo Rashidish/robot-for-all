@@ -19,9 +19,14 @@ function add(file) {
     const src = buf.toString('utf8');
     // Static imports, and dynamic import("...") too: a page that loads code after it opens
     // still makes the learner download it.
-    for (const m of src.matchAll(/(?:import|from)\s*\(?\s*["']([^"']+\.js)["']/g)) {
+    for (const m of src.matchAll(/(?:import|from)\s*\(?\s*["'`]([^"'`]+\.js)["'`]/g)) {
       const spec = m[1];
       add(spec.startsWith('/') ? join(root, spec) : resolve(dirname(file), spec));
+    }
+    // Vite's preload list (__vite__mapDeps): files a dynamic import fetches with it, relative to
+    // the site root ("_astro/…").
+    for (const list of src.matchAll(/__vite__mapDeps[^\n]*?\[((?:"[^"]+",?)+)\]/g)) {
+      for (const m of list[1].matchAll(/"([^"]+\.(?:js|css))"/g)) add(join(root, m[1]));
     }
   }
 }

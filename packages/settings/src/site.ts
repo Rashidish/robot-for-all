@@ -9,7 +9,9 @@ export const FEATURES = [
   'seasons',
   'send_to_microbit',
   // M5: sign-in, classes and progress (off until the owner opens them; the drafts preview shows them).
-  'accounts'
+  'accounts',
+  // M6: the AI helper panel (off until the owner opens it; its own kill switch is in the database).
+  'ai_helper'
 ] as const;
 export type Feature = (typeof FEATURES)[number];
 

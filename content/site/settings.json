@@ -5,6 +5,7 @@
     "print_course": true,
     "seasons": true,
     "send_to_microbit": true,
-    "accounts": false
+    "accounts": false,
+    "ai_helper": false
   }
 }
