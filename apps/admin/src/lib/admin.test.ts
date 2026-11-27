@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { verifyAccess } from './access';
+import { teamName, verifyAccess } from './access';
 import { decide, type Facts, SECURITY_HEADERS } from './guard';
 import {
   canEditSeasons,
@@ -65,6 +65,27 @@ describe('Cloudflare Access token check (ADR-0009)', () => {
       .sign(otherKey);
     expect((await verifyAccess(forged, config, keys)).ok).toBe(false);
     expect((await verifyAccess(await sign({}), config, keys)).ok).toBe(false);
+  });
+
+  it('accepts the team name however the dashboard shows it, and refuses a bad one', async () => {
+    for (const shown of [
+      'robotsforall',
+      ' robotsforall ',
+      'robotsforall.cloudflareaccess.com',
+      'https://robotsforall.cloudflareaccess.com/',
+      'RobotsForAll'
+    ]) {
+      expect(teamName(shown)).toBe('robotsforall');
+      const token = await sign({ email: 'a@b.c' });
+      expect((await verifyAccess(token, { ...config, team: shown }, keys)).ok).toBe(true);
+    }
+    for (const bad of ['', 'robots for all', 'https://evil.example/x?', 'a/b']) {
+      expect(teamName(bad)).toBeNull();
+    }
+    // A bad team name is refused (403), never a crash (500): owner report, 2026-11-27.
+    expect(
+      await verifyAccess(await sign({ email: 'a@b.c' }), { ...config, team: 'robots for all' })
+    ).toEqual({ ok: false, reason: 'Access is not configured' });
   });
 
   it('refuses everything when Access is not configured', async () => {
