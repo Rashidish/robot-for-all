@@ -221,6 +221,39 @@ PINs lock a learner for 5 minutes in the database. Logs are off.
 update the secrets here, in the certificate service and in the Pages project. Every learner then signs
 in again.
 
+### 9. The AI helper (M6, ADR-0018)
+A small **Cloudflare Worker** (`robots-for-all-helper`, `apps/helper`) answers `robotsforall.org.za/helper/*`.
+It is the only thing that holds AI provider keys. It answers signed-in adults, and children on lesson pages
+when their parent allows it; it stores no question or answer text. It starts **off**: nothing is asked until
+the owner switches it on in the back office (AI → Helper settings, M6 step 7) or in the database
+(`helper_settings.enabled`). Do these once:
+
+1. **An Anthropic API key** (console.anthropic.com → API keys), in a workspace with a monthly spend limit
+   a little above the helper's budget. Vault a copy with the other keys.
+2. **Check the provider** against `apps/helper/providers/README.md` with the Information Officer (what the
+   provider keeps, where, for how long).
+3. **Run the safety test set** against the model, from your own computer (a few cents):
+   ```
+   ANTHROPIC_API_KEY=... npm run helper-safety -- claude-haiku-5-5
+   ```
+   Every question must pass. Paste the summary into the checklist entry.
+4. **Worker secrets** (from `apps/helper`):
+   ```
+   npx wrangler secret put SUPABASE_URL
+   npx wrangler secret put SUPABASE_ANON_KEY
+   npx wrangler secret put SUPABASE_SERVICE_KEY
+   npx wrangler secret put ANTHROPIC_API_KEY
+   ```
+5. **Switch the deploy on:** GitHub → Settings → Secrets and variables → Actions → **Variables** →
+   `HELPER_DEPLOY` = `true`. The deploy checks that the live service refuses a request without a sign-in.
+
+`ZAR_PER_USD` in `apps/helper/wrangler.jsonc` turns token prices into rand for the budget; change it by
+pull request when the rand moves a lot. The per-address limit (10 a minute) comes from Workers rate
+limiting; the daily, class and monthly caps live in the database. Logs are off.
+
+**If the key leaks:** revoke it in the Anthropic console, make a new one and put it here
+(`npx wrangler secret put ANTHROPIC_API_KEY`); nothing else holds it.
+
 ## Security notes
 - The Pages token can only deploy Pages; the back-office token (`CLOUDFLARE_ADMIN_API_TOKEN`) is limited to Workers (and, if needed, DNS for the admin custom domain) on this account and zone.
 - Secrets are never exposed to pull requests from forks.

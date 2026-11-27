@@ -110,7 +110,7 @@ CLAUDE.md §8 sets the frame: it advises and troubleshoots; it is child-safe; it
 | ID | Requirement |
 |---|---|
 | FR-28 | Settings: switches (FR-23), caps (FR-7, FR-20, FR-21), models per audience (FR-26), the system prompt versions in use. |
-| FR-29 | System prompts are files in the repo (`apps/helper/prompts/adult-vN.md`, `child-vN.md`, `faq-vN.md`), changed by pull request and reviewed; the safety test set runs against each new version (faked in CI, live once per change by script). |
+| FR-29 | System prompts are in the repo (`apps/helper/src/prompts.ts`: `adult-vN`, `child-vN`, `faq-vN`), changed by pull request and reviewed; the safety test set runs against each new version (faked in CI, live once per change by script). |
 | FR-30 | Usage: questions a day by audience, estimated spend, refusals, blocked answers, 👍/👎 and hidden Common questions per lesson, caps reached. **No question or answer text and no user or learner ids** on this screen. |
 
 ## 5. Non-functional requirements
@@ -202,7 +202,7 @@ phone ──POST /helper/ask──▶ helper Worker (apps/helper, robotsforall.o
 One PR per step; ⏸ marks a stop for review.
 1. ✅ *(approved 2026-11-27)* **This spec** and **ADR-0018**, with CLAUDE.md §5 and §8 updated to match.
 2. *(built 2026-11-27: migration 0028, 9 PGlite tests; settings live in the database so the owner's changes and the kill switch work at once)* **Database:** migration 0028 (usage, caps, consent control e, class switch, monthly totals, Common questions and votes, `helper_take`), PGlite tests.
-3. **Helper Worker, core:** adult and child sessions, limits, stripping, lesson JSON at build, the Claude adapter (faked in tests), answer check, counts, safety test set in CI; deploy switch `HELPER_DEPLOY`; `docs/deploy.md`.
+3. *(built 2026-11-27: `apps/helper`: adult and learner sessions, the per-address limit, `helper_take`, stripping, `/lessons/<id>.json` at build, the Claude adapter (official SDK) behind the provider interface, prompts v1, the answer check and the children's distress pre-check, refusal and cost counting, one fallback to Haiku; the 59-question safety test set with its CI check and `npm run helper-safety` for live runs; the provider checklist; the deploy job `HELPER_DEPLOY`; `docs/deploy.md` §9)* **Helper Worker, core:** adult and child sessions, limits, stripping, lesson JSON at build, the Claude adapter (faked in tests), answer check, counts, safety test set in CI; deploy switch `HELPER_DEPLOY`; `docs/deploy.md`.
 4. **Common questions:** the daily job, `/helper/faq/<lesson>`, 👎 hiding, offline caching.
 5. **The panel:** adults' home page and lesson pages; children's lesson pages; offline, limit and paused states; 👍/👎; e2e tests at 360 px.
 6. **Consent and class controls:** control (e) in Your children (notice v1.1), the class switch and weekly count in the class view.

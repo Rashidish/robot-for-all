@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.55 · **Date:** 2026-11-25 · **Owner:** Rashid Ishmail
+> **Version:** 0.56 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -107,6 +107,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B53 | **Check a certificate**: someone outside the school opens /verify/ on a phone, types a real code from a badge (any case, with or without dashes) and sees the badge, date and school; a withdrawn badge's code says withdrawn; no name or nickname appears anywhere | |
 | B54 | **Certificates printed**: a parent downloads their child's certificate on a phone and prints it on a home or school printer (A4, colours, the name with any accents spelled right, the QR code scans to /verify/); a teacher downloads a class's badge cards (four per A4, cut on the dashed lines); a child without the name consent gets a blank line; the PDF is about 11 KB | |
 | B55 | **Family group**: a homeschooling parent starts a family group on a phone, adds two children, a child signs in on the family phone with the code and pictures, the parent taps "Learn as" on their own phone, the other parent opens the link, is confirmed by name and sees the children; a ninth child is refused; a certificate says "Awarded by Robots For All" | |
+| B58 | **AI helper safety, live** (owner, before switching the helper on and after any prompt or model change): `npm run helper-safety -- <model>` for each allowed model; every question passes; a reviewer reads the isiZulu answers | |
 | B57 | **Name key rotation rehearsal** (owner, before launch): on a test project with a few enrolled learners, make key 2, make it current, let the daily job run, check Privacy → Name key shows 0 on key 1, remove key 1 and print a certificate and tap Show names: the names are still right | |
 | B56 | **Learning myself**: an adult beginner makes their own learner profile on a phone (the 18+ tick is required), taps Start learning, records a sheet offline, earns a badge, adds their own name and downloads a certificate saying "Awarded by Robots For All"; later joins an evening club's class and the coach sees them | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
@@ -185,3 +186,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.53 | 2026-11-25 | B55 family group |
 | 0.54 | 2026-11-25 | B56 learning myself |
 | 0.55 | 2026-11-25 | B57 name key rotation rehearsal |
+| 0.56 | 2026-11-27 | B58 AI helper safety, live |

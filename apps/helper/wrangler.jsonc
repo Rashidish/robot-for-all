@@ -1,0 +1,22 @@
+// The AI helper (ADR-0018, M6 spec): the only holder of AI provider keys. Deployed by
+// .github/workflows/deploy.yml from main only, once the owner has set it up (docs/deploy.md §9).
+// Secrets (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_KEY, ANTHROPIC_API_KEY) are set with
+// `wrangler secret put`, never written here. Logs are off: nothing anyone types may be kept.
+{
+  "name": "robots-for-all-helper",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "routes": [{ "pattern": "robotsforall.org.za/helper/*", "zone_name": "robotsforall.org.za" }],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  // Per address: 10 requests a minute (a school's shared address is covered by its class caps).
+  "ratelimits": [
+    { "name": "BY_ADDRESS", "namespace_id": "1003", "simple": { "limit": 10, "period": 60 } }
+  ],
+  "vars": {
+    "SITE_URL": "https://robotsforall.org.za",
+    // For the spend estimate against the monthly budget; update when the rand moves a lot.
+    "ZAR_PER_USD": "18"
+  }
+}
