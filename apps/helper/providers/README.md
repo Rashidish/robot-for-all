@@ -22,7 +22,7 @@ trains on what people type is never used for children (`forChildren: false`).
 | How long kept | *To confirm* |
 | Where | *To confirm*; inputs are stripped of personal information first (spec §7.1) |
 | Price | Haiku 5.5 $0.10 / $0.50; Sonnet 5.5 $2 / $10; Opus 5.5 $4 / $20 per million tokens (input / output) |
-| Safety test set | *Not run yet: needs the API key (docs/deploy.md §9)* |
+| Safety test set | `claude-haiku-5-5`: **59/59 passed**, 2026-11-27, prompts `adult-v1` and `child-v1` (run by the owner). Sonnet 5.5 and Opus 5.5: not run yet |
 | Use with children | *To confirm* |
 | Licence | Commercial API |
 

@@ -2,7 +2,7 @@
 // Lesson pages are NOT precached: they are cached when visited, or with "Download for offline".
 
 /** Pages every visitor gets offline, as URL paths. */
-export const SHELL_PAGES = ['/', '/offline/', '/about/', '/lessons/'] as const;
+export const SHELL_PAGES = ['/', '/offline/', '/about/', '/privacy/', '/lessons/'] as const;
 
 /**
  * Code editor files (M3 spec §5): cached when a learner first opens /code/, not on install,

@@ -26,18 +26,34 @@ export function teamKeys(team: string): JWTVerifyGetKey {
   return keys;
 }
 
+/**
+ * The team name as Cloudflare's dashboard may show it ("robotsforall", "robotsforall.cloudflareaccess.com"
+ * or "https://robotsforall.cloudflareaccess.com/"), reduced to "robotsforall". Anything else is refused.
+ */
+export function teamName(value: string): string | null {
+  const team = value
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/+$/, '')
+    .replace(/\.cloudflareaccess\.com$/, '');
+  return /^[a-z0-9-]{1,63}$/.test(team) ? team : null;
+}
+
 /** Checks an Access token: signed by our team, for our application, not expired, with an email. */
 export async function verifyAccess(
   token: string | null,
   config: AccessConfig,
-  keys: JWTVerifyGetKey = teamKeys(config.team)
+  givenKeys?: JWTVerifyGetKey
 ): Promise<AccessResult> {
-  if (!config.team || !config.aud) return { ok: false, reason: 'Access is not configured' };
+  const team = teamName(config.team);
+  if (!team || !config.aud.trim()) return { ok: false, reason: 'Access is not configured' };
   if (!token) return { ok: false, reason: 'no Access token' };
   try {
+    const keys = givenKeys ?? teamKeys(team);
     const { payload } = await jwtVerify(token, keys, {
-      issuer: `https://${config.team}.cloudflareaccess.com`,
-      audience: config.aud,
+      issuer: `https://${team}.cloudflareaccess.com`,
+      audience: config.aud.trim(),
       algorithms: ['RS256']
     });
     const email = typeof payload['email'] === 'string' ? payload['email'] : '';

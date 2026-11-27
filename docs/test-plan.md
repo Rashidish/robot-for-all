@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.57 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.59 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -108,7 +108,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B54 | **Certificates printed**: a parent downloads their child's certificate on a phone and prints it on a home or school printer (A4, colours, the name with any accents spelled right, the QR code scans to /verify/); a teacher downloads a class's badge cards (four per A4, cut on the dashed lines); a child without the name consent gets a blank line; the PDF is about 11 KB | |
 | B55 | **Family group**: a homeschooling parent starts a family group on a phone, adds two children, a child signs in on the family phone with the code and pictures, the parent taps "Learn as" on their own phone, the other parent opens the link, is confirmed by name and sees the children; a ninth child is refused; a certificate says "Awarded by Robots For All" | |
 | B59 | **Junior with children** (Grades R–2, cheap phones and a projector): can they add and take out blocks without help, read the pictures without words, and solve the three missions? If tapping doesn't work for them, ADR-0019's fallback (Blockly sideways) is built | |
-| B58 | **AI helper safety, live** (owner, before switching the helper on and after any prompt or model change): `npm run helper-safety -- <model>` for each allowed model; every question passes; a reviewer reads the isiZulu answers | |
+| B58 | **AI helper safety, live** (owner, before switching the helper on and after any prompt or model change): `npm run helper-safety -- <model>` for each allowed model; every question passes; a reviewer reads the isiZulu answers | Part done: `claude-haiku-5-5` 59/59, owner, 2026-11-27 (prompts adult-v1, child-v1). Still to do: a reviewer reads the isiZulu answers |
 | B57 | **Name key rotation rehearsal** (owner, before launch): on a test project with a few enrolled learners, make key 2, make it current, let the daily job run, check Privacy → Name key shows 0 on key 1, remove key 1 and print a certificate and tap Show names: the names are still right | |
 | B56 | **Learning myself**: an adult beginner makes their own learner profile on a phone (the 18+ tick is required), taps Start learning, records a sheet offline, earns a badge, adds their own name and downloads a certificate saying "Awarded by Robots For All"; later joins an evening club's class and the coach sees them | |
 | B13 | **Open in code editor** from a Phase 2 lesson on a phone, then Run and Send to micro:bit | |
@@ -120,8 +120,8 @@ How to use this list: add a row whenever a step adds something only a person can
 
 | # | Check | Done |
 |---|---|---|
-| C1 | `robotsforall.org.za` connected (`docs/deploy.md` §4); HTTPS works; security headers present; `SITE_URL` variable set; `www.`, `robotsforall.co.za` and `robotsforall.africa` redirect to it with the path kept; the app installs and works offline from the new address | |
-| C2 | Vodacom ConnectU zero-rating applied for `robotsforall.org.za` (then MTN, Telkom, Cell C) | |
+| C1 | `robotsforall.org.za` connected (`docs/deploy.md` §4); HTTPS works; security headers present; `SITE_URL` variable set; `www.`, `robotsforall.co.za` and `robotsforall.africa` redirect to it with the path kept; the app installs and works offline from the new address | Part done: `robotsforall.org.za` works (owner, 2026-11-27). Redirects still to do |
+| C2 | Vodacom ConnectU zero-rating applied for `robotsforall.org.za` (then MTN, Telkom, Cell C). Owner, 2026-11-27: Vodacom zero-rating is limited to specific institutions; approach Vodacom once the platform is complete and working | |
 | C3 | Privacy page reviewed by the owner against POPIA | |
 | C4 | Licence of `@inlang/plugin-message-format` confirmed (build-time tool) | |
 | C5 | A short pilot: one class or club uses 2–3 lessons and gives feedback | |
@@ -188,4 +188,6 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.54 | 2026-11-25 | B56 learning myself |
 | 0.55 | 2026-11-25 | B57 name key rotation rehearsal |
 | 0.56 | 2026-11-27 | B58 AI helper safety, live |
-| 0.57 | 2026-11-27 | B59 Junior with children |
+| 0.57 | 2026-11-27 | B58: Haiku 5.5 safety test set 59/59 (owner) |
+| 0.58 | 2026-11-27 | C1: robotsforall.org.za live, redirects outstanding; C2: approach Vodacom once the platform is complete |
+| 0.59 | 2026-11-27 | B59 Junior with children |
