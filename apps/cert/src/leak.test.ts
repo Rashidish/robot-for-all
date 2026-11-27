@@ -305,7 +305,9 @@ describe('the certificate name never leaks (ADR-0015)', () => {
       (await post('/cert/name', PARENT, { learner: LEARNER, name: SECOND, notice: '1.0' })).status
     ).toBe(204);
     const shown = await post('/cert/show-names', TEACHER, { class: CLASS });
-    expect(shown.text).toContain(SECOND);
+    // The console gets first name + initial only; the full name stays on the certificate.
+    expect(shown.text).toContain('Nomvula Z.');
+    expect(shown.text).not.toContain('Zungu');
     expect(shown.headers.get('cache-control')).toBe('no-store');
     const pdf = await post('/cert/certificate', PARENT, { award: AWARD, kind: 'certificate' });
     expect(pdf.headers.get('content-type')).toBe('application/pdf');
@@ -317,7 +319,7 @@ describe('the certificate name never leaks (ADR-0015)', () => {
     expect(report.rekeyed).toBe(1);
     expect(learnerName?.key).toBe(2);
     expect((await post('/cert/show-names', TEACHER, { class: CLASS }, env2)).text).toContain(
-      SECOND
+      'Nomvula Z.'
     );
     expect(
       (await post('/cert/certificate', PARENT, { award: AWARD, kind: 'certificate' }, env2)).status

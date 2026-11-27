@@ -6,7 +6,7 @@ async function keyOf(keys: Map<number, CryptoKey>, v: number): Promise<CryptoKey
   if (!k) throw new Error('no key');
   return k;
 }
-import { type Env, handle, RECENT_SIGN_IN } from './handler';
+import { type Env, handle, RECENT_SIGN_IN, shortName } from './handler';
 
 const LEARNER = '11111111-1111-4111-8111-111111111111';
 const CLASS = '33333333-3333-4333-8333-333333333333';
@@ -121,9 +121,16 @@ describe('the certificate service', () => {
     const res = await post('/cert/show-names', { class: CLASS });
     expect(res.status).toBe(200);
     expect(res.headers.get('cache-control')).toBe('no-store');
-    expect(await res.json()).toEqual({ names: [{ learner: LEARNER, name: 'Sipho Mokoena' }] });
+    expect(await res.json()).toEqual({ names: [{ learner: LEARNER, name: 'Sipho M.' }] });
     const db = calls.find((c) => c.url.endsWith('/rpc/reveal_class_names'));
     expect(JSON.parse(String(db?.init?.body))).toEqual({ p_class: CLASS, p_by: USER });
+  });
+
+  it('shortens a certificate name to first name + initial', () => {
+    expect(shortName('Sipho Mokoena')).toBe('Sipho M.');
+    expect(shortName('  Thandiwe  Nomsa   radebe ')).toBe('Thandiwe R.');
+    expect(shortName('Lerato')).toBe('Lerato');
+    expect(shortName('   ')).toBe('');
   });
 
   it('needs a recent sign-in to show names', async () => {

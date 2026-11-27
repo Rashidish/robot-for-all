@@ -1,7 +1,7 @@
 // The certificate service (ADR-0015, M5 spec §4.5, §6.2): the only code that holds the name key.
 // Served on our own hostname at /cert/ (same origin as the site, so zero-rated and no CORS).
 //   POST /cert/name        a parent adds or replaces their child's certificate name
-//   POST /cert/show-names  a class's teacher or coach sees the names for that class (FR-22a)
+//   POST /cert/show-names  a class's teacher or coach sees first name + initial for that class (FR-22a)
 //   POST /cert/enrol       a class's teacher or coach enrols learners for parents to confirm
 //                          (FR-5a): name and parent email locked, the parent emailed a link
 //   POST /cert/pending     the parent opening that link sees which school and class it is
@@ -47,6 +47,19 @@ const EMAIL = /^[^\s@<>"']{1,64}@[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
 const TOKEN = /^[0-9a-f]{64}$/;
 const AVATAR = /^[a-z0-9-]{1,30}$/;
 const LANGUAGE = /^[a-z]{2,3}$/;
+
+/**
+ * The teacher's console shows a learner as first name + surname initial ("Sipho M."), never
+ * the full certificate name, which only appears on the certificate (FR-22a, owner 2026-11-27).
+ */
+export function shortName(full: string): string {
+  const words = full.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '';
+  const first = words[0] ?? '';
+  if (words.length === 1) return first;
+  const last = words[words.length - 1] ?? '';
+  return `${first} ${last.charAt(0).toLocaleUpperCase()}.`;
+}
 
 /** Show names needs a sign-in within this many seconds (FR-22a). */
 export const RECENT_SIGN_IN = 12 * 60 * 60;
@@ -258,7 +271,7 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
     try {
       names.push({
         learner: row.learner_id,
-        name: await decryptName(key, row.learner_id, fromBytea(row.certificate_name))
+        name: shortName(await decryptName(key, row.learner_id, fromBytea(row.certificate_name)))
       });
     } catch {
       // A name that does not decrypt is skipped, never guessed.
