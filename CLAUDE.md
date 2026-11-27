@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.38 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.40 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -15,7 +15,7 @@ Tagline: *"From Cardboard to Innovation: Robotics Education for Everyone."*
 Learners start with cardboard, popsicle sticks, straws and one motor. They move on to controlling robots with micro:bit/ESP boards, then to designing integrated robot projects. Teachers, robotics coaches and parents get ready-made lessons, templates, parts lists and AI help.
 
 **Who it's for**
-- Learners from **Grade 3** upward (children and adult beginners)
+- Learners from **Grade R** upward (children and adult beginners); Grades R–2 use the picture-block **Junior** tab (spec `docs/specs/junior.md`), lessons with written blocks start at Grade 3
 - Teachers, robotics club coaches, STEM trainers
 - Parents and guardians, homeschool families
 - Schools, libraries, community centres, youth programmes
@@ -55,7 +55,7 @@ Every change must keep these true. If one can't be met, say so in the PR and pro
 - Teacher, coach and parent portal: classes, progress, badges
 - AI helper for teachers, coaches, parents and adult learners, and for children on lesson pages with a parent's consent (advice and troubleshooting, ring-fenced to STEM education)
 - Challenges and virtual competitions (learner vs learner, club vs club, school vs school)
-- Live group help sessions run by verified volunteer coaches
+- Live group help sessions (virtual classroom) run by verified volunteer coaches on a laptop or tablet (spec `docs/specs/live-sessions.md`, approved; Later milestone)
 - Kit and supplies ordering
 - Parent engagement: weekly WhatsApp question, parent badges
 - Newsletter: events, competitions, results, rankings
@@ -84,6 +84,8 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 | Later | Live sessions, competitions, kit store, newsletter, back-office AI generation pipeline |
 
 **Owner decision (2026-11-23):** the product's name is **Robots For All** (plural); user-facing text uses it (done 2026-11-23). The site lives on one hostname, **`robotsforall.org.za`**; `robotsforall.co.za`, `robotsforall.africa` and `www.` redirect to it (`docs/deploy.md` §4). Internal identifiers (the Cloudflare Pages project `robot-for-all`, the program file format `robot-for-all-program`) keep their old names so nothing breaks.
+
+**Owner reminder (2026-11-27):** after the Junior launch, revisit **stories with characters** for Grades R–2 (ScratchJr-style; `docs/specs/junior.md` §2 out of scope).
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
@@ -316,3 +318,5 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.36 | 2026-11-27 | M6 owner decisions: helper ring-fenced to STEM education; children on lesson pages with parent consent; Common questions without review; Claude Haiku 5.5 first, other providers behind a checklist (ADR-0018, proposed) |
 | 0.37 | 2026-11-27 | M6 spec approved, ADR-0018 accepted; current milestone M6 |
 | 0.38 | 2026-11-27 | `apps/helper`: the AI helper service (M6 step 3); `npm run helper-safety` |
+| 0.39 | 2026-11-27 | Junior approved: learners from Grade R (Junior tab, after M6); reminder to revisit stories |
+| 0.40 | 2026-11-27 | Live help sessions spec approved (`docs/specs/live-sessions.md`), coach on laptop or tablet |
