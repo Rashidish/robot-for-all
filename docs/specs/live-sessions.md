@@ -1,6 +1,6 @@
 # Spec: Live help sessions (virtual classroom)
 
-> **Version:** 0.4 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27)
+> **Version:** 0.5 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27)
 > Milestone: *Later* (after M6 AI helper). Depends on: M3 (block editor, program JSON), M5 (accounts, classes, roles, learner sign-in), back office (coach verification, reports). Proposes ADR-0019 (video stack). Keep the version line current; log changes at the bottom.
 
 ---
@@ -113,6 +113,7 @@ Joins as a **class group** on the projector with two views side by side (coach +
 | FR-19 | **Usage record per session**: the settings used, plus measured data per learner (average and highest) and total server traffic, saved with the session log and shown in a back-office cost report |
 | FR-20 | **Studio on a tablet** (owner, 2026-11-27): the coach studio works on a tablet in landscape with the same controls; side panels (cameras, waiting room, questions) slide in and out so the main view stays large; touch targets at least 48 × 48 px |
 | FR-21 | **View-only observers**: a parent of an enrolled learner, or a teacher of the class, may join any session as an observer (no mic, no Q&A), so sessions are always open to adults |
+| FR-23 | **Names toggle for adults** (owner, 2026-11-27): in the coach studio, the session's attendance, raised hands and questions show **nicknames**; the class's own teachers and coaches (as in M5 FR-22a) can switch them to **first name + surname initial**, which is hard to do from memory with nicknames. Learners always see nicknames only. A volunteer host coach who is not one of the class's teachers or coaches sees nicknames only, until the owner decides otherwise (§14) |
 | FR-22 | **Q&A flags**: questions that look like personal contact details or requests to move to another app are held back and flagged to the back office automatically; nobody reads logs routinely |
 
 ### 4a. Streaming toggles (owner decision 2026-11-22)
@@ -275,7 +276,8 @@ The results set the platform defaults and the numbers in §5.
 - **Learners:**
   - no learner video, and mics off by default;
   - no learner-to-learner private messages;
-  - other learners see **nicknames only**: no real names, schools or photos (M5).
+  - other learners see **nicknames only**: no real names, schools or photos (M5);
+  - the class's own teachers and coaches can switch to first name + surname initial (FR-23).
 - **Access:**
   - signed-in, enrolled accounts only (M5), with parent or guardian consent for learners under 18 (POPIA);
   - waiting room on by default;
@@ -378,12 +380,15 @@ One PR per step. CI must pass before merging. ⏸ marks a stop for review.
 2. ~~Recording~~ Decided: off for now.
 3. ~~Session size and length~~ Approved with the spec: 50 connections, 30–45 minutes.
 4. ~~Coach device~~ Decided 2026-11-27: laptop or tablet.
-5. **Still open:** confirm with a lawyer which legal checks apply to volunteer coaches (before step 7).
+5. ~~Names for adults~~ Decided 2026-11-27: learners see nicknames; the class's own teachers and coaches can toggle to first name + initial (FR-23).
+6. **Still open:** confirm with a lawyer which legal checks apply to volunteer coaches (before step 7).
+7. **Still open:** may a volunteer host coach who is not the class's own teacher or coach also see first name + initial? Default until decided: nicknames only.
 
 ## Version history
 
 | Version | Date | Change |
 |---|---|---|
+| 0.5 | 2026-11-27 | Owner: nicknames for learners; class's own teachers and coaches toggle to first name + initial (FR-23); question on outside host coaches |
 | 0.4 | 2026-11-27 | Approved by the owner with the board sketches. Coach may use a tablet (FR-20). Observers (FR-21) and Q&A flags (FR-22) in. Nicknames instead of "first name + initial" (M5). Video-stack ADR renumbered to ADR-0019. Screens in §7 |
 | 0.3 | 2026-11-22 | Owner: recording off for now; co-host optional, no routine log review; logs stored encrypted and opened only on request, with access logged; proposed observers and Q&A flags |
 | 0.2 | 2026-11-22 | Owner: learner view choice and adaptive streaming can each be toggled on/off (admin default + per-session), for cost control and testing; §4a toggles and tests A–D; FR-18, FR-19 usage record |
