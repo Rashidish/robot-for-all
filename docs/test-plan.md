@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.57 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.58 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -119,8 +119,8 @@ How to use this list: add a row whenever a step adds something only a person can
 
 | # | Check | Done |
 |---|---|---|
-| C1 | `robotsforall.org.za` connected (`docs/deploy.md` §4); HTTPS works; security headers present; `SITE_URL` variable set; `www.`, `robotsforall.co.za` and `robotsforall.africa` redirect to it with the path kept; the app installs and works offline from the new address | |
-| C2 | Vodacom ConnectU zero-rating applied for `robotsforall.org.za` (then MTN, Telkom, Cell C) | |
+| C1 | `robotsforall.org.za` connected (`docs/deploy.md` §4); HTTPS works; security headers present; `SITE_URL` variable set; `www.`, `robotsforall.co.za` and `robotsforall.africa` redirect to it with the path kept; the app installs and works offline from the new address | Part done: `robotsforall.org.za` works (owner, 2026-11-27). Redirects still to do |
+| C2 | Vodacom ConnectU zero-rating applied for `robotsforall.org.za` (then MTN, Telkom, Cell C). Owner, 2026-11-27: Vodacom zero-rating is limited to specific institutions; approach Vodacom once the platform is complete and working | |
 | C3 | Privacy page reviewed by the owner against POPIA | |
 | C4 | Licence of `@inlang/plugin-message-format` confirmed (build-time tool) | |
 | C5 | A short pilot: one class or club uses 2–3 lessons and gives feedback | |
@@ -188,3 +188,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.55 | 2026-11-25 | B57 name key rotation rehearsal |
 | 0.56 | 2026-11-27 | B58 AI helper safety, live |
 | 0.57 | 2026-11-27 | B58: Haiku 5.5 safety test set 59/59 (owner) |
+| 0.58 | 2026-11-27 | C1: robotsforall.org.za live, redirects outstanding; C2: approach Vodacom once the platform is complete |
