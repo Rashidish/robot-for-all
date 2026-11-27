@@ -26,6 +26,7 @@ const nav = [
   { href: '/withdrawn/', label: 'Withdrawn', show: canWithdraw(roles) },
   { href: '/seasons/', label: 'Seasons', show: canEditSeasons(roles) },
   { href: '/site/', label: 'Site', show: canManagePeople(roles) },
+  { href: '/helper/', label: 'AI helper', show: canManagePeople(roles) },
   { href: '/people/', label: 'People', show: canManagePeople(roles) },
   { href: '/organisations/', label: 'Organisations', show: canVerifyOrganisations(roles) },
   { href: '/privacy/', label: 'Privacy', show: canConfirmDeletions(roles) },
