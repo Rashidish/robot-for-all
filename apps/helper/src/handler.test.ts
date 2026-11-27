@@ -260,6 +260,43 @@ describe('asking', () => {
   });
 });
 
+describe('Common questions', () => {
+  it('are public, per language, and a signed-in 👎 is counted once per person', async () => {
+    const get = (path: string) =>
+      handle(new Request(`https://robotsforall.org.za${path}`), env, {
+        fetch: fakeFetch,
+        now: Date.now,
+        provider
+      });
+    const r = await get('/helper/faq/p1-crank-01?lang=zu');
+    expect(r.status).toBe(200);
+    expect(r.headers.get('cache-control')).toBe('public, max-age=300');
+    expect(calls('helper_faq_for')[0]?.body).toEqual({ p_lesson: 'p1-crank-01', p_language: 'zu' });
+    expect((await get('/helper/faq/p1-crank-01?lang=ZU1')).status).toBe(400);
+    expect((await get('/helper/faq/../secret')).status).toBe(405);
+
+    expect(
+      await json(await post('/helper/faq-down', { lesson: 'p1-crank-01', language: 'en', item: 2 }))
+    ).toEqual({
+      status: 'ok',
+      hidden: false
+    });
+    expect(calls('helper_faq_down')[0]?.body).toEqual({
+      p_lesson: 'p1-crank-01',
+      p_language: 'en',
+      p_item: 2,
+      p_subject: ADULT
+    });
+    expect(
+      (await post('/helper/faq-down', { lesson: 'p1-crank-01', language: 'en', item: 9 })).status
+    ).toBe(400);
+    expect(
+      (await post('/helper/faq-down', { lesson: 'p1-crank-01', language: 'en', item: 1 }, null))
+        .status
+    ).toBe(401);
+  });
+});
+
 describe('thumbs', () => {
   it('counts 👍 or 👎 by audience, nothing else', async () => {
     expect(await json(await post('/helper/thumb', { up: false }, CHILD_TOKEN))).toEqual({

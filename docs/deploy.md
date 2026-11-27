@@ -246,6 +246,13 @@ the owner switches it on in the back office (AI → Helper settings, M6 step 7) 
    ```
 5. **Switch the deploy on:** GitHub → Settings → Secrets and variables → Actions → **Variables** →
    `HELPER_DEPLOY` = `true`. The deploy checks that the live service refuses a request without a sign-in.
+6. **Budget notices:** `npx wrangler secret put HELPER_NOTICE_EMAIL` (your address) and, once an email
+   provider is chosen, `EMAIL_PROVIDER` and its key, as for the certificate service.
+
+**The daily job** runs at 04:43 South African time: it deletes per-person usage older than 31 days,
+emails you at 80% and 100% of the month's questions or budget, and drafts the Common questions for
+up to 10 lessons and languages that need them (new, changed, or with an answer hidden by three 👎).
+While the helper is switched off or the budget is spent it drafts nothing.
 
 `ZAR_PER_USD` in `apps/helper/wrangler.jsonc` turns token prices into rand for the budget; change it by
 pull request when the rand moves a lot. The per-address limit (10 a minute) comes from Workers rate

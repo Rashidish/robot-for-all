@@ -664,6 +664,8 @@
   "email_dormant_body": "Hello,\n\nNobody has signed in to your Robots For All account for {months} months. We keep data only while it is needed, so the account will be deleted after 12 months without a sign-in, with any child’s profile that is not in a class.\n\nTo keep it, just sign in: {link}\n\nBefore then you can also save a copy of your child’s records from Your account.\n\nRobots For All",
   "email_privacy_notice_subject": "Robots For All: accounts waiting for deletion",
   "email_privacy_notice_body": "Accounts due for deletion: {due} ({overdue} waiting more than 7 days). Locked and to be deleted when the lock ends: {locked}.\n\nPlease review them: {link}\n\nThis notice comes every 7 days while accounts are waiting or locked.",
+  "email_helper_budget_subject": "Robots For All: the AI helper has used {percent}% of this month",
+  "email_helper_budget_body": "The AI helper has used {percent}% of this month: {questions} of {cap} questions, R{spend} of the R{budget} budget. At 100% it stops asking the AI until next month; Common questions still show.\n\nChange the cap or budget: {link}",
   "learner_class_title": "Sign in to your class",
   "learner_me_title": "My page",
   "learner_loading": "Loading…",

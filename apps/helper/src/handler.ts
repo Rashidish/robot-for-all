@@ -4,9 +4,12 @@
 //                        program?, run?}
 //        an adult (Supabase session) or a child (learner session, lesson pages only) asks
 //   POST /helper/thumb  {audience, up}   👍 or 👎 on an answer: a count only
+//   GET  /helper/faq/<lesson>?lang=zu   a lesson's Common questions (public, cacheable)
+//   POST /helper/faq-down {lesson, language, item}   👎 on a Common question; 3 hide it
 // Every reply is no-store JSON: {status, answer?}. A status other than "ok" is a reason the page
 // shows in the person's language (off, daily_cap, refused, blocked, safety, ...).
 import { checkAnswer, soundsUnsafe } from './check.ts';
+import { LANGUAGE_NAMES } from './languages.ts';
 import { promptFor } from './prompts.ts';
 import { anthropicProvider } from './providers/anthropic.ts';
 import { ALLOWED, costCents, modelFor } from './providers/models.ts';
@@ -52,13 +55,14 @@ interface Take {
   grade_band: string | null;
   names: string[] | null;
 }
-interface LessonJson {
+export interface LessonJson {
   id: string;
   title: string;
   grades: number[];
   parts: { item: string; qty: number; substitute?: string }[];
   safety: { adult_help: boolean; notes: string[] };
   body: string;
+  hash?: string;
 }
 
 const LESSON_ID = /^[a-z0-9-]{3,60}$/;
@@ -66,19 +70,6 @@ const LANGUAGE = /^[a-z]{2,3}$/;
 const PAGES = ['home', 'lesson', 'editor', 'world'] as const;
 export const MAX_QUESTION = { adult: 500, child: 200 } as const;
 export const MAX_ANSWER = { adult: 1200, child: 700 } as const;
-const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  zu: 'isiZulu',
-  xh: 'isiXhosa',
-  af: 'Afrikaans',
-  st: 'Sesotho',
-  tn: 'Setswana',
-  nso: 'Sepedi',
-  ts: 'Xitsonga',
-  ss: 'siSwati',
-  ve: 'Tshivenda',
-  nr: 'isiNdebele'
-};
 
 const reply = (status: number, body: unknown): Response =>
   new Response(JSON.stringify(body), {
@@ -93,7 +84,7 @@ const reply = (status: number, body: unknown): Response =>
 const answer = (status: string, text?: string) =>
   reply(200, text === undefined ? { status } : { status, answer: text });
 
-async function rpc<T>(
+export async function rpc<T>(
   env: Env,
   deps: Deps,
   fn: string,
@@ -143,7 +134,7 @@ async function asker(request: Request, env: Env, deps: Deps): Promise<Asker | nu
 
 // The lesson as built by the site (/lessons/<id>.json), kept for 10 minutes per Worker.
 const lessons = new Map<string, { at: number; lesson: LessonJson | null }>();
-async function lessonFor(id: string, env: Env, deps: Deps): Promise<LessonJson | null> {
+export async function lessonFor(id: string, env: Env, deps: Deps): Promise<LessonJson | null> {
   const hit = lessons.get(id);
   if (hit && deps.now() - hit.at < 10 * 60_000) return hit.lesson;
   const res = await deps.fetch(
@@ -171,9 +162,36 @@ const str = (v: unknown, max: number): string | null =>
   typeof v === 'string' && v.trim().length > 0 && v.length <= max ? v.trim() : null;
 
 export async function handle(request: Request, env: Env, deps: Deps): Promise<Response> {
-  const { pathname } = new URL(request.url);
+  const url = new URL(request.url);
+  const { pathname } = url;
+  const faq = /^\/helper\/faq\/([a-z0-9-]{3,60})$/.exec(pathname);
+  if (faq && request.method === 'GET') {
+    const lang = url.searchParams.get('lang') ?? 'en';
+    if (!LANGUAGE.test(lang)) return reply(400, { status: 'bad_request' });
+    // The edge keeps each lesson's answers for 5 minutes, so a class opening one lesson at once
+    // costs one database read (Workers Cache API; absent in tests).
+    const edge = (globalThis as { caches?: { default?: Cache } }).caches?.default;
+    const key = new Request(`${url.origin}${pathname}?lang=${lang}`);
+    const kept = edge ? await edge.match(key) : undefined;
+    if (kept) return kept;
+    const rows =
+      (await rpc<{ item: number; q: string; a: string }[]>(env, deps, 'helper_faq_for', {
+        p_lesson: faq[1],
+        p_language: lang
+      })) ?? [];
+    const res = new Response(JSON.stringify({ items: rows }), {
+      headers: {
+        'content-type': 'application/json',
+        // Short, so a hidden answer goes soon; the phone keeps its own copy for offline.
+        'cache-control': 'public, max-age=300',
+        'x-content-type-options': 'nosniff'
+      }
+    });
+    if (edge) await edge.put(key, res.clone());
+    return res;
+  }
   if (request.method !== 'POST') return reply(405, { status: 'post_only' });
-  if (pathname !== '/helper/ask' && pathname !== '/helper/thumb') {
+  if (!['/helper/ask', '/helper/thumb', '/helper/faq-down'].includes(pathname)) {
     return reply(404, { status: 'not_found' });
   }
   let body: Record<string, unknown>;
@@ -190,6 +208,38 @@ export async function handle(request: Request, env: Env, deps: Deps): Promise<Re
   }
   const who = await asker(request, env, deps);
   if (!who) return reply(401, { status: 'sign_in' });
+
+  if (pathname === '/helper/faq-down') {
+    const lesson =
+      typeof body['lesson'] === 'string' && LESSON_ID.test(body['lesson']) ? body['lesson'] : null;
+    const lang =
+      typeof body['language'] === 'string' && LANGUAGE.test(body['language'])
+        ? body['language']
+        : null;
+    const item = body['item'];
+    if (
+      !lesson ||
+      !lang ||
+      typeof item !== 'number' ||
+      !Number.isInteger(item) ||
+      item < 0 ||
+      item > 7
+    ) {
+      return reply(400, { status: 'bad_request' });
+    }
+    const hidden = await rpc<boolean>(env, deps, 'helper_faq_down', {
+      p_lesson: lesson,
+      p_language: lang,
+      p_item: item,
+      p_subject: who.id
+    });
+    if (hidden === true) {
+      // Hidden at once (FR-17): the edge's copy of that lesson goes too.
+      const edge = (globalThis as { caches?: { default?: Cache } }).caches?.default;
+      await edge?.delete(new Request(`${url.origin}/helper/faq/${lesson}?lang=${lang}`));
+    }
+    return reply(200, { status: 'ok', hidden: hidden === true });
+  }
 
   if (pathname === '/helper/thumb') {
     if (typeof body['up'] !== 'boolean') return reply(400, { status: 'bad_request' });
