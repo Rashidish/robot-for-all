@@ -1,0 +1,65 @@
+---
+// "Ask the helper" (M6 spec §3): a button that loads the helper panel when tapped. Shown when the
+// owner has switched the helper on (Site settings) or in the drafts preview. Lesson pages pass the
+// lesson; the adult's home page passes none.
+import { m, pageLang } from '../i18n';
+import { featureOn } from '../site';
+
+interface Props {
+  lesson?: string;
+}
+const { lesson } = Astro.props;
+const open = featureOn('ai_helper') || __RFA_SHOW_DRAFTS__;
+const labels = Object.fromEntries(
+  Object.entries(m)
+    .filter(([key]) => key.startsWith('helper_'))
+    .map(([key, message]) => [key, (message as () => string)()])
+);
+---
+
+{open && (
+  <div
+    class="helper-panel"
+    data-helper
+    data-lesson={lesson ?? ''}
+    data-language={pageLang()}
+    data-labels={JSON.stringify(labels)}
+  >
+    <button type="button" class="button" data-helper-open>
+      💬 {lesson ? m.helper_open_lesson() : m.helper_open()}
+    </button>
+  </div>
+)}
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-helper]');
+  const button = box?.querySelector<HTMLButtonElement>('[data-helper-open]');
+  button?.addEventListener('click', () => {
+    if (!box) return;
+    button.disabled = true;
+    const labels = JSON.parse(box.dataset['labels'] ?? '{}') as Record<string, string>;
+    const lesson = box.dataset['lesson'] || null;
+    const language = box.dataset['language'] ?? 'en';
+    void import('../helper/start')
+      .then(({ start }) => {
+        start(box, labels, lesson, language);
+        box.querySelector<HTMLElement>('h2')?.focus();
+      })
+      .catch(() => {
+        button.disabled = false;
+      });
+  });
+</script>
+
+<style>
+  .helper-panel {
+    margin-block: var(--space-4);
+  }
+  .helper-panel button {
+    min-height: 44px;
+    border: 0;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+</style>

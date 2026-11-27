@@ -9,11 +9,13 @@ export const test = base.extend<{ problems: string[] }>({
       const origin = new URL(baseURL ?? 'http://localhost:4321').origin;
       // Expected noise: the 404 test's own status, and failed requests while deliberately offline.
       const expected = /status of 404|ERR_INTERNET_DISCONNECTED/;
-      // Account services answering with a refusal (403, 503…) is part of those journeys; the
+      // Account services and the helper answering with a refusal (403, 503…) is part of those journeys; the
       // page shows its own message, which the tests check.
       const accountRefusal = (msg: import('@playwright/test').ConsoleMessage) =>
         /^Failed to load resource/.test(msg.text()) &&
-        /\/(db|cert|signin)\//.test(new URL(msg.location().url || 'about:blank', origin).pathname);
+        /\/(db|cert|signin|helper)\//.test(
+          new URL(msg.location().url || 'about:blank', origin).pathname
+        );
       page.on('console', (msg) => {
         if (msg.type() === 'error' && !expected.test(msg.text()) && !accountRefusal(msg)) {
           problems.push(`console: ${msg.text()}`);

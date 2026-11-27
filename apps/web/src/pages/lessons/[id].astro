@@ -4,6 +4,7 @@ import { hidden, isOff } from '../../withdrawn';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DownloadLesson from '../../components/DownloadLesson.astro';
+import HelperPanel from '../../components/HelperPanel.astro';
 import PrintButton from '../../components/PrintButton.astro';
 import { findTemplate, templateFile, templatePage } from '../../templates/load';
 import { starterLink } from '../../lessons/programs';
@@ -189,6 +190,8 @@ const withdrawnHere = isOff('lesson', lesson.id);
       ))}
     </ul>
   </section>
+
+  <HelperPanel lesson={lesson.id} />
 
   {starter && (
     <section class="code-start" aria-labelledby="code-start-title">

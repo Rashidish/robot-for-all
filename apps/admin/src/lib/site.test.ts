@@ -10,7 +10,7 @@ const form = (fields: Record<string, string>) => {
 const allOn = Object.fromEntries(FEATURES.map((f) => [`feature_${f}`, 'on']));
 
 describe('Configuration → Site', () => {
-  it('no banner and every part on except accounts gives the file in the repository', async () => {
+  it('no banner and every part on except accounts and the helper gives the repository file', async () => {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');
     const file = readFileSync(
@@ -18,7 +18,7 @@ describe('Configuration → Site', () => {
       'utf8'
     );
     const repo = Object.fromEntries(
-      Object.entries(allOn).filter(([k]) => k !== 'feature_accounts')
+      Object.entries(allOn).filter(([k]) => k !== 'feature_accounts' && k !== 'feature_ai_helper')
     );
     expect(settingsFromForm(form(repo))).toEqual({ text: file, problems: [] });
   });
