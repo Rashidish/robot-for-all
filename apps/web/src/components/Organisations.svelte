@@ -279,9 +279,10 @@
     });
   };
 
-  // Show names (FR-22a): the certificate service decrypts this class's names for this screen
-  // only. They live in memory, never in storage, and go after 2 minutes or when the page is left.
-  const NAMES_SHOWN_FOR = 2 * 60 * 1000;
+  // Show names (FR-22a): a toggle between nicknames and first name + initial, which the
+  // certificate service works out from the encrypted name. They live in memory, never in storage,
+  // and go when the teacher switches back, leaves the page, or after 30 minutes as a safety net.
+  const NAMES_SHOWN_FOR = 30 * 60 * 1000;
   let names = $state<Record<string, { nickname: string; name: string }[]>>({});
   // Timers only, not shown: a plain object, so no reactivity is needed.
   const hideTimers: Record<string, ReturnType<typeof setTimeout> | undefined> = {};

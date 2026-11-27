@@ -132,22 +132,25 @@ test.describe('certificate names (M5)', () => {
       }
     });
     await page.route('**/cert/show-names', (route) =>
-      route.fulfill(reply({ names: [{ learner: 'l1', name: 'Thandiwe Radebe' }] }))
+      route.fulfill(reply({ names: [{ learner: 'l1', name: 'Thandiwe R.' }] }))
     );
 
     await page.goto('/account/');
     await page.locator('summary', { hasText: 'Grade 4B' }).click();
-    await page.getByRole('button', { name: 'Show names' }).click();
+    await page.getByRole('button', { name: 'Show first names' }).click();
     const table = page.getByRole('table');
-    await expect(table.getByRole('row', { name: /Thandi R.*Thandiwe Radebe/ })).toBeVisible();
+    await expect(table.getByRole('row', { name: /Thandi R.*Thandiwe R\./ })).toBeVisible();
     await expect(table.getByRole('row', { name: /Rocket.*not given/ })).toBeVisible();
     expect(await storedEverywhere(page)).not.toContain('Thandiwe');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > 360);
     expect(overflow).toBe(false);
 
-    // Hidden again after 2 minutes.
+    // Still shown after 2 minutes: it is a toggle now (owner, 2026-11-27).
     await page.clock.fastForward('02:01');
-    await expect(page.getByText('Thandiwe Radebe')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Show names' })).toBeVisible();
+    await expect(page.getByText('Thandiwe R.')).toBeVisible();
+    // Switching back hides them at once.
+    await page.getByRole('button', { name: 'Show nicknames only' }).click();
+    await expect(page.getByText('Thandiwe R.')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Show first names' })).toBeVisible();
   });
 });
