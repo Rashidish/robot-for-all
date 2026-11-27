@@ -19,7 +19,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "npm run i18n && npm run typecheck -w apps/web && npm run typecheck -w apps/admin && tsc -p packages/blocks && tsc -p packages/sim && tsc -p packages/robots && tsc -p packages/db && tsc -p packages/settings && tsc -p packages/badges && tsc -p apps/cert && tsc -p apps/signin",
+    "typecheck": "npm run i18n && npm run typecheck -w apps/web && npm run typecheck -w apps/admin && tsc -p packages/blocks && tsc -p packages/sim && tsc -p packages/robots && tsc -p packages/db && tsc -p packages/settings && tsc -p packages/badges && tsc -p apps/cert && tsc -p apps/signin && tsc -p apps/helper",
     "test": "npm run i18n && vitest run",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "e2e": "playwright test",
@@ -27,9 +27,11 @@
     "build:production": "SHOW_DRAFTS=false npm run build",
     "build:admin": "npm run build -w apps/admin",
     "sheet-codes": "node scripts/sheet-codes.mjs",
-    "translation-hash": "node --experimental-strip-types scripts/translation-hash.ts"
+    "translation-hash": "node --experimental-strip-types scripts/translation-hash.ts",
+    "helper-safety": "node --experimental-strip-types scripts/helper-safety.ts"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "1.14.0",
     "@axe-core/playwright": "^4.14.0",
     "@electric-sql/pglite": "0.5.16",
     "@eslint/js": "^10.0.1",

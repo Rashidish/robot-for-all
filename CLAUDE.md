@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.37 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.38 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -123,6 +123,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /apps/admin          Back office (admin only)
 /apps/cert           Certificate service: the only holder of the name key (Cloudflare Worker on /cert/, ADR-0015)
 /apps/signin         Learner sign-in service: the only holder of Supabase's JWT secret (Worker on /signin/, ADR-0013)
+/apps/helper         AI helper: the only holder of AI provider keys (Worker on /helper/, ADR-0018); prompts, safety test set
 /packages/ui         Shared, accessible UI components
 /packages/sim        2D simulator
 /packages/db         Supabase migrations (back-office roles, audit log), tested on PGlite
@@ -244,6 +245,7 @@ build:     npm run build          # static site in apps/web/dist
 admin:     npm run build:admin    # back office (Cloudflare Worker) in apps/admin/dist
 translate: npm run translation-hash -- <lesson id>   # translated_from for a lesson translation
 sheets:    npm run build && npm run sheet-codes   # after changing a lesson: keep its new sheet code
+safety:    ANTHROPIC_API_KEY=... npm run helper-safety -- <model>   # the helper's safety test set, live
 ```
 Always commit `package-lock.json` changes; CI installs with `npm ci` and fails if it is out of date.
 
@@ -313,3 +315,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.35 | 2026-11-25 | Family groups and personal learners approved (`docs/specs/M5-family-and-personal.md`) |
 | 0.36 | 2026-11-27 | M6 owner decisions: helper ring-fenced to STEM education; children on lesson pages with parent consent; Common questions without review; Claude Haiku 5.5 first, other providers behind a checklist (ADR-0018, proposed) |
 | 0.37 | 2026-11-27 | M6 spec approved, ADR-0018 accepted; current milestone M6 |
+| 0.38 | 2026-11-27 | `apps/helper`: the AI helper service (M6 step 3); `npm run helper-safety` |
