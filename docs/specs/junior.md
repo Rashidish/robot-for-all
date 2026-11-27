@@ -1,6 +1,6 @@
 # Spec: Junior — coding before reading (Grades R–2)
 
-> **Version:** 0.2 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27)
+> **Version:** 0.3 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019)
 > Depends on: M3 editor (ADR-0005), M4 robot world and robot calls (ADR-0007, ADR-0008), M5 sign-in, records and badges (ADR-0013, ADR-0014, `content/badges`). If approved, CLAUDE.md §1 "Who it's for" changes from Grade 3 to Grade R upward. Brainstorm: build-plan board, "Grades R–2: coding before reading".
 
 ## 1. Purpose
@@ -21,6 +21,9 @@ Building our own Junior mode reuses Blockly and the M4 robot world, so it adds v
 2. Grade R–2 learners get **their own sign-in**, with the M5 QR sign-in card and picture PIN: no typing or reading.
 3. **Grid robot first.** Stories with characters come later: **owner reminder** to revisit stories after the Junior launch (CLAUDE.md §4).
 4. Junior is built **after M6**; the platform's learners start at **Grade R** (CLAUDE.md §1).
+5. **A tap-to-add row**, with Blockly sideways as the fallback (ADR-0019): tap a picture to add it, tap a block in the row to take it out; no dragging.
+6. **Its own page**, `/code/junior/`, linked as "Junior" from the code editor's tab row.
+7. **"×N" repeats the next block** (`[×3][↑]` is forward three times); groups of blocks later if needed.
 
 ## 2. Scope
 
@@ -105,7 +108,15 @@ Building our own Junior mode reuses Blockly and the M4 robot world, so it adds v
 
 After M6, unless the owner moves it earlier.
 
-1. Junior blocks + grid mode + three missions (after M4 steps that build the robot world UI).
+1. *(built 2026-11-27, ADR-0019)*
+   - The grid engine: `packages/sim/src/junior.ts`, pure TypeScript, also used by the build check. It handles ×N repeats, bumps into rocks and the edge, and stars (one for reaching the target, two for the fewest blocks). It also turns a program into robot calls for the real cart: 150 mm squares, 90° turns.
+   - Missions are data in `content/junior/` (not `content/worlds`, whose M4 format is for continuous worlds), with an order file. The build fails if a mission can't be solved in its "best".
+   - Three missions, for Grades R, 1 and 2: Bee to the flower (2 blocks), Rhino to the water (5), Bus to school (8).
+   - The page `/code/junior/`: tap-to-add row; Undo and Clear; Play with the current block lit; beep and light; Say the block names (speech synthesis where the phone has a voice). Stars are kept on the phone for now. Recording missions with the learner's sign-in (FR-7) and sending to the real cart (FR-5) come with steps 2 and 3.
+   - Pictures are inline SVG with no words. The page is 34.6 KB compressed in all (CI checks 40 KB). It works offline after a visit.
+   - Tests: e2e at 360 px, offline and accessibility.
+
+   **Junior blocks + grid mode + three missions.**
 2. Projector layout, arrow cards, picture answer sheet.
 3. Six Grade R–2 lessons (two per grade), CAPS Foundation Phase links to confirm. ⏸ owner review.
 
@@ -124,3 +135,4 @@ After M6, unless the owner moves it earlier.
 |---|---|---|
 | 0.1 | 2026-11-27 | First draft from the build-plan board brainstorm |
 | 0.2 | 2026-11-27 | Approved: tab named Junior, own sign-in with the QR card, grid first, stories later (reminder), after M6 |
+| 0.3 | 2026-11-27 | Owner decisions: tap-to-add row with Blockly as fallback (ADR-0019), own page linked as a tab, ×N repeats the next block; step 1 built |

@@ -48,6 +48,8 @@
   let workspace: Blockly.WorkspaceSvg | undefined;
 
   let tab = $state<'blocks' | 'python'>('blocks');
+  // Junior in the same language as this page (/zu/code/ → /zu/code/junior/).
+  const juniorHref = `${typeof location === 'undefined' ? '' : (/^\/[a-z]{2,3}(?=\/code\/)/.exec(location.pathname)?.[0] ?? '')}/code/junior/`;
   /** 'python' once the learner chooses to type Python instead of using blocks. */
   let mode = $state<'blocks' | 'python'>('blocks');
   let typed = $state('');
@@ -632,6 +634,8 @@
         {t('code_tab_python')}
       </button>
     </div>
+    <!-- Junior (Grades R–2) is its own page, so this is a link, not a tab (ADR-0019). -->
+    <a class="junior-link" href={juniorHref}>{t('code_tab_junior')}</a>
   </div>
 
   <div class="main">
@@ -852,6 +856,17 @@
   }
   .tablist {
     display: flex;
+  }
+  .junior-link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding-inline: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: #2e7d32;
+    border-radius: 6px;
+    text-decoration: none;
   }
   .search[hidden] {
     display: none;

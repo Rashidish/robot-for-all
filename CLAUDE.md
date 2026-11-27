@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.40 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.41 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -320,3 +320,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.38 | 2026-11-27 | `apps/helper`: the AI helper service (M6 step 3); `npm run helper-safety` |
 | 0.39 | 2026-11-27 | Junior approved: learners from Grade R (Junior tab, after M6); reminder to revisit stories |
 | 0.40 | 2026-11-27 | Live help sessions spec approved (`docs/specs/live-sessions.md`), coach on laptop or tablet |
+| 0.41 | 2026-11-27 | `content/junior` (Junior missions; ADR-0019: tap-to-add row on `/code/junior/`) |

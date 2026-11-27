@@ -8,6 +8,7 @@ import { languageProblems } from './languages';
 import { badgeProblems } from './badges';
 import { seasonProblems } from './seasons';
 import { worldIds, worldProblems } from './worlds';
+import { juniorProblems } from '../junior/missions';
 
 export type LessonEntry = CollectionEntry<'lessons'>;
 
@@ -50,7 +51,12 @@ export async function getLessons(): Promise<LessonEntry[]> {
   }
   // Robot worlds are content too: a broken world, or a lesson naming one that doesn't exist,
   // fails the build (M4 spec FR-4, FR-8).
-  problems.push(...worldProblems(), ...seasonProblems(), ...languageProblems());
+  problems.push(
+    ...worldProblems(),
+    ...seasonProblems(),
+    ...languageProblems(),
+    ...juniorProblems()
+  );
   const worlds = worldIds();
   for (const lesson of all) {
     const world = lesson.data.world;
