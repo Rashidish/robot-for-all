@@ -201,7 +201,7 @@ phone ──POST /helper/ask──▶ helper Worker (apps/helper, robotsforall.o
 ## 9. Work plan for Claude Code
 One PR per step; ⏸ marks a stop for review.
 1. ✅ *(approved 2026-11-27)* **This spec** and **ADR-0018**, with CLAUDE.md §5 and §8 updated to match.
-2. **Database:** migration 0028 (usage, caps, consent control e, class switch, monthly totals, Common questions and votes, `helper_take`), PGlite tests.
+2. *(built 2026-11-27: migration 0028, 9 PGlite tests; settings live in the database so the owner's changes and the kill switch work at once)* **Database:** migration 0028 (usage, caps, consent control e, class switch, monthly totals, Common questions and votes, `helper_take`), PGlite tests.
 3. **Helper Worker, core:** adult and child sessions, limits, stripping, lesson JSON at build, the Claude adapter (faked in tests), answer check, counts, safety test set in CI; deploy switch `HELPER_DEPLOY`; `docs/deploy.md`.
 4. **Common questions:** the daily job, `/helper/faq/<lesson>`, 👎 hiding, offline caching.
 5. **The panel:** adults' home page and lesson pages; children's lesson pages; offline, limit and paused states; 👍/👎; e2e tests at 360 px.
