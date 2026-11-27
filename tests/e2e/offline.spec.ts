@@ -12,7 +12,7 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     }
   });
 
-  test('home, lessons and about work with no signal after the first visit', async ({
+  test('home, lessons, about and privacy work with no signal after the first visit', async ({
     page,
     context
   }) => {
@@ -23,7 +23,9 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     for (const [path, heading] of [
       ['/', 'From Cardboard to Innovation'],
       ['/lessons/', 'Lessons'],
-      ['/about/', 'About Robots For All']
+      ['/about/', 'About Robots For All'],
+      // The footer links here on every page, so it works offline too (owner report, 2026-11-27).
+      ['/privacy/', 'Privacy']
     ] as const) {
       await page.goto(path);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(heading);
@@ -34,7 +36,7 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     await page.goto('/');
     await waitForServiceWorker(page);
     await context.setOffline(true);
-    await page.goto('/privacy/');
+    await page.goto('/lessons/p1-lever-01/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText("You're offline");
   });
 
