@@ -60,9 +60,13 @@ Steps (Cloudflare dashboard; the GitHub token can't do these, by design):
 5. **Tell the deploy checks:** github.com/Rashidish/robots-for-all → Settings → Secrets and variables →
    Actions → **Variables** → New repository variable `SITE_URL` = `https://robotsforall.org.za`. Until it
    is set, the checks after each merge use `robot-for-all.pages.dev`.
-6. Check: `https://robotsforall.org.za/` loads, installs as an app and works offline;
+6. **Keep Cloudflare Web Analytics off** for `robotsforall.org.za` (Analytics & Logs → Web Analytics, and
+   Workers & Pages → `robot-for-all` → Metrics). Cloudflare may switch it on when a domain is added; it
+   injects a third-party script that CLAUDE.md forbids and our security policy blocks, which fails the
+   checks after each merge (seen 2026-11-27).
+7. Check: `https://robotsforall.org.za/` loads, installs as an app and works offline;
    `https://robotsforall.africa/code/` lands on `https://robotsforall.org.za/code/`.
-7. Once live, apply for zero-rating of `robotsforall.org.za` via **Vodacom ConnectU** (then MTN, Telkom,
+8. Once live, apply for zero-rating of `robotsforall.org.za` via **Vodacom ConnectU** (then MTN, Telkom,
    Cell C). Everything the site loads already comes from this one hostname.
 
 Learners who installed the app from `robot-for-all.pages.dev` keep that copy working; the new address is a
