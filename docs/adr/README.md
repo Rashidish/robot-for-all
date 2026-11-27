@@ -22,3 +22,4 @@ Copy `0000-template.md`. Never edit an accepted ADR's decision; write a new ADR 
 | 0015 | [Encrypted certificate names](0015-encrypted-certificate-names.md): AES-256-GCM in a certificate Worker; key never in the database | Accepted |
 | 0016 | [Messages](0016-message-provider.md): WhatsApp and SMS through a South African provider, email through Supabase | Accepted (provider still to choose) |
 | 0017 | [Account data through our domain](0017-account-data-through-our-domain.md): a `/db/` proxy (Pages Function) with an allow-list; a small client, no supabase-js | Accepted |
+| 0018 | [The AI helper service](0018-ai-helper-service.md): a helper Worker on `/helper/`, provider adapters behind an allowed list, Claude Haiku 5.5 first | Accepted |
