@@ -26,6 +26,9 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
         aud: ACCESS_AUD ?? ''
       });
   if (!access.ok) {
+    // The reason names what failed (not configured, no token, wrong app...), never a secret or an email,
+    // so the owner can see it with `wrangler tail`.
+    console.warn(`Access refused: ${access.reason}`);
     return secured(new Response('Not allowed.', { status: 403 }));
   }
 
