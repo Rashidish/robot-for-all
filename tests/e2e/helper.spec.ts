@@ -100,7 +100,9 @@ test.describe('the AI helper (M6)', () => {
     await page.goto('/account/');
     await page.getByRole('button', { name: 'Ask the helper' }).click();
     await page.getByLabel('Your question').fill('How do I explain gear ratios to Grade 5?');
-    await expect(page.getByText("Don't type learners' names")).toBeVisible();
+    await expect(
+      page.getByText(/Names, phone numbers and addresses you type are taken out/)
+    ).toBeVisible();
     await page.getByRole('button', { name: 'Ask', exact: true }).click();
     await expect(page.getByText('Count the teeth on each gear.')).toBeVisible();
     await expect(page.getByText('Written by AI. AI can be wrong')).toBeVisible();
@@ -252,6 +254,9 @@ test.describe('AI helper controls (M6 step 6)', () => {
       page.getByText(/never send your child's name, nickname, school or account/)
     ).toBeVisible();
     await expect(page.getByText(/outside South Africa/)).toBeVisible();
+    await expect(
+      page.getByText(/the helper takes it out before the question is sent/)
+    ).toBeVisible();
     await expect(page.getByText(/Childline is free on 116/)).toBeVisible();
     const turnOn = page.getByRole('button', { name: 'Turn the helper on' });
     await expect(turnOn).toBeDisabled();
