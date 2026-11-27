@@ -75,7 +75,7 @@ The back office is a separate **Cloudflare Worker** (`robots-for-all-admin`) on
 `admin.robotsforall.org.za`, behind **Cloudflare Access**. It is never part of the public site.
 Do these once, in this order:
 
-1. **Supabase:** create a project (free plan, the region nearest South Africa). Turn on
+1. **Supabase:** create a project (free plan, the region nearest South Africa). *Done 2026-11-27: project `aiicpeiucosjywmumfgf`, region **Central EU (Frankfurt), eu-central-1**: data is stored outside South Africa, so the privacy page and the Information Officer record it (POPIA s72).* Turn on
    **Authentication → Multi-factor → TOTP**. Apply `packages/db/migrations/*.sql` in order and set
    up the first super admin and the vaulted break-glass account (`packages/db/README.md`).
 2. **Cloudflare Access:** Zero Trust (free plan) → **Access → Applications → Add → Self-hosted**:
