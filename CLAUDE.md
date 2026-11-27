@@ -312,3 +312,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.34 | 2026-11-25 | `content/badges` and `packages/badges` (M5 step 7a) |
 | 0.35 | 2026-11-25 | Family groups and personal learners approved (`docs/specs/M5-family-and-personal.md`) |
 | 0.36 | 2026-11-27 | M6 owner decisions: helper ring-fenced to STEM education; children on lesson pages with parent consent; Common questions without review; Claude Haiku 5.5 first, other providers behind a checklist (ADR-0018, proposed) |
+| 0.37 | 2026-11-27 | M6 spec approved, ADR-0018 accepted; current milestone M6 |

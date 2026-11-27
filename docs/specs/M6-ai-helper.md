@@ -1,6 +1,6 @@
 # Spec: M6 — AI helper
 
-> **Version:** 0.2 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27), with ADR-0018
+> **Version:** 0.3 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27), with ADR-0018
 > Builds on: CLAUDE.md §2 (low data, free core), §7 (no personal data to AI), §8 (AI rules, amended here); M5 (adult accounts, learner sign-in, consent controls, class switches, site switches); back-office spec ("AI → Helper settings"); ADR-0013 (learner sessions); ADR-0017 (same-origin services).
 > **Owner direction (2026-11-27):** answers are **ring-fenced to STEM education** (science, technology, engineering and mathematics, taught together to build critical thinking, problem-solving, creativity and collaboration), always with safety in mind. Adults ask from **their home page** and lesson pages; **children ask on lesson pages only**, with their use managed. **Common questions are drafted by AI with no human review**, shown with an "AI can be wrong" disclaimer, so they add no back-office work. Start with **Claude Haiku 5.5**; the settings allow **other AI providers**, including free models, to manage cost. Every safeguard proposed is accepted, and any other useful one added.
 
