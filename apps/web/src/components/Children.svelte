@@ -24,8 +24,10 @@
   interface Props {
     client: AccountClient;
     labels: Record<string, string>;
+    /** The AI helper is on: show control (e), "Let my child ask the AI helper" (M6 FR-6). */
+    helper?: boolean;
   }
-  let { client, labels }: Props = $props();
+  let { client, labels, helper = false }: Props = $props();
   const t = (key: string) => labels[key] ?? key;
   const emoji = (id: string) => AVATARS.find((a) => a.id === id)?.emoji ?? '🤖';
 
@@ -77,6 +79,10 @@
   let hasName = $state<Record<string, boolean>>({});
   let nameDraft = $state<Record<string, string>>({});
   let nameConsent = $state<Record<string, boolean>>({});
+  // Consent control (e), the AI helper (M6 FR-6): off by default; on only with this notice.
+  const HELPER_NOTICE = '1.1';
+  let helperOn = $state<Record<string, boolean>>({});
+  let helperConsent = $state<Record<string, boolean>>({});
 
   async function load() {
     const [kids, rows] = await Promise.all([
@@ -90,7 +96,26 @@
       children.map((c) => client.rpc<boolean | null>('has_certificate_name', { p_learner: c.id }))
     );
     hasName = Object.fromEntries(children.map((c, i) => [c.id, flags[i] === true]));
+    if (helper) {
+      const rows =
+        (await client
+          .rpc<{ learner_id: string; helper_on: boolean }[] | null>('my_children_helper')
+          .catch(() => null)) ?? [];
+      helperOn = Object.fromEntries(rows.map((r) => [r.learner_id, r.helper_on]));
+    }
   }
+
+  const setHelper = (child: Child, on: boolean) =>
+    run(async () => {
+      await client.rpc('set_helper_consent', {
+        p_learner: child.id,
+        p_on: on,
+        p_notice: on ? HELPER_NOTICE : null
+      });
+      helperOn[child.id] = on;
+      helperConsent[child.id] = false;
+      message = on ? t('children_helper_turned_on') : t('children_helper_turned_off');
+    });
 
   const saveName = (e: SubmitEvent, child: Child) => {
     e.preventDefault();
@@ -313,6 +338,42 @@
             </button>
           {/if}
         </details>
+        {#if helper}
+          <details class="helper-control">
+            <summary>
+              {t('children_helper_title')}:
+              <strong>
+                {helperOn[child.id] ? t('children_helper_on') : t('children_helper_off')}
+              </strong>
+            </summary>
+            <p class="muted">{t('children_helper_about')}</p>
+            <p class="muted">{t('children_helper_sent')}</p>
+            <p class="muted">{t('children_helper_kept')}</p>
+            {#if helperOn[child.id]}
+              <button
+                class="button secondary"
+                type="button"
+                disabled={busy}
+                onclick={() => setHelper(child, false)}
+              >
+                {t('children_helper_turn_off')}
+              </button>
+            {:else}
+              <label class="check">
+                <input type="checkbox" bind:checked={helperConsent[child.id]} />
+                {t('children_helper_consent')}
+              </label>
+              <button
+                class="button"
+                type="button"
+                disabled={busy || !helperConsent[child.id]}
+                onclick={() => setHelper(child, true)}
+              >
+                {t('children_helper_turn_on')}
+              </button>
+            {/if}
+          </details>
+        {/if}
         <p>
           <button
             type="button"

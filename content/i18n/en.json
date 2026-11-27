@@ -891,5 +891,19 @@
   "helper_status_sign_in": "Please sign in again.",
   "helper_status_slow_down": "Too many questions at once. Wait a minute and try again.",
   "helper_status_bad_request": "Please write a shorter question.",
-  "helper_status_offline": "You're offline. The common questions work offline."
+  "helper_status_offline": "You're offline. The common questions work offline.",
+  "children_helper_title": "AI helper",
+  "children_helper_on": "on",
+  "children_helper_off": "off",
+  "children_helper_about": "When on, your child can type questions about a lesson to the AI helper on lesson pages, up to 5 a day. Answers stay on STEM learning and safety. AI can be wrong, so answers say so and tell your child to ask an adult before using tools.",
+  "children_helper_sent": "What is sent: the question with names, contact details and places taken out, the lesson, and your child's grade band (for example Grade 3–4). Never their name, nickname, school or account.",
+  "children_helper_kept": "What is kept: only how many questions were asked each day, for 31 days. The questions and answers are not stored, so nobody reads them later, and nobody is alerted. If your child seems unsafe, the helper tells them to speak to a trusted adult or Childline (116).",
+  "children_helper_consent": "I'm the parent or guardian and I allow my child to ask the AI helper.",
+  "children_helper_turn_on": "Turn the helper on",
+  "children_helper_turn_off": "Turn the helper off",
+  "children_helper_turned_on": "The AI helper is on for your child.",
+  "children_helper_turned_off": "The AI helper is off for your child.",
+  "progress_helper_allowed": "Learners may ask the AI helper",
+  "progress_helper_about": "Only learners whose parent turned the helper on can ask, on lesson pages. You see how many questions were asked, never what.",
+  "progress_helper_count": "Questions this week:"
 }

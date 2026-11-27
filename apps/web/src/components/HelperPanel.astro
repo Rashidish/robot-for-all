@@ -25,7 +25,7 @@ const labels = Object.fromEntries(
     data-language={pageLang()}
     data-labels={JSON.stringify(labels)}
   >
-    <button type="button" class="button" data-helper-open>
+    <button type="button" class="button" data-helper-open disabled>
       💬 {lesson ? m.helper_open_lesson() : m.helper_open()}
     </button>
   </div>
@@ -34,6 +34,8 @@ const labels = Object.fromEntries(
 <script>
   const box = document.querySelector<HTMLElement>('[data-helper]');
   const button = box?.querySelector<HTMLButtonElement>('[data-helper-open]');
+  // Enabled once this script runs, so a tap is never lost on a slow phone.
+  if (button) button.disabled = false;
   button?.addEventListener('click', () => {
     if (!box) return;
     button.disabled = true;

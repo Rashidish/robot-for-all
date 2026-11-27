@@ -12,8 +12,10 @@
   interface Props {
     labels: Record<string, string>;
     languages: { code: string; native: string }[];
+    /** The AI helper is on (site switch): show its parent and class controls (M6). */
+    helper?: boolean;
   }
-  let { labels, languages }: Props = $props();
+  let { labels, languages, helper = false }: Props = $props();
   const t = (key: string) => labels[key] ?? key;
 
   let client: AccountClient | undefined;
@@ -170,10 +172,10 @@
     </form>
     <p><button type="button" class="plain" onclick={signOut}>{t('account_sign_out')}</button></p>
     {#if client}
-      <Children {client} {labels} />
+      <Children {client} {labels} {helper} />
       <Family {client} {labels} {languages} />
       <Personal {client} {labels} {languages} />
-      {#key joined}<Organisations {client} {labels} {languages} />{/key}
+      {#key joined}<Organisations {client} {labels} {languages} {helper} />{/key}
     {/if}
   {/if}
   {#if message}<p class="message" role="status">{message}</p>{/if}

@@ -8,6 +8,8 @@ import { featureOn } from '../site';
 import { siteLanguages } from '../site-languages';
 
 const open = featureOn('accounts') || __RFA_SHOW_DRAFTS__;
+// The AI helper's parent and class controls (M6 step 6) show only when the helper is on.
+const helper = featureOn('ai_helper') || __RFA_SHOW_DRAFTS__;
 const labels = Object.fromEntries(
   Object.entries(m)
     .filter(([key]) => /^(account|children|signin|progress|badge|family|enrol|personal)_/.test(key))
@@ -22,6 +24,7 @@ const labels = Object.fromEntries(
     <>
       <div
         id="account"
+        data-ai-helper={helper ? 'on' : 'off'}
         data-labels={JSON.stringify(labels)}
         data-languages={JSON.stringify(
           siteLanguages.map((l) => ({ code: l.code, native: l.native }))
@@ -45,6 +48,7 @@ const labels = Object.fromEntries(
       code: string;
       native: string;
     }[];
-    void import('../account/start').then(({ start }) => start(target, labels, languages));
+    const helper = target.dataset['aiHelper'] === 'on';
+    void import('../account/start').then(({ start }) => start(target, labels, languages, helper));
   }
 </script>

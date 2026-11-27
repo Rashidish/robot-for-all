@@ -51,7 +51,12 @@ export const RPC = new Set([
   'check_record',
   'revoke_badge',
   'verify_certificate',
-  'has_certificate_name'
+  'has_certificate_name',
+  // M6: the parent's AI helper control (e) and the class switch (migration 0028).
+  'set_helper_consent',
+  'my_children_helper',
+  'set_helper_allowed',
+  'class_helper_count'
 ]);
 
 /** Tables the account pages read (row-level security decides which rows). */

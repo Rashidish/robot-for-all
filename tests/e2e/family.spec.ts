@@ -109,7 +109,9 @@ test.describe('family group (M5)', () => {
     await expect(family.getByText(`/account/#guardian=${'ab'.repeat(32)}`)).toBeVisible();
     await expect(family.getByText('Mr Radebe')).toBeVisible();
     await family.getByRole('button', { name: 'Confirm' }).click();
-    expect(calls.find((c) => c.fn === 'confirm_guardian')?.body).toEqual({ p_invitation: 'i1' });
+    await expect
+      .poll(() => calls.find((c) => c.fn === 'confirm_guardian')?.body)
+      .toEqual({ p_invitation: 'i1' });
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > 360);
     expect(overflow).toBe(false);
   });
@@ -226,13 +228,15 @@ test.describe('family group (M5)', () => {
     await expect(make).toBeDisabled();
     await me.getByLabel('I am 18 or older.').check();
     await make.click();
-    expect(created).toEqual({
-      p_nickname: 'Sam',
-      p_avatar: 'star',
-      p_language: 'en',
-      p_notice: '1.0',
-      p_adult: true
-    });
+    await expect
+      .poll(() => created)
+      .toEqual({
+        p_nickname: 'Sam',
+        p_avatar: 'star',
+        p_language: 'en',
+        p_notice: '1.0',
+        p_adult: true
+      });
     await expect(page.getByRole('region', { name: 'Your children' })).toHaveCount(0);
     await me.getByRole('button', { name: 'Start learning' }).click();
     await expect(page).toHaveURL(/\/me\/$/);

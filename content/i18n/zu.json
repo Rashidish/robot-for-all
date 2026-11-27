@@ -891,5 +891,19 @@
   "helper_status_sign_in": "Sicela ungene futhi.",
   "helper_status_slow_down": "Imibuzo miningi kakhulu ngesikhathi esisodwa. Linda umzuzu bese uzama futhi.",
   "helper_status_bad_request": "Sicela ubhale umbuzo omfushane.",
-  "helper_status_offline": "Awuxhunyiwe ku-inthanethi. Imibuzo evamile iyasebenza ngaphandle kwe-inthanethi."
+  "helper_status_offline": "Awuxhunyiwe ku-inthanethi. Imibuzo evamile iyasebenza ngaphandle kwe-inthanethi.",
+  "children_helper_title": "Umsizi we-AI",
+  "children_helper_on": "uvuliwe",
+  "children_helper_off": "uvaliwe",
+  "children_helper_about": "Uma uvuliwe, ingane yakho ingabhalela umsizi we-AI imibuzo ngesifundo emakhasini ezifundo, kufika ku-5 ngosuku. Izimpendulo zihlala ekufundeni kwe-STEM nasekuphepheni. I-AI ingenza amaphutha, ngakho izimpendulo zisho kanjalo futhi zitshela ingane ukuthi ibuze umuntu omdala ngaphambi kokusebenzisa amathuluzi.",
+  "children_helper_sent": "Okuthunyelwayo: umbuzo ngaphandle kwamagama, imininingwane yokuxhumana nezindawo, isifundo, nezinga lebanga lengane yakho (isibonelo iBanga 3–4). Akulokothi kube yigama layo, igama lokudlala, isikole noma i-akhawunti.",
+  "children_helper_kept": "Okugcinwayo: kuphela ukuthi mingaki imibuzo ebuziwe ngosuku, izinsuku ezingu-31. Imibuzo nezimpendulo azigcinwa, ngakho akekho ozifundayo kamuva, futhi akekho owaziswayo. Uma ingane yakho ibonakala ingaphephile, umsizi uyitshela ukuthi ikhulume nomuntu omdala eyimethembayo noma iChildline (116).",
+  "children_helper_consent": "Ngingumzali noma umbheki futhi ngivumela ingane yami ukuthi ibuze umsizi we-AI.",
+  "children_helper_turn_on": "Vula umsizi",
+  "children_helper_turn_off": "Vala umsizi",
+  "children_helper_turned_on": "Umsizi we-AI uvuliwe enganeni yakho.",
+  "children_helper_turned_off": "Umsizi we-AI uvaliwe enganeni yakho.",
+  "progress_helper_allowed": "Abafundi bangabuza umsizi we-AI",
+  "progress_helper_about": "Kuphela abafundi abazali babo abavule umsizi abangabuza, emakhasini ezifundo. Ubona ukuthi mingaki imibuzo ebuziwe, hhayi ukuthi yini.",
+  "progress_helper_count": "Imibuzo kuleli sonto:"
 }
