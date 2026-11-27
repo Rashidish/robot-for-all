@@ -1,6 +1,6 @@
 # Spec: Junior — coding before reading (Grades R–2)
 
-> **Version:** 0.1 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Draft, for review
+> **Version:** 0.2 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27)
 > Depends on: M3 editor (ADR-0005), M4 robot world and robot calls (ADR-0007, ADR-0008), M5 sign-in, records and badges (ADR-0013, ADR-0014, `content/badges`). If approved, CLAUDE.md §1 "Who it's for" changes from Grade 3 to Grade R upward. Brainstorm: build-plan board, "Grades R–2: coding before reading".
 
 ## 1. Purpose
@@ -15,6 +15,12 @@ Lessons start at Grade 3. Grade R–2 learners (about 5 to 8 years old) can't re
 ScratchJr (ages 5–7) is the right idea, but it's an archived tablet app, not a web app.
 
 Building our own Junior mode reuses Blockly and the M4 robot world, so it adds very little to download, works offline, and needs no reading, which suits every home language.
+
+**Owner decisions (2026-11-27)**
+1. The tab is called **Junior**.
+2. Grade R–2 learners get **their own sign-in**, with the M5 QR sign-in card and picture PIN: no typing or reading.
+3. **Grid robot first.** Stories with characters come later: **owner reminder** to revisit stories after the Junior launch (CLAUDE.md §4).
+4. Junior is built **after M6**; the platform's learners start at **Grade R** (CLAUDE.md §1).
 
 ## 2. Scope
 
@@ -110,13 +116,11 @@ After M6, unless the owner moves it earlier.
 - **Risks:**
   - Real carts don't move exactly one square, so missions on the floor drift. Calibration per profile, and lessons treat it as a "test and improve" moment.
   - Grade R attention spans are short: missions take 2–5 minutes each.
-- **Owner actions:** approve this spec, and answer the open questions on the board:
-  - the tab's name;
-  - own sign-in for Grade R–2 (guess: yes, with the QR card);
-  - grid only, or stories too.
+- **Owner actions:** none open; stories to be revisited after launch (reminder).
 
 ## Version history
 
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-27 | First draft from the build-plan board brainstorm |
+| 0.2 | 2026-11-27 | Approved: tab named Junior, own sign-in with the QR card, grid first, stories later (reminder), after M6 |
