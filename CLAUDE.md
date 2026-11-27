@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.39 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.40 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -55,7 +55,7 @@ Every change must keep these true. If one can't be met, say so in the PR and pro
 - Teacher, coach and parent portal: classes, progress, badges
 - AI helper for teachers, coaches, parents and adult learners, and for children on lesson pages with a parent's consent (advice and troubleshooting, ring-fenced to STEM education)
 - Challenges and virtual competitions (learner vs learner, club vs club, school vs school)
-- Live group help sessions run by verified volunteer coaches
+- Live group help sessions (virtual classroom) run by verified volunteer coaches on a laptop or tablet (spec `docs/specs/live-sessions.md`, approved; Later milestone)
 - Kit and supplies ordering
 - Parent engagement: weekly WhatsApp question, parent badges
 - Newsletter: events, competitions, results, rankings
@@ -319,3 +319,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.37 | 2026-11-27 | M6 spec approved, ADR-0018 accepted; current milestone M6 |
 | 0.38 | 2026-11-27 | `apps/helper`: the AI helper service (M6 step 3); `npm run helper-safety` |
 | 0.39 | 2026-11-27 | Junior approved: learners from Grade R (Junior tab, after M6); reminder to revisit stories |
+| 0.40 | 2026-11-27 | Live help sessions spec approved (`docs/specs/live-sessions.md`), coach on laptop or tablet |
