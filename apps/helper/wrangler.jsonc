@@ -14,8 +14,11 @@
   "ratelimits": [
     { "name": "BY_ADDRESS", "namespace_id": "1003", "simple": { "limit": 10, "period": 60 } }
   ],
+  // The daily job (src/daily.ts): 02:43 UTC, 04:43 in South Africa, after the certificate service's.
+  "triggers": { "crons": ["43 2 * * *"] },
   "vars": {
     "SITE_URL": "https://robotsforall.org.za",
+    "ADMIN_URL": "https://admin.robotsforall.org.za",
     // For the spend estimate against the monthly budget; update when the rand moves a lot.
     "ZAR_PER_USD": "18"
   }

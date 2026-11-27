@@ -664,6 +664,8 @@
   "email_dormant_body": "Sawubona,\n\nAkekho ongene ku-akhawunti yakho ye-Robots For All izinyanga ezingu-{months}. Sigcina imininingwane kuphela uma isadingeka, ngakho i-akhawunti izosuswa emva kwezinyanga eziyi-12 ingangenwanga, kanye nanoma iyiphi iphrofayela yengane engekho ekilasini.\n\nUkuze uyigcine, vele ungene: {link}\n\nNgaphambi kwalokho ungagcina nekhophi yamarekhodi engane yakho ku-akhawunti yakho.\n\nRobots For All",
   "email_privacy_notice_subject": "Robots For All: ama-akhawunti alindele ukususwa",
   "email_privacy_notice_body": "Ama-akhawunti afanele ukususwa: {due} ({overdue} alinde ngaphezu kwezinsuku ezi-7). Akhiyiwe futhi azosuswa uma ukukhiya kuphela: {locked}.\n\nSicela uwabuyekeze: {link}\n\nLesi saziso siza njalo ezinsukwini ezi-7 uma kusekhona ama-akhawunti alindile noma akhiyiwe.",
+  "email_helper_budget_subject": "Robots For All: umsizi we-AI usesebenzise u-{percent}% wale nyanga",
+  "email_helper_budget_body": "Umsizi we-AI usesebenzise u-{percent}% wale nyanga: imibuzo engu-{questions} kwengu-{cap}, u-R{spend} kwesabelomali sika-R{budget}. Uma kufika ku-100% uyayeka ukubuza i-AI kuze kube yinyanga ezayo; Imibuzo Evamile isaboniswa.\n\nShintsha umkhawulo noma isabelomali: {link}",
   "learner_class_title": "Ngena ekilasini lakho",
   "learner_me_title": "Ikhasi lami",
   "learner_loading": "Iyalayisha…",

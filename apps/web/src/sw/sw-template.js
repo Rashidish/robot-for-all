@@ -78,6 +78,18 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.startsWith('/db/')) return;
   if (url.pathname.startsWith('/cert/')) return;
   if (url.pathname.startsWith('/signin/')) return;
+  // The helper's Common questions (M6 FR-18): fresh when online (a hidden answer must go), the
+  // saved copy when offline. Asking (POST) never comes here.
+  if (url.pathname.startsWith('/helper/faq/')) {
+    event.respondWith(
+      fromNetworkAndStore(request, PAGES_CACHE).catch(async () => {
+        const cached = await caches.match(request);
+        return cached || Response.error();
+      })
+    );
+    return;
+  }
+  if (url.pathname.startsWith('/helper/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(handlePage(event));
