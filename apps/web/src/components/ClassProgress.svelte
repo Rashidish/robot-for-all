@@ -20,8 +20,10 @@
     labels: Record<string, string>;
     classId: string;
     language: string;
+    /** The AI helper is on: show the class switch and its weekly count (M6 FR-6). */
+    helper?: boolean;
   }
-  let { client, labels, classId, language }: Props = $props();
+  let { client, labels, classId, language, helper = false }: Props = $props();
   const t = (key: string) => labels[key] ?? key;
 
   let roster = $state<{ id: string; nickname: string }[] | null>(null);
@@ -32,6 +34,8 @@
   // Badges (M5 step 7d, FR-15): "badges need a check" for this class, and each learner's badges
   // with a way to revoke one awarded by mistake.
   let needCheck = $state(false);
+  let helperAllowed = $state(true);
+  let helperCount = $state<number | null>(null);
   let awards = $state<{ id: string; learner_id: string; badge_id: string }[]>([]);
   const badgeName = (id: string) => t(`badge_${id.replace(/-/g, '_')}_name`);
   let busy = $state(false);
@@ -53,12 +57,18 @@
     roster = rows
       .map((r) => ({ id: r.learner_id, nickname: r.learners?.nickname ?? '' }))
       .sort((a, b) => a.nickname.localeCompare(b.nickname));
-    const [cls] = await client.select<{ badges_need_check: boolean }>(
+    const [cls] = await client.select<{ badges_need_check: boolean; helper_allowed: boolean }>(
       'classes',
-      'badges_need_check',
+      'badges_need_check,helper_allowed',
       `id=eq.${classId}`
     );
     needCheck = cls?.badges_need_check ?? false;
+    helperAllowed = cls?.helper_allowed ?? true;
+    if (helper) {
+      helperCount = await client
+        .rpc<number | null>('class_helper_count', { p_class: classId })
+        .catch(() => null);
+    }
     if (roster.length > 0) {
       awards = await client.select<{ id: string; learner_id: string; badge_id: string }>(
         'badge_awards',
@@ -103,6 +113,12 @@
     run(async () => {
       await client.rpc('set_badges_need_check', { p_class: classId, p_on: on });
       needCheck = on;
+    });
+
+  const setHelperAllowed = (on: boolean) =>
+    run(async () => {
+      await client.rpc('set_helper_allowed', { p_class: classId, p_on: on });
+      helperAllowed = on;
     });
 
   const revokeBadge = (a: { id: string; badge_id: string }, nickname: string) => {
@@ -173,6 +189,21 @@
       />
       {t('progress_need_check')}
     </label>
+    {#if helper}
+      <label class="check">
+        <input
+          type="checkbox"
+          checked={helperAllowed}
+          disabled={busy}
+          onchange={(e) => setHelperAllowed((e.currentTarget as HTMLInputElement).checked)}
+        />
+        {t('progress_helper_allowed')}
+      </label>
+      <p class="muted">
+        {t('progress_helper_about')}
+        {#if helperCount !== null}{t('progress_helper_count')} {helperCount}{/if}
+      </p>
+    {/if}
     <p class="muted legend">{t('progress_legend')}</p>
     {#if lessons.length === 0}
       <p class="muted">{t('progress_no_records')}</p>

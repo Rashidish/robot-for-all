@@ -22,8 +22,9 @@
     client: AccountClient;
     labels: Record<string, string>;
     languages: { code: string; native: string }[];
+    helper?: boolean;
   }
-  let { client, labels, languages }: Props = $props();
+  let { client, labels, languages, helper = false }: Props = $props();
   const t = (key: string) => labels[key] ?? key;
 
   interface Org {
@@ -426,7 +427,7 @@
             {#if qr[c.id]}
               <img class="qr" src={qr[c.id]} alt={t('account_class_qr')} width="200" height="200" />
             {/if}
-            <ClassProgress {client} {labels} classId={c.id} language={c.language} />
+            <ClassProgress {client} {labels} classId={c.id} language={c.language} {helper} />
             <ClassSignIn {client} {labels} classId={c.id} className={c.name} />
             <details class="enrol-for">
               <summary>{t('account_enrol_title')}</summary>

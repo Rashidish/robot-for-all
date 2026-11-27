@@ -5,8 +5,9 @@ import Account from '../components/Account.svelte';
 export function start(
   target: HTMLElement,
   labels: Record<string, string>,
-  languages: { code: string; native: string }[]
+  languages: { code: string; native: string }[],
+  helper = false
 ): void {
   target.replaceChildren();
-  mount(Account, { target, props: { labels, languages } });
+  mount(Account, { target, props: { labels, languages, helper } });
 }

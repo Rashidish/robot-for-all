@@ -100,7 +100,9 @@ test.describe('the AI helper (M6)', () => {
     await page.goto('/account/');
     await page.getByRole('button', { name: 'Ask the helper' }).click();
     await page.getByLabel('Your question').fill('How do I explain gear ratios to Grade 5?');
-    await expect(page.getByText("Don't type learners' names")).toBeVisible();
+    await expect(
+      page.getByText(/Names, phone numbers and addresses you type are taken out/)
+    ).toBeVisible();
     await page.getByRole('button', { name: 'Ask', exact: true }).click();
     await expect(page.getByText('Count the teeth on each gear.')).toBeVisible();
     await expect(page.getByText('Written by AI. AI can be wrong')).toBeVisible();
@@ -109,7 +111,7 @@ test.describe('the AI helper (M6)', () => {
       body: { question: 'How do I explain gear ratios to Grade 5?', page: 'home', language: 'en' }
     });
     await page.getByRole('button', { name: 'Helpful', exact: true }).click();
-    expect(thumbs).toEqual([{ up: true }]);
+    await expect.poll(() => thumbs).toEqual([{ up: true }]);
 
     await page.getByLabel('Ask one more question about this').fill('Give an example');
     await page.getByRole('button', { name: 'Ask', exact: true }).click();
@@ -206,5 +208,132 @@ test.describe('the AI helper (M6)', () => {
         .analyze();
       expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
     }
+  });
+});
+
+test.describe('AI helper controls (M6 step 6)', () => {
+  test('a parent turns the helper on for their child, reading what is sent and kept, and off again', async ({
+    page
+  }) => {
+    await page.addInitScript((s) => localStorage.setItem('rfa-session', s), SESSION);
+    const calls: unknown[] = [];
+    let on = false;
+    await page.route('**/db/**', async (route) => {
+      const url = new URL(route.request().url());
+      switch (url.pathname) {
+        case '/db/rest/v1/learners':
+          return route.fulfill(
+            json([
+              {
+                id: 'l1',
+                nickname: 'Thandi R',
+                grade: 4,
+                avatar: 'rocket',
+                language: 'en',
+                created_at: '2026-11-25T05:00:00Z'
+              }
+            ])
+          );
+        case '/db/rest/v1/rpc/my_children_helper':
+          return route.fulfill(json([{ learner_id: 'l1', helper_on: on }]));
+        case '/db/rest/v1/rpc/set_helper_consent': {
+          const body = route.request().postDataJSON() as { p_on: boolean };
+          calls.push(body);
+          on = body.p_on;
+          return route.fulfill(json(null));
+        }
+        default:
+          return route.fulfill(json(url.pathname.includes('/rpc/') ? null : []));
+      }
+    });
+    await page.goto('/account/');
+    await page.locator('summary', { hasText: 'AI helper' }).click();
+    await expect(page.getByText('AI helper: off')).toBeVisible();
+    await expect(page.getByText(/What is sent: no personal information is shared/)).toBeVisible();
+    await expect(
+      page.getByText(/never send your child's name, nickname, school or account/)
+    ).toBeVisible();
+    await expect(page.getByText(/outside South Africa/)).toBeVisible();
+    await expect(
+      page.getByText(/the helper takes it out before the question is sent/)
+    ).toBeVisible();
+    await expect(page.getByText(/Childline is free on 116/)).toBeVisible();
+    const turnOn = page.getByRole('button', { name: 'Turn the helper on' });
+    await expect(turnOn).toBeDisabled();
+    await page.getByLabel(/I allow my child to ask the AI helper/).check();
+    await turnOn.click();
+    await expect(page.getByRole('status')).toHaveText('The AI helper is on for your child.');
+    await expect(page.getByText('AI helper: on')).toBeVisible();
+    await page.getByRole('button', { name: 'Turn the helper off' }).click();
+    await expect(page.getByText('AI helper: off')).toBeVisible();
+    expect(calls).toEqual([
+      { p_learner: 'l1', p_on: true, p_notice: '1.1' },
+      { p_learner: 'l1', p_on: false, p_notice: null }
+    ]);
+  });
+
+  test('a teacher switches the helper off for a class and sees only a count', async ({ page }) => {
+    await page.addInitScript((s) => localStorage.setItem('rfa-session', s), SESSION);
+    const calls: unknown[] = [];
+    await page.route('**/db/**', async (route) => {
+      const url = new URL(route.request().url());
+      switch (url.pathname) {
+        case '/db/rest/v1/organisation_staff':
+          return route.fulfill(
+            json([
+              {
+                role: 'teacher',
+                organisations: {
+                  id: 'o1',
+                  name: 'Sizwe Primary',
+                  kind: 'school',
+                  verified_at: '2026-11-25'
+                }
+              }
+            ])
+          );
+        case '/db/rest/v1/classes':
+          return route.fulfill(
+            json(
+              url.searchParams.get('select') === 'badges_need_check,helper_allowed'
+                ? [{ badges_need_check: false, helper_allowed: true }]
+                : [
+                    {
+                      id: 'c1',
+                      organisation_id: 'o1',
+                      name: 'Grade 4B',
+                      grade_band: '3-4',
+                      language: 'en',
+                      class_code: 'BCDFGH',
+                      enrol_token: 'f'.repeat(32)
+                    }
+                  ]
+            )
+          );
+        case '/db/rest/v1/class_learners':
+          return route.fulfill(
+            json(
+              url.searchParams.get('class_id')
+                ? [{ learner_id: 'l1', learners: { nickname: 'Thandi R' } }]
+                : [{ class_id: 'c1' }]
+            )
+          );
+        case '/db/rest/v1/rpc/class_helper_count':
+          return route.fulfill(json(12));
+        case '/db/rest/v1/rpc/set_helper_allowed':
+          calls.push(route.request().postDataJSON());
+          return route.fulfill(json(null));
+        default:
+          return route.fulfill(json(url.pathname.includes('/rpc/') ? null : []));
+      }
+    });
+    await page.goto('/account/');
+    await page.locator('summary', { hasText: 'Grade 4B' }).click();
+    await page.locator('summary', { hasText: /^Progress$/ }).click();
+    await expect(page.getByText('Questions this week: 12')).toBeVisible();
+    const box = page.getByLabel('Learners may ask the AI helper');
+    await expect(box).toBeChecked();
+    await box.uncheck();
+    await expect.poll(() => calls).toEqual([{ p_class: 'c1', p_on: false }]);
   });
 });
