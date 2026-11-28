@@ -68,6 +68,14 @@
 - [ ] **JS-6: big screen, offline, size and accessibility pass** (S-8, S-9).
 - [ ] ⏸ **Owner review of stories.**
 
+### CAPS reference (spec `docs/specs/caps-reference.md` v0.1, draft)
+
+- [ ] ⏸ **Owner approves the spec and uploads the Intermediate (4–6) and Senior (7–9) CAPS PDFs** to the planning chat.
+- [ ] **CR-a:** reference format, `content/caps/foundation.json` from `docs/caps-foundation-codes.md`, shared checker; Junior uses it (CR-1, CR-2).
+- [ ] **CR-b:** `caps` on lessons, projects, topics, missions and stories, with build checks and the update report (CR-3, CR-6).
+- [ ] **CR-c:** back-office code picker and AI-suggested codes, plus a batch run to tag existing lessons (CR-5).
+- [ ] **CR-d:** teachers' reference page and CAPS filter (CR-4). ⏸ Owner review.
+
 ## Done
 
 - [x] Machines step 1: format, library, three topics (2026-11-28, #142)
