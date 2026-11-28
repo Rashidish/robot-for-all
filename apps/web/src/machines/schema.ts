@@ -49,8 +49,9 @@ export const machineSchema = z
     /** Alt text for picture.svg in the topic folder (a picture without words). */
     picture_alt: z.string().min(5).max(300),
     /** Free or cheap things that work instead of the real part. */
+    // strict: an unquoted comma in YAML's { item: …, note: a, b } would otherwise lose words.
     stand_ins: z
-      .array(z.object({ item: z.string().min(2), note: z.string().min(2).optional() }))
+      .array(z.object({ item: z.string().min(2), note: z.string().min(2).optional() }).strict())
       .min(1),
     real_part: z.string().min(2),
     /** Topic lessons, in order: ordinary lessons that teach this topic. */
@@ -128,4 +129,67 @@ export function usedIn<L extends { id: string; machines: readonly string[] }>(
   lessons: readonly L[]
 ): L[] {
   return lessons.filter((l) => l.machines.includes(topic));
+}
+
+/**
+ * A topic translation, content/machines/<id>/index.<lang>.md (machines spec FR-10): only the
+ * translated words, in the same order as the English topic, plus its own review status. Facts
+ * (family, grades, links, adult help) always come from the English topic.
+ */
+export const machineTranslationSchema = z
+  .object({
+    title: z.string().min(2).max(80),
+    card: z
+      .string()
+      .min(10)
+      .refine((t) => wordCount(t) <= CARD_MAX_WORDS, {
+        message: `a card has at most ${CARD_MAX_WORDS} words`
+      }),
+    picture_alt: z.string().min(5).max(300),
+    stand_ins: z
+      .array(z.object({ item: z.string().min(2), note: z.string().min(2).optional() }).strict())
+      .default([]),
+    real_part: z.string().min(2),
+    safety_notes: z.array(z.string().min(3)).default([]),
+    /** Which English text this translates: `npm run translation-hash -- <topic id>`. */
+    translated_from: z.string().regex(/^[0-9a-f]{16}$/, 'translated_from is 16 hex characters'),
+    status: z.enum(['draft', 'in_review', 'published']),
+    ai_generated: z.boolean(),
+    reviewed_by: z.string().min(2).nullable()
+  })
+  .strict()
+  .refine((t) => t.status !== 'published' || t.reviewed_by !== null, {
+    message: 'A published translation needs reviewed_by (a reviewer who reads the language)',
+    path: ['reviewed_by']
+  });
+
+export type MachineTranslation = z.infer<typeof machineTranslationSchema>;
+
+/** Problems with a topic translation: its words must line up with the English topic. */
+export function machineTranslationProblems(
+  english: Pick<Machine, 'stand_ins' | 'safety'>,
+  englishBody: string,
+  t: Pick<MachineTranslation, 'stand_ins' | 'safety_notes'>,
+  body: string
+): string[] {
+  const problems: string[] = [];
+  if (t.stand_ins.length !== english.stand_ins.length)
+    problems.push(
+      `stand_ins: the English topic has ${english.stand_ins.length}, this has ${t.stand_ins.length}`
+    );
+  t.stand_ins.forEach((s, i) => {
+    const en = english.stand_ins[i];
+    if (en && Boolean(en.note) !== Boolean(s.note))
+      problems.push(`stand_ins[${i}]: has a note only if the English stand-in has one`);
+  });
+  if (t.safety_notes.length !== english.safety.notes.length)
+    problems.push(
+      `safety_notes: the English topic has ${english.safety.notes.length}, this has ${t.safety_notes.length}`
+    );
+  const count = (b: string) => [...b.matchAll(/^##\s+/gm)].length;
+  if (count(body) !== count(englishBody))
+    problems.push(
+      `the body has ${count(body)} "##" sections; the English topic has ${count(englishBody)} (same order)`
+    );
+  return problems;
 }

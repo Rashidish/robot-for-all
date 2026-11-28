@@ -3,15 +3,21 @@
 // short card over the lesson; the cards are part of the lesson page, so they work offline whenever
 // the lesson does (FR-9). Without JavaScript, or where <dialog> isn't supported, each part is a
 // plain link to its topic page.
-import { localHref, m } from '../i18n';
-import { picture, type MachineEntry } from '../machines/load';
+import { localHref, m, pageLang } from '../i18n';
+import { picture } from '../machines/load';
+import type { LocalMachine } from '../machines/translations';
 
 interface Props {
-  /** The topics this lesson uses, in the lesson's order (only those visible in this build). */
-  topics: MachineEntry[];
+  /**
+   * The topics this lesson uses, in the lesson's order (only those visible in this build), each
+   * in the page's language where a translation may be shown (FR-10).
+   */
+  topics: { id: string; local: LocalMachine }[];
 }
 
 const { topics } = Astro.props;
+const lang = (t: { local: LocalMachine }) =>
+  t.local.lang === pageLang() ? undefined : t.local.lang;
 ---
 
 {topics.length > 0 && (
@@ -21,24 +27,25 @@ const { topics } = Astro.props;
     <ul>
       {topics.map((t) => (
         <li>
-          <a href={localHref(`/machines/${t.id}/`)} data-machine-card={t.id} lang="en">
-            {t.data.title}
+          <a href={localHref(`/machines/${t.id}/`)} data-machine-card={t.id} lang={lang(t)}>
+            {t.local.data.title}
           </a>
         </li>
       ))}
     </ul>
     {topics.map((t) => (
       <dialog id={`machine-card-${t.id}`} aria-labelledby={`machine-card-${t.id}-title`}>
-        <h3 id={`machine-card-${t.id}-title`} lang="en">
-          {t.data.title}
+        <h3 id={`machine-card-${t.id}-title`} lang={lang(t)}>
+          {t.local.data.title}
         </h3>
-        <figure class="picture" role="img" aria-label={t.data.picture_alt}>
+        <figure class="picture" role="img" aria-label={t.local.data.picture_alt} lang={lang(t)}>
           <Fragment set:html={picture(t.id) ?? ''} />
         </figure>
-        <p lang="en">{t.data.card}</p>
+        <p lang={lang(t)}>{t.local.data.card}</p>
+        {t.local.notice === 'english' && <p class="muted">{m.machine_in_english_notice()}</p>}
         <p>
           <a href={localHref(`/machines/${t.id}/`)}>
-            {m.machine_card_more({ title: t.data.title })}
+            {m.machine_card_more({ title: t.local.data.title })}
           </a>
         </p>
         <form method="dialog">

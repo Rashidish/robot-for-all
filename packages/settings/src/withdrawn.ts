@@ -3,12 +3,19 @@
 // office adds and removes one item at a time. One check for the public build and the back office.
 import { prettyJson } from './json';
 
-export const WITHDRAW_TYPES = ['lesson', 'template', 'world', 'season', 'language'] as const;
+export const WITHDRAW_TYPES = [
+  'lesson',
+  'template',
+  'world',
+  'season',
+  'language',
+  'machine'
+] as const;
 export type WithdrawType = (typeof WITHDRAW_TYPES)[number];
 
 export interface WithdrawnItem {
   type: WithdrawType;
-  /** lesson id, "<lesson>/<sheet>" for a template, world id, season id, or language code. */
+  /** lesson id, "<lesson>/<sheet>" for a template, world id, season id, language code or Machines topic id. */
   id: string;
   reason: string;
   /** YYYY-MM-DD, South African date. */
@@ -25,7 +32,8 @@ export const ID_PATTERNS: Record<WithdrawType, RegExp> = {
   template: new RegExp(`^${SLUG}/${SLUG}$`),
   world: new RegExp(`^${SLUG}$`),
   season: new RegExp(`^${SLUG}$`),
-  language: /^[a-z]{2,3}$/
+  language: /^[a-z]{2,3}$/,
+  machine: /^[a-z]+(?:-[a-z]+)*$/
 };
 
 const isObject = (v: unknown): v is Record<string, unknown> =>

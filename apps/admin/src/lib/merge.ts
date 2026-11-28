@@ -1,6 +1,6 @@
 // ADR-0012: the back office merges a pull request itself only when all four hold, checked just
 // before merging: (1) the App opened it, from an admin/ branch, into main; (2) it changes only the
-// status lines of one lesson, lesson translation or world file, one language's entry, or one
+// status lines of one lesson, lesson translation, Machines topic or world file, one language's entry, or one
 // item of the withdrawn list; (3) CI passed on its latest commit; (4) the decision it carries was
 // recorded in the back office by a person with the right role. Anything else waits for a person
 // on GitHub.
@@ -18,6 +18,7 @@ export const WITHDRAWN_PATH = 'content/site/withdrawn.json';
 const LESSON_FILE = /^content\/lessons\/[a-z0-9]+(?:-[a-z0-9]+)*\/index\.md$/;
 const WORLD_FILE = /^content\/worlds\/[a-z]+(?:-[a-z]+)*\.json$/;
 const BADGE_FILE = /^content\/badges\/[a-z]+(?:-[a-z]+)*\.json$/;
+const MACHINE_FILE = /^content\/machines\/[a-z]+(?:-[a-z]+)*\/index\.md$/;
 
 export interface MergeCheck {
   ok: boolean;
@@ -51,7 +52,9 @@ export async function checkMerge(
   const [file] = files;
   const kind =
     files.length === 1 && file?.status === 'modified'
-      ? LESSON_FILE.test(file.filename) || TRANSLATION_FILE.test(file.filename)
+      ? LESSON_FILE.test(file.filename) ||
+        TRANSLATION_FILE.test(file.filename) ||
+        MACHINE_FILE.test(file.filename)
         ? 'lesson'
         : WORLD_FILE.test(file.filename)
           ? 'world'
@@ -65,7 +68,7 @@ export async function checkMerge(
       : null;
   if (!file || !kind) {
     waiting.push(
-      'it changes more than one content file (lesson, translation, world, badge, language status or the withdrawn list)'
+      'it changes more than one content file (lesson, translation, Machines topic, world, badge, language status or the withdrawn list)'
     );
   } else {
     const [before, after] = await Promise.all([

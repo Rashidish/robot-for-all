@@ -1,0 +1,73 @@
+---
+// Content → Machines (docs/specs/machines.md FR-12): every topic with its family, status, reviewer
+// and any change waiting to be merged. A topic goes live once a reviewer approves it.
+import Admin from '../../layouts/Admin.astro';
+import type { Pull } from '../../lib/github';
+import { githubFromEnv } from '../../lib/github-env';
+import { MACHINE, type MachineSummary } from '../../lib/machines';
+import { pullsFor, readItems } from '../../lib/review';
+import { canSeeLessons } from '../../lib/roles';
+
+const { roles } = Astro.locals;
+if (!canSeeLessons(roles)) return Astro.redirect('/', 303);
+
+const STATUS_LABELS = { draft: 'Draft', in_review: 'In review', published: 'Published' } as const;
+const gh = githubFromEnv();
+let topics: MachineSummary[] = [];
+let pulls = new Map<string, Pull>();
+let error = '';
+if (gh) {
+  try {
+    const [all, open] = await Promise.all([readItems(gh, MACHINE), gh.openAdminPulls()]);
+    topics = all.sort((a, b) => a.family.localeCompare(b.family) || a.title.localeCompare(b.title));
+    pulls = pullsFor('machine', open);
+  } catch {
+    error = 'Could not read the Machines topics from GitHub. Try again in a minute.';
+  }
+}
+---
+
+<Admin title="Machines">
+  {error && (
+    <p class="error" role="alert">
+      {error}
+    </p>
+  )}
+  {!gh && <p class="error">The GitHub App is not set up yet. See docs/deploy.md §5.</p>}
+  <p>
+    One topic per part or mechanism, shown in the Machine library and as a card in every lesson that
+    uses it. A topic goes live once a reviewer approves it here. To add a topic, add a folder in{' '}
+    <code>content/machines/</code> (see the Machines spec §6) and send it for review.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Topic</th>
+          <th scope="col">Family</th>
+          <th scope="col">Status</th>
+          <th scope="col">Reviewed</th>
+          <th scope="col">Waiting</th>
+        </tr>
+      </thead>
+      <tbody>
+        {topics.map((t) => (
+          <tr>
+            <td>
+              <a href={`/machines/${t.id}/`}>{t.title}</a>
+              <br />
+              <small>
+                {t.id}
+                {t.aiGenerated && ' · AI-drafted'}
+              </small>
+            </td>
+            <td>{t.family}</td>
+            <td>{STATUS_LABELS[t.status]}</td>
+            <td>{t.reviewedBy ?? '—'}</td>
+            <td>{pulls.has(t.id) ? 'A change is waiting' : ''}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Admin>

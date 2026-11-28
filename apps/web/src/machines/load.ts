@@ -3,6 +3,8 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { showDrafts } from '../lessons/load';
 import { isVisible } from '../lessons/schema';
+import { hidden } from '../withdrawn';
+import { getMachineTranslations } from './translations';
 import { MACHINE_FAMILIES, checkSections, linkProblems, type MachineFamily } from './schema';
 
 export type MachineEntry = CollectionEntry<'machines'>;
@@ -46,14 +48,20 @@ export async function getMachines(): Promise<MachineEntry[]> {
       }
     }
   }
+  // Topic translations are checked with the topics (machines spec FR-10).
+  await getMachineTranslations();
   if (problems.length > 0) {
     throw new Error(`Machines problems:\n- ${problems.join('\n- ')}`);
   }
   const family = (f: MachineFamily) => MACHINE_FAMILIES.indexOf(f);
-  return all
-    .filter((t) => isVisible(t.data, showDrafts))
-    .sort(
-      (a, b) =>
-        family(a.data.family) - family(b.data.family) || a.data.title.localeCompare(b.data.title)
-    );
+  return (
+    all
+      // Withdrawn topics (content/site/withdrawn.json) leave production; lessons naming one simply
+      // leave it out of their "Parts in this robot" strip.
+      .filter((t) => isVisible(t.data, showDrafts) && !hidden('machine', t.id))
+      .sort(
+        (a, b) =>
+          family(a.data.family) - family(b.data.family) || a.data.title.localeCompare(b.data.title)
+      )
+  );
 }

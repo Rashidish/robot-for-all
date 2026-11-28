@@ -68,9 +68,9 @@ export const canWithdraw = (mine: readonly Role[]): boolean =>
 /** Competition managers may withdraw only worlds and seasons. */
 export const withdrawTypesFor = (
   mine: readonly Role[]
-): ('lesson' | 'template' | 'world' | 'season' | 'language')[] =>
+): ('lesson' | 'template' | 'world' | 'season' | 'language' | 'machine')[] =>
   hasRole(mine, 'owner') || hasRole(mine, 'reviewer')
-    ? ['lesson', 'template', 'world', 'season', 'language']
+    ? ['lesson', 'template', 'world', 'season', 'language', 'machine']
     : hasRole(mine, 'competition_manager')
       ? ['world', 'season']
       : [];

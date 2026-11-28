@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.43 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
+> **Version:** 0.44 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -137,7 +137,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /content/lessons     Lessons as Markdown + front matter (one folder per lesson)
 /content/projects    Project data, parts lists, templates (SVG)
 /content/worlds      Robot worlds and courses for the simulator (JSON, checked)
-/content/machines    Machines topics: one folder per part or mechanism (index.md + picture.svg without words)
+/content/machines    Machines topics: one folder per part or mechanism (index.md + picture.svg without words; index.<lang>.md translations)
 /content/seasons     Seasons: three courses per theme, one per grade band, plus badge (JSON + SVG)
 /content/badges      Badges: rule (JSON) + picture without words (SVG); words in content/i18n as badge_<id>_name/_about
 /content/sheets      Every answer sheet code ever printed (`npm run sheet-codes` after a build; only grows)
@@ -249,7 +249,7 @@ lighthouse: npm run lighthouse          # performance/accessibility must be 90+
 lint:      npm run lint           # npm run format to auto-fix formatting
 build:     npm run build          # static site in apps/web/dist
 admin:     npm run build:admin    # back office (Cloudflare Worker) in apps/admin/dist
-translate: npm run translation-hash -- <lesson id>   # translated_from for a lesson translation
+translate: npm run translation-hash -- <lesson or topic id>   # translated_from for a lesson or Machines topic translation
 sheets:    npm run build && npm run sheet-codes   # after changing a lesson: keep its new sheet code
 safety:    ANTHROPIC_API_KEY=... npm run helper-safety -- <model>   # the helper's safety test set, live
 ```
@@ -327,3 +327,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.41 | 2026-11-27 | `content/junior` (Junior missions; ADR-0019: tap-to-add row on `/code/junior/`) |
 | 0.42 | 2026-11-28 | Machines approved and started (`docs/specs/machines.md`): `content/machines`, the Machines tab, `machines` in lesson front matter |
 | 0.43 | 2026-11-28 | `docs/next.md`: the build queue; planning chat writes specs and the queue, Claude Code builds (§9.11) |
+| 0.44 | 2026-11-28 | Machines topics in the back office review flow and the withdrawn list; topic translations; `translation-hash` takes a topic id |

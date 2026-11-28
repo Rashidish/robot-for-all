@@ -40,7 +40,7 @@
 
 ### Machines (spec `docs/specs/machines.md` v0.3, approved)
 
-- [ ] **M-3: back office.**
+- [x] **M-3: back office.** (2026-11-28, #148)
   - Topics become a content kind in the review flow (draft → in review → published, `reviewed_by` required).
   - Add `machines` to `content/site/withdrawn.json`.
   - Translations as `index.<lang>.md`; `npm run translation-hash` covers `index.md` and `picture.svg`.
