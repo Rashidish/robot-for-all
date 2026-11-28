@@ -2,9 +2,9 @@
 // Junior (Grades R–2; spec docs/specs/junior.md, ADR-0019): picture blocks on a grid. Its own page,
 // so a young learner's phone doesn't download the Grade 3+ editor; the editor links to it as a tab.
 // Started from a bundled module script, like the code editor (our CSP blocks inline scripts).
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { localHref, m, pageLang } from '../../i18n';
-import { juniorMissions } from '../../junior/missions';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { localHref, m, pageLang } from '../../../i18n';
+import { juniorMissions } from '../../../junior/missions';
 
 const labels = Object.fromEntries(
   Object.entries(m)
@@ -30,13 +30,13 @@ const labels = Object.fromEntries(
 </BaseLayout>
 
 <script>
-  import type { Mission } from '../../../../../packages/sim/src/junior';
+  import type { Mission } from '../../../../../../packages/sim/src/junior';
   const target = document.getElementById('junior');
   if (target) {
     const labels = JSON.parse(target.dataset['labels'] ?? '{}') as Record<string, string>;
     const missions = JSON.parse(target.dataset['missions'] ?? '[]') as Mission[];
     const language = target.dataset['language'] ?? 'en';
-    void import('../../junior/start').then(({ start }) =>
+    void import('../../../junior/start').then(({ start }) =>
       start(target, labels, missions, language)
     );
   }

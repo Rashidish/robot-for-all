@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.59 · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.60 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -107,6 +107,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B53 | **Check a certificate**: someone outside the school opens /verify/ on a phone, types a real code from a badge (any case, with or without dashes) and sees the badge, date and school; a withdrawn badge's code says withdrawn; no name or nickname appears anywhere | |
 | B54 | **Certificates printed**: a parent downloads their child's certificate on a phone and prints it on a home or school printer (A4, colours, the name with any accents spelled right, the QR code scans to /verify/); a teacher downloads a class's badge cards (four per A4, cut on the dashed lines); a child without the name consent gets a blank line; the PDF is about 11 KB | |
 | B55 | **Family group**: a homeschooling parent starts a family group on a phone, adds two children, a child signs in on the family phone with the code and pictures, the parent taps "Learn as" on their own phone, the other parent opens the link, is confirmed by name and sees the children; a ninth child is refused; a certificate says "Awarded by Robots For All" | |
+| B60 | **Junior printing**: print the arrow cards and the three mission sheets on a school printer (colour and black and white). Do the cards cut cleanly at 6.2 cm, and can a Grade R child tell the arrows apart in black and white? Do the boards fit one page? | |
 | B59 | **Junior with children** (Grades R–2, cheap phones and a projector): can they add and take out blocks without help, read the pictures without words, and solve the three missions? If tapping doesn't work for them, ADR-0019's fallback (Blockly sideways) is built | |
 | B58 | **AI helper safety, live** (owner, before switching the helper on and after any prompt or model change): `npm run helper-safety -- <model>` for each allowed model; every question passes; a reviewer reads the isiZulu answers | Part done: `claude-haiku-5-5` 59/59, owner, 2026-11-27 (prompts adult-v1, child-v1). Still to do: a reviewer reads the isiZulu answers |
 | B57 | **Name key rotation rehearsal** (owner, before launch): on a test project with a few enrolled learners, make key 2, make it current, let the daily job run, check Privacy → Name key shows 0 on key 1, remove key 1 and print a certificate and tap Show names: the names are still right | |
@@ -191,3 +192,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.57 | 2026-11-27 | B58: Haiku 5.5 safety test set 59/59 (owner) |
 | 0.58 | 2026-11-27 | C1: robotsforall.org.za live, redirects outstanding; C2: approach Vodacom once the platform is complete |
 | 0.59 | 2026-11-27 | B59 Junior with children |
+| 0.60 | 2026-11-28 | B60 Junior printing |

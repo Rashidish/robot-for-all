@@ -23,7 +23,9 @@ const pages = [
   // A translated lesson, and one shown in English on an isiZulu page (more content spec §2.7)
   '/zu/lessons/p1-crank-01/',
   '/zu/lessons/p1-cam-01/',
-  '/code/junior/'
+  '/code/junior/',
+  '/code/junior/cards/',
+  '/code/junior/sheet/rhino-to-water/'
 ];
 
 for (const path of pages) {

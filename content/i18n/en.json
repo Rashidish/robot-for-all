@@ -952,5 +952,14 @@
   "junior_best": "Well done! The best way!",
   "junior_bumped": "Oops, a rock! Try again.",
   "junior_off": "Oops, the edge! Try again.",
-  "junior_not_there": "Not there yet. Try again."
+  "junior_not_there": "Not there yet. Try again.",
+  "junior_big": "Big screen",
+  "junior_cards_title": "Arrow cards",
+  "junior_cards_about": "Print on A4 and cut along the dashed lines. Children hold up the cards to plan the way, then tap the same pictures.",
+  "junior_print": "Print",
+  "junior_print_mission": "Print this mission",
+  "junior_sheet_title": "Mission sheet",
+  "junior_sheet_boxes": "Boxes to draw the arrows in",
+  "junior_sheet_faces": "How did it go? Colour a face.",
+  "junior_sheet_stars": "Colour a star for each one you got"
 }

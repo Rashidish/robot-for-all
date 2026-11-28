@@ -63,3 +63,43 @@ test.describe('Junior (Grades R–2)', () => {
     await context.setOffline(false);
   });
 });
+
+test.describe('Junior printables and projector (step 2)', () => {
+  const pdfPages = async (page: import('@playwright/test').Page) => {
+    const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true });
+    return (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) ?? []).length;
+  };
+
+  test('arrow cards print on two A4 pages; each mission sheet on one', async ({ page }) => {
+    await page.goto('/code/junior/');
+    await page.getByRole('link', { name: 'Arrow cards' }).click();
+    await expect(page).toHaveURL(/\/code\/junior\/cards\/$/);
+    await expect(page.getByRole('heading', { name: 'Arrow cards' })).toBeVisible();
+    expect(await pdfPages(page)).toBe(2);
+    for (const id of ['bee-to-flower', 'rhino-to-water', 'bus-to-school']) {
+      await page.goto(`/code/junior/sheet/${id}/`);
+      await expect(page.getByRole('img').first()).toBeVisible();
+      expect(await pdfPages(page), `${id} sheet pages`).toBe(1);
+    }
+  });
+
+  test('each mission links to its sheet; Big screen makes the blocks bigger', async ({ page }) => {
+    await page.goto('/code/junior/#rhino-to-water');
+    await expect(page.getByRole('link', { name: 'Print this mission' })).toHaveAttribute(
+      'href',
+      '/code/junior/sheet/rhino-to-water/'
+    );
+    const forward = page
+      .getByRole('group', { name: 'Blocks' })
+      .getByRole('button', { name: 'Forward', exact: true });
+    const before = (await forward.boundingBox())?.height ?? 0;
+    const big = page.getByRole('button', { name: 'Big screen' });
+    await big.click();
+    await expect(big).toHaveAttribute('aria-pressed', 'true');
+    await expect
+      .poll(async () => (await forward.boundingBox())?.height ?? 0)
+      .toBeGreaterThan(before);
+    await big.click();
+    await expect(big).toHaveAttribute('aria-pressed', 'false');
+  });
+});

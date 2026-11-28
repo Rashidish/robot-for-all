@@ -117,7 +117,14 @@ After M6, unless the owner moves it earlier.
    - Tests: e2e at 360 px, offline and accessibility.
 
    **Junior blocks + grid mode + three missions.**
-2. Projector layout, arrow cards, picture answer sheet.
+2. *(built 2026-11-28)*
+   - **Big screen** (FR-8): a button on Junior. On a wide screen the board sits beside the blocks, everything gets bigger, and the page goes full screen where the browser allows it.
+   - **Arrow cards** (FR-6) at `/code/junior/cards/`: two A4 pages of 6.2 cm cut-out cards in the block colours (start, forward, back, turn left, turn right, ×2–×5), with no words.
+   - **A picture mission sheet** for each mission at `/code/junior/sheet/<mission>/`: one A4 page with the board, empty boxes to draw the arrows in, three faces and two stars to colour. The mission's name is the only word, for the adult.
+   - Junior links to the cards and to each mission's sheet.
+   - Tests: e2e checks the page counts (2 and 1), the projector size and accessibility. Printing on real paper goes in the test plan (B60).
+
+   **Projector layout, arrow cards, picture answer sheet.**
 3. Six Grade R–2 lessons (two per grade), CAPS Foundation Phase links to confirm. ⏸ owner review.
 
 ## 10. AI · 11. Revenue · 12. Risks · 13. Owner actions

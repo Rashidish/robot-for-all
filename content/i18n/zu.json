@@ -952,5 +952,14 @@
   "junior_best": "Wenze kahle! Indlela engcono kakhulu!",
   "junior_bumped": "Hawu, idwala! Zama futhi.",
   "junior_off": "Hawu, umphetho! Zama futhi.",
-  "junior_not_there": "Akukafiki. Zama futhi."
+  "junior_not_there": "Akukafiki. Zama futhi.",
+  "junior_big": "Isikrini esikhulu",
+  "junior_cards_title": "Amakhadi emicibisholo",
+  "junior_cards_about": "Phrinta ku-A4 bese usika ngemigqa enamachashaza. Izingane ziphakamisa amakhadi ukuhlela indlela, bese zithepha izithombe ezifanayo.",
+  "junior_print": "Phrinta",
+  "junior_print_mission": "Phrinta lo msebenzi",
+  "junior_sheet_title": "Ishidi lomsebenzi",
+  "junior_sheet_boxes": "Amabhokisi okudweba imicibisholo",
+  "junior_sheet_faces": "Kuhambe kanjani? Faka umbala ebusweni.",
+  "junior_sheet_stars": "Faka umbala enkanyezini ngayinye oyitholile"
 }
