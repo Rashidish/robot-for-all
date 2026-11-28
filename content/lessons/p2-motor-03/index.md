@@ -4,6 +4,7 @@ title: 'Two motors: turning'
 phase: 2
 grades: [6, 7]
 mechanism: motor-control
+machines: [wheel-and-axle]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.6 Mimic the operations of a robot - two actuators working together to steer (to confirm)

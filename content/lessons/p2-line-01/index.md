@@ -4,6 +4,7 @@ title: Follow the line
 phase: 2
 grades: [6, 7]
 mechanism: sensor-control
+machines: [wheel-and-axle]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.6 Mimic the operations of a robot - sensors give inputs that decide the outputs (to confirm)

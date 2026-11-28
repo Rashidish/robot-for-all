@@ -4,7 +4,7 @@ title: Rolling cardboard cart
 phase: 1
 grades: [3, 4]
 mechanism: wheel and axle
-machines: [bushing]
+machines: [wheel-and-axle, bushing]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.5-R.7 (Grade 4, Term 4) - wheels and axles in movement; design and build a simple wheeled robot

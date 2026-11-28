@@ -208,6 +208,102 @@ export function gearCentreDistance(teethA: number, teethB: number, pitch = 9): n
   return r2(((teethA + teethB) * pitch) / (2 * Math.PI));
 }
 
+/**
+ * A rack: a straight bar with gear teeth along its top edge, for a pinion of the same pitch
+ * (rack and pinion). Its pitch line is `rackPitchLine(pitch)` mm below the tooth tips.
+ */
+export function rack(opts: { name: string; teeth: number; pitch?: number; body?: number }): Part {
+  const { name, teeth, pitch = 9, body = 12 } = opts;
+  check(Number.isInteger(teeth) && teeth >= 4 && teeth <= 40, `${name}: use 4–40 teeth`);
+  check(pitch >= 8, `${name}: card teeth smaller than 8 mm pitch tear easily`);
+  check(body >= 8, `${name}: the bar below the teeth must be at least 8 mm`);
+  const module = pitch / Math.PI;
+  const root = 2.25 * module;
+  const length = teeth * pitch;
+  const height = root + body;
+  const points: string[] = [`0 ${fmt(height)}`, `0 ${fmt(root)}`];
+  for (let i = 0; i < teeth; i++) {
+    const c = pitch / 2 + i * pitch;
+    for (const [dx, y] of [
+      [-0.28, root],
+      [-0.16, 0],
+      [0.16, 0],
+      [0.28, root]
+    ] as const) {
+      points.push(`${fmt(c + dx * pitch)} ${fmt(y)}`);
+    }
+  }
+  points.push(`${fmt(length)} ${fmt(root)}`, `${fmt(length)} ${fmt(height)}`);
+  return {
+    name,
+    width: r2(length),
+    height: r2(height),
+    outline: `M${points.join('L')}Z`,
+    holes: [],
+    folds: [],
+    facts: [{ kind: 'shape', width: fmt(length), height: fmt(height) }],
+    notes: [`${teeth} teeth along the top edge, one every ${fmt(pitch)} mm, ${fmt(root)} mm deep`]
+  };
+}
+
+/** How far below a rack's tooth tips its pitch line is: a pinion's pitch circle touches it there. */
+export const rackPitchLine = (pitch = 9): number => r2(pitch / Math.PI);
+
+/**
+ * A ring gear (internal gear): a ring with its teeth pointing inwards. A smaller gear of the same
+ * pitch meshes inside it and turns the same way, at `internalCentreDistance` from its centre.
+ */
+export function ringGear(opts: {
+  name: string;
+  teeth: number;
+  pitch?: number;
+  rim?: number;
+}): Part {
+  const { name, teeth, pitch = 9, rim = 8 } = opts;
+  check(Number.isInteger(teeth) && teeth >= 20 && teeth <= 60, `${name}: use 20–60 teeth`);
+  check(pitch >= 8, `${name}: card teeth smaller than 8 mm pitch tear easily`);
+  check(rim >= 6, `${name}: the rim outside the teeth must be at least 6 mm`);
+  const pitchRadius = (teeth * pitch) / (2 * Math.PI);
+  const module = pitch / Math.PI;
+  const tip = pitchRadius - module;
+  const root = pitchRadius + 1.25 * module;
+  const outer = root + rim;
+  check(2 * outer <= 180, `${name}: the ring must be at most 180 mm across`);
+  const step = (2 * Math.PI) / teeth;
+  const points: string[] = [];
+  for (let i = 0; i < teeth; i++) {
+    const a = i * step;
+    for (const [radius, angle] of [
+      [root, a - step * 0.28],
+      [tip, a - step * 0.16],
+      [tip, a + step * 0.16],
+      [root, a + step * 0.28]
+    ] as const) {
+      points.push(
+        `${fmt(outer + radius * Math.cos(angle))} ${fmt(outer + radius * Math.sin(angle))}`
+      );
+    }
+  }
+  return {
+    name,
+    width: r2(2 * outer),
+    height: r2(2 * outer),
+    // Two cut lines: the outside of the ring, and the teeth inside it.
+    outline: `${circlePath(outer, outer, outer)}M${points.join('L')}Z`,
+    holes: [],
+    folds: [],
+    facts: [{ kind: 'shape', width: fmt(2 * outer), height: fmt(2 * outer) }],
+    notes: [
+      `${teeth} teeth pointing inwards; the tooth tips are ${fmt(2 * tip)} mm across, the gaps between them ${fmt(2 * root)} mm across`
+    ]
+  };
+}
+
+/** The distance between the centres of a ring gear and a gear meshing inside it. */
+export function internalCentreDistance(ringTeeth: number, teeth: number, pitch = 9): number {
+  return r2(((ringTeeth - teeth) * pitch) / (2 * Math.PI));
+}
+
 /** An egg-shaped cam: turning it lifts a follower by `lift` mm once per turn. */
 export function cam(opts: { name: string; base: number; lift: number; axleHole?: number }): Part {
   const { name, base, lift, axleHole = 4 } = opts;

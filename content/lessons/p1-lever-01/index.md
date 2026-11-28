@@ -4,6 +4,7 @@ title: Snapping crocodile
 phase: 1
 grades: [3, 4]
 mechanism: lever
+machines: [lever, spring, pin-and-key]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.3 Components of a robot - grippers and attachments (Grade 5); Motion - rotational movement about a pivot

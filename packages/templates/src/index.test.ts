@@ -6,10 +6,14 @@ import {
   disc,
   gear,
   gearCentreDistance,
+  internalCentreDistance,
   inWords,
   layout,
   MARGIN,
   measurements,
+  rack,
+  rackPitchLine,
+  ringGear,
   renderSheet,
   type Say,
   shape,
@@ -55,6 +59,24 @@ describe('parts are drawn to size in millimetres', () => {
 
   it('gear: refuses teeth too small for card', () => {
     expect(() => gear({ name: 'Tiny', teeth: 20, pitch: 4 })).toThrow(/tear/);
+  });
+
+  it('rack: teeth along the top at the gear pitch, pitch line one module below the tips', () => {
+    const r = rack({ name: 'Rack', teeth: 16 });
+    expect(r.width).toBe(144);
+    expect(r.height).toBeCloseTo(2.25 * (9 / Math.PI) + 12, 1);
+    expect(rackPitchLine()).toBeCloseTo(9 / Math.PI, 2);
+    expect(r.outline.split('L').length).toBe(16 * 4 + 4);
+    expect(() => rack({ name: 'Rack', teeth: 16, pitch: 6 })).toThrow(/8 mm pitch/);
+  });
+
+  it('ring gear: teeth inside a ring; a gear meshes inside at the difference of pitch radii', () => {
+    const g = ringGear({ name: 'Ring', teeth: 36 });
+    const pitchRadius = (36 * 9) / (2 * Math.PI);
+    expect(g.width).toBeCloseTo(2 * (pitchRadius + 1.25 * (9 / Math.PI) + 8), 1);
+    expect(g.outline.match(/M/g)).toHaveLength(2); // outer edge and the teeth
+    expect(internalCentreDistance(36, 12)).toBeCloseTo((24 * 9) / (2 * Math.PI), 2);
+    expect(() => ringGear({ name: 'Ring', teeth: 60 })).toThrow(/180 mm/);
   });
 
   it('cam: height is base plus lift', () => {
