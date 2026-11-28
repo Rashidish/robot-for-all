@@ -25,7 +25,7 @@
     - `best` counts **cards**: a repeat number is part of its card.
   - Tag each lesson with its CAPS codes (R.1–R.7, D.1–D.10).
   - Keep the edits to the lesson filters, lesson page, i18n, the spec and CLAUDE.md in line with what's on `main` now: the Machines "Part" filter and "Parts in this robot" (#144), and Junior step 3 (#146).
-- [ ] **J-4: mission kinds and card limits** (spec FR-12, FR-14).
+- [x] **J-4: mission kinds and card limits** (spec FR-12, FR-14). (2026-11-28, #PR)
   - Mission kinds: `complete` (fill the gaps), `fix` (debug a given program), `predict` (tap the square where it ends), `choose` (2–3 programs), `shorten`.
   - Exact card sets (Parsons) or a maximum number of cards; the palette shows how many are left.
   - 12 missions across Grade R Terms 1–4, Grade 1 and Grade 2, each tagged with grades, term and CAPS codes.
@@ -77,6 +77,9 @@
 ## Notes from the build
 
 *(Claude Code adds dated notes here when a build changes the plan.)*
+
+- **2026-11-28, J-8a waits:** the owner chose to rewrite the six Grade R–2 lessons around robots and digital concepts (spec step 8: R.1–R.5, D.1–D.9). Claude Code needs the meaning of each code from the CAPS document (in the project files, not the repo). The planning chat adds the code list to `docs/specs/junior.md` §2A; J-8a starts after that. J-4 was built first, with the owner's go-ahead.
+- **2026-11-28, J-4:** the Junior page is at 39.8 KB of its 40 KB budget. J-5 to J-7 need the budget raised or the page split (e.g. teacher tools on a page of their own). Planning chat: decide before J-5.
 
 ## Parked (planning chat; not for Claude Code yet)
 

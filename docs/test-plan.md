@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.63 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
+> **Version:** 0.64 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -112,6 +112,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B55 | **Family group**: a homeschooling parent starts a family group on a phone, adds two children, a child signs in on the family phone with the code and pictures, the parent taps "Learn as" on their own phone, the other parent opens the link, is confirmed by name and sees the children; a ninth child is refused; a certificate says "Awarded by Robots For All" | |
 | B62 | **Review and withdraw a Machines topic in the back office** (after migration `0030_machine_reviews.sql` is applied): an editor sends a topic for review; a reviewer opens it from Content → Machines, reads it on the drafts preview, ticks the seven items and approves; after Merge now it shows on the live Machine library and in its lessons' "Parts in this robot"; the same person can't approve a topic they sent; Withdraw takes it off the library and the lessons' strips, Restore brings it back; on a phone at 360 px | |
 | B61 | **Machines topics review and build tests** (machines spec): a reviewer reads each topic page and its card on a phone (is it right, safe and clear for its grades?), checks the picture matches its numbered callouts, and builds each stand-in from the topic, doing its "Try it": straw bushing vs bare hole; rack and pinion and ring gear from the lesson templates (they mesh without slipping); marble bearing between two lids; straw thrust washer; Prestik collar; rubber-band spring with bottle caps; syringe damper (no needle); coin flywheel on a card disc; bottle-lid pulleys with a rubber band; lever on a pencil; four-bar card linkage; card cam; matchstick key and split-pin pivot | |
+| B63 | **Junior mission kinds with children** (Grades R–2, a phone and a projector): do children understand each task when it is spoken (predict: tap where it stops; choose: tap the shortest way; complete: fill the empty box; fix; make it shorter), without reading? Can a Grade R child count the cards left on a Parsons mission? Is Big screen usable with 15 missions? | |
 | B60 | **Junior printing**: print the arrow cards and the three mission sheets on a school printer (colour and black and white). Do the cards cut cleanly at 6.2 cm, and can a Grade R child tell the arrows apart in black and white? Do the boards fit one page? | |
 | B59 | **Junior with children** (Grades R–2, cheap phones and a projector): can they add and take out blocks without help, read the pictures without words, and solve the three missions? If tapping doesn't work for them, ADR-0019's fallback (Blockly sideways) is built | |
 | B58 | **AI helper safety, live** (owner, before switching the helper on and after any prompt or model change): `npm run helper-safety -- <model>` for each allowed model; every question passes; a reviewer reads the isiZulu answers | Part done: `claude-haiku-5-5` 59/59, owner, 2026-11-27 (prompts adult-v1, child-v1). Still to do: a reviewer reads the isiZulu answers |
@@ -201,3 +202,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.61 | 2026-11-28 | B61 Machines topics review |
 | 0.62 | 2026-11-28 | B62 review and withdraw a Machines topic in the back office |
 | 0.63 | 2026-11-28 | B61 build tests for every Machines topic; three gear topic lessons waiting for A1–A6 |
+| 0.64 | 2026-11-28 | B63 Junior mission kinds with children |

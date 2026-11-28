@@ -1,12 +1,8 @@
 {
   "id": "rhino-make-it-shorter",
-  "grades": [
-    1
-  ],
+  "grades": [1],
   "term": 4,
-  "caps": [
-    "C.5"
-  ],
+  "caps": ["C.5"],
   "kind": "shorten",
   "mode": "arrows",
   "grid": {
@@ -19,19 +15,8 @@
   },
   "target": "D3",
   "obstacles": [],
-  "blocks": [
-    "east",
-    "south",
-    "x2",
-    "x3"
-  ],
-  "given": [
-    "east",
-    "east",
-    "east",
-    "south",
-    "south"
-  ],
+  "blocks": ["east", "south", "x2", "x3"],
+  "given": ["east", "east", "east", "south", "south"],
   "best": 2,
   "theme": "rhino-water"
 }

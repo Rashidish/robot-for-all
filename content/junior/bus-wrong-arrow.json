@@ -1,13 +1,8 @@
 {
   "id": "bus-wrong-arrow",
-  "grades": [
-    0
-  ],
+  "grades": [0],
   "term": 4,
-  "caps": [
-    "C.3",
-    "C.4"
-  ],
+  "caps": ["C.3", "C.4"],
   "kind": "fix",
   "mode": "arrows",
   "grid": {
@@ -19,21 +14,9 @@
     "heading": "N"
   },
   "target": "C1",
-  "obstacles": [
-    "B2"
-  ],
-  "blocks": [
-    "north",
-    "east",
-    "south",
-    "west"
-  ],
-  "given": [
-    "north",
-    "north",
-    "east",
-    "west"
-  ],
+  "obstacles": ["B2"],
+  "blocks": ["north", "east", "south", "west"],
+  "given": ["north", "north", "east", "west"],
   "best": 4,
   "theme": "bus-school"
 }

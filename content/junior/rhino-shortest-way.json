@@ -1,13 +1,8 @@
 {
   "id": "rhino-shortest-way",
-  "grades": [
-    0
-  ],
+  "grades": [0],
   "term": 3,
-  "caps": [
-    "C.3",
-    "C.5"
-  ],
+  "caps": ["C.3", "C.5"],
   "kind": "choose",
   "mode": "arrows",
   "grid": {
@@ -20,32 +15,11 @@
   },
   "target": "C3",
   "obstacles": [],
-  "blocks": [
-    "north",
-    "east",
-    "south",
-    "west"
-  ],
+  "blocks": ["north", "east", "south", "west"],
   "options": [
-    [
-      "south",
-      "east",
-      "north",
-      "east",
-      "south",
-      "south"
-    ],
-    [
-      "east",
-      "east",
-      "south",
-      "south"
-    ],
-    [
-      "east",
-      "east",
-      "south"
-    ]
+    ["south", "east", "north", "east", "south", "south"],
+    ["east", "east", "south", "south"],
+    ["east", "east", "south"]
   ],
   "best": 4,
   "theme": "rhino-water"

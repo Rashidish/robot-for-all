@@ -1,6 +1,6 @@
 # Spec: Junior — coding before reading (Grades R–2)
 
-> **Version:** 0.5 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019); CAPS alignment (§2A, FR-9 to FR-16) approved by the owner 2026-11-28
+> **Version:** 0.6 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019); CAPS alignment (§2A, FR-9 to FR-16) approved by the owner 2026-11-28
 > Depends on: M3 editor (ADR-0005), M4 robot world and robot calls (ADR-0007, ADR-0008), M5 sign-in, records and badges (ADR-0013, ADR-0014, `content/badges`). If approved, CLAUDE.md §1 "Who it's for" changes from Grade 3 to Grade R upward. Brainstorm: build-plan board, "Grades R–2: coding before reading".
 
 ## 1. Purpose
@@ -182,7 +182,35 @@ After M6, unless the owner moves it earlier.
 CAPS alignment approved by the owner (2026-11-28). Then:
 
 3. *(built 2026-11-28)* **Arrows and CAPS tags:** movement modes (FR-10), repeat number under the card (FR-11), turn around; mission grades, term and CAPS codes (FR-9); the three missions retagged (bee: Grade R arrows-slide; rhino: Grade 1 arrows; bus: Grade 2 turns); arrow cards and sheets drawn the CAPS way.
-4. **Mission kinds** (FR-12) and **card limits** (FR-14): complete, fix, predict, choose, shorten; 12 missions across Grade R Terms 1–4, Grade 1 and Grade 2, each tagged.
+4. *(built 2026-11-28)* **Mission kinds** (FR-12) and **card limits** (FR-14):
+   - **Kinds** in the mission file (`kind`), with what each one needs:
+     - `complete`: `given` with 1–3 gaps (`null`). The given cards stay (tapping one says so); each picture tapped fills the next empty box, and a repeat number goes under the card just filled. Play waits until every box is filled.
+     - `fix`: `given`, a program that doesn't reach the goal. The learner edits it; "Start again" brings it back.
+     - `shorten`: `given`, a program that works but has more cards than `best`. Two stars only with fewer cards; the same number says "It works. Can you use fewer cards?".
+     - `predict`: `given`, run as it is. The goal is hidden; the learner taps the square where it will stop (see-through buttons over the board), then watches. `target` is where it ends.
+     - `choose`: 2–3 `options`, each shown as a row of cards. The right one reaches the goal with the fewest cards; there must be exactly one.
+   - **Card limits:** `cards` is an exact set (Parsons), written "east" or "x3 east" (the repeat number with its card). The palette shows each card once, with how many are left, and greys it out at 0. `max_cards` is a limit on the number of cards; the page shows "6 left". A mission has one or the other.
+   - **Build checks** for each kind: a fill that works (complete), the program really is wrong (fix), long (shorten) or doesn't bump (predict), exactly one best option (choose), an order of the Parsons cards that works, and `best` within `max_cards`.
+   - **Spoken task:** each mission says what to do ("Where will it stop? Tap the square."), shown under its name and spoken with Say the block names.
+   - **12 new missions**, 15 in all, in order of grade and term:
+
+     | Grade, term | Mission | Kind | CAPS |
+     |---|---|---|---|
+     | R, 1 | Where will the bee stop? | predict (slide) | C.3, R.6 |
+     | R, 2 | Put the cards in order | build, Parsons (slide) | C.1, C.2 |
+     | R, 3 | The shortest way | choose | C.3, C.5 |
+     | R, 4 | Find the wrong arrow | fix | C.3, C.4 |
+     | 1, 1 | Fill the gap | complete | C.1, C.3 |
+     | 1, 2 | Fix the number | fix (repeats) | C.4, C.5 |
+     | 1, 3 | Where will the bus stop? | predict | C.3 |
+     | 1, 4 | Make it shorter | shorten | C.5 |
+     | 2, 2 | Fill in the turn | complete (turns) | C.1, C.2, C.3 |
+     | 2, 2 | Fix the turn | fix (turns) | C.4 |
+     | 2, 3 | Which way works? | choose (turns) | C.2, C.5 |
+     | 2, 4 | Six cards or fewer | build, at most 6 cards | C.1, C.5 |
+
+   - **Big screen** now scrolls when the missions don't fit (full screen shows only Junior).
+   - The page is **39.8 KB** of its 40 KB budget. Steps 5–7 will need it raised or the page split (for example, the teacher tools on their own page).
 5. **Grade 2 board features** (FR-13): collect, ordered goals, no-go squares, enter and leave, jump, IF tile; 4 more missions.
 6. **Patterns** (FR-12 `pattern`): copy, complete, find the error, make your own; 4 missions.
 7. **Teacher tools** (FR-15, FR-16): mission planner by CAPS code, observation checklist and Annexure B rubrics to print, observations recorded with M5; pairs mode.
@@ -205,4 +233,5 @@ CAPS alignment approved by the owner (2026-11-28). Then:
 | 0.2 | 2026-11-27 | Approved: tab named Junior, own sign-in with the QR card, grid first, stories later (reminder), after M6 |
 | 0.3 | 2026-11-27 | Owner decisions: tap-to-add row with Blockly as fallback (ADR-0019), own page linked as a tab, ×N repeats the next block; step 1 built |
 | 0.4 | 2026-11-28 | Draft §2A CAPS alignment against the Foundation Phase CAPS (§2.12, §3, §4): direction arrows for Grades R–1, repeat under the arrow, mission kinds, board features, CAPS tags, teacher observation and rubrics (FR-9 to FR-16); work plan steps 3–8 |
+| 0.6 | 2026-11-28 | Step 4 built: mission kinds (complete, fix, predict, choose, shorten) and card limits (Parsons cards, maximum); 12 more missions |
 | 0.5 | 2026-11-28 | CAPS alignment approved (all four decisions); step 3 built: direction arrows and Grade R slide, repeat number under the card, turn around, missions tagged with grades, term and CAPS codes |

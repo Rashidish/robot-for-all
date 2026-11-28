@@ -1,12 +1,8 @@
 {
   "id": "rhino-fix-the-turn",
-  "grades": [
-    2
-  ],
+  "grades": [2],
   "term": 2,
-  "caps": [
-    "C.4"
-  ],
+  "caps": ["C.4"],
   "kind": "fix",
   "mode": "turns",
   "grid": {
@@ -19,19 +15,8 @@
   },
   "target": "D4",
   "obstacles": [],
-  "blocks": [
-    "forward",
-    "left",
-    "right",
-    "x3"
-  ],
-  "given": [
-    "x3",
-    "forward",
-    "left",
-    "x3",
-    "forward"
-  ],
+  "blocks": ["forward", "left", "right", "x3"],
+  "given": ["x3", "forward", "left", "x3", "forward"],
   "best": 3,
   "theme": "rhino-water"
 }
