@@ -1,0 +1,4 @@
+{
+  "about": "The order Junior missions appear in, easiest first (spec docs/specs/junior.md FR-4).",
+  "missions": ["bee-to-flower", "rhino-to-water", "bus-to-school"]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "bee-to-flower",
+  "grid": {
+    "cols": 3,
+    "rows": 3
+  },
+  "start": {
+    "cell": "A2",
+    "heading": "E"
+  },
+  "target": "C2",
+  "obstacles": [],
+  "blocks": ["forward"],
+  "best": 2,
+  "theme": "bee-flower"
+}

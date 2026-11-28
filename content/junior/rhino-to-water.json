@@ -1,0 +1,16 @@
+{
+  "id": "rhino-to-water",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A1",
+    "heading": "E"
+  },
+  "target": "D4",
+  "obstacles": ["B2"],
+  "blocks": ["forward", "left", "right", "x3"],
+  "best": 5,
+  "theme": "rhino-water"
+}

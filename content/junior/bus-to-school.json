@@ -1,0 +1,16 @@
+{
+  "id": "bus-to-school",
+  "grid": {
+    "cols": 5,
+    "rows": 5
+  },
+  "start": {
+    "cell": "A5",
+    "heading": "N"
+  },
+  "target": "E1",
+  "obstacles": ["A2", "B2", "C2", "D4", "E4"],
+  "blocks": ["forward", "left", "right", "x2", "x3", "x4"],
+  "best": 8,
+  "theme": "bus-school"
+}

@@ -22,7 +22,8 @@ const pages = [
   '/no-such-page/',
   // A translated lesson, and one shown in English on an isiZulu page (more content spec §2.7)
   '/zu/lessons/p1-crank-01/',
-  '/zu/lessons/p1-cam-01/'
+  '/zu/lessons/p1-cam-01/',
+  '/code/junior/'
 ];
 
 for (const path of pages) {
