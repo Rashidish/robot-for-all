@@ -78,12 +78,11 @@
 
 *(Claude Code adds dated notes here when a build changes the plan.)*
 
-- **2026-11-28, J-4:** the Junior page is at 39.8 KB of its 40 KB budget after J-4.
+- **2026-11-28, J-8a waited:** the owner chose to rewrite the six Grade R–2 lessons around robots and digital concepts (spec step 8: R.1–R.5, D.1–D.9), which needed the CAPS code list (now `docs/caps-foundation-codes.md`). J-4 was built first, with the owner's go-ahead.
+- **2026-11-28, J-4:** the Junior page is at 39.8 KB of its 40 KB budget.
 - **2026-11-28, owner decision:** teacher tools (J-7) go on a page of their own, so the Junior page stays within 40 KB. J-5 and J-6 add to the Junior page itself: watch the budget there.
-- **2026-11-28, J-8a:** built on #143's format, with the six lessons rewritten around R.1–R.5 and D codes (the owner chose a rewrite over tagging the route lessons). A build check now rejects CAPS codes that are N/A in an item's grades (lessons and missions). #143 is superseded and can be closed.
-
-- **2026-11-28, J-8a waits:** the owner chose to rewrite the six Grade R–2 lessons around robots and digital concepts (spec step 8: R.1–R.5, D.1–D.9). Claude Code needs the meaning of each code from the CAPS document (in the project files, not the repo). The planning chat adds the code list to `docs/specs/junior.md` §2A; J-8a starts after that. J-4 was built first, with the owner's go-ahead.
-- **2026-11-28, J-4:** the Junior page is at 39.8 KB of its 40 KB budget. J-5 to J-7 need the budget raised or the page split (e.g. teacher tools on a page of their own). Planning chat: decide before J-5.
+- **2026-11-28, owner decision:** the Junior page's budget goes from 40 KB to 45 KB (CI and spec NFR). J-8a's three missions took it to 40.2 KB, after leaving out planning facts and server-only words.
+- **2026-11-28, J-8a:** built on #143's format, with the six lessons rewritten around R.1–R.5 and D codes. A build check now rejects CAPS codes that are N/A in an item's grades (lessons and missions). #143 is superseded and can be closed.
 
 ## Parked (planning chat; not for Claude Code yet)
 

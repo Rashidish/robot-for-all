@@ -126,7 +126,7 @@ Source: the DBE's *Curriculum and Assessment Policy Statement, Coding and Roboti
 
 ## 5. Non-functional requirements
 
-- Adds **under 40 KB** compressed (icons as inline SVG, no new dependency).
+- Adds **under 45 KB** compressed (icons as inline SVG, no new dependency). Raised from 40 KB by the owner (2026-11-28) when step 8's missions took the page to 40.2 KB; CI checks it.
 - Works on a 360 px phone, offline after the first visit.
 - WCAG 2.2 AA:
   - the light-up highlight and the icons pass contrast;
@@ -152,7 +152,7 @@ Source: the DBE's *Curriculum and Assessment Policy Statement, Coding and Roboti
 - [ ] A program with repeat moves the robot exactly the planned squares and turns (unit test).
 - [ ] The same program runs on the real cart through a robot profile (test plan, real device).
 - [ ] Arrow cards and the picture answer sheet print on A4 (e2e page count; people check in test plan).
-- [ ] Junior adds < 40 KB compressed; works offline (e2e).
+- [ ] Junior adds < 45 KB compressed (40 KB until step 8); works offline (e2e).
 - [ ] Every mission has grades, term, CAPS codes and kind; the build rejects an unknown code (unit test).
 - [ ] A Grade R "slide" mission and a Grade 1 arrows mission run exactly as CAPS describes; arrows convert to the same robot calls as turns (unit tests).
 - [ ] One mission of each kind (complete, fix, predict, choose, shorten, pattern) can be solved on a 360 px phone without reading (e2e).
@@ -213,7 +213,7 @@ CAPS alignment approved by the owner (2026-11-28). Then:
    - The page is **39.8 KB** of its 40 KB budget. Steps 5–7 will need it raised or the page split (for example, the teacher tools on their own page).
 5. **Grade 2 board features** (FR-13): collect, ordered goals, no-go squares, enter and leave, jump, IF tile; 4 more missions.
 6. **Patterns** (FR-12 `pattern`): copy, complete, find the error, make your own; 4 missions.
-7. **Teacher tools** (FR-15, FR-16): mission planner by CAPS code, observation checklist and Annexure B rubrics to print, observations recorded with M5; pairs mode. **Owner decision (2026-11-28): on a page of their own**, so the Junior page stays within its 40 KB budget (it is at 39.8 KB after step 4).
+7. **Teacher tools** (FR-15, FR-16): mission planner by CAPS code, observation checklist and Annexure B rubrics to print, observations recorded with M5; pairs mode. **Owner decision (2026-11-28): on a page of their own**, so the Junior page stays within its size budget (45 KB since step 8).
 8. *(built 2026-11-28, drafts)* Six Grade R–2 lessons (two per grade) for R.1–R.5 and D.1–D.9, with CAPS codes. The lesson format above, built on PR #143's format work, with the lessons rewritten around robots and digital concepts (owner, 2026-11-28). Each lesson starts unplugged and opens one mission in its Try step:
 
    | Grade | Lesson | CAPS | Mission |

@@ -6,9 +6,33 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { localHref, m, pageLang } from '../../../i18n';
 import { juniorMissions } from '../../../junior/missions';
 
+// The page needs the boards and programs, not the planning facts (grades, term, CAPS codes): those
+// are for teachers (the build checks them; teacher tools list them), and leaving them out keeps the
+// page within its size budget.
+const missionsForPage = juniorMissions().map((m) => {
+  const page: Partial<typeof m> = { ...m };
+  delete page.grades;
+  delete page.term;
+  delete page.caps;
+  return page;
+});
+const SERVER_ONLY = new Set([
+  'junior_title',
+  'junior_intro',
+  'junior_loading',
+  'junior_back_to_code',
+  'junior_cards_about',
+  'junior_print',
+  'junior_sheet_title',
+  'junior_sheet_boxes',
+  'junior_sheet_faces',
+  'junior_sheet_stars'
+]);
 const labels = Object.fromEntries(
   Object.entries(m)
-    .filter(([key]) => key.startsWith('junior_'))
+    // Only the words the Junior component uses: the page heading, the cards and the sheets are
+    // rendered on the server, so their words needn't be sent again.
+    .filter(([key]) => key.startsWith('junior_') && !SERVER_ONLY.has(key))
     // Words with a number or a square in them keep "{n}" and "{cell}", filled in on the page.
     .map(([key, message]) => [
       key,
@@ -26,7 +50,7 @@ const labels = Object.fromEntries(
   <div
     id="junior"
     data-labels={JSON.stringify(labels)}
-    data-missions={JSON.stringify(juniorMissions())}
+    data-missions={JSON.stringify(missionsForPage)}
     data-language={pageLang()}
   >
     <p>{m.junior_loading()}</p>
