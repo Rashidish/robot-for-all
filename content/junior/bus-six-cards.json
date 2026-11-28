@@ -1,0 +1,22 @@
+{
+  "id": "bus-six-cards",
+  "grades": [2],
+  "term": 4,
+  "caps": ["C.1", "C.5"],
+  "kind": "build",
+  "mode": "turns",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A4",
+    "heading": "N"
+  },
+  "target": "D4",
+  "obstacles": ["B4", "B3", "C3"],
+  "blocks": ["forward", "left", "right", "x2", "x3"],
+  "max_cards": 6,
+  "best": 5,
+  "theme": "bus-school"
+}

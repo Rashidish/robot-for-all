@@ -56,8 +56,12 @@ const MODE_BLOCKS: Record<Mode, readonly Block[]> = {
     'stop'
   ]
 };
-/** Kinds of mission (FR-12). Only "build" so far; the others come with step 4. */
-export const KINDS = ['build'] as const;
+/**
+ * Kinds of mission (FR-12): build from scratch; complete a program with gaps; fix a wrong
+ * program; predict where a program ends; choose the program that works (or the shortest); shorten
+ * a working program. Patterns come with step 6.
+ */
+export const KINDS = ['build', 'complete', 'fix', 'predict', 'choose', 'shorten'] as const;
 export type Kind = (typeof KINDS)[number];
 /** CAPS Foundation Phase codes: C.1–C.7 coding, R.1–R.7 robotics, D.1–D.10 digital concepts. */
 export const CAPS_CODE = /^(C\.[1-7]|R\.[1-7]|D\.([1-9]|10))$/;
@@ -93,7 +97,70 @@ export interface Mission {
   best: number;
   /** The picture theme: what the robot is and what it's going to. */
   theme: 'rhino-water' | 'bee-flower' | 'bus-school';
+  /**
+   * The program the mission starts with (complete, fix, predict, shorten). In "complete", null is
+   * a gap to fill with one card; the given cards stay.
+   */
+  given?: (Block | null)[];
+  /** "choose": 2–3 programs; exactly one reaches the goal with the fewest cards. */
+  options?: Block[][];
+  /**
+   * Card limits (FR-14). `cards`: exactly these cards, each used once (a Parsons puzzle), written
+   * like "east" or "x3 east" (a repeat number with its card). `max_cards`: at most this many.
+   */
+  cards?: string[];
+  max_cards?: number;
 }
+
+/** A card written as in mission files ("east", "x3 east") as program blocks. */
+export function cardBlocks(card: string): Block[] {
+  return card.split(' ').filter(Boolean) as Block[];
+}
+/** The card a program card is written as in mission files: "x3 east" or "east". */
+export const cardToken = (action: Action, times: Block | null): string =>
+  times ? `${times} ${action}` : action;
+
+/** The cards of a program, each with its repeat number (the program's indexes it covers). */
+export function programCards(
+  program: readonly Block[]
+): { action: Action; times: Repeat | null; from: number; to: number }[] {
+  const out: { action: Action; times: Repeat | null; from: number; to: number }[] = [];
+  for (let i = 0; i < program.length; i++) {
+    const b = program[i] as Block;
+    if (isRepeat(b)) {
+      const next = program[i + 1];
+      if (next !== undefined && !isRepeat(next)) {
+        out.push({ action: next as Action, times: b, from: i, to: i + 1 });
+        i++;
+      }
+      continue;
+    }
+    out.push({ action: b as Action, times: null, from: i, to: i });
+  }
+  return out;
+}
+
+/**
+ * How many of each card are left to use (FR-14): for a Parsons mission, each card in `cards`
+ * minus those in the program; null when there's no exact set. `max_cards` is checked with
+ * `cardsLeft`.
+ */
+export function parsonsLeft(
+  mission: Mission,
+  program: readonly Block[]
+): Map<string, number> | null {
+  if (!mission.cards) return null;
+  const left = new Map<string, number>();
+  for (const c of mission.cards) left.set(c, (left.get(c) ?? 0) + 1);
+  for (const c of programCards(program)) {
+    const k = cardToken(c.action, c.times);
+    left.set(k, (left.get(k) ?? 0) - 1);
+  }
+  return left;
+}
+/** Cards still allowed under `max_cards`, or null when there's no limit. */
+export const cardsLeft = (mission: Mission, program: readonly Block[]): number | null =>
+  mission.max_cards === undefined ? null : mission.max_cards - cardCount(program);
 
 /** "B3" → { col: 1, row: 2 } (columns are letters, rows are numbers, A1 top left). */
 export function parseCell(name: string): Cell | null {
@@ -248,6 +315,198 @@ export function fewestBlocks(mission: Mission): number | null {
   return null;
 }
 
+const reaches = (m: Mission, program: readonly Block[]) =>
+  runJunior(m, program).outcome === 'reached';
+
+/** Every ordering of a list (Parsons puzzles have at most 8 cards: 40 320 orders). */
+function* orders<T>(items: readonly T[]): Generator<T[]> {
+  if (items.length <= 1) {
+    yield [...items];
+    return;
+  }
+  for (let i = 0; i < items.length; i++) {
+    // The same card twice: one order is enough.
+    if (items.findIndex((x) => JSON.stringify(x) === JSON.stringify(items[i])) !== i) continue;
+    const rest = [...items.slice(0, i), ...items.slice(i + 1)];
+    for (const o of orders(rest)) yield [items[i] as T, ...o];
+  }
+}
+
+/** Every way to fill the gaps of a "complete" program with one card from the palette each. */
+function* fills(m: Mission): Generator<Block[]> {
+  const given = m.given ?? [];
+  const moves = m.blocks.filter((b) => !isRepeat(b));
+  const repeats = m.blocks.filter(isRepeat);
+  const choices: Block[][] = moves.flatMap((b) =>
+    MOVES.includes(b as Action) ? [[b], ...repeats.map((x) => [x, b])] : [[b]]
+  );
+  const gaps = given.flatMap((b, i) => (b === null ? [i] : []));
+  const pick = (k: number, acc: Block[][]): Block[][][] =>
+    k === gaps.length ? [acc] : choices.flatMap((c) => pick(k + 1, [...acc, c]));
+  for (const chosen of pick(0, [])) {
+    let g = 0;
+    yield given.flatMap((b) => (b === null ? (chosen[g++] ?? []) : [b]));
+  }
+}
+
+/** Does a filled-in program keep every given card of a "complete" mission, in its place? */
+export function keepsGiven(m: Mission, program: readonly Block[]): boolean {
+  const given = m.given ?? [];
+  const cards = programCards(program);
+  const want = programCards(given.filter((b): b is Block => b !== null));
+  // Walk the program: given cards must appear in order, one gap card between them per null.
+  let ci = 0;
+  let wi = 0;
+  for (let i = 0; i < given.length; i++) {
+    if (given[i] === null) {
+      ci++;
+      continue;
+    }
+    if (isRepeat(given[i] as Block)) continue;
+    const c = cards[ci];
+    const w = want[wi];
+    if (!c || !w || c.action !== w.action || c.times !== w.times) return false;
+    ci++;
+    wi++;
+  }
+  return ci === cards.length;
+}
+
+/** The right option of a "choose" mission: the one that reaches the goal with the fewest cards. */
+export function chooseAnswer(m: Mission): number | null {
+  const ok = (m.options ?? [])
+    .map((o, i) => ({ i, n: cardCount(o), reached: reaches(m, o) }))
+    .filter((o) => o.reached);
+  if (ok.length === 0) return null;
+  const fewest = Math.min(...ok.map((o) => o.n));
+  const best = ok.filter((o) => o.n === fewest);
+  return best.length === 1 ? (best[0]?.i ?? null) : null;
+}
+
+/** Where the given program of a "predict" mission ends. */
+export function predictAnswer(m: Mission): Cell | null {
+  const run = runJunior(
+    m,
+    (m.given ?? []).filter((b): b is Block => b !== null)
+  );
+  if (run.outcome === 'bumped' || run.outcome === 'off') return null;
+  return run.steps.at(-1)?.cell ?? parseCell(m.start.cell);
+}
+
+/** Problems with the parts that depend on the mission's kind and card limits (FR-12, FR-14). */
+function kindProblems(m: Mission, id: string): string[] {
+  const p: string[] = [];
+  const given = m.given;
+  const needsGiven = ['complete', 'fix', 'predict', 'shorten'].includes(m.kind);
+  if (needsGiven && (!Array.isArray(given) || given.length === 0)) {
+    return [`${id}: a "${m.kind}" mission needs "given", the program it starts with`];
+  }
+  if (!needsGiven && given !== undefined)
+    p.push(`${id}: only complete, fix, predict and shorten missions have "given"`);
+  if (m.kind === 'choose') {
+    if (!Array.isArray(m.options) || m.options.length < 2 || m.options.length > 3) {
+      return [...p, `${id}: a "choose" mission needs 2 or 3 "options"`];
+    }
+  } else if (m.options !== undefined) p.push(`${id}: only choose missions have "options"`);
+  const known = (b: unknown) => b === null || BLOCKS.includes(b as Block);
+  for (const prog of [...(given ? [given] : []), ...(m.options ?? [])]) {
+    if (!prog.every(known)) p.push(`${id}: programs must use cards from ${BLOCKS.join(', ')}`);
+  }
+  if (m.cards !== undefined && m.max_cards !== undefined)
+    p.push(`${id}: give either "cards" (exact set) or "max_cards", not both`);
+  if (m.cards !== undefined) {
+    if (!Array.isArray(m.cards) || m.cards.length < 2 || m.cards.length > 8)
+      p.push(`${id}: "cards" lists 2 to 8 cards`);
+    else if (
+      !m.cards.every((c) => {
+        const bs = cardBlocks(c);
+        return (
+          (bs.length === 1 && m.blocks.includes(bs[0] as Block) && !isRepeat(bs[0] as Block)) ||
+          (bs.length === 2 &&
+            isRepeat(bs[0] as Block) &&
+            m.blocks.includes(bs[1] as Block) &&
+            MOVES.includes(bs[1] as Action))
+        );
+      })
+    )
+      p.push(`${id}: every card in "cards" is a palette card, or "xN card" for a move`);
+  }
+  if (m.max_cards !== undefined && (!Number.isInteger(m.max_cards) || m.max_cards < 1))
+    p.push(`${id}: "max_cards" is a whole number from 1`);
+  if (p.length) return p;
+
+  const best = m.best;
+  switch (m.kind) {
+    case 'build': {
+      if (m.cards) {
+        const all = m.cards.map(cardBlocks);
+        let solved = false;
+        for (const o of orders(all)) {
+          if (reaches(m, o.flat())) {
+            solved = true;
+            break;
+          }
+        }
+        if (!solved) p.push(`${id}: no order of the given "cards" reaches the goal`);
+        if (best !== m.cards.length)
+          p.push(`${id}: "best" must be the number of cards (${m.cards.length})`);
+        return p;
+      }
+      break;
+    }
+    case 'complete': {
+      const gaps = (given ?? []).filter((b) => b === null).length;
+      if (gaps < 1 || gaps > 3) return [`${id}: a "complete" program has 1 to 3 gaps (null)`];
+      let solved = false;
+      for (const f of fills(m)) {
+        if (reaches(m, f)) {
+          solved = true;
+          break;
+        }
+      }
+      if (!solved) p.push(`${id}: no way to fill the gaps reaches the goal`);
+      const n = cardCount((given ?? []).filter((b): b is Block => b !== null)) + gaps;
+      if (best !== n) p.push(`${id}: "best" must be the number of cards when filled (${n})`);
+      return p;
+    }
+    case 'fix': {
+      if ((given ?? []).includes(null)) return [`${id}: a "fix" program has no gaps`];
+      if (reaches(m, given as Block[]))
+        p.push(`${id}: the program to fix already reaches the goal`);
+      break;
+    }
+    case 'shorten': {
+      if ((given ?? []).includes(null)) return [`${id}: a "shorten" program has no gaps`];
+      if (!reaches(m, given as Block[]))
+        p.push(`${id}: the program to shorten must reach the goal`);
+      else if (cardCount(given as Block[]) <= best)
+        p.push(`${id}: the program to shorten must have more cards than "best"`);
+      break;
+    }
+    case 'predict': {
+      if ((given ?? []).includes(null)) return [`${id}: a "predict" program has no gaps`];
+      const end = predictAnswer(m);
+      if (!end) return [`${id}: the program to predict must not bump`];
+      if (cellName(end) !== m.target)
+        p.push(`${id}: "target" must be where the program ends (${cellName(end)})`);
+      const n = cardCount(given as Block[]);
+      if (best !== n) p.push(`${id}: "best" must be the number of cards in "given" (${n})`);
+      return p;
+    }
+    case 'choose': {
+      const answer = chooseAnswer(m);
+      if (answer === null)
+        return [`${id}: exactly one option must reach the goal with the fewest cards`];
+      const n = cardCount(m.options?.[answer] ?? []);
+      if (best !== n) p.push(`${id}: "best" must be the right option's number of cards (${n})`);
+      return p;
+    }
+  }
+  if (m.max_cards !== undefined && best > m.max_cards)
+    p.push(`${id}: "max_cards" (${m.max_cards}) is fewer than the fewest cards (${best})`);
+  return p;
+}
+
 /** Problems with a mission file (the build fails on any). */
 export function missionProblems(raw: unknown, id: string): string[] {
   const p: string[] = [];
@@ -320,6 +579,16 @@ export function missionProblems(raw: unknown, id: string): string[] {
     p.push(`${id}: theme must be rhino-water, bee-flower or bus-school`);
   }
   if (p.length) return p;
+  const byKind = kindProblems(m as Mission, id);
+  if (byKind.length) return byKind;
+  // Complete, predict, choose and Parsons missions are checked by their kind above.
+  if (
+    m.kind === 'complete' ||
+    m.kind === 'predict' ||
+    m.kind === 'choose' ||
+    (m.kind === 'build' && m.cards)
+  )
+    return p;
   const fewest = fewestBlocks(m as Mission);
   if (fewest === null) p.push(`${id}: the target can't be reached with these blocks`);
   else if (fewest !== m.best)

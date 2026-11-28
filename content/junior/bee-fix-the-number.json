@@ -1,0 +1,22 @@
+{
+  "id": "bee-fix-the-number",
+  "grades": [1],
+  "term": 2,
+  "caps": ["C.4", "C.5"],
+  "kind": "fix",
+  "mode": "arrows",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A4",
+    "heading": "N"
+  },
+  "target": "D1",
+  "obstacles": [],
+  "blocks": ["north", "east", "south", "west", "x2", "x3"],
+  "given": ["x3", "north", "x2", "east"],
+  "best": 2,
+  "theme": "bee-flower"
+}

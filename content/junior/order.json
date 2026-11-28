@@ -1,4 +1,20 @@
 {
   "about": "The order Junior missions appear in, easiest first (spec docs/specs/junior.md FR-4).",
-  "missions": ["bee-to-flower", "rhino-to-water", "bus-to-school"]
+  "missions": [
+    "bee-to-flower",
+    "bee-where-it-stops",
+    "bee-pack-the-cards",
+    "rhino-shortest-way",
+    "bus-wrong-arrow",
+    "rhino-fill-the-gap",
+    "rhino-to-water",
+    "bee-fix-the-number",
+    "bus-where-it-stops",
+    "rhino-make-it-shorter",
+    "bus-fill-the-turn",
+    "bus-to-school",
+    "rhino-fix-the-turn",
+    "bee-which-way",
+    "bus-six-cards"
+  ]
 }

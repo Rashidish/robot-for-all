@@ -1,6 +1,11 @@
 // Junior grid programs (spec docs/specs/junior.md FR-2 to FR-5).
 import { describe, expect, it } from 'vitest';
 import {
+  cardsLeft,
+  chooseAnswer,
+  keepsGiven,
+  parsonsLeft,
+  predictAnswer,
   type Block,
   cardCount,
   expand,
@@ -191,6 +196,108 @@ describe('missions', () => {
       { drive: 150 },
       { drive: 150 },
       { turn: -90 }
+    ]);
+  });
+});
+
+describe('mission kinds and card limits (FR-12, FR-14)', () => {
+  const base: Mission = {
+    id: 'm',
+    grades: [1],
+    term: 2,
+    caps: ['C.3'],
+    kind: 'build',
+    mode: 'arrows',
+    grid: { cols: 4, rows: 4 },
+    start: { cell: 'A1', heading: 'E' },
+    target: 'D3',
+    obstacles: [],
+    blocks: ['east', 'south', 'x2', 'x3'],
+    best: 2,
+    theme: 'rhino-water'
+  };
+
+  it('complete: a gap that can be filled; the given cards stay in place', () => {
+    const m: Mission = {
+      ...base,
+      kind: 'complete',
+      given: ['x3', 'east', null],
+      best: 2
+    };
+    expect(missionProblems(m, 'm')).toEqual([]);
+    expect(keepsGiven(m, ['x3', 'east', 'x2', 'south'])).toBe(true);
+    expect(keepsGiven(m, ['east', 'x2', 'south'])).toBe(false);
+    expect(missionProblems({ ...m, given: ['north', null] }, 'm')).toEqual(
+      [
+        'm: no way to fill the gaps reaches the goal',
+        'm: "best" must be the number of cards when filled (2)'
+      ].slice(0, 1)
+    );
+    expect(missionProblems({ ...m, given: ['x3', 'east'] }, 'm')).toEqual([
+      'm: a "complete" program has 1 to 3 gaps (null)'
+    ]);
+  });
+
+  it('fix and shorten: the given program must be wrong, or working but long', () => {
+    expect(
+      missionProblems({ ...base, kind: 'fix', given: ['x3', 'east', 'x3', 'south'] }, 'm')
+    ).toEqual([]);
+    expect(
+      missionProblems({ ...base, kind: 'fix', given: ['x3', 'east', 'x2', 'south'] }, 'm')
+    ).toEqual(['m: the program to fix already reaches the goal']);
+    expect(
+      missionProblems(
+        { ...base, kind: 'shorten', given: ['east', 'east', 'east', 'south', 'south'] },
+        'm'
+      )
+    ).toEqual([]);
+    expect(
+      missionProblems({ ...base, kind: 'shorten', given: ['x3', 'east', 'x2', 'south'] }, 'm')
+    ).toEqual(['m: the program to shorten must have more cards than "best"']);
+  });
+
+  it('predict: the target is where the given program ends', () => {
+    const m: Mission = { ...base, kind: 'predict', given: ['x2', 'east', 'south'], target: 'C2' };
+    expect(predictAnswer(m)).toEqual({ col: 2, row: 1 });
+    expect(missionProblems(m, 'm')).toEqual([]);
+    expect(missionProblems({ ...m, target: 'D3' }, 'm')).toEqual([
+      'm: "target" must be where the program ends (C2)'
+    ]);
+  });
+
+  it('choose: exactly one option reaches the goal with the fewest cards', () => {
+    const m: Mission = {
+      ...base,
+      kind: 'choose',
+      options: [
+        ['east', 'east', 'east', 'south', 'south'],
+        ['x3', 'east', 'x2', 'south'],
+        ['x3', 'east', 'south']
+      ]
+    };
+    expect(chooseAnswer(m)).toBe(1);
+    expect(missionProblems(m, 'm')).toEqual([]);
+    expect(missionProblems({ ...m, options: [['x3', 'east', 'south'], ['east']] }, 'm')).toEqual([
+      'm: exactly one option must reach the goal with the fewest cards'
+    ]);
+  });
+
+  it('Parsons cards and a card limit: what is left, and the build checks', () => {
+    const m: Mission = { ...base, cards: ['x3 east', 'x2 south'], best: 2 };
+    expect(missionProblems(m, 'm')).toEqual([]);
+    expect(parsonsLeft(m, ['x3', 'east'])).toEqual(
+      new Map([
+        ['x3 east', 0],
+        ['x2 south', 1]
+      ])
+    );
+    expect(missionProblems({ ...m, cards: ['x3 east', 'south'] }, 'm')).toEqual([
+      'm: no order of the given "cards" reaches the goal'
+    ]);
+    const limited: Mission = { ...base, max_cards: 3 };
+    expect(cardsLeft(limited, ['x3', 'east'])).toBe(2);
+    expect(missionProblems({ ...base, max_cards: 1 }, 'm')).toEqual([
+      'm: "max_cards" (1) is fewer than the fewest cards (2)'
     ]);
   });
 });

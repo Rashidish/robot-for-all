@@ -32,7 +32,7 @@ test.describe('Junior (Grades R–2)', () => {
     expect(overflow).toBe(false);
     await page.reload();
     await expect(
-      page.getByRole('button', { name: '2. Rhino to the water (2 stars)' })
+      page.getByRole('button', { name: '7. Rhino to the water (2 stars)' })
     ).toBeVisible();
   });
 
@@ -112,5 +112,80 @@ test.describe('Junior printables and projector (step 2)', () => {
       .toBeGreaterThan(before);
     await big.click();
     await expect(big).toHaveAttribute('aria-pressed', 'false');
+  });
+});
+
+test.describe('Junior mission kinds and card limits (step 4)', () => {
+  const tap = (page: import('@playwright/test').Page, name: string) =>
+    page.getByRole('group', { name: 'Blocks' }).getByRole('button', { name, exact: true }).click();
+
+  test('predict: tap the square where the bee stops, then watch', async ({ page }) => {
+    await page.goto('/code/junior/#bee-where-it-stops');
+    await expect(page.locator('.task')).toHaveText('Where will it stop? Tap the square.');
+    await expect(page.getByRole('group', { name: 'Blocks' })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Square B2' }).click();
+    await expect(page.getByText('Not quite. Watch, then try again.')).toBeVisible({
+      timeout: 10_000
+    });
+    // Tapping the mission again starts it again.
+    await page.getByRole('button', { name: /^2\. / }).click();
+    await page.getByRole('button', { name: 'Square C2' }).click();
+    await expect(page.getByText("Yes, that's right!")).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('choose: the shortest way that works', async ({ page }) => {
+    await page.goto('/code/junior/#rhino-shortest-way');
+    await page.getByRole('button', { name: /^Way 3:/ }).click();
+    await expect(page.getByText('Not quite. Watch, then try again.')).toBeVisible({
+      timeout: 15_000
+    });
+    await page.getByRole('button', { name: /^Way 2:/ }).click();
+    await expect(page.getByText("Yes, that's right!")).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('complete: the given cards stay; fill the empty box', async ({ page }) => {
+    await page.goto('/code/junior/#rhino-fill-the-gap');
+    const row = page.getByRole('list', { name: 'Your program' });
+    await expect(row.getByRole('img', { name: 'Empty box' })).toHaveCount(1);
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByText('Fill the empty box first.')).toBeVisible();
+    await row
+      .getByRole('button', { name: /^Go right/ })
+      .first()
+      .click();
+    await expect(page.getByText('This card stays.')).toBeVisible();
+    await tap(page, 'Go down');
+    await expect(row.getByRole('img', { name: 'Empty box' })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByText('Well done! The best way!')).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('Parsons cards: each card once, with a count; a card limit says how many are left', async ({
+    page
+  }) => {
+    await page.goto('/code/junior/#bee-pack-the-cards');
+    const blocks = page.getByRole('group', { name: 'Blocks' });
+    await blocks.getByRole('button', { name: 'Go right, 2 left' }).click();
+    await blocks.getByRole('button', { name: 'Go down, 1 left' }).click();
+    await blocks.getByRole('button', { name: 'Go right, 1 left' }).click();
+    await expect(blocks.getByRole('button', { name: 'Go right, 0 left' })).toBeDisabled();
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByText('Well done! The best way!')).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('button', { name: /^15\. / }).click();
+    await expect(page.getByText('6 left', { exact: true })).toBeVisible();
+    await tap(page, 'Forward');
+    await expect(page.getByText('5 left', { exact: true })).toBeVisible();
+  });
+
+  test('shorten: it works already; fewer cards earn the stars', async ({ page }) => {
+    await page.goto('/code/junior/#rhino-make-it-shorter');
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByText('It works. Can you use fewer cards?')).toBeVisible({
+      timeout: 15_000
+    });
+    await page.getByRole('button', { name: 'Clear' }).click();
+    for (const b of ['Go right', 'Three times', 'Go down', 'Two times']) await tap(page, b);
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByText('Well done! The best way!')).toBeVisible({ timeout: 15_000 });
   });
 });

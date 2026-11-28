@@ -1,0 +1,22 @@
+{
+  "id": "rhino-fill-the-gap",
+  "grades": [1],
+  "term": 1,
+  "caps": ["C.1", "C.3"],
+  "kind": "complete",
+  "mode": "arrows",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A1",
+    "heading": "E"
+  },
+  "target": "D4",
+  "obstacles": ["B3"],
+  "blocks": ["north", "east", "south", "west"],
+  "given": ["east", "east", "east", null, "south", "south"],
+  "best": 6,
+  "theme": "rhino-water"
+}
