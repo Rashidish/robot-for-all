@@ -51,6 +51,23 @@
   - Add the build tests to `docs/test-plan.md` (B61).
 - [ ] ⏸ **Owner review of the Machines content.**
 
+### Junior stories (spec `docs/specs/junior-stories.md` v0.1, draft)
+
+- [ ] ⏸ **Owner approves the stories spec.** If you already have stories work, push it first as a **draft PR** (don't merge it) and describe it in the PR, so the plan can be adapted to it.
+- [ ] **JS-1: scenes and characters.** Content format, 6 scenes (city, neighbourhood, village, bush, garden, classroom), 12 characters as SVG, a card row per character, ▶ (S-1, S-2, S-7).
+- [ ] **JS-2: Retell and the eight stories.** Picture strips, checking, stars (S-3).
+- [ ] **JS-3: Make your own**, saved on the device (S-4).
+- [ ] **JS-4: voices.**
+  - Recording up to 5 s with the microphone released straight after.
+  - Six cartoon filters (Giant, Mouse, Robot, Bee, Boy, Girl), applied **before** storage.
+  - No natural voice for children; adults can switch theirs on or off.
+  - Deletion on sign-out of a shared device.
+  - The consent line (S-6).
+  - ⏸ The lawyer checks the consent wording before this goes live.
+- [ ] **JS-5: sets.** Teachers and parents set stories (S-5).
+- [ ] **JS-6: big screen, offline, size and accessibility pass** (S-8, S-9).
+- [ ] ⏸ **Owner review of stories.**
+
 ## Done
 
 - [x] Machines step 1: format, library, three topics (2026-11-28, #142)
@@ -64,6 +81,5 @@
 ## Parked (planning chat; not for Claude Code yet)
 
 - Funding model: project doc `funding-model_v0.1`; owner's four questions open.
-- Junior "stories with characters": after the Junior launch (CLAUDE.md §4).
 - Extension folder format: after the front office is complete (CLAUDE.md §4).
 - Owner setup in Cloudflare and GitHub: `ACCESS_AUD` / `ACCESS_TEAM`, `GITHUB_APP_LOGIN`, Web Analytics off, rulesets, redirects.
