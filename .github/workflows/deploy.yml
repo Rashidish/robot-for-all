@@ -43,7 +43,7 @@ jobs:
       - name: On-screen micro:bit (cached; built from source when its version or patches change)
         id: simulator-cache
         if: env.HAS_TOKEN == 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: apps/web/public/simulator
           key: simulator-${{ hashFiles('apps/web/simulator.json', 'patches/simulator/**', 'scripts/build-simulator.sh', 'scripts/vendor-simulator.mjs') }}
