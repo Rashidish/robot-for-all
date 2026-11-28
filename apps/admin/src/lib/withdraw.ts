@@ -14,14 +14,16 @@ import {
 } from '../../../../packages/settings/src/withdrawn';
 import type { GitHub } from './github';
 import { WITHDRAWN_PATH } from './merge';
-import { readLessons } from './review';
+import { MACHINE } from './machines';
+import { readItems, readLessons } from './review';
 
 export const TYPE_LABELS: Record<WithdrawType, string> = {
   lesson: 'Lesson',
   template: 'Template',
   world: 'World or course',
   season: 'Season',
-  language: 'Language'
+  language: 'Language',
+  machine: 'Machines topic'
 };
 
 export interface LiveItem {
@@ -35,12 +37,16 @@ export async function readWithdrawn(gh: GitHub): Promise<{ list: WithdrawnList; 
   return { list: buildWithdrawn(JSON.parse(file.text)), sha: file.sha };
 }
 
-/** Everything live that could be withdrawn: published lessons and their templates, worlds, seasons. */
+/**
+ * Everything live that could be withdrawn: published lessons and their templates, worlds,
+ * seasons and published Machines topics.
+ */
 export async function liveItems(gh: GitHub, list: WithdrawnList): Promise<LiveItem[]> {
-  const [lessons, worlds, seasons] = await Promise.all([
+  const [lessons, worlds, seasons, machines] = await Promise.all([
     readLessons(gh),
     gh.listDir('content/worlds'),
-    gh.listDir('content/seasons')
+    gh.listDir('content/seasons'),
+    readItems(gh, MACHINE)
   ]);
   const out: LiveItem[] = [];
   for (const l of lessons.filter((x) => x.status === 'published')) {
@@ -56,6 +62,8 @@ export async function liveItems(gh: GitHub, list: WithdrawnList): Promise<LiveIt
     const id = f.name.replace(/\.json$/, '');
     out.push({ type: 'season', id, label: id });
   }
+  for (const t of machines.filter((x) => x.status === 'published'))
+    out.push({ type: 'machine', id: t.id, label: `${t.title} (${t.id})` });
   const off = new Set(list.items.map((i) => `${i.type}:${i.id}`));
   return out.filter((i) => !off.has(`${i.type}:${i.id}`));
 }

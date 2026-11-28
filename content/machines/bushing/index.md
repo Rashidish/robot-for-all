@@ -6,7 +6,7 @@ grades: [4, 5, 6]
 card: A bushing is a smooth sleeve an axle spins inside. It stops the axle rubbing on the frame, so it turns easily and the hole doesn't wear bigger.
 picture_alt: "A skewer axle (1) passes through a short piece of straw (2) that sits in a hole in a cardboard frame (3). A wheel (4) is on the end of the axle. An arrow shows the axle turning."
 stand_ins:
-  - { item: a short piece of drinking straw, note: about 2 cm, slid onto the skewer }
+  - { item: a short piece of drinking straw, note: "about 2 cm, slid onto the skewer" }
   - { item: the empty tube of an old ballpoint pen }
 real_part: a bronze or plastic bushing
 lessons: []

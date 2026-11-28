@@ -9,6 +9,8 @@ import { localTitles } from '../../lessons/translations';
 import { familyName } from '../../machines/families';
 import { getMachines, picture, type MachineEntry } from '../../machines/load';
 import { usedIn } from '../../machines/schema';
+import { localMachine } from '../../machines/translations';
+import { isOff } from '../../withdrawn';
 
 export async function getStaticPaths() {
   const topics = await getMachines();
@@ -22,11 +24,19 @@ interface Props {
 }
 
 const { topic, topics } = Astro.props;
-const { data } = topic;
-const { Content } = await render(topic);
+// The topic in this page's language when a translation may be shown (FR-10), else English.
+const local = await localMachine(topic, pageLang());
+const { data } = local;
+const textLang = local.lang === pageLang() ? undefined : local.lang;
+const { Content } = await render(local.entry);
+const withdrawnHere = isOff('machine', topic.id);
 const lessons = await getLessons();
 const titles = await localTitles(lessons, pageLang());
-const titleOf = new Map(topics.map((t) => [t.id, t.data.title]));
+const titleOf = new Map(
+  await Promise.all(
+    topics.map(async (t) => [t.id, (await localMachine(t, pageLang())).data.title] as const)
+  )
+);
 const topicLessons = data.lessons.filter((id) => titles[id]);
 const using = usedIn(
   topic.id,
@@ -42,24 +52,40 @@ const svg = picture(topic.id) ?? '';
     <a href={localHref('/machines/')}>← {m.machine_back()}</a>
   </p>
 
+  {withdrawnHere && (
+    <p class="draft" role="note">
+      {m.machine_withdrawn_notice()}
+    </p>
+  )}
+
+  {local.notice && (
+    <p class="draft" role="note">
+      {local.notice === 'english'
+        ? m.machine_in_english_notice()
+        : local.notice === 'stale'
+          ? m.machine_translation_stale_notice()
+          : m.lesson_translation_draft_notice()}
+    </p>
+  )}
+
   {data.status !== 'published' && (
     <p class="draft" role="note">
       {m.machine_draft_notice()}
     </p>
   )}
 
-  <h1 lang="en">{data.title}</h1>
+  <h1 lang={textLang}>{data.title}</h1>
 
   <ul class="facts">
     <li>{familyName(data.family)}</li>
     <li>{m.lesson_grades({ grades: data.grades.join('–') })}</li>
   </ul>
 
-  <figure class="picture" role="img" aria-label={data.picture_alt}>
+  <figure class="picture" role="img" aria-label={data.picture_alt} lang={textLang}>
     <Fragment set:html={svg} />
   </figure>
 
-  <p class="card-text" lang="en">
+  <p class="card-text" lang={textLang}>
     {data.card}
   </p>
 
@@ -69,9 +95,7 @@ const svg = picture(topic.id) ?? '';
       {learnFirst.map((id, i) => (
         <>
           {i > 0 && ', '}
-          <a href={localHref(`/machines/${id}/`)} lang="en">
-            {titleOf.get(id)}
-          </a>
+          <a href={localHref(`/machines/${id}/`)}>{titleOf.get(id)}</a>
         </>
       ))}
     </p>
@@ -83,7 +107,7 @@ const svg = picture(topic.id) ?? '';
   >
     <h2 id="safety-title">⚠ {m.lesson_safety_title()}</h2>
     {data.safety.adult_help && <p class="adult">{m.lesson_adult_help()}</p>}
-    <ul lang="en">
+    <ul lang={textLang}>
       {data.safety.notes.map((note) => (
         <li>{note}</li>
       ))}
@@ -93,7 +117,7 @@ const svg = picture(topic.id) ?? '';
   <section class="stand-ins" aria-labelledby="stand-ins-title">
     <h2 id="stand-ins-title">{m.machine_stand_ins_title()}</h2>
     <p>{m.machine_stand_ins_intro()}</p>
-    <ul lang="en">
+    <ul lang={textLang}>
       {data.stand_ins.map((s) => (
         <li>
           {s.item}
@@ -104,7 +128,7 @@ const svg = picture(topic.id) ?? '';
     <p>{m.machine_real_part({ part: data.real_part })}</p>
   </section>
 
-  <div class="topic-body" lang="en">
+  <div class="topic-body" lang={textLang}>
     <Content />
   </div>
 
@@ -143,9 +167,7 @@ const svg = picture(topic.id) ?? '';
       <ul>
         {related.map((id) => (
           <li>
-            <a href={localHref(`/machines/${id}/`)} lang="en">
-              {titleOf.get(id)}
-            </a>
+            <a href={localHref(`/machines/${id}/`)}>{titleOf.get(id)}</a>
           </li>
         ))}
       </ul>

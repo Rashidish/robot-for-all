@@ -7,6 +7,7 @@ import DownloadLesson from '../../components/DownloadLesson.astro';
 import HelperPanel from '../../components/HelperPanel.astro';
 import MachinesStrip from '../../components/MachinesStrip.astro';
 import { getMachines } from '../../machines/load';
+import { localMachine } from '../../machines/translations';
 import PrintButton from '../../components/PrintButton.astro';
 import { findTemplate, templateFile, templatePage } from '../../templates/load';
 import { starterLink } from '../../lessons/programs';
@@ -50,7 +51,11 @@ const starter = data.starter_program
 const withdrawnHere = isOff('lesson', lesson.id);
 // "Parts in this robot" (machines spec FR-6): the lesson's topics that are visible in this build.
 const topicById = new Map((await getMachines()).map((t) => [t.id, t]));
-const parts = lesson.data.machines.flatMap((id) => topicById.get(id) ?? []);
+const parts = await Promise.all(
+  lesson.data.machines
+    .flatMap((id) => topicById.get(id) ?? [])
+    .map(async (t) => ({ id: t.id, local: await localMachine(t, pageLang()) }))
+);
 ---
 
 <BaseLayout title={data.title}>

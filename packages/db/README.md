@@ -34,6 +34,7 @@ file-name order. Every permission is enforced here, in the database, with row-le
 | `0027_name_key_rotation.sql` | Name key rotation: `names_to_rekey` and `rekey_names` (service only; locked bytes only, saved only while still on the old key version, count audit-logged), `name_key_counts` and, for the data protection officer, `name_key_counts_for_officer` |
 | `0028_ai_helper.sql` | The AI helper (M6): settings (off by default; caps, models and prompts per audience), `helper_take` (switches, consent control `ai_helper`, class switch `helper_allowed`, daily, class, month and budget caps, pause after refusals; returns the nicknames to strip), `helper_record`, Common questions with one 👎 per person (hidden at 3), owner-only settings and usage totals without ids; usage per person deleted after 31 days |
 | `0029_helper_month_for_owner.sql` | `helper_month_for_owner`: the month's questions and estimated spend against the caps, for back office AI → Helper settings (owner only) |
+| `0030_machine_reviews.sql` | Machines topics reviewed like badges: content type `machine` (reviews and withdrawals), its checklist (`explains_right`, `safety`, `stand_ins`, `picture_no_words`, `age_language`, `caps`, `ai_read`), no build test |
 
 ## Tests
 

@@ -1,12 +1,21 @@
 ---
 // The Machine library (machines spec FR-1): every topic, grouped by family.
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { localHref, m } from '../../i18n';
+import { localHref, m, pageLang } from '../../i18n';
 import { familyName } from '../../machines/families';
 import { getMachines } from '../../machines/load';
+import { localMachine } from '../../machines/translations';
 import { MACHINE_FAMILIES } from '../../machines/schema';
 
 const topics = await getMachines();
+// Each topic's title and card in the page's language where a translation may be shown (FR-10).
+const local = new Map(
+  await Promise.all(topics.map(async (t) => [t.id, await localMachine(t, pageLang())] as const))
+);
+const textLang = (id: string) => {
+  const l = local.get(id)?.lang ?? 'en';
+  return l === pageLang() ? undefined : l;
+};
 const families = MACHINE_FAMILIES.map((family) => ({
   family,
   topics: topics.filter((t) => t.data.family === family)
@@ -40,11 +49,11 @@ const grades = [...new Set(topics.flatMap((t) => t.data.grades))].sort((a, b) =>
       {topics.map((topic) => (
         <article class="card" data-machine={topic.id} data-grades={topic.data.grades.join(' ')}>
           <h3>
-            <a href={localHref(`/machines/${topic.id}/`)} lang="en">
-              {topic.data.title}
+            <a href={localHref(`/machines/${topic.id}/`)} lang={textLang(topic.id)}>
+              {local.get(topic.id)?.data.title}
             </a>
           </h3>
-          <p lang="en">{topic.data.card}</p>
+          <p lang={textLang(topic.id)}>{local.get(topic.id)?.data.card}</p>
           <p class="meta">
             {m.lesson_grades({ grades: topic.data.grades.join('–') })}
             {topic.data.status !== 'published' && <> · {m.machine_draft_notice()}</>}

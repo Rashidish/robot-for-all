@@ -1,6 +1,6 @@
 # Spec: Machines — how each part works, one library used everywhere
 
-> **Version:** 0.3 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28; build now)
+> **Version:** 0.4 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28; build now)
 > Depends on: lesson format (ADR-0004, CLAUDE.md §6), offline service worker (`apps/web/src/sw/`), back-office content review (`docs/specs/back-office-more-content.md`), lesson translations (§2.7 there). Brainstorm: build-plan board, "Mechanical parts: brainstorm" and "Three ways in, one set of Machines topic pages".
 
 ## 1. Purpose
@@ -57,7 +57,7 @@ Lessons teach a robot; they don't stop to explain each part inside it. A learner
 | FR-2 | Each topic has a page at `/machines/<id>/` with, in order: its picture and card, "good to know first", safety, stand-ins and the real part, how it works, try it (a quick test), topic lessons, "Used in", related topics, syllabus links. |
 | FR-3 | Each topic has a **card**: one picture and at most 40 words, shown inside lessons. |
 | FR-4 | Topics are content, not code: one folder per topic in `content/machines/` (§6). Editors add a topic without touching code. |
-| FR-5 | A lesson lists the topics it uses in a new front-matter field `machines: [ids]`. The build fails if an id doesn't exist or is withdrawn. |
+| FR-5 | A lesson lists the topics it uses in a new front-matter field `machines: [ids]`. The build fails if an id doesn't exist. A withdrawn topic is left out of the lessons' strips on the live site, so withdrawing a topic never needs its lessons changed. |
 | FR-6 | A lesson shows a **"Parts in this robot"** strip when `machines` is not empty. Tapping a part opens its card in a dialog that works with keyboard and screen reader and closes back to the same place. |
 | FR-7 | A topic lists its own **topic lessons** in order (`lessons: [ids]`). "Used in" is computed: every published lesson whose `machines` includes the topic, grouped by phase. |
 | FR-8 | A lesson or topic can **suggest** a topic to do first (`learn_first`). The app shows "Good to know first: Bushing" and never blocks the lesson. |
@@ -149,7 +149,12 @@ Owner, 2026-11-28: build now. One PR per step; ⏸ marks a stop for review.
    - the "Parts in this robot" strip near the top of each lesson (`MachinesStrip.astro`): each part opens its card in a `<dialog>` (Escape and Close shut it, focus returns to the part; without JavaScript the part is a link to the topic). Cards are part of the lesson page, so "Download for offline" saves them;
    - mapping: lessons tag the three example topics where they use them (`p1-crank-01`, `p1-gear-01`, `p1-cam-01`, `p1-wheel-01`, `p1-linkage-02`); the other lessons get tags as their topics arrive in step 4;
    - filters: grade on the Machine library; "Part" on the lessons list (`?machine=`).
-3. **Back office:** topics as a content kind in review, withdrawal, translations (`translation-hash` covers topics).
+3. *(built 2026-11-28)* **Back office:**
+   - **Content → Machines** in the back office lists every topic (family, status, reviewer, change waiting); each topic's page shows its picture and card and offers the decisions. Sent for review → approved (publishes, `reviewed_by` set) or changes asked for; unpublish. A topic has **no build test**: its stand-ins are build-tested through the test plan (B61) and its topic lessons. The reviewer ticks seven items: explains it right, safety, stand-ins, picture without words, grades and plain words, CAPS links, read every section. Database: migration `0030_machine_reviews.sql` (content type `machine`, "not your own" as for lessons). The merge check accepts a pull request that changes only a topic's status lines.
+   - **Withdrawal:** `content/site/withdrawn.json` takes `machine` items; the Withdrawn page lists published topics. A withdrawn topic leaves the Machine library, its page and every lesson's strip on the live site (FR-5); the drafts preview keeps it, marked.
+   - **Translations** (FR-10): `content/machines/<id>/index.<lang>.md` holds `title`, `card`, `picture_alt`, `stand_ins` (item and note), `real_part`, `safety_notes`, the body with the same `##` sections, and `status`, `ai_generated`, `reviewed_by`, `translated_from`. `npm run translation-hash -- <topic id>` covers `index.md` and `picture.svg`, so new callouts mark translations "needs updating". The library, topic pages and lesson cards show the translation where one may be shown, else English with "Not yet in your language". The build fails on a translation whose stand-ins, notes, safety notes or sections don't line up with English. One draft example: `bushing` in isiZulu.
+   - Found on the way: an unquoted comma in a stand-in's note lost words silently (`note: about 2 cm, slid onto the skewer`); stand-ins are now checked strictly, so the build fails instead.
+   - Not yet: reviewing topic **translations** in the back office (Languages screen) and their coverage flags. They are drafts until then; a follow-up when the first topic translations are ready for review.
 4. **Starting set:**
    - the rest of the topics in §2, AI-drafted and marked `in_review`;
    - one topic lesson each for the three gear topics (idler train, rack and pinion, ring gear) with cutout templates.
@@ -182,3 +187,4 @@ Owner, 2026-11-28: build now. One PR per step; ⏸ marks a stop for review.
 | 0.1 | 2026-11-28 | First draft from the build-plan brainstorm: topics with their own lessons, one library in three places, tab named Machines |
 | 0.2 | 2026-11-28 | Approved; build now. Body is "How it works" and "Try it" (stand-ins from front matter); `picture.svg`; filters move to step 2; step 1 built |
 | 0.3 | 2026-11-28 | Step 2 built: "Parts in this robot" with cards, grade and part filters; lessons tagged where the example topics are used (the rest with step 4) |
+| 0.4 | 2026-11-28 | Step 3 built: topics reviewed and withdrawn in the back office (migration 0030), topic translations; FR-5: a withdrawn topic leaves the strips instead of failing the build |

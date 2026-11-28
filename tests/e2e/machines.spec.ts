@@ -131,3 +131,33 @@ test.describe('Machines', () => {
     await expect(lever).toBeHidden();
   });
 });
+
+test.describe('Machines in other languages (step 3, FR-10)', () => {
+  test('a translated topic shows in isiZulu, marked as a draft translation', async ({ page }) => {
+    await page.goto('/zu/machines/bushing/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ibhushi');
+    await expect(page.getByText('Ukuhumusha okusalungiswa: akukabuyekezwa.')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: 'Zama' })).toBeVisible();
+    await expect(page.getByText('cishe u-2 cm, lufakwe othini lokosa')).toBeVisible();
+  });
+
+  test('an untranslated topic shows in English, marked as English, in the library and in a lesson card', async ({
+    page
+  }) => {
+    await page.goto('/zu/machines/crank/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Crank');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveAttribute('lang', 'en');
+    await expect(
+      page.getByText('Akukabi bikho olimini lwakho, ngakho kuboniswa ngesiNgisi.')
+    ).toBeVisible();
+    await page.goto('/zu/machines/');
+    await expect(page.getByRole('link', { name: 'Ibhushi' })).toBeVisible();
+    await page.goto('/zu/lessons/p1-crank-01/');
+    await page.locator('a[data-machine-card="crank"]').click();
+    const card = page.getByRole('dialog');
+    await expect(card).toBeVisible();
+    await expect(
+      card.getByText('Akukabi bikho olimini lwakho, ngakho kuboniswa ngesiNgisi.')
+    ).toBeVisible();
+  });
+});

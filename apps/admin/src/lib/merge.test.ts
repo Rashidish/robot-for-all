@@ -201,4 +201,46 @@ describe('the back office merges only its own, status-only, checked, decided pul
       expect(merged).toEqual([]);
     });
   });
+  describe('a Machines topic', () => {
+    const M = 'content/machines/bushing/index.md';
+    const topic = readFileSync(join(import.meta.dirname, '../../../../', M), 'utf8');
+    const pr = (head: string) => {
+      const merged: string[] = [];
+      const gh = {
+        getPull: async () => ({
+          number: 11,
+          html_url: URL,
+          title: 'Bushing (bushing): approved',
+          state: 'open',
+          user: { login: APP },
+          head: { ref: 'admin/machine-bushing-20261128-150000', sha: 'head-sha' },
+          base: { ref: 'main' }
+        }),
+        pullFiles: async () => [{ filename: M, status: 'modified' }],
+        readFile: async (_p: string, ref: string) => ({
+          text: ref === 'main' ? topic : head,
+          sha: ref
+        }),
+        checks: async () => 'passed',
+        merge: async (_n: number, sha: string) => void merged.push(sha)
+      } as unknown as GitHub;
+      return { gh, merged };
+    };
+    const approved = topic
+      .replace(/^status:.*$/m, 'status: published')
+      .replace(/^reviewed_by:.*$/m, 'reviewed_by: "Reviewer 3"');
+
+    it('merges a status-only change', async () => {
+      const { gh, merged } = pr(approved);
+      expect((await mergeIfReady(gh, 11, { appLogin: APP, decided: decided(true) })).ok).toBe(true);
+      expect(merged).toEqual(['head-sha']);
+    });
+
+    it('waits when the card changed too', async () => {
+      const { gh, merged } = pr(approved.replace(/^card: .*$/m, 'card: Something else entirely.'));
+      const r = await mergeIfReady(gh, 11, { appLogin: APP, decided: decided(true) });
+      expect(r.waiting.join('; ')).toContain('more than the status lines');
+      expect(merged).toEqual([]);
+    });
+  });
 });
