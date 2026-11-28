@@ -1,0 +1,34 @@
+{
+  "id": "bee-where-it-stops",
+  "grades": [
+    0
+  ],
+  "term": 1,
+  "caps": [
+    "C.3",
+    "R.6"
+  ],
+  "kind": "predict",
+  "mode": "arrows-slide",
+  "grid": {
+    "cols": 3,
+    "rows": 3
+  },
+  "start": {
+    "cell": "A2",
+    "heading": "E"
+  },
+  "target": "C2",
+  "obstacles": [],
+  "blocks": [
+    "north",
+    "east",
+    "south",
+    "west"
+  ],
+  "given": [
+    "east"
+  ],
+  "best": 1,
+  "theme": "bee-flower"
+}

@@ -1,0 +1,41 @@
+{
+  "id": "bus-where-it-stops",
+  "grades": [
+    1
+  ],
+  "term": 3,
+  "caps": [
+    "C.3"
+  ],
+  "kind": "predict",
+  "mode": "arrows",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A1",
+    "heading": "E"
+  },
+  "target": "B3",
+  "obstacles": [
+    "D2"
+  ],
+  "blocks": [
+    "north",
+    "east",
+    "south",
+    "west",
+    "x2",
+    "x3"
+  ],
+  "given": [
+    "x2",
+    "east",
+    "x2",
+    "south",
+    "west"
+  ],
+  "best": 3,
+  "theme": "bus-school"
+}

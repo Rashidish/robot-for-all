@@ -9,7 +9,11 @@ import { juniorMissions } from '../../../junior/missions';
 const labels = Object.fromEntries(
   Object.entries(m)
     .filter(([key]) => key.startsWith('junior_'))
-    .map(([key, message]) => [key, (message as () => string)()])
+    // Words with a number or a square in them keep "{n}" and "{cell}", filled in on the page.
+    .map(([key, message]) => [
+      key,
+      (message as (inputs: Record<string, string>) => string)({ n: '{n}', cell: '{cell}' })
+    ])
 );
 ---
 

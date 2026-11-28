@@ -1,0 +1,54 @@
+{
+  "id": "bee-which-way",
+  "grades": [
+    2
+  ],
+  "term": 3,
+  "caps": [
+    "C.2",
+    "C.5"
+  ],
+  "kind": "choose",
+  "mode": "turns",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A1",
+    "heading": "S"
+  },
+  "target": "C3",
+  "obstacles": [],
+  "blocks": [
+    "forward",
+    "left",
+    "right",
+    "x2"
+  ],
+  "options": [
+    [
+      "x2",
+      "forward",
+      "right",
+      "x2",
+      "forward"
+    ],
+    [
+      "forward",
+      "forward",
+      "left",
+      "forward",
+      "forward"
+    ],
+    [
+      "x2",
+      "forward",
+      "left",
+      "x2",
+      "forward"
+    ]
+  ],
+  "best": 3,
+  "theme": "bee-flower"
+}

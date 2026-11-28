@@ -1,0 +1,39 @@
+{
+  "id": "bus-fill-the-turn",
+  "grades": [
+    2
+  ],
+  "term": 2,
+  "caps": [
+    "C.1",
+    "C.2",
+    "C.3"
+  ],
+  "kind": "complete",
+  "mode": "turns",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A4",
+    "heading": "N"
+  },
+  "target": "D1",
+  "obstacles": [],
+  "blocks": [
+    "forward",
+    "left",
+    "right",
+    "x3"
+  ],
+  "given": [
+    "x3",
+    "forward",
+    null,
+    "x3",
+    "forward"
+  ],
+  "best": 3,
+  "theme": "bus-school"
+}

@@ -1,0 +1,38 @@
+{
+  "id": "bee-pack-the-cards",
+  "grades": [
+    0
+  ],
+  "term": 2,
+  "caps": [
+    "C.1",
+    "C.2"
+  ],
+  "kind": "build",
+  "mode": "arrows-slide",
+  "grid": {
+    "cols": 3,
+    "rows": 3
+  },
+  "start": {
+    "cell": "A1",
+    "heading": "E"
+  },
+  "target": "C3",
+  "obstacles": [
+    "C1"
+  ],
+  "blocks": [
+    "north",
+    "east",
+    "south",
+    "west"
+  ],
+  "cards": [
+    "east",
+    "south",
+    "east"
+  ],
+  "best": 3,
+  "theme": "bee-flower"
+}
