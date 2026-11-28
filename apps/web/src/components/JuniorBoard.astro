@@ -1,0 +1,62 @@
+---
+// A Junior mission's board as a static picture (spec FR-6): the arrow cards and the picture mission
+// sheet print it. Same pictures as the screen (src/junior/icons.ts); no words.
+import { parseCell, type Mission } from '../../../../packages/sim/src/junior';
+import { ROCK_ICON, THEME } from '../junior/icons';
+
+interface Props {
+  mission: Mission;
+  label: string;
+}
+const { mission, label } = Astro.props;
+const SIZE = 64;
+const theme = THEME[mission.theme];
+const start = parseCell(mission.start.cell) ?? { col: 0, row: 0 };
+const target = parseCell(mission.target) ?? { col: 0, row: 0 };
+const angle = { N: 0, E: 90, S: 180, W: 270 }[mission.start.heading];
+const cells = Array.from({ length: mission.grid.rows * mission.grid.cols }, (_, i) => ({
+  col: i % mission.grid.cols,
+  row: Math.floor(i / mission.grid.cols)
+}));
+---
+
+<svg
+  class="junior-board"
+  viewBox={`0 0 ${mission.grid.cols * SIZE} ${mission.grid.rows * SIZE}`}
+  role="img"
+  aria-label={label}
+>
+  {cells.map((c) => (
+    <rect
+      x={c.col * SIZE + 2}
+      y={c.row * SIZE + 2}
+      width={SIZE - 4}
+      height={SIZE - 4}
+      rx="8"
+      fill={c.col === target.col && c.row === target.row ? '#d6ebf7' : '#e4efd6'}
+      stroke="#9aa58c"
+    />
+  ))}
+  {mission.obstacles.flatMap((o) => {
+    const p = parseCell(o);
+    return p
+      ? [
+          <g transform={`translate(${p.col * SIZE + 8} ${p.row * SIZE + 8}) scale(2)`}>
+            <path d={ROCK_ICON} fill="#7d6e5e" />
+          </g>
+        ]
+      : [];
+  })}
+  <g transform={`translate(${target.col * SIZE + 8} ${target.row * SIZE + 8}) scale(2)`}>
+    <path d={theme.target} fill={theme.targetColour} />
+  </g>
+  <g transform={`translate(${start.col * SIZE} ${start.row * SIZE})`}>
+    <g transform={`rotate(${angle} 32 32)`}>
+      <path d="M32 1l7 9H25z" fill="#222" />
+    </g>
+    <circle cx="32" cy="32" r="22" fill="#fff" stroke={theme.robotColour} stroke-width="4" />
+    <g transform="translate(16 16) scale(1.333)">
+      <path d={theme.robot} fill={theme.robotColour} fill-rule="evenodd" />
+    </g>
+  </g>
+</svg>

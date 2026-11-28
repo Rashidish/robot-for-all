@@ -17,6 +17,8 @@ export const START_ICON = 'M5 2.5v19h2.5v-7.5h11l-3-4.25 3-4.25h-11V2.5z';
 export const CLEAR_ICON = 'M7 4V2.5h10V4h4.5v2.5h-19V4zM4.5 8h15l-1.2 13.5H5.7z';
 export const UNDO_ICON =
   'M8.5 5H21v14H8.5L2 12zM11.6 8.6l-1.4 1.4 2 2-2 2 1.4 1.4 2-2 2 2 1.4-1.4-2-2 2-2-1.4-1.4-2 2z';
+export const BIG_ICON =
+  'M3 3h7v2.5H5.5V10H3zM14 3h7v7h-2.5V5.5H14zM3 14h2.5v4.5H10V21H3zM18.5 14H21v7h-7v-2.5h4.5z';
 export const PLAY_ICON = 'M7 4l13 8-13 8z';
 export const SPEAK_ICON = 'M3 9h4l5-4.5v15L7 15H3zM15.5 8.5a5 5 0 0 1 0 7M17.5 5.5a9 9 0 0 1 0 13';
 export const STAR_ICON =

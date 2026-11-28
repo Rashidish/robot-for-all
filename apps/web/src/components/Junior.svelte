@@ -23,7 +23,8 @@
     START_ICON,
     STAR_ICON,
     THEME,
-    UNDO_ICON
+    UNDO_ICON,
+    BIG_ICON
   } from '../junior/icons';
 
   interface Props {
@@ -51,6 +52,21 @@
   let stars = $state<Record<string, number>>({});
   let speak = $state(false);
   let announce = $state('');
+  // Projector layout (FR-8): a big board and blocks, full screen where the browser allows it.
+  let big = $state(false);
+  let root: HTMLDivElement | undefined = $state();
+  async function toggleBig() {
+    big = !big;
+    try {
+      if (big && root?.requestFullscreen && !document.fullscreenElement)
+        await root.requestFullscreen();
+      else if (!big && document.fullscreenElement) await document.exitFullscreen();
+    } catch {
+      // Full screen not allowed here: the big layout is enough.
+    }
+  }
+  // Links for adults, in this page's language (/zu/code/junior/ → /zu/code/junior/cards/).
+  const base = `${typeof location === 'undefined' ? '' : (/^\/[a-z]{2,3}(?=\/code\/)/.exec(location.pathname)?.[0] ?? '')}/code/junior/`;
 
   const place = () => {
     const c = parseCell(mission.start.cell) ?? { col: 0, row: 0 };
@@ -177,7 +193,7 @@
   const angle = { N: 0, E: 90, S: 180, W: 270 } as const;
 </script>
 
-<div class="junior">
+<div class="junior" class:big bind:this={root}>
   <nav class="missions" aria-label={t('junior_missions')}>
     {#each missions as m, i (m.id)}
       <button
@@ -342,6 +358,15 @@
     </button>
     <button
       type="button"
+      class="tool"
+      aria-label={t('junior_big')}
+      aria-pressed={big}
+      onclick={toggleBig}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d={BIG_ICON} /></svg>
+    </button>
+    <button
+      type="button"
       class="play"
       aria-label={t('junior_run')}
       disabled={running}
@@ -365,9 +390,65 @@
       <span class="visually-hidden">{announce}</span>
     {/if}
   </p>
+
+  <p class="adults">
+    <a href={`${base}cards/`}>{t('junior_cards_title')}</a>
+    <a href={`${base}sheet/${mission.id}/`}>{t('junior_print_mission')}</a>
+  </p>
 </div>
 
 <style>
+  .adults {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  .adults a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  /* Projector layout: board beside the blocks on a wide screen, everything bigger. */
+  .junior.big {
+    max-width: none;
+    background: #fffaf2;
+    padding: var(--space-4);
+  }
+  .junior.big .block {
+    width: 72px;
+    height: 72px;
+  }
+  .junior.big .block svg {
+    width: 48px;
+    height: 48px;
+  }
+  .junior.big .block.big {
+    width: 100%;
+    height: 88px;
+  }
+  .junior.big .title {
+    font-size: 2rem;
+  }
+  .junior.big .board {
+    width: min(100%, 40rem);
+  }
+  @media (min-width: 60rem) {
+    .junior.big {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      align-items: start;
+      align-content: start;
+    }
+    .junior.big > .missions,
+    .junior.big > .title {
+      grid-column: 1 / -1;
+    }
+    .junior.big > .board {
+      grid-row: span 6;
+    }
+  }
   .junior {
     display: grid;
     gap: var(--space-2);
@@ -514,7 +595,7 @@
   }
   .controls {
     display: grid;
-    grid-template-columns: 56px 56px 56px 1fr;
+    grid-template-columns: 56px 56px 56px 56px 1fr;
     gap: var(--space-2);
     width: 100%;
   }

@@ -1,0 +1,145 @@
+---
+// Junior arrow cards (spec docs/specs/junior.md FR-6): two A4 pages of cut-out picture cards in the
+// block colours, from the same pictures as the screen. No words on the cards, so they work in every
+// language. Children hold them up to plan the way before anyone taps a block.
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PrintButton from '../../../components/PrintButton.astro';
+import { localHref, m } from '../../../i18n';
+import type { Block } from '../../../../../../packages/sim/src/junior';
+import { BLOCK_ICON, START_ICON } from '../../../junior/icons';
+
+type Card = Block | 'start';
+// Two pages of twelve (3 × 4), enough for a group to plan the three missions.
+const pages: Card[][] = [
+  [
+    'start',
+    'start',
+    'forward',
+    'forward',
+    'forward',
+    'forward',
+    'forward',
+    'forward',
+    'forward',
+    'forward',
+    'back',
+    'back'
+  ],
+  ['left', 'left', 'left', 'left', 'right', 'right', 'right', 'right', 'x2', 'x3', 'x4', 'x5']
+];
+// Colour classes (our CSP allows no inline styles); the same colours as BLOCK_COLOUR in icons.ts.
+const kind = (c: Card) =>
+  c === 'start'
+    ? 'k-start'
+    : c.startsWith('x')
+      ? 'k-repeat'
+      : c === 'left' || c === 'right'
+        ? 'k-turn'
+        : 'k-move';
+const icon = (c: Card) => (c === 'start' ? START_ICON : BLOCK_ICON[c as keyof typeof BLOCK_ICON]);
+---
+
+<BaseLayout title={m.junior_cards_title()}>
+  <p class="back">
+    <a href={localHref('/code/junior/')}>← {m.junior_title()}</a>
+  </p>
+  <h1>{m.junior_cards_title()}</h1>
+  <p class="about">{m.junior_cards_about()}</p>
+  <PrintButton label={m.junior_print()} />
+  {pages.map((cards) => (
+    <section class="sheet" aria-label={m.junior_cards_title()}>
+      {cards.map((c) => (
+        <div class:list={['card', kind(c)]}>
+          {c.startsWith('x') ? (
+            <span class="times" aria-hidden="true">
+              ×{c.slice(1)}
+            </span>
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d={icon(c)} />
+            </svg>
+          )}
+        </div>
+      ))}
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .sheet {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    max-width: 30rem;
+    margin-block: var(--space-4);
+    border: 1px dashed #777;
+  }
+  .card {
+    aspect-ratio: 1;
+    border: 1px dashed #777;
+    display: grid;
+    place-items: center;
+    background: #fff;
+  }
+  .k-start {
+    --c: #2e7d32;
+  }
+  .k-move {
+    --c: #1c5fb8;
+  }
+  .k-turn {
+    --c: #6a35b0;
+  }
+  .k-repeat {
+    --c: #b85c00;
+  }
+  .card svg,
+  .times {
+    width: 70%;
+    height: 70%;
+    background: var(--c);
+    border-radius: 14%;
+    fill: #fff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .card svg {
+    padding: 8%;
+    box-sizing: border-box;
+  }
+  .times {
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 8vw, 3rem);
+  }
+  @media print {
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+    .back,
+    .about,
+    h1 {
+      display: none !important;
+    }
+    .sheet {
+      max-width: none;
+      width: 186mm;
+      grid-template-columns: repeat(3, 62mm);
+      grid-auto-rows: 62mm;
+      margin: 0;
+      break-after: page;
+    }
+    .sheet:last-of-type {
+      break-after: auto;
+    }
+    .card {
+      aspect-ratio: auto;
+    }
+    .times {
+      font-size: 19mm;
+    }
+  }
+</style>
