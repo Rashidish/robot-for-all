@@ -1,6 +1,6 @@
 # Spec: Junior stories: characters, scenes and voices
 
-> **Version:** 0.1 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Draft for owner review (decisions below made by the owner on 2026-11-28)
+> **Version:** 0.2 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28: "Go with all")
 > Depends on: Junior (`docs/specs/junior.md`: picture cards, tap-to-add row, sign-in with QR card, big screen, CAPS tags), M5 classes, families and records (`docs/specs/M5-teach.md`, `docs/specs/M5-family-and-personal.md`). Brainstorm: build-plan board, "Junior stories: character voices".
 
 ## 1. Purpose
@@ -151,7 +151,7 @@ Junior's grid mode teaches puzzle thinking: one robot, one goal, a best route. *
 
 ## 10. Work plan
 
-⏸ Owner approves this spec. Then:
+Spec approved by the owner (2026-11-28). Then:
 
 1. **Scenes and characters:** the content format for stories, the 6 scenes and 12 characters as SVG, and the card row per character with ▶ (S-1, S-2, S-7).
 2. **Retell and the eight stories:** picture strips, checking, stars (S-3).
@@ -167,3 +167,4 @@ Junior's grid mode teaches puzzle thinking: one robot, one goal, a best route. *
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-28 | First draft from the owner's brainstorm: Retell and Make your own, 8 stories, teacher and parent sets, city and neighbourhood scenes, six cartoon voices filtered on the device |
+| 0.2 | 2026-11-28 | Approved by the owner; CAPS codes per `docs/caps-foundation-codes.md` |

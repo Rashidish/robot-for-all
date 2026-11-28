@@ -86,7 +86,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 
 **Owner decision (2026-11-23):** the product's name is **Robots For All** (plural); user-facing text uses it (done 2026-11-23). The site lives on one hostname, **`robotsforall.org.za`**; `robotsforall.co.za`, `robotsforall.africa` and `www.` redirect to it (`docs/deploy.md` §4). Internal identifiers (the Cloudflare Pages project `robot-for-all`, the program file format `robot-for-all-program`) keep their old names so nothing breaks.
 
-**Owner decision (2026-11-28):** **Junior stories** (ScratchJr-style characters, scenes and filtered voices) are planned now: spec `docs/specs/junior-stories.md` (draft), queued in `docs/next.md`. Children's voices are always filtered on the device before storage and never uploaded.
+**Owner decision (2026-11-28):** **Junior stories** (ScratchJr-style characters, scenes and filtered voices) are approved and planned now: spec `docs/specs/junior-stories.md`, queued in `docs/next.md`. Children's voices are always filtered on the device before storage and never uploaded.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
