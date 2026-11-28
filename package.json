@@ -40,7 +40,7 @@
     "@lhci/cli": "^0.16.1",
     "@pdf-lib/fontkit": "1.1.1",
     "@playwright/test": "^1.65.1",
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.7",
     "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-svelte": "^3.24.1",
