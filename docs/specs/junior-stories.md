@@ -1,6 +1,6 @@
 # Spec: Junior stories: characters, scenes and voices
 
-> **Version:** 0.2 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28: "Go with all")
+> **Version:** 0.3 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28: "Go with all")
 > Depends on: Junior (`docs/specs/junior.md`: picture cards, tap-to-add row, sign-in with QR card, big screen, CAPS tags), M5 classes, families and records (`docs/specs/M5-teach.md`, `docs/specs/M5-family-and-personal.md`). Brainstorm: build-plan board, "Junior stories: character voices".
 
 ## 1. Purpose
@@ -104,7 +104,22 @@ Junior's grid mode teaches puzzle thinking: one robot, one goal, a best route. *
 - **Children always get a filter.** There's no natural-voice option for anyone under 18.
 - **Adults** (teachers and parents, signed in) can turn natural voice on or off for their own narration. They consent for themselves.
 - Sounds are stored **on the device only**. They are never uploaded, never sent to AI and never used to identify anyone. They're deleted with the story, and when a learner signs out of a shared device.
-- **Consent:** one line is added to the parent consent at account setup (M5), covering filtered voices kept on the device. There's no separate switch. **A lawyer confirms the wording** (owner action).
+- **Consent:** part of the parent consent at account setup (M5), not a separate switch elsewhere. Wording below, **approved by the owner on 2026-11-28 for building**. A lawyer reviews it later (test plan), and it can change then.
+
+**Consent wording** (English source; translation keys follow the `enrol_*` and `children_*` patterns):
+
+| Key | Where | Text |
+|---|---|---|
+| `enrol_notice_voices` | Enrolment notice, "What we keep about your child, and why", after `enrol_notice_not_kept` | In Junior stories, your child can record a short line, up to 5 seconds, for a cartoon character. The phone or tablet turns it into a cartoon voice straight away, and only the cartoon voice is saved, on that device only. We never receive it, never send it to any AI and never use it to recognise your child. It is deleted with the story, or when your child signs out of a shared device. |
+| `enrol_consent_voices` | Enrolment consent, a tick box after `enrol_consent_class` (**optional**, not ticked by default) | Let my child record cartoon-voice lines for Junior stories, kept on the device only. |
+| `children_voices_consent` | The child's page in the parent's account (change later) | Let my child record cartoon-voice lines for Junior stories, kept on the device only. |
+| `stories_voices_off` | Shown to the child on the 🎤 card when it isn't allowed (with a picture) | Ask your grown-up to switch this on. You can use the ready-made sounds. |
+| `stories_adult_voice` | Adult's own setting, next to the switch | Record my own narration in my natural voice. When this is off, my voice is changed into a cartoon voice too. |
+
+**Rules for the wording**
+- Without the tick, the 🎤 card shows `stories_voices_off`, and the child uses ready-made sounds. Everything else in Stories works.
+- Withdrawing the tick in the account deletes any recorded lines on devices the child signs in to.
+- `enrol_notice_withdraw` already covers changing consent at any time.
 - Children who aren't signed in (free play) can't record. They use the ready-made sounds only, because a parent's consent is needed first.
 
 ## 6. Users and journeys
@@ -137,6 +152,7 @@ Junior's grid mode teaches puzzle thinking: one robot, one goal, a best route. *
 | The microphone left on | On only for the 5-second recording, released straight after; the browser's microphone indicator shows |
 | A child says personal details in a recording | It stays on the device, and the filter disguises the voice; story 6 teaches not to; no sharing in this version |
 | A stranger story upsets a child | Teacher review of the wording; calm, everyday pictures; ends with the child safe with the Teacher |
+| Recording without consent | The 🎤 card works only when the parent ticked `enrol_consent_voices` (or `children_voices_consent`); free play without sign-in can't record |
 | Sets reveal something about a child | Sets are stored on the class or family, not the child; they list story ids only |
 
 ## 9. Acceptance criteria
@@ -156,7 +172,7 @@ Spec approved by the owner (2026-11-28). Then:
 1. **Scenes and characters:** the content format for stories, the 6 scenes and 12 characters as SVG, and the card row per character with ▶ (S-1, S-2, S-7).
 2. **Retell and the eight stories:** picture strips, checking, stars (S-3).
 3. **Make your own:** saving on the device (S-4).
-4. **Voices:** recording, the six filters, storage and deletion rules, the adult switch, the consent line (S-6). ⏸ The lawyer checks the consent wording before this goes live.
+4. **Voices:** recording, the six filters, storage and deletion rules, the adult switch, and the consent wording in §5 (S-6). The lawyer's review is a people check in the test plan; it doesn't block the build.
 5. **Sets:** teacher and parent setting stories (S-5).
 6. **Big screen, offline, size and accessibility** pass (S-8, S-9). ⏸ Owner review.
 
@@ -168,3 +184,4 @@ Spec approved by the owner (2026-11-28). Then:
 |---|---|---|
 | 0.1 | 2026-11-28 | First draft from the owner's brainstorm: Retell and Make your own, 8 stories, teacher and parent sets, city and neighbourhood scenes, six cartoon voices filtered on the device |
 | 0.2 | 2026-11-28 | Approved by the owner; CAPS codes per `docs/caps-foundation-codes.md` |
+| 0.3 | 2026-11-28 | Consent wording for voices (owner approved for building; lawyer review later in the test plan): optional tick at enrolment, changeable in the account |

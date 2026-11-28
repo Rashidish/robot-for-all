@@ -62,8 +62,8 @@
   - Six cartoon filters (Giant, Mouse, Robot, Bee, Boy, Girl), applied **before** storage.
   - No natural voice for children; adults can switch theirs on or off.
   - Deletion on sign-out of a shared device.
-  - The consent line (S-6).
-  - ⏸ The lawyer checks the consent wording before this goes live.
+  - The consent wording in spec §5: an optional tick at enrolment and in the parent's account; without it, ready-made sounds only (S-6).
+  - Add a people check to `docs/test-plan.md`: a lawyer reviews the voice consent wording (it doesn't block the build).
 - [ ] **JS-5: sets.** Teachers and parents set stories (S-5).
 - [ ] **JS-6: big screen, offline, size and accessibility pass** (S-8, S-9).
 - [ ] ⏸ **Owner review of stories.**
