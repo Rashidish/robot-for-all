@@ -59,7 +59,9 @@ const svg = picture(topic.id) ?? '';
     <Fragment set:html={svg} />
   </figure>
 
-  <p class="card-text" lang="en">{data.card}</p>
+  <p class="card-text" lang="en">
+    {data.card}
+  </p>
 
   {learnFirst.length > 0 && (
     <p class="learn-first">

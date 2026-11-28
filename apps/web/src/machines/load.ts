@@ -32,7 +32,12 @@ export async function getMachines(): Promise<MachineEntry[]> {
       problems.push(`${topic.id}: picture.svg not found in content/machines/${topic.id}/`);
     }
   }
-  problems.push(...linkProblems(all.map((t) => t.data), new Set(lessons.map((l) => l.id))));
+  problems.push(
+    ...linkProblems(
+      all.map((t) => t.data),
+      new Set(lessons.map((l) => l.id))
+    )
+  );
   const ids = new Set(all.map((t) => t.id));
   for (const lesson of lessons) {
     for (const id of lesson.data.machines) {
