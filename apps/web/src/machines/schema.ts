@@ -47,7 +47,7 @@ export const machineSchema = z
         message: `a card has at most ${CARD_MAX_WORDS} words`
       }),
     /** Alt text for picture.svg in the topic folder (a picture without words). */
-    picture_alt: z.string().min(5).max(200),
+    picture_alt: z.string().min(5).max(300),
     /** Free or cheap things that work instead of the real part. */
     stand_ins: z
       .array(z.object({ item: z.string().min(2), note: z.string().min(2).optional() }))
