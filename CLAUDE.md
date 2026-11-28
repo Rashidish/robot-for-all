@@ -235,6 +235,7 @@ Teachers and content editors must be able to add a lesson without touching code.
 8. **Update docs** (spec, ADR, this file) in the same PR when behaviour or decisions change.
 9. **Ask, don't guess,** when a requirement is unclear or touches money, children's data or safety.
 10. **Deferred people checks:** anything only a person or real device can check (lesson review, build tests, printing, screen readers) goes into `docs/test-plan.md`, to be run when the full application is done. Automated tests still gate every merge.
+11. **The build queue:** `docs/next.md` is the ordered list of what to build next. The owner plans with Claude on claude.ai (the planning chat writes specs and the queue, never code); Claude Code builds. When asked to "do the next item", pull `main`, take the first unticked item, and tick it (date, PR) in the same PR. Stop at ⏸.
 
 ### Commands
 Node 24 (see `.nvmrc`; minimum 22.17). Run from the repo root:
@@ -325,4 +326,8 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.40 | 2026-11-27 | Live help sessions spec approved (`docs/specs/live-sessions.md`), coach on laptop or tablet |
 | 0.41 | 2026-11-27 | `content/junior` (Junior missions; ADR-0019: tap-to-add row on `/code/junior/`) |
 | 0.42 | 2026-11-28 | Machines approved and started (`docs/specs/machines.md`): `content/machines`, the Machines tab, `machines` in lesson front matter |
+<<<<<<< HEAD
 | 0.43 | 2026-11-28 | Machines topics in the back office review flow and the withdrawn list; topic translations; `translation-hash` takes a topic id |
+=======
+| 0.43 | 2026-11-28 | `docs/next.md`: the build queue; planning chat writes specs and the queue, Claude Code builds (§9.11) |
+>>>>>>> origin/main
