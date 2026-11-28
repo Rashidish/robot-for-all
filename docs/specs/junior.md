@@ -1,6 +1,6 @@
 # Spec: Junior — coding before reading (Grades R–2)
 
-> **Version:** 0.4 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019); **§2A CAPS alignment and FR-9 to FR-16 are a draft for review**
+> **Version:** 0.5 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019); CAPS alignment (§2A, FR-9 to FR-16) approved by the owner 2026-11-28
 > Depends on: M3 editor (ADR-0005), M4 robot world and robot calls (ADR-0007, ADR-0008), M5 sign-in, records and badges (ADR-0013, ADR-0014, `content/badges`). If approved, CLAUDE.md §1 "Who it's for" changes from Grade 3 to Grade R upward. Brainstorm: build-plan board, "Grades R–2: coding before reading".
 
 ## 1. Purpose
@@ -48,7 +48,7 @@ Building our own Junior mode reuses Blockly and the M4 robot world, so it adds v
 - Sound recording (privacy and storage).
 - Learner-shared projects (they need moderation).
 
-## 2A. CAPS alignment (draft for review)
+## 2A. CAPS alignment (approved 2026-11-28)
 
 Source: the DBE's *Curriculum and Assessment Policy Statement, Coding and Robotics, Foundation Phase (Grade R–3)* (gazetted 2024), §2.12 (focus of content areas, Tables 2.2–2.4), §3 (content per grade per term) and §4 (assessment). Owner's copy: `CAPS-FP-CODING-AND-ROBOTICS` (project files). Junior covers Grades R–2; Grade 3 is the first grade of the written-block lessons.
 
@@ -79,7 +79,7 @@ Source: the DBE's *Curriculum and Assessment Policy Statement, Coding and Roboti
 - The teacher records what they observed, per learner and CAPS code, using the M5 records and sign-in (nicknames). Junior gives them an **observation checklist** and printable **rubrics** that follow Annexure B. Any level 1–7 is the teacher's judgement, entered by the teacher.
 - Picture sheets (step 2) are the "written recording" for Grades 1–2; Grade R uses the checklist (oral and practical).
 
-### Decisions for the owner
+### Owner decisions (2026-11-28: all four approved)
 
 1. **Two ways to move, chosen per mission:**
    - **Arrows** (Grades R–1): ↑ → ↓ ←, the character turns itself, plus a Grade R "slide until it stops" version for Terms 1–2.
@@ -115,14 +115,14 @@ Source: the DBE's *Curriculum and Assessment Policy Statement, Coding and Roboti
 | FR-6 | Printable resources come from the same data: arrow cards (A4, cut out) and a picture answer sheet per lesson. |
 | FR-7 | Progress (missions done, stars) is stored like other lesson progress (M5, ADR-0014) and works offline. |
 | FR-8 | Junior has a projector layout: a large grid, blocks and run button. |
-| FR-9 | *(draft)* Each mission records its **grades, term and CAPS codes** (e.g. `C.1`, `C.3`, `R.6`) and its **kind**; the build rejects unknown codes. Teachers can list missions by grade, term and code to plan their Annual Teaching Plan. |
-| FR-10 | *(draft)* **Movement modes** per mission: `arrows` (direction arrows; the character faces the arrow), `arrows-slide` (Grade R Terms 1–2: one arrow moves until a barrier or the edge) and `turns` (forward, back, turn left, turn right, turn around). |
-| FR-11 | *(draft)* **Repeat** is a number (1–5) under a move card, matching CAPS; programs saved with the old ×N blocks still open. |
-| FR-12 | *(draft)* **Mission kinds:** `build` (from scratch), `complete` (fill the gaps in a given program), `fix` (debug a given wrong program), `predict` (watch a given program, tap the square where it ends), `choose` (pick the program that works, or the shortest, from 2–3), `shorten` (rewrite with fewer cards or repeats), `pattern` (copy, complete, find the error, make your own). |
-| FR-13 | *(draft)* **Board features:** things to collect (carrots, letters that spell a word), goals in order ("first the bone, then home"), no-go squares (fire, lava), start or finish outside the grid (enter and leave), a log to **jump** (Grade 2), a coloured **IF tile** with a turn rule (Grade 2 Term 4). |
-| FR-14 | *(draft)* **Card limits:** a mission can give an exact set of cards (Parsons puzzle) or a maximum number; the palette shows how many are left. |
-| FR-15 | *(draft)* **Teacher tools:** a mission list by grade, term and CAPS code; a printable **observation checklist** per class (nicknames, CAPS codes, "seen / not yet"); printable **rubrics** following CAPS Annexure B (problem solving, pair programming, cooperative learning); the teacher records observations against each learner in the M5 records, offline-first. No automatic marks. |
-| FR-16 | *(draft)* **Pairs mode** on the big screen: "one is the robot, one is the programmer", with a prompt to swap roles after each run (CAPS §3 R.6, §4.3.3 pair programming). |
+| FR-9 | Each mission records its **grades, term and CAPS codes** (e.g. `C.1`, `C.3`, `R.6`) and its **kind**; the build rejects unknown codes. Teachers can list missions by grade, term and code to plan their Annual Teaching Plan. |
+| FR-10 | **Movement modes** per mission: `arrows` (direction arrows; the character faces the arrow), `arrows-slide` (Grade R Terms 1–2: one arrow moves until a barrier or the edge) and `turns` (forward, back, turn left, turn right, turn around). |
+| FR-11 | **Repeat** is a number (1–5) under a move card, matching CAPS; programs saved with the old ×N blocks still open. |
+| FR-12 | **Mission kinds:** `build` (from scratch), `complete` (fill the gaps in a given program), `fix` (debug a given wrong program), `predict` (watch a given program, tap the square where it ends), `choose` (pick the program that works, or the shortest, from 2–3), `shorten` (rewrite with fewer cards or repeats), `pattern` (copy, complete, find the error, make your own). |
+| FR-13 | **Board features:** things to collect (carrots, letters that spell a word), goals in order ("first the bone, then home"), no-go squares (fire, lava), start or finish outside the grid (enter and leave), a log to **jump** (Grade 2), a coloured **IF tile** with a turn rule (Grade 2 Term 4). |
+| FR-14 | **Card limits:** a mission can give an exact set of cards (Parsons puzzle) or a maximum number; the palette shows how many are left. |
+| FR-15 | **Teacher tools:** a mission list by grade, term and CAPS code; a printable **observation checklist** per class (nicknames, CAPS codes, "seen / not yet"); printable **rubrics** following CAPS Annexure B (problem solving, pair programming, cooperative learning); the teacher records observations against each learner in the M5 records, offline-first. No automatic marks. |
+| FR-16 | **Pairs mode** on the big screen: "one is the robot, one is the programmer", with a prompt to swap roles after each run (CAPS §3 R.6, §4.3.3 pair programming). |
 
 ## 5. Non-functional requirements
 
@@ -153,10 +153,10 @@ Source: the DBE's *Curriculum and Assessment Policy Statement, Coding and Roboti
 - [ ] The same program runs on the real cart through a robot profile (test plan, real device).
 - [ ] Arrow cards and the picture answer sheet print on A4 (e2e page count; people check in test plan).
 - [ ] Junior adds < 40 KB compressed; works offline (e2e).
-- [ ] *(draft)* Every mission has grades, term, CAPS codes and kind; the build rejects an unknown code (unit test).
-- [ ] *(draft)* A Grade R "slide" mission and a Grade 1 arrows mission run exactly as CAPS describes; arrows convert to the same robot calls as turns (unit tests).
-- [ ] *(draft)* One mission of each kind (complete, fix, predict, choose, shorten, pattern) can be solved on a 360 px phone without reading (e2e).
-- [ ] *(draft)* The observation checklist and rubrics print on A4 and use nicknames only (e2e; printing in the test plan).
+- [ ] Every mission has grades, term, CAPS codes and kind; the build rejects an unknown code (unit test).
+- [ ] A Grade R "slide" mission and a Grade 1 arrows mission run exactly as CAPS describes; arrows convert to the same robot calls as turns (unit tests).
+- [ ] One mission of each kind (complete, fix, predict, choose, shorten, pattern) can be solved on a 360 px phone without reading (e2e).
+- [ ] The observation checklist and rubrics print on A4 and use nicknames only (e2e; printing in the test plan).
 
 ## 9. Work plan
 
@@ -179,9 +179,9 @@ After M6, unless the owner moves it earlier.
    - Tests: e2e checks the page counts (2 and 1), the projector size and accessibility. Printing on real paper goes in the test plan (B60).
 
    **Projector layout, arrow cards, picture answer sheet.**
-⏸ **CAPS alignment (§2A, FR-9 to FR-16): owner review before building.** Then:
+CAPS alignment approved by the owner (2026-11-28). Then:
 
-3. **Arrows and CAPS tags:** movement modes (FR-10), repeat number under the card (FR-11), turn around; mission grades, term and CAPS codes (FR-9); the three missions retagged (bee: Grade R arrows-slide; rhino: Grade 1 arrows; bus: Grade 2 turns); arrow cards and sheets drawn the CAPS way.
+3. *(built 2026-11-28)* **Arrows and CAPS tags:** movement modes (FR-10), repeat number under the card (FR-11), turn around; mission grades, term and CAPS codes (FR-9); the three missions retagged (bee: Grade R arrows-slide; rhino: Grade 1 arrows; bus: Grade 2 turns); arrow cards and sheets drawn the CAPS way.
 4. **Mission kinds** (FR-12) and **card limits** (FR-14): complete, fix, predict, choose, shorten; 12 missions across Grade R Terms 1–4, Grade 1 and Grade 2, each tagged.
 5. **Grade 2 board features** (FR-13): collect, ordered goals, no-go squares, enter and leave, jump, IF tile; 4 more missions.
 6. **Patterns** (FR-12 `pattern`): copy, complete, find the error, make your own; 4 missions.
@@ -205,3 +205,4 @@ After M6, unless the owner moves it earlier.
 | 0.2 | 2026-11-27 | Approved: tab named Junior, own sign-in with the QR card, grid first, stories later (reminder), after M6 |
 | 0.3 | 2026-11-27 | Owner decisions: tap-to-add row with Blockly as fallback (ADR-0019), own page linked as a tab, ×N repeats the next block; step 1 built |
 | 0.4 | 2026-11-28 | Draft §2A CAPS alignment against the Foundation Phase CAPS (§2.12, §3, §4): direction arrows for Grades R–1, repeat under the arrow, mission kinds, board features, CAPS tags, teacher observation and rubrics (FR-9 to FR-16); work plan steps 3–8 |
+| 0.5 | 2026-11-28 | CAPS alignment approved (all four decisions); step 3 built: direction arrows and Grade R slide, repeat number under the card, turn around, missions tagged with grades, term and CAPS codes |

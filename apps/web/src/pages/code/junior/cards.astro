@@ -9,23 +9,38 @@ import type { Block } from '../../../../../../packages/sim/src/junior';
 import { BLOCK_ICON, START_ICON } from '../../../junior/icons';
 
 type Card = Block | 'start';
-// Two pages of twelve (3 × 4), enough for a group to plan the three missions.
+// Two pages of twelve (3 × 4). Page 1: direction arrows, the way CAPS writes moves for Grades R–1
+// (the robot turns itself to face the arrow). Page 2: forward and turns for Grade 2, and repeat
+// numbers to lay under a card (spec FR-10, FR-11).
 const pages: Card[][] = [
   [
     'start',
     'start',
-    'forward',
-    'forward',
-    'forward',
-    'forward',
-    'forward',
-    'forward',
-    'forward',
-    'forward',
-    'back',
-    'back'
+    'north',
+    'north',
+    'east',
+    'east',
+    'east',
+    'south',
+    'south',
+    'south',
+    'west',
+    'west'
   ],
-  ['left', 'left', 'left', 'left', 'right', 'right', 'right', 'right', 'x2', 'x3', 'x4', 'x5']
+  [
+    'forward',
+    'forward',
+    'forward',
+    'left',
+    'left',
+    'right',
+    'right',
+    'around',
+    'x2',
+    'x3',
+    'x4',
+    'x5'
+  ]
 ];
 // Colour classes (our CSP allows no inline styles); the same colours as BLOCK_COLOUR in icons.ts.
 const kind = (c: Card) =>
@@ -33,7 +48,7 @@ const kind = (c: Card) =>
     ? 'k-start'
     : c.startsWith('x')
       ? 'k-repeat'
-      : c === 'left' || c === 'right'
+      : c === 'left' || c === 'right' || c === 'around'
         ? 'k-turn'
         : 'k-move';
 const icon = (c: Card) => (c === 'start' ? START_ICON : BLOCK_ICON[c as keyof typeof BLOCK_ICON]);

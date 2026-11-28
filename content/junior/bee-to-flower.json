@@ -1,16 +1,21 @@
 {
   "id": "bee-to-flower",
+  "grades": [0],
+  "term": 1,
+  "caps": ["C.1", "C.2", "C.3", "R.6"],
+  "kind": "build",
+  "mode": "arrows-slide",
   "grid": {
     "cols": 3,
     "rows": 3
   },
   "start": {
-    "cell": "A2",
+    "cell": "A1",
     "heading": "E"
   },
-  "target": "C2",
+  "target": "C3",
   "obstacles": [],
-  "blocks": ["forward"],
+  "blocks": ["north", "east", "south", "west"],
   "best": 2,
   "theme": "bee-flower"
 }

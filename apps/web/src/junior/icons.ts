@@ -1,5 +1,5 @@
 // Junior pictures (spec FR-1): inline SVG paths on a 24×24 grid, no words, so they work in every
-// language and add almost nothing to download. "×N" blocks show the number only.
+// language and add almost nothing to download. A repeat shows its number only, under its card.
 import type { Block } from '../../../../packages/sim/src/junior';
 
 export const BLOCK_ICON: Record<Exclude<Block, 'x2' | 'x3' | 'x4' | 'x5'>, string> = {
@@ -8,6 +8,12 @@ export const BLOCK_ICON: Record<Exclude<Block, 'x2' | 'x3' | 'x4' | 'x5'>, strin
   back: 'M12 21.5l-7.5-8.5h5V2.5h5V13h5z',
   left: 'M9.5 3L3 8.5l6.5 5.5v-3.6c4.6 0 7.6 2 8.6 7.1.5-6.4-3.2-10.6-8.6-11.1z',
   right: 'M14.5 3L21 8.5 14.5 14v-3.6c-4.6 0-7.6 2-8.6 7.1-.5-6.4 3.2-10.6 8.6-11.1z',
+  around: 'M6.5 21.5V9a5.5 5.5 0 0 1 11 0v3.5H21l-6 7-6-7h3.5V9a1 1 0 0 0-2 0v12.5z',
+  // Direction arrows (CAPS Grades R–1): the robot turns itself to face the arrow, then moves.
+  north: 'M12 2.5L19.5 11H14.5V21.5H9.5V11H4.5Z',
+  east: 'M21.5 12L13 19.5V14.5H2.5V9.5H13V4.5Z',
+  south: 'M12 21.5L4.5 13H9.5V2.5H14.5V13H19.5Z',
+  west: 'M2.5 12L11 4.5V9.5H21.5V14.5H11V19.5Z',
   wait: 'M6 2.5h12v2.5l-4.5 7 4.5 7v2.5H6V19l4.5-7L6 5z',
   beep: 'M12 2.5a6.5 6.5 0 0 0-6.5 6.5v4.5L3.5 17h17l-2-3.5V9A6.5 6.5 0 0 0 12 2.5zM9.5 18.5a2.5 2.5 0 0 0 5 0z',
   light: 'M12 21l-8.2-8.2a5.2 5.2 0 0 1 8.2-6.3 5.2 5.2 0 0 1 8.2 6.3z',
@@ -61,6 +67,11 @@ export const BLOCK_COLOUR: Record<string, string> = {
   back: '#1c5fb8',
   left: '#6a35b0',
   right: '#6a35b0',
+  around: '#6a35b0',
+  north: '#1c5fb8',
+  east: '#1c5fb8',
+  south: '#1c5fb8',
+  west: '#1c5fb8',
   repeat: '#b85c00',
   wait: '#5d6b75',
   beep: '#ad1457',

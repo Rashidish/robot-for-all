@@ -1,14 +1,23 @@
 // Junior (Grades R–2, spec docs/specs/junior.md, ADR-0019): picture-block programs on a grid. A
-// program is a row of blocks read left to right after the start flag; "×N" repeats the block after
-// it. The robot moves one square per step and turns 90°. Missions are data (content/junior), and
-// the build checks each one can be solved in its "fewest blocks" (FR-4). The same program becomes
-// robot calls for the real cart (FR-5): one square is SQUARE_MM, a turn is 90°.
+// program is a row of cards read left to right after the start flag. A repeat number belongs to the
+// move card after it (CAPS shows it under the arrow, FR-11): it is stored as "×N" just before the
+// card and counts as part of that card. Missions are data (content/junior), and the build checks
+// each one can be solved in its "fewest cards" (FR-4). Moves are written one of two ways (FR-10):
+// - arrows (CAPS Grades R–1): up, right, down, left; the robot turns itself to face the arrow.
+//   "arrows-slide" (Grade R Terms 1–2): one arrow moves until a rock or the edge stops it.
+// - turns (CAPS Grade 2): forward, back, turn left, turn right, turn around.
+// The same program becomes robot calls for the real cart (FR-5): one square is SQUARE_MM.
 
+/** Direction arrows (CAPS Grades R–1): the robot faces the arrow, then moves. */
+export const ARROWS = ['north', 'east', 'south', 'west'] as const;
+export type Arrow = (typeof ARROWS)[number];
 export const ACTIONS = [
   'forward',
   'back',
   'left',
   'right',
+  'around',
+  ...ARROWS,
   'wait',
   'beep',
   'light',
@@ -19,8 +28,39 @@ export const REPEATS = ['x2', 'x3', 'x4', 'x5'] as const;
 export type Repeat = (typeof REPEATS)[number];
 export type Block = Action | Repeat;
 export const BLOCKS: readonly Block[] = [...ACTIONS, ...REPEATS];
-/** At most 20 blocks per program at launch (FR-2). */
+/** At most 20 cards per program at launch (FR-2); a repeat number is part of its card. */
 export const MAX_BLOCKS = 20;
+/** Cards that move or turn the robot, and so can carry a repeat number. */
+export const MOVES: readonly Action[] = ['forward', 'back', 'left', 'right', 'around', ...ARROWS];
+
+export const MODES = ['arrows', 'arrows-slide', 'turns'] as const;
+export type Mode = (typeof MODES)[number];
+/** The cards each way of moving may use (FR-10). */
+const MODE_BLOCKS: Record<Mode, readonly Block[]> = {
+  arrows: [...ARROWS, 'x2', 'x3', 'x4', 'x5', 'wait', 'beep', 'light', 'stop'],
+  // Each Grade R card is one action: no repeats (CAPS Table 2.2, C.2).
+  'arrows-slide': [...ARROWS, 'wait', 'beep', 'light', 'stop'],
+  turns: [
+    'forward',
+    'back',
+    'left',
+    'right',
+    'around',
+    'x2',
+    'x3',
+    'x4',
+    'x5',
+    'wait',
+    'beep',
+    'light',
+    'stop'
+  ]
+};
+/** Kinds of mission (FR-12). Only "build" so far; the others come with step 4. */
+export const KINDS = ['build'] as const;
+export type Kind = (typeof KINDS)[number];
+/** CAPS Foundation Phase codes: C.1–C.7 coding, R.1–R.7 robotics, D.1–D.10 digital concepts. */
+export const CAPS_CODE = /^(C\.[1-7]|R\.[1-7]|D\.([1-9]|10))$/;
 /** One square on the floor (spec §2: like classroom floor robots). */
 export const SQUARE_MM = 150;
 
@@ -34,13 +74,22 @@ export interface Cell {
 }
 export interface Mission {
   id: string;
+  /** Grades it is for: 0 is Grade R (FR-9). */
+  grades: number[];
+  /** The CAPS term it fits (1–4). */
+  term: number;
+  /** CAPS codes it practises, e.g. "C.1", "R.6". */
+  caps: string[];
+  kind: Kind;
+  /** How moves are written (FR-10). */
+  mode: Mode;
   grid: { cols: number; rows: number };
   start: { cell: string; heading: Heading };
   target: string;
   obstacles: string[];
-  /** The blocks offered in the palette. */
+  /** The cards offered in the palette. */
   blocks: Block[];
-  /** The fewest blocks that solve it (the "best solution" star), checked at build. */
+  /** The fewest cards that solve it (the "best solution" star), checked at build. */
   best: number;
   /** The picture theme: what the robot is and what it's going to. */
   theme: 'rhino-water' | 'bee-flower' | 'bus-school';
@@ -55,6 +104,12 @@ export function parseCell(name: string): Cell | null {
 export const cellName = (c: Cell): string => `${String.fromCharCode(65 + c.col)}${c.row + 1}`;
 
 const repeatCount = (b: Block): number => (b.startsWith('x') ? Number(b.slice(1)) : 0);
+export const isRepeat = (b: Block): b is Repeat => b.startsWith('x');
+/** The number of cards in a program: a repeat number is part of its card, not a card itself. */
+export const cardCount = (program: readonly Block[]): number =>
+  program.filter((b) => !isRepeat(b)).length;
+const ARROW_HEADING: Record<Arrow, Heading> = { north: 'N', east: 'E', south: 'S', west: 'W' };
+const isArrow = (a: Action): a is Arrow => (ARROWS as readonly string[]).includes(a);
 
 /** The actions a row makes, in order, each with the index of the block that made it. */
 export function expand(program: readonly Block[]): { action: Action; block: number }[] {
@@ -102,52 +157,68 @@ export function runJunior(mission: Mission, program: readonly Block[]): Run {
   let heading = mission.start.heading;
   const steps: Step[] = [];
   let outcome: Outcome = 'not-there';
+  const blocked = (next: Cell): 'edge' | 'rock' | null =>
+    next.col < 0 || next.row < 0 || next.col >= mission.grid.cols || next.row >= mission.grid.rows
+      ? 'edge'
+      : rocks.has(cellName(next))
+        ? 'rock'
+        : null;
   for (const { action, block } of expand(program)) {
     if (action === 'stop') {
       steps.push({ block, action, cell, heading });
       break;
     }
-    if (action === 'left' || action === 'right') {
+    if (action === 'left' || action === 'right' || action === 'around') {
       const i = HEADINGS.indexOf(heading);
-      heading = HEADINGS[(i + (action === 'right' ? 1 : 3)) % 4] as Heading;
-    } else if (action === 'forward' || action === 'back') {
+      const by = action === 'right' ? 1 : action === 'left' ? 3 : 2;
+      heading = HEADINGS[(i + by) % 4] as Heading;
+    } else if (action === 'forward' || action === 'back' || isArrow(action)) {
+      const arrow = isArrow(action);
+      if (isArrow(action)) heading = ARROW_HEADING[action];
       const [dx, dy] = STEP[heading];
-      const sign = action === 'forward' ? 1 : -1;
-      const next = { col: cell.col + dx * sign, row: cell.row + dy * sign };
-      const off =
-        next.col < 0 ||
-        next.row < 0 ||
-        next.col >= mission.grid.cols ||
-        next.row >= mission.grid.rows;
-      if (off || rocks.has(cellName(next))) {
-        steps.push({ block, action, cell, heading, blocked: off ? 'edge' : 'rock' });
-        outcome = off ? 'off' : 'bumped';
-        return { steps, outcome, stars: 0 };
+      const sign = action === 'back' ? -1 : 1;
+      const slide = arrow && mission.mode === 'arrows-slide';
+      let moved = false;
+      for (;;) {
+        const next = { col: cell.col + dx * sign, row: cell.row + dy * sign };
+        const hit = blocked(next);
+        if (hit && slide) break; // Grade R: an arrow moves until something stops it.
+        if (hit) {
+          steps.push({ block, action, cell, heading, blocked: hit });
+          outcome = hit === 'edge' ? 'off' : 'bumped';
+          return { steps, outcome, stars: 0 };
+        }
+        cell = next;
+        moved = true;
+        if (!slide) break;
+        steps.push({ block, action, cell, heading });
       }
-      cell = next;
+      if (slide) {
+        // Facing the arrow even when it couldn't move: show the turn.
+        if (!moved) steps.push({ block, action, cell, heading });
+        continue;
+      }
     }
     steps.push({ block, action, cell, heading });
   }
   if (cell.col === target.col && cell.row === target.row) outcome = 'reached';
-  const stars = outcome === 'reached' ? (program.length <= mission.best ? 2 : 1) : 0;
+  const stars = outcome === 'reached' ? (cardCount(program) <= mission.best ? 2 : 1) : 0;
   return { steps, outcome, stars };
 }
 
 /**
- * The fewest blocks that reach the target with the mission's blocks, or null if it can't be
- * reached (breadth-first search over squares and headings; "×N" + a move counts as two blocks).
+ * The fewest cards that reach the target with the mission's cards, or null if it can't be reached
+ * (search over squares and headings; a card with its repeat number counts as one card).
  */
 export function fewestBlocks(mission: Mission): number | null {
   const start = parseCell(mission.start.cell);
   const target = parseCell(mission.target);
   if (!start || !target) return null;
-  const moves = mission.blocks.filter(
-    (b): b is Action => b === 'forward' || b === 'back' || b === 'left' || b === 'right'
-  );
+  const moves = mission.blocks.filter((b): b is Action => MOVES.includes(b as Action));
   const repeats = [1, ...mission.blocks.map(repeatCount).filter((n) => n > 0)];
   const key = (c: Cell, h: Heading) => `${cellName(c)}${h}`;
   const seen = new Map<string, number>([[key(start, mission.start.heading), 0]]);
-  // Costs are 1 or 2, so a simple sorted frontier is enough for boards this small.
+  // Every card costs 1, so a simple sorted frontier is enough for boards this small.
   const frontier: { cell: Cell; heading: Heading; cost: number }[] = [
     { cell: start, heading: mission.start.heading, cost: 0 }
   ];
@@ -166,7 +237,7 @@ export function fewestBlocks(mission: Mission): number | null {
         if (run.outcome === 'bumped' || run.outcome === 'off') continue;
         const last = run.steps.at(-1);
         if (!last) continue;
-        const cost = s.cost + program.length;
+        const cost = s.cost + 1;
         const k = key(last.cell, last.heading);
         if ((seen.get(k) ?? Infinity) <= cost) continue;
         seen.set(k, cost);
@@ -183,6 +254,29 @@ export function missionProblems(raw: unknown, id: string): string[] {
   const m = raw as Partial<Mission>;
   if (!m || typeof m !== 'object') return [`${id}: not an object`];
   if (m.id !== id) p.push(`${id}: "id" must be the file name`);
+  if (
+    !Array.isArray(m.grades) ||
+    m.grades.length === 0 ||
+    !m.grades.every((g) => Number.isInteger(g) && g >= 0 && g <= 3)
+  ) {
+    p.push(`${id}: grades must be a list of 0 (Grade R) to 3`);
+  }
+  if (!Number.isInteger(m.term) || (m.term as number) < 1 || (m.term as number) > 4) {
+    p.push(`${id}: term must be 1 to 4`);
+  }
+  if (!Array.isArray(m.caps) || m.caps.length === 0) {
+    p.push(`${id}: caps must list at least one CAPS code, e.g. "C.1"`);
+  } else {
+    for (const code of m.caps) {
+      if (typeof code !== 'string' || !CAPS_CODE.test(code)) {
+        p.push(
+          `${id}: "${String(code)}" is not a Foundation Phase CAPS code (C.1–7, R.1–7, D.1–10)`
+        );
+      }
+    }
+  }
+  if (!KINDS.includes(m.kind as Kind)) p.push(`${id}: kind must be ${KINDS.join(', ')}`);
+  if (!MODES.includes(m.mode as Mode)) p.push(`${id}: mode must be ${MODES.join(', ')}`);
   const g = m.grid;
   if (
     !g ||
@@ -217,6 +311,10 @@ export function missionProblems(raw: unknown, id: string): string[] {
     !m.blocks.every((b) => BLOCKS.includes(b))
   ) {
     p.push(`${id}: blocks must be from ${BLOCKS.join(', ')}`);
+  } else if (MODES.includes(m.mode as Mode)) {
+    const allowed = MODE_BLOCKS[m.mode as Mode];
+    const wrong = m.blocks.filter((b) => !allowed.includes(b));
+    if (wrong.length) p.push(`${id}: ${String(m.mode)} missions can't use ${wrong.join(', ')}`);
   }
   if (!['rhino-water', 'bee-flower', 'bus-school'].includes(m.theme as string)) {
     p.push(`${id}: theme must be rhino-water, bee-flower or bus-school`);
@@ -225,34 +323,34 @@ export function missionProblems(raw: unknown, id: string): string[] {
   const fewest = fewestBlocks(m as Mission);
   if (fewest === null) p.push(`${id}: the target can't be reached with these blocks`);
   else if (fewest !== m.best)
-    p.push(`${id}: "best" is ${String(m.best)} but the fewest blocks is ${fewest}`);
-  else if (fewest > MAX_BLOCKS) p.push(`${id}: needs more than ${MAX_BLOCKS} blocks`);
+    p.push(`${id}: "best" is ${String(m.best)} but the fewest cards is ${fewest}`);
+  else if (fewest > MAX_BLOCKS) p.push(`${id}: needs more than ${MAX_BLOCKS} cards`);
   return p;
 }
 
 export type RobotStep =
   { drive: number } | { turn: 90 | -90 } | { wait: number } | { beep: true } | { light: true };
 
-/** The program as robot calls for the real cart (FR-5): drive whole squares, turn 90°. */
-export function robotSteps(program: readonly Block[]): RobotStep[] {
-  return expand(program).flatMap(({ action }): RobotStep[] => {
-    switch (action) {
-      case 'forward':
-        return [{ drive: SQUARE_MM }];
-      case 'back':
-        return [{ drive: -SQUARE_MM }];
-      case 'left':
-        return [{ turn: -90 as const }];
-      case 'right':
-        return [{ turn: 90 as const }];
-      case 'wait':
-        return [{ wait: 1000 }];
-      case 'beep':
-        return [{ beep: true as const }];
-      case 'light':
-        return [{ light: true as const }];
-      case 'stop':
-        return [];
-    }
-  });
+/**
+ * The program as robot calls for the real cart (FR-5): drive whole squares, turn 90°. Worked out
+ * from the run itself, so direction arrows and Grade R slides become "turn to face, then drive".
+ */
+export function robotSteps(mission: Mission, program: readonly Block[]): RobotStep[] {
+  const out: RobotStep[] = [];
+  let cell = parseCell(mission.start.cell) ?? { col: 0, row: 0 };
+  let heading = mission.start.heading;
+  for (const step of runJunior(mission, program).steps) {
+    if (step.action === 'wait') out.push({ wait: 1000 });
+    if (step.action === 'beep') out.push({ beep: true });
+    if (step.action === 'light') out.push({ light: true });
+    const turn = (HEADINGS.indexOf(step.heading) - HEADINGS.indexOf(heading) + 4) % 4;
+    if (turn === 1) out.push({ turn: 90 });
+    if (turn === 3) out.push({ turn: -90 });
+    if (turn === 2) out.push({ turn: 90 }, { turn: 90 });
+    heading = step.heading;
+    const moved = Math.abs(step.cell.col - cell.col) + Math.abs(step.cell.row - cell.row);
+    if (moved > 0) out.push({ drive: step.action === 'back' ? -SQUARE_MM : SQUARE_MM });
+    cell = step.cell;
+  }
+  return out;
 }

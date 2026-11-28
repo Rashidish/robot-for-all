@@ -990,5 +990,11 @@
   "machine_card_close": "Vala",
   "machines_filter_label": "Hlunga izihloko",
   "machines_filter_none": "Azikho izihloko zaleli banga okwamanje.",
-  "lessons_filter_machine": "Ingxenye"
+  "lessons_filter_machine": "Ingxenye",
+  "junior_block_north": "Iya phezulu",
+  "junior_block_east": "Iya kwesokudla",
+  "junior_block_south": "Iya phansi",
+  "junior_block_west": "Iya kwesokunxele",
+  "junior_block_around": "Phenduka",
+  "junior_repeat_first": "Thepha umcibisholo kuqala, bese uthepha inombolo."
 }
