@@ -9,7 +9,7 @@
     "typecheck": "astro check"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "14.4.6",
+    "@astrojs/cloudflare": "14.4.9",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.119.0",
     "astro": "^7.4.13",
