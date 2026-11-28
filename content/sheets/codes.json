@@ -131,6 +131,38 @@
       "I can predict which way and how fast the last gear in my gear train turns"
     ]
   },
+  "p1-idler-01-90f077": {
+    "lesson": "p1-idler-01",
+    "lang": "en",
+    "title": "Idler gears: same way round",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 7
+      },
+      {
+        "label": "Investigate",
+        "steps": 1
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can show which way each gear turns in a train with an idler",
+      "I can explain why changing the idler's size doesn't change the follower's speed",
+      "I can design a gear train where the last gear turns the way I want"
+    ]
+  },
   "p1-lever-01-b6bdc4": {
     "lesson": "p1-lever-01",
     "lang": "en",
@@ -360,6 +392,71 @@
       "I can count how many times the small pulley turns for one turn of the big pulley",
       "I can explain which setup lifts the load faster and which lifts it more easily",
       "I can compare a belt and pulley with a gear train"
+    ]
+  },
+  "p1-rack-01-e36d1e": {
+    "lesson": "p1-rack-01",
+    "lang": "en",
+    "title": "Rack and pinion slider",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 6
+      },
+      {
+        "label": "Investigate",
+        "steps": 2
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can show how turning the pinion slides the rack",
+      "I can measure how far the rack moves for one turn of the pinion",
+      "I can predict how far it moves for a quarter or half turn and check my prediction",
+      "I can name a machine that uses a rack and pinion"
+    ]
+  },
+  "p1-ringgear-01-724d9f": {
+    "lesson": "p1-ringgear-01",
+    "lang": "en",
+    "title": "Ring gear: rolling inside",
+    "sections": [
+      {
+        "label": "Predict",
+        "steps": 0
+      },
+      {
+        "label": "Run",
+        "steps": 6
+      },
+      {
+        "label": "Investigate",
+        "steps": 0
+      },
+      {
+        "label": "Modify",
+        "steps": 1
+      },
+      {
+        "label": "Make",
+        "steps": 0
+      }
+    ],
+    "ican": [
+      "I can show that the small gear and the ring gear turn the same way",
+      "I can count how many times the small gear spins as it rolls once round the ring",
+      "I can explain how this is different from two gears meshing on the outside"
     ]
   },
   "p1-wheel-01-011945": {

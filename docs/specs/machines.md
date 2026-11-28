@@ -1,6 +1,6 @@
 # Spec: Machines — how each part works, one library used everywhere
 
-> **Version:** 0.4 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28; build now)
+> **Version:** 0.5 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28; build now)
 > Depends on: lesson format (ADR-0004, CLAUDE.md §6), offline service worker (`apps/web/src/sw/`), back-office content review (`docs/specs/back-office-more-content.md`), lesson translations (§2.7 there). Brainstorm: build-plan board, "Mechanical parts: brainstorm" and "Three ways in, one set of Machines topic pages".
 
 ## 1. Purpose
@@ -155,11 +155,12 @@ Owner, 2026-11-28: build now. One PR per step; ⏸ marks a stop for review.
    - **Translations** (FR-10): `content/machines/<id>/index.<lang>.md` holds `title`, `card`, `picture_alt`, `stand_ins` (item and note), `real_part`, `safety_notes`, the body with the same `##` sections, and `status`, `ai_generated`, `reviewed_by`, `translated_from`. `npm run translation-hash -- <topic id>` covers `index.md` and `picture.svg`, so new callouts mark translations "needs updating". The library, topic pages and lesson cards show the translation where one may be shown, else English with "Not yet in your language". The build fails on a translation whose stand-ins, notes, safety notes or sections don't line up with English. One draft example: `bushing` in isiZulu.
    - Found on the way: an unquoted comma in a stand-in's note lost words silently (`note: about 2 cm, slid onto the skewer`); stand-ins are now checked strictly, so the build fails instead.
    - Not yet: reviewing topic **translations** in the back office (Languages screen) and their coverage flags. They are drafts until then; a follow-up when the first topic translations are ready for review.
-4. **Starting set:**
-   - the rest of the topics in §2, AI-drafted and marked `in_review`;
-   - one topic lesson each for the three gear topics (idler train, rack and pinion, ring gear) with cutout templates.
+4. *(built 2026-11-28, in review)* **Starting set:**
+   - the rest of the topics in §2, AI-drafted and marked `in_review`, each with a `picture.svg` without words (numbered callouts only): **gears** rack and pinion, ring gear; **levers** lever; **linkages** linkage; **cams and cranks** cam; **pulleys** pulleys and belts; **wheels, axles and bearings** wheel and axle, bearing, thrust washer, collar; **springs and dampers** spring, damper, flywheel; **fasteners** threaded fastener, pin and key. With the three examples, 18 topics;
+   - one topic lesson each for the three gear topics, with cutout templates: `p1-idler-01` Idler gears: same way round (Gear train), `p1-rack-01` Rack and pinion slider, `p1-ringgear-01` Ring gear: rolling inside (two sheets: parts and base). The template package gains `rack()` and `ringGear()` parts, sized to mesh with the 9 mm pitch card gears;
+   - the lessons are tagged with the topics they use (`machines`), so "Parts in this robot" and "Used in" fill in: levers, linkages, the cam, crank, pulley and wheel lessons, and the Phase 2 robots on wheels (`p2-art-01` also uses a collar).
 
-   ⏸ The owner reviews the content. Build tests go in `docs/test-plan.md`.
+   ⏸ The owner reviews the content. Build tests are in `docs/test-plan.md` (B61 and the lesson table).
 
 ## 10. AI · 11. Revenue · 12. Risks · 13. Owner actions
 
@@ -187,4 +188,5 @@ Owner, 2026-11-28: build now. One PR per step; ⏸ marks a stop for review.
 | 0.1 | 2026-11-28 | First draft from the build-plan brainstorm: topics with their own lessons, one library in three places, tab named Machines |
 | 0.2 | 2026-11-28 | Approved; build now. Body is "How it works" and "Try it" (stand-ins from front matter); `picture.svg`; filters move to step 2; step 1 built |
 | 0.3 | 2026-11-28 | Step 2 built: "Parts in this robot" with cards, grade and part filters; lessons tagged where the example topics are used (the rest with step 4) |
+| 0.5 | 2026-11-28 | Step 4 built (in review): 15 more topics with pictures, three gear topic lessons with templates, lessons tagged |
 | 0.4 | 2026-11-28 | Step 3 built: topics reviewed and withdrawn in the back office (migration 0030), topic translations; FR-5: a withdrawn topic leaves the strips instead of failing the build |

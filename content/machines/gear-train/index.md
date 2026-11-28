@@ -10,7 +10,7 @@ stand_ins:
   - { item: bottle caps with matchstick teeth glued round the edge }
   - { item: wooden skewers as axles, note: blunt the points first }
 real_part: plastic or metal spur gears on steel axles
-lessons: []
+lessons: [p1-idler-01]
 learn_first: [bushing]
 related: [crank]
 syllabus_links:

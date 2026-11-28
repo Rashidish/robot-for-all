@@ -4,7 +4,7 @@ title: Crank-powered waving rhino
 phase: 1
 grades: [3, 4]
 mechanism: crank
-machines: [crank, bushing]
+machines: [crank, bushing, pin-and-key]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: Motion - linear, rotational and combined motion (a crank turns rotational into up-and-down motion)

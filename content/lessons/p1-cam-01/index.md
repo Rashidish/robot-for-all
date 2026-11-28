@@ -4,7 +4,7 @@ title: Bouncing animal box
 phase: 1
 grades: [4, 5]
 mechanism: cam
-machines: [crank, bushing]
+machines: [cam, crank, bushing]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: Motion - turning (rotational) motion changed into up-and-down (linear) motion

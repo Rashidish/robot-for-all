@@ -4,6 +4,7 @@ title: Rubber-band pulley lift
 phase: 1
 grades: [5, 6, 7]
 mechanism: pulley
+machines: [pulley, wheel-and-axle]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: Motion - rotational motion passed from one axle to another by a belt; speed and force

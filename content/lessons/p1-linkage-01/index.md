@@ -4,6 +4,7 @@ title: Extending grabber
 phase: 1
 grades: [4, 5]
 mechanism: linkage
+machines: [linkage, pin-and-key]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.3 Components of a robot - grippers and attachments (Grade 5)
