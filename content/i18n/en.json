@@ -990,5 +990,11 @@
   "machine_card_close": "Close",
   "machines_filter_label": "Filter topics",
   "machines_filter_none": "No topics for this grade yet.",
-  "lessons_filter_machine": "Part"
+  "lessons_filter_machine": "Part",
+  "junior_block_north": "Go up",
+  "junior_block_east": "Go right",
+  "junior_block_south": "Go down",
+  "junior_block_west": "Go left",
+  "junior_block_around": "Turn around",
+  "junior_repeat_first": "Tap an arrow first, then the number."
 }

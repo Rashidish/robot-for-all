@@ -1,14 +1,19 @@
 <script lang="ts">
-  // Junior (Grades R–2; spec docs/specs/junior.md, ADR-0019): a tap-to-add row of picture blocks
-  // that drives a robot on a grid. Tap a picture to add it; tap a block in the row to take it out.
+  // Junior (Grades R–2; spec docs/specs/junior.md, ADR-0019): a tap-to-add row of picture cards
+  // that drives a robot on a grid. Tap a picture to add it; tap a card in the row to take it out.
+  // A repeat number goes under the last card, as CAPS shows it (FR-11): tap the arrow, then "×3".
   // No dragging and no reading: every block has a picture, a colour and a spoken name. The program
   // runs one step at a time with the current block lit up (FR-3). Stars are kept on this phone.
   import { onMount } from 'svelte';
   import {
+    type Action,
     type Block,
+    cardCount,
     cellName,
+    isRepeat,
     MAX_BLOCKS,
     type Mission,
+    MOVES,
     parseCell,
     type Run,
     runJunior
@@ -105,26 +110,66 @@
     }
   }
 
+  // The row as cards: a repeat number belongs to the move card after it (stored just before it).
+  interface Card {
+    action: Action;
+    times: Block | null;
+    /** The program indexes this card covers (its repeat number and itself). */
+    from: number;
+    to: number;
+  }
+  const cards = $derived.by(() => {
+    const out: Card[] = [];
+    for (let i = 0; i < program.length; i++) {
+      const b = program[i] as Block;
+      if (isRepeat(b)) {
+        const next = program[i + 1];
+        if (next !== undefined && !isRepeat(next)) {
+          out.push({ action: next as Action, times: b, from: i, to: i + 1 });
+          i++;
+        }
+        continue;
+      }
+      out.push({ action: b as Action, times: null, from: i, to: i });
+    }
+    return out;
+  });
+  const cardName = (c: Card) =>
+    c.times ? `${blockName(c.action)}, ${blockName(c.times)}` : blockName(c.action);
+
   function add(b: Block) {
     if (running) return;
     result = null;
     place();
-    if (program.length >= MAX_BLOCKS) {
+    if (isRepeat(b)) {
+      // The number goes under the last card, if that card moves or turns the robot.
+      const last = cards.at(-1);
+      if (!last || !MOVES.includes(last.action)) {
+        say(t('junior_repeat_first'));
+        return;
+      }
+      program = [...program.slice(0, last.from), b, last.action];
+      say(cardName({ ...last, times: b }));
+      return;
+    }
+    if (cardCount(program) >= MAX_BLOCKS) {
       say(t('junior_full'));
       return;
     }
     program = [...program, b];
     say(blockName(b));
   }
-  function removeAt(i: number) {
+  function removeCard(c: Card) {
     if (running) return;
     result = null;
     place();
-    const b = program[i];
-    program = program.filter((_, k) => k !== i);
-    if (b) say(blockName(b));
+    program = program.filter((_, k) => k < c.from || k > c.to);
+    say(cardName(c));
   }
-  const undo = () => program.length && removeAt(program.length - 1);
+  const undo = () => {
+    const last = cards.at(-1);
+    if (last) removeCard(last);
+  };
   const clear = () => {
     if (running) return;
     program = [];
@@ -284,23 +329,22 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d={START_ICON} /></svg>
       </span>
     </li>
-    {#each program as b, i (i)}
+    {#each cards as c (c.from)}
       <li>
         <button
           type="button"
           class="block"
-          class:lit={lit === i}
-          style={`--c:${colourOf(b)}`}
-          aria-label={`${blockName(b)}. ${t('junior_take_out')}`}
+          class:lit={lit !== null && lit >= c.from && lit <= c.to}
+          style={`--c:${colourOf(c.action)}`}
+          aria-label={`${cardName(c)}. ${t('junior_take_out')}`}
           disabled={running}
-          onclick={() => removeAt(i)}
+          onclick={() => removeCard(c)}
         >
-          {#if b.startsWith('x')}
-            <span class="times" aria-hidden="true">×{b.slice(1)}</span>
-          {:else}
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d={BLOCK_ICON[b as keyof typeof BLOCK_ICON]} />
-            </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d={BLOCK_ICON[c.action]} />
+          </svg>
+          {#if c.times}
+            <span class="under" aria-hidden="true">{c.times.slice(1)}</span>
           {/if}
         </button>
       </li>
@@ -542,7 +586,7 @@
     padding: var(--space-2);
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 16px 6px;
     min-height: 68px;
     width: 100%;
     box-sizing: border-box;
@@ -578,6 +622,25 @@
   .times {
     font-weight: 900;
     font-size: 1.35rem;
+  }
+  /* The repeat number under its card, as CAPS writes it (FR-11). */
+  .block {
+    position: relative;
+  }
+  .under {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    border: 2px solid #b85c00;
+    background: #fff;
+    color: #1f1a14;
+    font-weight: 900;
+    font-size: 0.95rem;
+    line-height: 20px;
   }
   .palette {
     display: grid;

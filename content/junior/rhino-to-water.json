@@ -1,5 +1,10 @@
 {
   "id": "rhino-to-water",
+  "grades": [1],
+  "term": 2,
+  "caps": ["C.1", "C.2", "C.3", "C.5"],
+  "kind": "build",
+  "mode": "arrows",
   "grid": {
     "cols": 4,
     "rows": 4
@@ -10,7 +15,7 @@
   },
   "target": "D4",
   "obstacles": ["B2"],
-  "blocks": ["forward", "left", "right", "x3"],
-  "best": 5,
+  "blocks": ["north", "east", "south", "west", "x2", "x3"],
+  "best": 2,
   "theme": "rhino-water"
 }
