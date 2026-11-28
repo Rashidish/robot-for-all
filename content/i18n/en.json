@@ -983,5 +983,12 @@
   "machine_used_in_title": "Used in",
   "machine_used_in_none": "No lessons use this part yet.",
   "machine_learn_first": "Good to know first",
-  "machine_related_title": "Related topics"
+  "machine_related_title": "Related topics",
+  "lesson_machines_title": "Parts in this robot",
+  "lesson_machines_hint": "Tap a part to see how it works.",
+  "machine_card_more": "More about {title}",
+  "machine_card_close": "Close",
+  "machines_filter_label": "Filter topics",
+  "machines_filter_none": "No topics for this grade yet.",
+  "lessons_filter_machine": "Part"
 }

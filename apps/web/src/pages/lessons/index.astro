@@ -5,8 +5,10 @@ import LessonFilters from '../../components/LessonFilters.astro';
 import { m, pageLang } from '../../i18n';
 import { getLessons } from '../../lessons/load';
 import { localLesson } from '../../lessons/translations';
+import { getMachines } from '../../machines/load';
 
 const lessons = await getLessons();
+const machines = (await getMachines()).map((t) => ({ id: t.id, title: t.data.title }));
 // Titles in this page's language where a translation may be shown (spec §2.7).
 const local = await Promise.all(lessons.map((l) => localLesson(l, pageLang(), lessons)));
 ---
@@ -14,7 +16,7 @@ const local = await Promise.all(lessons.map((l) => localLesson(l, pageLang(), le
 <BaseLayout title={m.lessons_title()}>
   <h1>{m.lessons_title()}</h1>
   <p>{m.lessons_intro()}</p>
-  {lessons.length > 0 && <LessonFilters lessons={lessons} />}
+  {lessons.length > 0 && <LessonFilters lessons={lessons} machines={machines} />}
   {lessons.length === 0 ? (
     <p class="muted">{m.lessons_empty()}</p>
   ) : (

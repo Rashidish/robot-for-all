@@ -1,6 +1,6 @@
 # Spec: Machines — how each part works, one library used everywhere
 
-> **Version:** 0.2 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28; build now)
+> **Version:** 0.3 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28; build now)
 > Depends on: lesson format (ADR-0004, CLAUDE.md §6), offline service worker (`apps/web/src/sw/`), back-office content review (`docs/specs/back-office-more-content.md`), lesson translations (§2.7 there). Brainstorm: build-plan board, "Mechanical parts: brainstorm" and "Three ways in, one set of Machines topic pages".
 
 ## 1. Purpose
@@ -145,10 +145,10 @@ Owner, 2026-11-28: build now. One PR per step; ⏸ marks a stop for review.
    - `/machines/` (in the main menu and kept offline like Lessons) and `/machines/<id>/`;
    - three topics as examples: gear train (with an idler), crank, bushing; `p1-crank-01` and `p1-gear-01` list the topics they use, so "Used in" works already;
    - unit, e2e (360 px, offline) and accessibility tests; a 60 KB size budget for the library page.
-2. **Inside lessons:**
-   - the `machines` field, the "Parts in this robot" strip and cards, offline saving;
-   - mapping for the 22 current lessons;
-   - filter by machine.
+2. *(built 2026-11-28)* **Inside lessons:**
+   - the "Parts in this robot" strip near the top of each lesson (`MachinesStrip.astro`): each part opens its card in a `<dialog>` (Escape and Close shut it, focus returns to the part; without JavaScript the part is a link to the topic). Cards are part of the lesson page, so "Download for offline" saves them;
+   - mapping: lessons tag the three example topics where they use them (`p1-crank-01`, `p1-gear-01`, `p1-cam-01`, `p1-wheel-01`, `p1-linkage-02`); the other lessons get tags as their topics arrive in step 4;
+   - filters: grade on the Machine library; "Part" on the lessons list (`?machine=`).
 3. **Back office:** topics as a content kind in review, withdrawal, translations (`translation-hash` covers topics).
 4. **Starting set:**
    - the rest of the topics in §2, AI-drafted and marked `in_review`;
@@ -181,3 +181,4 @@ Owner, 2026-11-28: build now. One PR per step; ⏸ marks a stop for review.
 |---|---|---|
 | 0.1 | 2026-11-28 | First draft from the build-plan brainstorm: topics with their own lessons, one library in three places, tab named Machines |
 | 0.2 | 2026-11-28 | Approved; build now. Body is "How it works" and "Try it" (stand-ins from front matter); `picture.svg`; filters move to step 2; step 1 built |
+| 0.3 | 2026-11-28 | Step 2 built: "Parts in this robot" with cards, grade and part filters; lessons tagged where the example topics are used (the rest with step 4) |

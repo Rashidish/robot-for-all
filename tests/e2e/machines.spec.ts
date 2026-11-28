@@ -1,5 +1,5 @@
 // The Machine library (spec docs/specs/machines.md, step 1) on a 360 px phone.
-import { expect, test, waitForServiceWorker } from './fixtures';
+import { expect, LESSON, test, waitForServiceWorker } from './fixtures';
 
 const TOPIC = '/machines/gear-train/';
 
@@ -69,5 +69,65 @@ test.describe('Machines', () => {
     await page.goto(TOPIC);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Gear train');
     await expect(page.getByRole('img', { name: /Three meshing gears/ })).toBeVisible();
+  });
+
+  test('the library filters topics by grade (FR-1)', async ({ page }) => {
+    await page.goto('/machines/');
+    await page.getByLabel('Grade').selectOption('3');
+    await expect(page.getByRole('link', { name: 'Crank' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Gear train' })).toBeHidden();
+    await expect(page.getByRole('heading', { level: 2, name: 'Gears' })).toBeHidden();
+    await page.getByLabel('Grade').selectOption('');
+    await expect(page.getByRole('link', { name: 'Gear train' })).toBeVisible();
+  });
+
+  test('a lesson shows "Parts in this robot"; a part opens its card (FR-6)', async ({ page }) => {
+    await page.goto(LESSON);
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'Parts in this robot' })
+    ).toBeVisible();
+    const part = page.getByRole('link', { name: 'Bushing', exact: true });
+    await part.click();
+    const card = page.getByRole('dialog', { name: 'Bushing' });
+    await expect(card).toBeVisible();
+    await expect(card.getByText(/smooth sleeve an axle spins inside/)).toBeVisible();
+    await expect(card.getByRole('img', { name: /straw/ })).toBeVisible();
+    // Escape closes it, and focus goes back to the part that opened it.
+    await page.keyboard.press('Escape');
+    await expect(card).toBeHidden();
+    await expect(part).toBeFocused();
+    // The Close button closes it too; "More about" opens the full topic.
+    await part.click();
+    await card.getByRole('button', { name: 'Close' }).click();
+    await expect(card).toBeHidden();
+    await part.click();
+    await card.getByRole('link', { name: 'More about Bushing' }).click();
+    await expect(page).toHaveURL(/\/machines\/bushing\/$/);
+  });
+
+  test('a lesson saved for offline opens its part cards with no signal (FR-9)', async ({
+    page,
+    context
+  }) => {
+    await page.goto(LESSON);
+    await waitForServiceWorker(page);
+    await page.getByRole('button', { name: 'Download for offline' }).click();
+    await expect(page.getByRole('button', { name: '✓ Saved for offline' })).toBeDisabled();
+    await context.setOffline(true);
+    await page.goto('/');
+    await page.goto(LESSON);
+    await page.getByRole('link', { name: 'Crank', exact: true }).click();
+    const card = page.getByRole('dialog', { name: 'Crank' });
+    await expect(card).toBeVisible();
+    await expect(card.getByRole('img', { name: /crank disc/ })).toBeVisible();
+  });
+
+  test('the lessons list filters by part (FR-13)', async ({ page }) => {
+    await page.goto('/lessons/?machine=bushing');
+    await expect(page.getByLabel('Part')).toHaveValue('bushing');
+    await expect(page.getByRole('link', { name: 'Crank-powered waving rhino' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Spinning gear train' })).toBeVisible();
+    const lever = page.locator('[data-lesson][data-mechanism="lever"]').first();
+    await expect(lever).toBeHidden();
   });
 });

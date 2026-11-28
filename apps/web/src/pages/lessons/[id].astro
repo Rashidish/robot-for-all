@@ -5,6 +5,8 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DownloadLesson from '../../components/DownloadLesson.astro';
 import HelperPanel from '../../components/HelperPanel.astro';
+import MachinesStrip from '../../components/MachinesStrip.astro';
+import { getMachines } from '../../machines/load';
 import PrintButton from '../../components/PrintButton.astro';
 import { findTemplate, templateFile, templatePage } from '../../templates/load';
 import { starterLink } from '../../lessons/programs';
@@ -46,6 +48,9 @@ const starter = data.starter_program
   ? starterLink(lesson.id, data.starter_program, world, local.programName)
   : undefined;
 const withdrawnHere = isOff('lesson', lesson.id);
+// "Parts in this robot" (machines spec FR-6): the lesson's topics that are visible in this build.
+const topicById = new Map((await getMachines()).map((t) => [t.id, t]));
+const parts = lesson.data.machines.flatMap((id) => topicById.get(id) ?? []);
 ---
 
 <BaseLayout title={data.title}>
@@ -84,6 +89,8 @@ const withdrawnHere = isOff('lesson', lesson.id);
     <li>{m.lesson_cost({ amount: data.cost_estimate_zar })}</li>
     <li>{m.lesson_mechanism({ mechanism: data.mechanism })}</li>
   </ul>
+
+  <MachinesStrip topics={parts} />
 
   <p>
     <a class="button" href={localHref(`/lessons/${lesson.id}/slides/`)} data-offline>
