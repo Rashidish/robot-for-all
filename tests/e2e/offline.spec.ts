@@ -23,6 +23,7 @@ test.describe('offline (M1 spec journeys B and C)', () => {
     for (const [path, heading] of [
       ['/', 'From Cardboard to Innovation'],
       ['/lessons/', 'Lessons'],
+      ['/machines/', 'Machine library'],
       ['/about/', 'About Robots For All'],
       // The footer links here on every page, so it works offline too (owner report, 2026-11-27).
       ['/privacy/', 'Privacy']

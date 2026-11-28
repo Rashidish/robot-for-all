@@ -25,7 +25,9 @@ const pages = [
   '/zu/lessons/p1-cam-01/',
   '/code/junior/',
   '/code/junior/cards/',
-  '/code/junior/sheet/rhino-to-water/'
+  '/code/junior/sheet/rhino-to-water/',
+  '/machines/',
+  '/machines/gear-train/'
 ];
 
 for (const path of pages) {

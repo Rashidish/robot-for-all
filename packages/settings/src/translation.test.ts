@@ -32,6 +32,12 @@ describe('translated_from: which English text a translation was made from', () =
     expect(translationSource(english)).not.toContain('status');
   });
 
+  it('ignores the Machines topics a lesson uses: facts, not words (machines spec FR-5)', async () => {
+    const tagged = english.replace('status: draft', 'machines: [crank, bushing]\nstatus: draft');
+    expect(tagged).toContain('machines:');
+    expect(await translationHash(tagged)).toBe(await translationHash(english));
+  });
+
   it('changes when the words change', async () => {
     const hash = await translationHash(english);
     expect(hash).toMatch(/^[0-9a-f]{16}$/);

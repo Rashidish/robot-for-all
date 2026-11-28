@@ -1,0 +1,68 @@
+---
+// The Machine library (machines spec FR-1): every topic, grouped by family.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { localHref, m } from '../../i18n';
+import { familyName } from '../../machines/families';
+import { getMachines } from '../../machines/load';
+import { MACHINE_FAMILIES } from '../../machines/schema';
+
+const topics = await getMachines();
+const families = MACHINE_FAMILIES.map((family) => ({
+  family,
+  topics: topics.filter((t) => t.data.family === family)
+})).filter((f) => f.topics.length > 0);
+---
+
+<BaseLayout title={m.machines_title()}>
+  <h1>{m.machines_title()}</h1>
+  <p>{m.machines_intro()}</p>
+  {topics.length === 0 && <p class="muted">{m.machines_empty()}</p>}
+  {families.map(({ family, topics }) => (
+    <section aria-labelledby={`family-${family}`}>
+      <h2 id={`family-${family}`}>{familyName(family)}</h2>
+      {topics.map((topic) => (
+        <article class="card" data-machine={topic.id}>
+          <h3>
+            <a href={localHref(`/machines/${topic.id}/`)} lang="en">
+              {topic.data.title}
+            </a>
+          </h3>
+          <p lang="en">{topic.data.card}</p>
+          <p class="meta">
+            {m.lesson_grades({ grades: topic.data.grades.join('–') })}
+            {topic.data.status !== 'published' && <> · {m.machine_draft_notice()}</>}
+          </p>
+        </article>
+      ))}
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .card {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  h3 {
+    margin: 0 0 var(--space-2);
+  }
+
+  h3 a {
+    display: inline-block;
+    min-height: var(--tap);
+    padding-top: var(--space-1);
+  }
+
+  .card p {
+    margin: 0 0 var(--space-2);
+  }
+
+  .meta {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

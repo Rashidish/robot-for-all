@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.41 (draft) · **Date:** 2026-11-27 · **Owner:** Rashid Ishmail
+> **Version:** 0.42 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -50,6 +50,7 @@ Every change must keep these true. If one can't be met, say so in the PR and pro
 - Lesson player: handbook (printable PDF) and on-screen slides views of the same lesson, plus a one-page printable answer sheet per lesson (spec: `docs/specs/answer-sheets.md`); recording sheets in the app comes with M5
 - Project library filtered by phase, grade, subject, mechanism, cost and language
 - Printable cutout templates (A4, true scale, fold/cut lines)
+- **Machines** tab (Machine library): one topic per part or mechanism (gears, cranks, bushings…) with how it works, a cheap stand-in, the real part and its own lessons; every lesson links to the topics it uses (spec `docs/specs/machines.md`)
 - Block coding editor plus micro:bit flashing from the browser
 - 2D robot and sensor simulator
 - Teacher, coach and parent portal: classes, progress, badges
@@ -136,6 +137,7 @@ Before adding any dependency, check: bundle size, licence, works offline, works 
 /content/lessons     Lessons as Markdown + front matter (one folder per lesson)
 /content/projects    Project data, parts lists, templates (SVG)
 /content/worlds      Robot worlds and courses for the simulator (JSON, checked)
+/content/machines    Machines topics: one folder per part or mechanism (index.md + picture.svg without words)
 /content/seasons     Seasons: three courses per theme, one per grade band, plus badge (JSON + SVG)
 /content/badges      Badges: rule (JSON) + picture without words (SVG); words in content/i18n as badge_<id>_name/_about
 /content/sheets      Every answer sheet code ever printed (`npm run sheet-codes` after a build; only grows)
@@ -156,6 +158,7 @@ title: Crank-powered waving rhino
 phase: 1                 # 1 Build | 2 Control | 3 Integrate
 grades: [3, 4]
 mechanism: crank         # crank | gear | lever | linkage | ...
+machines: [crank, bushing] # Machines topics it uses (content/machines/<id>); not words, so no translation
 syllabus_links:          # CAPS topic references
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.5 Design a simple artefact based on design specifications
@@ -321,3 +324,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.39 | 2026-11-27 | Junior approved: learners from Grade R (Junior tab, after M6); reminder to revisit stories |
 | 0.40 | 2026-11-27 | Live help sessions spec approved (`docs/specs/live-sessions.md`), coach on laptop or tablet |
 | 0.41 | 2026-11-27 | `content/junior` (Junior missions; ADR-0019: tap-to-add row on `/code/junior/`) |
+| 0.42 | 2026-11-28 | Machines approved and started (`docs/specs/machines.md`): `content/machines`, the Machines tab, `machines` in lesson front matter |
