@@ -25,7 +25,7 @@
     - `best` counts **cards**: a repeat number is part of its card.
   - Tag each lesson with its CAPS codes (R.1–R.7, D.1–D.10).
   - Keep the edits to the lesson filters, lesson page, i18n, the spec and CLAUDE.md in line with what's on `main` now: the Machines "Part" filter and "Parts in this robot" (#144), and Junior step 3 (#146).
-- [x] **J-4: mission kinds and card limits** (spec FR-12, FR-14). (2026-11-28, #PR)
+- [x] **J-4: mission kinds and card limits** (spec FR-12, FR-14). (2026-11-28, #152)
   - Mission kinds: `complete` (fill the gaps), `fix` (debug a given program), `predict` (tap the square where it ends), `choose` (2–3 programs), `shorten`.
   - Exact card sets (Parsons) or a maximum number of cards; the palette shows how many are left.
   - 12 missions across Grade R Terms 1–4, Grade 1 and Grade 2, each tagged with grades, term and CAPS codes.
