@@ -1,6 +1,6 @@
 # Spec: CAPS reference and AI-suggested CAPS links
 
-> **Version:** 0.1 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Draft for owner review
+> **Version:** 0.2 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28)
 > Depends on: lesson format (ADR-0004), back office review flow (`docs/specs/back-office.md`, `docs/specs/back-office-content-review.md`), Junior missions (`docs/specs/junior.md` FR-9), Machines topics. Seed list: `docs/caps-foundation-codes.md`.
 
 ## 1. Purpose
@@ -12,6 +12,7 @@ Every lesson, project, Machines topic, Junior mission and story should point to 
 **Owner decisions (2026-11-28)**
 1. Build a CAPS reference for **all grades, R–9**, used whenever lessons or projects are created, and updated when CAPS changes.
 2. **AI suggests the CAPS links** for new content, as during development: it reads the content and picks matching codes. Following CLAUDE.md §8, a person confirms them before publishing.
+3. Build now from the **2021 draft** CAPS for Grades 4–9 (`docs/caps-intermediate-senior-codes.md`). The owner uploads the gazetted versions **before go-live**, and the reference is updated then.
 
 ## 2. The reference (data)
 
@@ -36,7 +37,9 @@ One file per phase in `content/caps/`, checked at build:
 ```
 
 - `foundation.json` (R–3) comes from `docs/caps-foundation-codes.md`, which then becomes a page generated from the data.
-- `intermediate.json` (4–6) and `senior.json` (7–9) need the **official gazetted CAPS PDFs** (owner action; the 2021 drafts online aren't final).
+- `intermediate.json` (4–6) and `senior.json` (7–9) come from `docs/caps-intermediate-senior-codes.md`, built from the 2021 drafts. They are marked `"status": "draft"` until the gazetted PDFs arrive (owner action, before go-live).
+- The drafts don't number their topics, so these phases use our codes **`<strand>.<grade>.<term>`**, e.g. `RS.6.3`. The strands are AC, RS, IE, AS, plus PAT.
+- **Go-live check:** the production build fails while any phase is still `"status": "draft"` (it warns in previews). That way the gazetted update can't be forgotten.
 - Each entry has: the code, its content area, a short summary in our own words, and the grades it applies to (CAPS's N/A cells are left out).
 
 ## 3. Where it's used
@@ -84,10 +87,10 @@ One file per phase in `content/caps/`, checked at build:
 
 ## 7. Work plan
 
-⏸ Owner approves this spec and uploads the Intermediate (4–6) and Senior (7–9) CAPS PDFs.
+Spec approved by the owner (2026-11-28).
 
-1. **CR-1, CR-2:** the reference format, `foundation.json` from the current list, and the shared checker; Junior switches to it.
-2. **Intermediate and Senior data:** codes from the uploaded PDFs, extracted in the planning chat and checked by a person.
+1. **CR-1, CR-2:** the reference format, `foundation.json` from `docs/caps-foundation-codes.md`, and `intermediate.json` and `senior.json` from `docs/caps-intermediate-senior-codes.md` (draft status, go-live check); the shared checker; Junior switches to it.
+2. **Gazetted update** *(before go-live)*: the owner uploads the gazetted Grades 4–6 and 7–9 PDFs; the planning chat updates the lists; Claude Code updates the data and fixes the lessons the build reports.
 3. **CR-3, CR-6:** the `caps` field on all content kinds, the build checks and the update report.
 4. **CR-5:** the back-office picker, AI suggestions and the batch run (tag the existing lessons).
 5. **CR-4:** the teachers' reference page and the CAPS filter. ⏸ Owner review.
@@ -97,3 +100,4 @@ One file per phase in `content/caps/`, checked at build:
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-28 | First draft: one CAPS reference for Grades R–9 as data, checked everywhere; AI suggests links from the list, a person confirms |
+| 0.2 | 2026-11-28 | Approved; Grades 4–9 from the 2021 drafts with strand.grade.term codes; production build blocked until the gazetted versions replace the drafts |
