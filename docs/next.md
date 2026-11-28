@@ -23,7 +23,7 @@
   - Give its three missions (`bee-first-steps`, `bus-round-corner`, `rhino-count-steps`) the fields step 3 made required: `grades` (0 = Grade R), `term`, `caps`, `kind: build` and `mode`.
     - Grades R–1 use `arrows`; Grade R Terms 1–2 use `arrows-slide`; Grade 2 uses `turns`.
     - `best` counts **cards**: a repeat number is part of its card.
-  - Tag each lesson with its CAPS codes (R.1–R.7, D.1–D.10).
+  - Tag each lesson with its CAPS codes (R.1–R.7, D.1–D.10): the list, with the grades each code applies to, is in **`docs/caps-foundation-codes.md`**.
   - Keep the edits to the lesson filters, lesson page, i18n, the spec and CLAUDE.md in line with what's on `main` now: the Machines "Part" filter and "Parts in this robot" (#144), and Junior step 3 (#146).
 - [x] **J-4: mission kinds and card limits** (spec FR-12, FR-14). (2026-11-28, #152)
   - Mission kinds: `complete` (fill the gaps), `fix` (debug a given program), `predict` (tap the square where it ends), `choose` (2–3 programs), `shorten`.
