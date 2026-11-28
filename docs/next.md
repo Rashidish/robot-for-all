@@ -51,9 +51,9 @@
   - Add the build tests to `docs/test-plan.md` (B61).
 - [ ] ⏸ **Owner review of the Machines content.**
 
-### Junior stories (spec `docs/specs/junior-stories.md` v0.1, draft)
+### Junior stories (spec `docs/specs/junior-stories.md` v0.2, approved 2026-11-28)
 
-- [ ] ⏸ **Owner approves the stories spec.** If you already have stories work, push it first as a **draft PR** (don't merge it) and describe it in the PR, so the plan can be adapted to it.
+- [x] **Owner approved the stories spec** (2026-11-28). If you already have stories work, push it first as a **draft PR** (don't merge it), describe it in the PR, and adapt JS-1 to reuse it.
 - [ ] **JS-1: scenes and characters.** Content format, 6 scenes (city, neighbourhood, village, bush, garden, classroom), 12 characters as SVG, a card row per character, ▶ (S-1, S-2, S-7).
 - [ ] **JS-2: Retell and the eight stories.** Picture strips, checking, stars (S-3).
 - [ ] **JS-3: Make your own**, saved on the device (S-4).
