@@ -18,7 +18,7 @@
 
 ### Junior (spec `docs/specs/junior.md` v0.5, CAPS alignment approved 2026-11-28)
 
-- [x] **J-8a: rebase PR #143 (Grade R–2 lessons and six draft lessons).** (2026-11-28, #PR; lessons rewritten around R and D codes, owner's choice)
+- [x] **J-8a: rebase PR #143 (Grade R–2 lessons and six draft lessons).** (2026-11-28, #155; lessons rewritten around R and D codes, owner's choice)
   - Rebase onto `main` and rename it step 8 (the spec renumbered the steps).
   - Give its three missions (`bee-first-steps`, `bus-round-corner`, `rhino-count-steps`) the fields step 3 made required: `grades` (0 = Grade R), `term`, `caps`, `kind: build` and `mode`.
     - Grades R–1 use `arrows`; Grade R Terms 1–2 use `arrows-slide`; Grade 2 uses `turns`.
