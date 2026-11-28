@@ -26,6 +26,8 @@ const pages = [
   '/code/junior/',
   '/code/junior/cards/',
   '/code/junior/sheet/rhino-to-water/',
+  '/lessons/j-robot-01/',
+  '/lessons/j-robot-01/slides/',
   '/machines/',
   '/machines/gear-train/'
 ];

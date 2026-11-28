@@ -65,6 +65,32 @@ export const KINDS = ['build', 'complete', 'fix', 'predict', 'choose', 'shorten'
 export type Kind = (typeof KINDS)[number];
 /** CAPS Foundation Phase codes: C.1–C.7 coding, R.1–R.7 robotics, D.1–D.10 digital concepts. */
 export const CAPS_CODE = /^(C\.[1-7]|R\.[1-7]|D\.([1-9]|10))$/;
+/**
+ * Codes CAPS doesn't teach in a grade (docs/caps-foundation-codes.md, "N/A"): tagging an item for
+ * that grade with one of them is a mistake. Grade R is 0.
+ */
+const CAPS_NOT_IN: Record<number, readonly string[]> = {
+  0: ['C.7', 'R.3', 'D.4', 'D.5', 'D.6', 'D.10'],
+  1: ['D.5', 'D.6', 'D.10'],
+  2: ['D.10'],
+  3: ['D.10']
+};
+/** Problems with an item's CAPS codes for its grades (unknown codes, or N/A in a grade). */
+export function capsProblems(codes: readonly string[], grades: readonly number[]): string[] {
+  const out: string[] = [];
+  for (const code of codes) {
+    if (!CAPS_CODE.test(code)) {
+      out.push(`"${code}" is not a Foundation Phase CAPS code (C.1–7, R.1–7, D.1–10)`);
+      continue;
+    }
+    const off = grades.filter((g) => CAPS_NOT_IN[g]?.includes(code));
+    if (off.length)
+      out.push(
+        `${code} isn't taught in Grade ${off.map((g) => (g === 0 ? 'R' : String(g))).join(', ')} (CAPS: N/A)`
+      );
+  }
+  return out;
+}
 /** One square on the floor (spec §2: like classroom floor robots). */
 export const SQUARE_MM = 150;
 
@@ -526,13 +552,11 @@ export function missionProblems(raw: unknown, id: string): string[] {
   if (!Array.isArray(m.caps) || m.caps.length === 0) {
     p.push(`${id}: caps must list at least one CAPS code, e.g. "C.1"`);
   } else {
-    for (const code of m.caps) {
-      if (typeof code !== 'string' || !CAPS_CODE.test(code)) {
-        p.push(
-          `${id}: "${String(code)}" is not a Foundation Phase CAPS code (C.1–7, R.1–7, D.1–10)`
-        );
-      }
-    }
+    for (const problem of capsProblems(
+      m.caps.map((c) => String(c)),
+      Array.isArray(m.grades) ? m.grades : []
+    ))
+      p.push(`${id}: ${problem}`);
   }
   if (!KINDS.includes(m.kind as Kind)) p.push(`${id}: kind must be ${KINDS.join(', ')}`);
   if (!MODES.includes(m.mode as Mode)) p.push(`${id}: mode must be ${MODES.join(', ')}`);

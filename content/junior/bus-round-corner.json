@@ -1,0 +1,21 @@
+{
+  "id": "bus-round-corner",
+  "grades": [1],
+  "term": 2,
+  "caps": ["C.1", "C.2", "R.7"],
+  "kind": "build",
+  "mode": "arrows",
+  "grid": {
+    "cols": 3,
+    "rows": 3
+  },
+  "start": {
+    "cell": "A3",
+    "heading": "N"
+  },
+  "target": "C1",
+  "obstacles": ["B2"],
+  "blocks": ["north", "east", "south", "west", "x2"],
+  "best": 2,
+  "theme": "bus-school"
+}
