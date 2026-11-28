@@ -1,0 +1,21 @@
+{
+  "id": "rhino-count-steps",
+  "grades": [2],
+  "term": 3,
+  "caps": ["C.2", "C.5", "R.7"],
+  "kind": "build",
+  "mode": "turns",
+  "grid": {
+    "cols": 4,
+    "rows": 4
+  },
+  "start": {
+    "cell": "A4",
+    "heading": "N"
+  },
+  "target": "D1",
+  "obstacles": ["B3", "C3"],
+  "blocks": ["forward", "left", "right", "x2", "x3"],
+  "best": 3,
+  "theme": "rhino-water"
+}

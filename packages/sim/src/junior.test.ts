@@ -1,6 +1,7 @@
 // Junior grid programs (spec docs/specs/junior.md FR-2 to FR-5).
 import { describe, expect, it } from 'vitest';
 import {
+  capsProblems,
   cardsLeft,
   chooseAnswer,
   keepsGiven,
@@ -298,6 +299,22 @@ describe('mission kinds and card limits (FR-12, FR-14)', () => {
     expect(cardsLeft(limited, ['x3', 'east'])).toBe(2);
     expect(missionProblems({ ...base, max_cards: 1 }, 'm')).toEqual([
       'm: "max_cards" (1) is fewer than the fewest cards (2)'
+    ]);
+  });
+});
+
+describe('CAPS codes per grade (docs/caps-foundation-codes.md)', () => {
+  it('rejects codes CAPS marks N/A for a grade, and unknown codes', () => {
+    expect(capsProblems(['C.1', 'R.6', 'D.7'], [0])).toEqual([]);
+    expect(capsProblems(['R.3', 'D.4', 'C.7'], [0])).toEqual([
+      "R.3 isn't taught in Grade R (CAPS: N/A)",
+      "D.4 isn't taught in Grade R (CAPS: N/A)",
+      "C.7 isn't taught in Grade R (CAPS: N/A)"
+    ]);
+    expect(capsProblems(['D.5'], [1, 2])).toEqual(["D.5 isn't taught in Grade 1 (CAPS: N/A)"]);
+    expect(capsProblems(['D.10'], [2])).toEqual(["D.10 isn't taught in Grade 2 (CAPS: N/A)"]);
+    expect(capsProblems(['X.1'], [1])).toEqual([
+      '"X.1" is not a Foundation Phase CAPS code (C.1–7, R.1–7, D.1–10)'
     ]);
   });
 });

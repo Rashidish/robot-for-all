@@ -1,6 +1,6 @@
 # Deferred test plan (people and devices)
 
-> **Version:** 0.64 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
+> **Version:** 0.65 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 
 **Decision (2026-11-22, owner):** because of time and people constraints, building continues with **automated functional tests only** (CI must pass before anything merges). The human and device checks below are collected here and run **once the full application is complete**, before the first public launch of lessons.
 
@@ -38,6 +38,12 @@ How to use this list: add a row whenever a step adds something only a person can
 | p1-idler-01 Idler gears: same way round (A5 on both board guides: the gears mesh without slipping with the small and the big idler) | | | | | | |
 | p1-rack-01 Rack and pinion slider (also: one turn moves the rack about 108 mm; the axle hole in the base keeps the pinion meshed) | | | | | | |
 | p1-ringgear-01 Ring gear: rolling inside (also: the inside teeth can be cut cleanly with scissors; the small gear rolls all the way round without jamming; two sheets) | | | | | | |
+| j-robot-01 What is a robot? (Junior, Grade R: **A2 = a teach test** with a class, using only the printed lesson, arrow cards and mission sheet; A4 = the CAPS codes match docs/caps-foundation-codes.md; no template, so A5 n/a) | | | | | n/a | |
+| j-tap-01 Tap it and it moves (as above, Grade R; also: the screen part stays short) | | | | | n/a | |
+| j-helpers-01 Robots that help us (as above, Grade 1) | | | | | n/a | |
+| j-build-01 Build a robot model (as above, Grade 1; also: the split-pin arm swings and the model carries a small toy) | | | | | n/a | |
+| j-online-01 Safe on screens and online (as above, Grade 2; also: a teacher checks the online-safety wording is calm and age-appropriate) | | | | | n/a | |
+| j-work-01 Robots at work (as above, Grade 2) | | | | | n/a | |
 | p2-display-01 Blink a heart (A2 = run the starter on the on-screen and a real micro:bit; no template, so A5 n/a) | | | | | n/a | |
 | p2-button-01 Button-controlled faces (as above) | | | | | n/a | |
 | p2-light-01 Automatic night light (as above; also check the threshold works in a real classroom) | | | | | n/a | |
@@ -112,6 +118,7 @@ How to use this list: add a row whenever a step adds something only a person can
 | B55 | **Family group**: a homeschooling parent starts a family group on a phone, adds two children, a child signs in on the family phone with the code and pictures, the parent taps "Learn as" on their own phone, the other parent opens the link, is confirmed by name and sees the children; a ninth child is refused; a certificate says "Awarded by Robots For All" | |
 | B62 | **Review and withdraw a Machines topic in the back office** (after migration `0030_machine_reviews.sql` is applied): an editor sends a topic for review; a reviewer opens it from Content → Machines, reads it on the drafts preview, ticks the seven items and approves; after Merge now it shows on the live Machine library and in its lessons' "Parts in this robot"; the same person can't approve a topic they sent; Withdraw takes it off the library and the lessons' strips, Restore brings it back; on a phone at 360 px | |
 | B61 | **Machines topics review and build tests** (machines spec): a reviewer reads each topic page and its card on a phone (is it right, safe and clear for its grades?), checks the picture matches its numbered callouts, and builds each stand-in from the topic, doing its "Try it": straw bushing vs bare hole; rack and pinion and ring gear from the lesson templates (they mesh without slipping); marble bearing between two lids; straw thrust washer; Prestik collar; rubber-band spring with bottle caps; syringe damper (no needle); coin flywheel on a card disc; bottle-lid pulleys with a rubber band; lever on a pencil; four-bar card linkage; card cam; matchstick key and split-pin pivot | |
+| B64 | **Junior lessons in a classroom**: a Foundation Phase teacher reads the six lessons for wording (read aloud to Grade R), timing (about 30 minutes; 2–5 minutes per activity), the unplugged parts, and whether each lesson's CAPS codes are really covered | |
 | B63 | **Junior mission kinds with children** (Grades R–2, a phone and a projector): do children understand each task when it is spoken (predict: tap where it stops; choose: tap the shortest way; complete: fill the empty box; fix; make it shorter), without reading? Can a Grade R child count the cards left on a Parsons mission? Is Big screen usable with 15 missions? | |
 | B60 | **Junior printing**: print the arrow cards and the three mission sheets on a school printer (colour and black and white). Do the cards cut cleanly at 6.2 cm, and can a Grade R child tell the arrows apart in black and white? Do the boards fit one page? | |
 | B59 | **Junior with children** (Grades R–2, cheap phones and a projector): can they add and take out blocks without help, read the pictures without words, and solve the three missions? If tapping doesn't work for them, ADR-0019's fallback (Blockly sideways) is built | |
@@ -203,3 +210,4 @@ How to use this list: add a row whenever a step adds something only a person can
 | 0.62 | 2026-11-28 | B62 review and withdraw a Machines topic in the back office |
 | 0.63 | 2026-11-28 | B61 build tests for every Machines topic; three gear topic lessons waiting for A1–A6 |
 | 0.64 | 2026-11-28 | B63 Junior mission kinds with children |
+| 0.65 | 2026-11-28 | Six Junior lessons waiting for A1–A6; B64 Junior lessons in a classroom |

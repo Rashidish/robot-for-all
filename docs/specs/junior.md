@@ -1,6 +1,6 @@
 # Spec: Junior — coding before reading (Grades R–2)
 
-> **Version:** 0.6 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019); CAPS alignment (§2A, FR-9 to FR-16) approved by the owner 2026-11-28
+> **Version:** 0.7 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-27); editor decided (ADR-0019); CAPS alignment (§2A, FR-9 to FR-16) approved by the owner 2026-11-28
 > Depends on: M3 editor (ADR-0005), M4 robot world and robot calls (ADR-0007, ADR-0008), M5 sign-in, records and badges (ADR-0013, ADR-0014, `content/badges`). If approved, CLAUDE.md §1 "Who it's for" changes from Grade 3 to Grade R upward. Brainstorm: build-plan board, "Grades R–2: coding before reading".
 
 ## 1. Purpose
@@ -137,7 +137,7 @@ Source: the DBE's *Curriculum and Assessment Policy Statement, Coding and Roboti
 
 - **Blocks:** a second, small Blockly block set in `packages/blocks` (horizontal layout, icon fields). It generates the same robot calls as the Grade 3+ blocks, so there is one runtime.
 - **Grid mode** in `packages/sim`: positions snap to squares, turns are 90°, and a block per step drives the animation.
-- **Lessons:** front matter gains `junior: true` and `world: <id>`; grades accept `R` (as 0), 1 and 2.
+- **Lessons** (built in step 8): a Junior lesson is `phase: 0` (shown as "Junior") with an id like `j-robot-01`, grades `0` (shown as "R"), 1 and 2, `junior_missions: [<mission id>, …]` naming the missions it opens, and `caps: [codes]` (docs/caps-foundation-codes.md). Its body has four `##` steps in order, **Predict, Run, Try, Make**, optionally followed by Teacher notes. Instead of the PRIMM answer sheet (and its sheet code), the lesson page links to each mission, its picture mission sheet and the arrow cards, and lists its CAPS codes. The build fails on a mission that doesn't exist, the wrong steps, a grade above 2, Grade R on any other phase, or a CAPS code that isn't taught in one of the lesson's grades (the same check runs on missions). Junior lessons list first, by grade and along their chain of prerequisites.
 - An ADR is needed only if Blockly's horizontal layout turns out not to work on phones; the fallback is a tiny custom row editor of about 300 lines.
 
 ## 7. Security, privacy and child safety
@@ -213,8 +213,22 @@ CAPS alignment approved by the owner (2026-11-28). Then:
    - The page is **39.8 KB** of its 40 KB budget. Steps 5–7 will need it raised or the page split (for example, the teacher tools on their own page).
 5. **Grade 2 board features** (FR-13): collect, ordered goals, no-go squares, enter and leave, jump, IF tile; 4 more missions.
 6. **Patterns** (FR-12 `pattern`): copy, complete, find the error, make your own; 4 missions.
-7. **Teacher tools** (FR-15, FR-16): mission planner by CAPS code, observation checklist and Annexure B rubrics to print, observations recorded with M5; pairs mode.
-8. Six Grade R–2 lessons (two per grade) for R.1–R.5 and D.1–D.9, with CAPS codes. ⏸ owner review.
+7. **Teacher tools** (FR-15, FR-16): mission planner by CAPS code, observation checklist and Annexure B rubrics to print, observations recorded with M5; pairs mode. **Owner decision (2026-11-28): on a page of their own**, so the Junior page stays within its 40 KB budget (it is at 39.8 KB after step 4).
+8. *(built 2026-11-28, drafts)* Six Grade R–2 lessons (two per grade) for R.1–R.5 and D.1–D.9, with CAPS codes. The lesson format above, built on PR #143's format work, with the lessons rewritten around robots and digital concepts (owner, 2026-11-28). Each lesson starts unplugged and opens one mission in its Try step:
+
+   | Grade | Lesson | CAPS | Mission |
+   |---|---|---|---|
+   | R | `j-robot-01` What is a robot? | R.1, R.2, R.6, D.1, C.3 | Three steps to the flower |
+   | R | `j-tap-01` Tap it and it moves | D.2, D.3, D.7, R.7, C.1 | Bee to the flower |
+   | 1 | `j-helpers-01` Robots that help us | R.1, R.2, R.3, R.4, D.4, R.7 | Round the corner |
+   | 1 | `j-build-01` Build a robot model | R.3, R.5, R.6, C.3 | Rhino to the water |
+   | 2 | `j-online-01` Safe on screens and online | D.2, D.3, D.4, D.5, C.1 | Bus to school |
+   | 2 | `j-work-01` Robots at work | R.1, R.2, R.4, D.6, R.7, C.5 | Count to the water |
+
+   - PR #143's three missions carry the step 3 fields: Three steps to the flower (Grade R Term 3, arrows), Round the corner (Grade 1 Term 2, arrows with a repeat), Count to the water (Grade 2 Term 3, turns); 18 missions in all.
+   - Drafts: `ai_generated: true`, `reviewed_by: null`; English only for the lesson text, the new interface words in English and draft isiZulu.
+
+   ⏸ owner review.
 
 ## 10. AI · 11. Revenue · 12. Risks · 13. Owner actions
 
@@ -233,5 +247,6 @@ CAPS alignment approved by the owner (2026-11-28). Then:
 | 0.2 | 2026-11-27 | Approved: tab named Junior, own sign-in with the QR card, grid first, stories later (reminder), after M6 |
 | 0.3 | 2026-11-27 | Owner decisions: tap-to-add row with Blockly as fallback (ADR-0019), own page linked as a tab, ×N repeats the next block; step 1 built |
 | 0.4 | 2026-11-28 | Draft §2A CAPS alignment against the Foundation Phase CAPS (§2.12, §3, §4): direction arrows for Grades R–1, repeat under the arrow, mission kinds, board features, CAPS tags, teacher observation and rubrics (FR-9 to FR-16); work plan steps 3–8 |
+| 0.7 | 2026-11-28 | Step 8 built (drafts): Junior lesson format with CAPS codes checked per grade, six lessons on robots and digital concepts, #143's missions retagged; teacher tools get a page of their own (owner) |
 | 0.6 | 2026-11-28 | Step 4 built: mission kinds (complete, fix, predict, choose, shorten) and card limits (Parsons cards, maximum); 12 more missions |
 | 0.5 | 2026-11-28 | CAPS alignment approved (all four decisions); step 3 built: direction arrows and Grade R slide, repeat number under the card, turn around, missions tagged with grades, term and CAPS codes |

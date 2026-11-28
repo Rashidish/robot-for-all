@@ -1,0 +1,21 @@
+{
+  "id": "bee-first-steps",
+  "grades": [0],
+  "term": 3,
+  "caps": ["C.1", "C.3", "R.7"],
+  "kind": "build",
+  "mode": "arrows",
+  "grid": {
+    "cols": 4,
+    "rows": 3
+  },
+  "start": {
+    "cell": "A2",
+    "heading": "E"
+  },
+  "target": "D2",
+  "obstacles": [],
+  "blocks": ["north", "east", "south", "west"],
+  "best": 3,
+  "theme": "bee-flower"
+}
