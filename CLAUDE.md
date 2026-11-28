@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.44 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
+> **Version:** 0.45 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -86,7 +86,7 @@ Ship in order. Each milestone must be usable on its own before the next starts.
 
 **Owner decision (2026-11-23):** the product's name is **Robots For All** (plural); user-facing text uses it (done 2026-11-23). The site lives on one hostname, **`robotsforall.org.za`**; `robotsforall.co.za`, `robotsforall.africa` and `www.` redirect to it (`docs/deploy.md` §4). Internal identifiers (the Cloudflare Pages project `robot-for-all`, the program file format `robot-for-all-program`) keep their old names so nothing breaks.
 
-**Owner reminder (2026-11-27):** after the Junior launch, revisit **stories with characters** for Grades R–2 (ScratchJr-style; `docs/specs/junior.md` §2 out of scope).
+**Owner decision (2026-11-28):** **Junior stories** (ScratchJr-style characters, scenes and filtered voices) are planned now: spec `docs/specs/junior-stories.md` (draft), queued in `docs/next.md`. Children's voices are always filtered on the device before storage and never uploaded.
 
 **Owner reminder (2026-11-22):** once all front-office functionality is complete, revisit the **extension folder format** (how extension packs are stored, contributed, reviewed and kept up to date; see M3 spec §15) before building it out.
 
@@ -328,3 +328,4 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.42 | 2026-11-28 | Machines approved and started (`docs/specs/machines.md`): `content/machines`, the Machines tab, `machines` in lesson front matter |
 | 0.43 | 2026-11-28 | `docs/next.md`: the build queue; planning chat writes specs and the queue, Claude Code builds (§9.11) |
 | 0.44 | 2026-11-28 | Machines topics in the back office review flow and the withdrawn list; topic translations; `translation-hash` takes a topic id |
+| 0.45 | 2026-11-28 | Junior stories planned now (spec `docs/specs/junior-stories.md`, draft), replacing the "after launch" reminder |
