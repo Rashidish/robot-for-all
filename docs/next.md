@@ -44,7 +44,7 @@
   - Topics become a content kind in the review flow (draft → in review → published, `reviewed_by` required).
   - Add `machines` to `content/site/withdrawn.json`.
   - Translations as `index.<lang>.md`; `npm run translation-hash` covers `index.md` and `picture.svg`.
-- [ ] **M-4: starting set.**
+- [x] **M-4: starting set.** (2026-11-28, #149)
   - The rest of the topics in spec §2: thrust washer, threaded fastener, pin and key, collar, spring, damper, flywheel, levers and linkages, cams, pulleys and belts, wheels and axles, rack and pinion, ring gear. Each is AI-drafted, marked `in_review`, with a `picture.svg` that has no words.
   - One topic lesson each for the three gear topics (idler train, rack and pinion, ring gear), with cutout templates.
   - Tag every remaining lesson with `machines`.
