@@ -1,6 +1,6 @@
 # CLAUDE.md — Robots For All
 
-> **Version:** 0.43 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
+> **Version:** 0.44 (draft) · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail
 > Keep the version line above current and log changes at the bottom.
 
 Read this file before every task. It is the source of truth for what we build, the rules that cannot be broken, and how to work in this repo. If a request conflicts with this file, stop and ask.
@@ -326,8 +326,5 @@ Always commit `package-lock.json` changes; CI installs with `npm ci` and fails i
 | 0.40 | 2026-11-27 | Live help sessions spec approved (`docs/specs/live-sessions.md`), coach on laptop or tablet |
 | 0.41 | 2026-11-27 | `content/junior` (Junior missions; ADR-0019: tap-to-add row on `/code/junior/`) |
 | 0.42 | 2026-11-28 | Machines approved and started (`docs/specs/machines.md`): `content/machines`, the Machines tab, `machines` in lesson front matter |
-<<<<<<< HEAD
-| 0.43 | 2026-11-28 | Machines topics in the back office review flow and the withdrawn list; topic translations; `translation-hash` takes a topic id |
-=======
 | 0.43 | 2026-11-28 | `docs/next.md`: the build queue; planning chat writes specs and the queue, Claude Code builds (§9.11) |
->>>>>>> origin/main
+| 0.44 | 2026-11-28 | Machines topics in the back office review flow and the withdrawn list; topic translations; `translation-hash` takes a topic id |
