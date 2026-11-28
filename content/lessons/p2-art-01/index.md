@@ -4,6 +4,7 @@ title: Pen art
 phase: 2
 grades: [4, 5, 6]
 mechanism: servo
+machines: [collar, wheel-and-axle]
 syllabus_links:
   - subject: Mathematics (CAPS, Intermediate Phase)
     topic: Space and shape - 2D shapes, angles and turns; a square has four equal sides and four right angles (to confirm)

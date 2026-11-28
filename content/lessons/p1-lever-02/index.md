@@ -4,6 +4,7 @@ title: Robot arm with three lever types
 phase: 1
 grades: [5, 6]
 mechanism: lever
+machines: [lever, pin-and-key]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.2 Types of robots - industrial robot arms (Grade 5); R.3 Components - grippers and structural parts

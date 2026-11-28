@@ -4,6 +4,7 @@ title: Robot that reacts
 phase: 2
 grades: [6, 7]
 mechanism: sensor-control
+machines: [wheel-and-axle]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: R.5 Use a variable and the light sensor to control an actuator (Grade 6 Term 4 - one variable only; to confirm)
