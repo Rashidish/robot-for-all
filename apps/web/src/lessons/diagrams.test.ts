@@ -6,6 +6,8 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const lessons = join(import.meta.dirname, '../../../../content/lessons');
+// Machines topic pictures follow the same rule (machines spec FR-11).
+const machines = join(import.meta.dirname, '../../../../content/machines');
 
 /** Markings allowed in a diagram: numbers, pins, board and part names, voltages, signs. */
 const ALLOWED = [
@@ -25,23 +27,30 @@ function diagramWords(svg: string): string[] {
     .filter((t) => t !== '' && !ALLOWED.some((re) => re.test(t)));
 }
 
-const files = readdirSync(lessons).flatMap((lesson) => {
-  try {
-    return readdirSync(join(lessons, lesson, 'images'))
-      .filter((f) => f.endsWith('.svg'))
-      .map((f) => join(lesson, 'images', f));
-  } catch {
-    return [];
-  }
-});
+const files = [
+  ...readdirSync(lessons).flatMap((lesson) => {
+    try {
+      return readdirSync(join(lessons, lesson, 'images'))
+        .filter((f) => f.endsWith('.svg'))
+        .map((f) => join(lessons, lesson, 'images', f));
+    } catch {
+      return [];
+    }
+  }),
+  ...readdirSync(machines).map((topic) => join(machines, topic, 'picture.svg'))
+];
 
 describe('lesson diagrams carry no words, only callouts and printed markings', () => {
   it('finds diagrams to check', () => {
     expect(files.length).toBeGreaterThan(10);
   });
 
+  it('includes the Machines pictures', () => {
+    expect(files.some((f) => f.includes('content/machines/'))).toBe(true);
+  });
+
   it.each(files)('%s', (file) => {
-    expect(diagramWords(readFileSync(join(lessons, file), 'utf8'))).toEqual([]);
+    expect(diagramWords(readFileSync(file, 'utf8'))).toEqual([]);
   });
 
   it('catches a word', () => {

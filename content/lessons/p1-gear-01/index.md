@@ -4,6 +4,7 @@ title: Spinning gear train
 phase: 1
 grades: [5, 6, 7]
 mechanism: gear
+machines: [gear-train, bushing]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: Motion - rotational motion; gears change speed and direction of turning

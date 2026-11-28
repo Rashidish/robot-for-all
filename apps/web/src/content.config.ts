@@ -3,6 +3,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { lessonSchema, translationSchema } from './lessons/schema';
+import { machineSchema } from './machines/schema';
 
 const lessons = defineCollection({
   loader: glob({
@@ -28,4 +29,14 @@ const translations = defineCollection({
   schema: translationSchema
 });
 
-export const collections = { lessons, translations };
+// Machines topics (machines spec §6): content/machines/<id>/index.md, English source.
+const machines = defineCollection({
+  loader: glob({
+    base: '../../content/machines',
+    pattern: '*/index.md',
+    generateId: ({ entry }) => entry.split('/')[0] ?? entry
+  }),
+  schema: machineSchema
+});
+
+export const collections = { lessons, translations, machines };

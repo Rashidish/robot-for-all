@@ -1,5 +1,6 @@
 // Lesson rules (ADR-0004, CLAUDE.md §6). Used by the content collection at build time and by unit tests.
 import { z } from 'astro/zod';
+import { machineId } from '../machines/schema';
 
 export const PRIMM_STEPS = ['Predict', 'Run', 'Investigate', 'Modify', 'Make'] as const;
 
@@ -12,6 +13,8 @@ export const lessonSchema = z
     phase: z.union([z.literal(1), z.literal(2), z.literal(3)]),
     grades: z.array(z.number().int().min(1).max(12)).min(1),
     mechanism: z.string().min(2),
+    /** Machines topics this lesson uses ("Parts in this robot", machines spec FR-5). */
+    machines: z.array(machineId).default([]),
     syllabus_links: z
       .array(z.object({ subject: z.string().min(2), topic: z.string().min(2) }))
       .default([]),

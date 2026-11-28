@@ -1,0 +1,249 @@
+---
+// A Machines topic page (machines spec FR-2): how it works, stand-ins and the real part, a test to
+// try, the topic's own lessons and every lesson that uses it ("Used in", worked out at build).
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { localHref, m, pageLang } from '../../i18n';
+import { getLessons } from '../../lessons/load';
+import { localTitles } from '../../lessons/translations';
+import { familyName } from '../../machines/families';
+import { getMachines, picture, type MachineEntry } from '../../machines/load';
+import { usedIn } from '../../machines/schema';
+
+export async function getStaticPaths() {
+  const topics = await getMachines();
+  return topics.map((topic) => ({ params: { id: topic.id }, props: { topic, topics } }));
+}
+
+interface Props {
+  topic: MachineEntry;
+  /** The topics visible in this build, for "learn first" and related links. */
+  topics: MachineEntry[];
+}
+
+const { topic, topics } = Astro.props;
+const { data } = topic;
+const { Content } = await render(topic);
+const lessons = await getLessons();
+const titles = await localTitles(lessons, pageLang());
+const titleOf = new Map(topics.map((t) => [t.id, t.data.title]));
+const topicLessons = data.lessons.filter((id) => titles[id]);
+const using = usedIn(
+  topic.id,
+  lessons.map((l) => ({ id: l.id, phase: l.data.phase, machines: l.data.machines }))
+).filter((l) => !data.lessons.includes(l.id));
+const learnFirst = data.learn_first.filter((id) => titleOf.has(id));
+const related = data.related.filter((id) => titleOf.has(id));
+const svg = picture(topic.id) ?? '';
+---
+
+<BaseLayout title={data.title}>
+  <p class="back">
+    <a href={localHref('/machines/')}>← {m.machine_back()}</a>
+  </p>
+
+  {data.status !== 'published' && (
+    <p class="draft" role="note">
+      {m.machine_draft_notice()}
+    </p>
+  )}
+
+  <h1 lang="en">{data.title}</h1>
+
+  <ul class="facts">
+    <li>{familyName(data.family)}</li>
+    <li>{m.lesson_grades({ grades: data.grades.join('–') })}</li>
+  </ul>
+
+  <figure class="picture" role="img" aria-label={data.picture_alt}>
+    <Fragment set:html={svg} />
+  </figure>
+
+  <p class="card-text" lang="en">
+    {data.card}
+  </p>
+
+  {learnFirst.length > 0 && (
+    <p class="learn-first">
+      <strong>{m.machine_learn_first()}:</strong>{' '}
+      {learnFirst.map((id, i) => (
+        <>
+          {i > 0 && ', '}
+          <a href={localHref(`/machines/${id}/`)} lang="en">
+            {titleOf.get(id)}
+          </a>
+        </>
+      ))}
+    </p>
+  )}
+
+  <section
+    class:list={['safety', { 'adult-help': data.safety.adult_help }]}
+    aria-labelledby="safety-title"
+  >
+    <h2 id="safety-title">⚠ {m.lesson_safety_title()}</h2>
+    {data.safety.adult_help && <p class="adult">{m.lesson_adult_help()}</p>}
+    <ul lang="en">
+      {data.safety.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="stand-ins" aria-labelledby="stand-ins-title">
+    <h2 id="stand-ins-title">{m.machine_stand_ins_title()}</h2>
+    <p>{m.machine_stand_ins_intro()}</p>
+    <ul lang="en">
+      {data.stand_ins.map((s) => (
+        <li>
+          {s.item}
+          {s.note && <span class="muted"> ({s.note})</span>}
+        </li>
+      ))}
+    </ul>
+    <p>{m.machine_real_part({ part: data.real_part })}</p>
+  </section>
+
+  <div class="topic-body" lang="en">
+    <Content />
+  </div>
+
+  {topicLessons.length > 0 && (
+    <section aria-labelledby="topic-lessons-title">
+      <h2 id="topic-lessons-title">{m.machine_lessons_title()}</h2>
+      <ol>
+        {topicLessons.map((id) => (
+          <li>
+            <a href={localHref(`/lessons/${id}/`)}>{titles[id]}</a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  <section aria-labelledby="used-in-title">
+    <h2 id="used-in-title">{m.machine_used_in_title()}</h2>
+    {using.length === 0 ? (
+      <p class="muted">{m.machine_used_in_none()}</p>
+    ) : (
+      <ul>
+        {using.map((l) => (
+          <li>
+            <a href={localHref(`/lessons/${l.id}/`)}>{titles[l.id]}</a>{' '}
+            <span class="muted">({m.lesson_phase({ phase: l.phase })})</span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  {related.length > 0 && (
+    <section aria-labelledby="related-title">
+      <h2 id="related-title">{m.machine_related_title()}</h2>
+      <ul>
+        {related.map((id) => (
+          <li>
+            <a href={localHref(`/machines/${id}/`)} lang="en">
+              {titleOf.get(id)}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {data.syllabus_links.length > 0 && (
+    <section aria-labelledby="syllabus-title">
+      <h2 id="syllabus-title">{m.lesson_syllabus_title()}</h2>
+      <ul>
+        {data.syllabus_links.map((link) => (
+          <li>
+            {link.subject}: {link.topic}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .back {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .draft {
+    padding: var(--space-3) var(--space-4);
+    border-left: 4px solid var(--color-accent);
+    background: var(--color-surface);
+    font-weight: 600;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .facts li {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: var(--text-sm);
+  }
+
+  .picture {
+    margin: var(--space-4) 0;
+    max-width: 28rem;
+  }
+
+  .picture :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .card-text {
+    font-size: var(--text-lg);
+  }
+
+  .learn-first a {
+    display: inline-block;
+    min-height: 24px;
+  }
+
+  .safety {
+    margin: var(--space-6) 0;
+    padding: var(--space-3) var(--space-4);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .safety.adult-help {
+    border-color: var(--color-accent);
+  }
+
+  .safety h2,
+  .stand-ins h2 {
+    margin-top: 0;
+  }
+
+  .safety .adult {
+    font-weight: 700;
+  }
+
+  .stand-ins {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  li a {
+    display: inline-block;
+    min-height: 24px;
+    padding-block: 2px;
+  }
+</style>

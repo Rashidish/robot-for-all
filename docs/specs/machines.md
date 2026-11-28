@@ -1,6 +1,6 @@
 # Spec: Machines — how each part works, one library used everywhere
 
-> **Version:** 0.1 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Draft (concept and tab name approved by the owner 2026-11-28; this spec waits for review)
+> **Version:** 0.2 · **Date:** 2026-11-28 · **Owner:** Rashid Ishmail · **Status:** Approved (owner, 2026-11-28; build now)
 > Depends on: lesson format (ADR-0004, CLAUDE.md §6), offline service worker (`apps/web/src/sw/`), back-office content review (`docs/specs/back-office-more-content.md`), lesson translations (§2.7 there). Brainstorm: build-plan board, "Mechanical parts: brainstorm" and "Three ways in, one set of Machines topic pages".
 
 ## 1. Purpose
@@ -13,6 +13,7 @@ Lessons teach a robot; they don't stop to explain each part inside it. A learner
 1. Each part or mechanism is **a topic of its own, with its own lessons**. The list of topics is open and keeps growing.
 2. **One library, used everywhere**: each topic is written once and appears in three places (§3).
 3. The tab is called **Machines**; its page heading is **Machine library**.
+4. **Build now**, alongside Junior (owner, 2026-11-28: "Go ahead").
 
 **Assumption challenged: why not explain each part inside the lessons?** The same bushing would be written up in many lessons, drift apart, and be translated many times. A teacher looking for "springs" wouldn't know which phase to open. One topic page, linked from every lesson, is cheaper to write, review and translate, and a fix reaches every lesson at once.
 
@@ -52,8 +53,8 @@ Lessons teach a robot; they don't stop to explain each part inside it. A learner
 
 | ID | Requirement |
 |---|---|
-| FR-1 | A **Machines** tab in the main navigation opens the Machine library at `/machines/`, with topics grouped by family and filters by grade and language. |
-| FR-2 | Each topic has a page at `/machines/<id>/` with these sections in order: how it works, stand-in and real part, try it (a quick test), topic lessons, "Used in", syllabus links. |
+| FR-1 | A **Machines** tab in the main navigation opens the Machine library at `/machines/`, with topics grouped by family. Filters by grade and language come with step 2. |
+| FR-2 | Each topic has a page at `/machines/<id>/` with, in order: its picture and card, "good to know first", safety, stand-ins and the real part, how it works, try it (a quick test), topic lessons, "Used in", related topics, syllabus links. |
 | FR-3 | Each topic has a **card**: one picture and at most 40 words, shown inside lessons. |
 | FR-4 | Topics are content, not code: one folder per topic in `content/machines/` (§6). Editors add a topic without touching code. |
 | FR-5 | A lesson lists the topics it uses in a new front-matter field `machines: [ids]`. The build fails if an id doesn't exist or is withdrawn. |
@@ -83,7 +84,7 @@ Lessons teach a robot; they don't stop to explain each part inside it. A learner
 ```yaml
 id: bushing
 title: Bushing
-family: bearings          # gears | levers | linkages | cams-cranks | pulleys | wheels-bearings | springs-dampers | fasteners | ...
+family: wheels-bearings   # gears | levers | linkages | cams-cranks | pulleys | wheels-bearings | springs-dampers | fasteners
 grades: [4, 5, 6]
 card: A sleeve the axle spins in, so it turns smoothly and the hole doesn't wear.   # ≤ 40 words
 stand_ins:                # free or cheap things that work
@@ -94,14 +95,14 @@ learn_first: []           # topic ids, suggestions only
 related: [thrust-washer, collar]
 syllabus_links: [...]     # as lessons
 safety: { adult_help: false, notes: [...] }
-images: [card.svg]        # no words
+picture_alt: A skewer axle in a straw bushing in a card frame   # picture.svg in the folder, no words
 status: draft             # draft | in_review | published
 ai_generated: true
 reviewed_by: null
 ```
-The body holds `## How it works`, `## Stand-in and real part`, `## Try it`.
+The body holds `## How it works` then `## Try it`; stand-ins and the real part come from the front matter. The picture is `picture.svg` in the topic folder, put inline in the page (no extra request; works offline).
 
-**Lessons** gain one optional field, `machines: [ids]`. The existing `mechanism` field stays for now. A one-off mapping fills `machines` for the 22 current lessons (crank → `crank`, gear → `gear-train`, and so on). Retiring `mechanism` is a later decision.
+**Lessons** gain one optional field, `machines: [ids]`. It is a fact, not words: `translated_from` ignores the line, so tagging a lesson doesn't stale its translations. The existing `mechanism` field stays for now. A one-off mapping fills `machines` for the 22 current lessons (crank → `crank`, gear → `gear-train`, and so on). Retiring `mechanism` is a later decision.
 
 **Pages**:
 - `apps/web/src/pages/machines/index.astro` and `[id].astro`, static, zero JS.
@@ -137,12 +138,13 @@ The body holds `## How it works`, `## Stand-in and real part`, `## Try it`.
 
 ## 9. Work plan
 
-Proposed: after Junior, unless the owner moves it. One PR per step; ⏸ marks a stop for review.
+Owner, 2026-11-28: build now. One PR per step; ⏸ marks a stop for review.
 
-1. **Format and pages:**
-   - topic schema, build checks, `/machines/` and `/machines/<id>/`;
-   - three topics as examples: gear train with an idler, crank, bushing;
-   - e2e and accessibility tests.
+1. *(built 2026-11-28)* **Format and pages:**
+   - topic schema and build checks (`apps/web/src/machines/`): ids, folder names, body sections, picture present and without words, links to topics and lessons, no `learn_first` circles, cards of at most 40 words;
+   - `/machines/` (in the main menu and kept offline like Lessons) and `/machines/<id>/`;
+   - three topics as examples: gear train (with an idler), crank, bushing; `p1-crank-01` and `p1-gear-01` list the topics they use, so "Used in" works already;
+   - unit, e2e (360 px, offline) and accessibility tests; a 60 KB size budget for the library page.
 2. **Inside lessons:**
    - the `machines` field, the "Parts in this robot" strip and cards, offline saving;
    - mapping for the 22 current lessons;
@@ -171,7 +173,6 @@ Proposed: after Junior, unless the owner moves it. One PR per step; ⏸ marks a 
 
 **13. Owner actions**
 - Approve this spec, or ask for changes.
-- Confirm when to build: after Junior (proposed) or earlier.
 - Review the first three example topics after step 1.
 
 ## Version history
@@ -179,3 +180,4 @@ Proposed: after Junior, unless the owner moves it. One PR per step; ⏸ marks a 
 | Version | Date | Change |
 |---|---|---|
 | 0.1 | 2026-11-28 | First draft from the build-plan brainstorm: topics with their own lessons, one library in three places, tab named Machines |
+| 0.2 | 2026-11-28 | Approved; build now. Body is "How it works" and "Try it" (stand-ins from front matter); `picture.svg`; filters move to step 2; step 1 built |

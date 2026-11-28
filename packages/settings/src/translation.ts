@@ -6,9 +6,15 @@
 /** Front matter lines that change when a lesson is reviewed, not when its words change. */
 const REVIEW_LINES = /^(status|reviewed_by|build_tested_by|ai_generated):.*$/gm;
 
+/**
+ * The Machines topics a lesson uses (machines spec FR-5): facts with no words to translate. The
+ * whole line goes, so tagging a lesson leaves its hash exactly as before.
+ */
+const FACT_LINES = /^machines:.*\n/gm;
+
 /** The English lesson text a translation depends on: everything except the review lines. */
 export function translationSource(englishFile: string): string {
-  return englishFile.replace(/\r\n/g, '\n').replace(REVIEW_LINES, '');
+  return englishFile.replace(/\r\n/g, '\n').replace(FACT_LINES, '').replace(REVIEW_LINES, '');
 }
 
 /**

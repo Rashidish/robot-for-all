@@ -13,6 +13,7 @@ const home = localHref('/');
 const links = [
   { base: '/', href: home, label: m.nav_home() },
   { base: '/lessons/', href: localHref('/lessons/'), label: m.nav_lessons() },
+  { base: '/machines/', href: localHref('/machines/'), label: m.nav_machines() },
   { base: '/about/', href: localHref('/about/'), label: m.nav_about() }
 ];
 ---
@@ -65,6 +66,7 @@ const links = [
 
   ul {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-1);
     margin: 0;
     padding: 0;
