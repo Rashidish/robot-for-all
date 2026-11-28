@@ -5,9 +5,13 @@ import type { LessonEntry } from '../lessons/load';
 
 interface Props {
   lessons: LessonEntry[];
+  /** Machines topics (id and title) the lessons can be filtered by (machines spec FR-13). */
+  machines?: { id: string; title: string }[];
 }
 
-const { lessons } = Astro.props;
+const { lessons, machines = [] } = Astro.props;
+const used = new Set(lessons.flatMap((l) => l.data.machines));
+const parts = machines.filter((t) => used.has(t.id));
 const grades = [...new Set(lessons.flatMap((l) => l.data.grades))].sort((a, b) => a - b);
 const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
 ---
@@ -31,6 +35,19 @@ const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
       ))}
     </select>
   </label>
+  {parts.length > 0 && (
+    <label>
+      {m.lessons_filter_machine()}
+      <select name="machine">
+        <option value="">{m.lessons_filter_any()}</option>
+        {parts.map((t) => (
+          <option value={t.id} lang="en">
+            {t.title}
+          </option>
+        ))}
+      </select>
+    </label>
+  )}
   <label>
     {m.lessons_filter_cost()}
     <select name="cost">
@@ -59,7 +76,8 @@ const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
         {
           grades: (card.dataset['grades'] ?? '').split(' ').map(Number),
           mechanism: card.dataset['mechanism'] ?? '',
-          cost: Number(card.dataset['cost'])
+          cost: Number(card.dataset['cost']),
+          machines: (card.dataset['machines'] ?? '').split(' ').filter(Boolean)
         },
         f
       );
@@ -79,6 +97,7 @@ const mechanisms = [...new Set(lessons.map((l) => l.data.mechanism))].sort();
     set('grade', initial.grade);
     set('mechanism', initial.mechanism);
     set('cost', initial.maxCost);
+    set('machine', initial.machine);
     apply(initial);
 
     form.addEventListener('change', () => {

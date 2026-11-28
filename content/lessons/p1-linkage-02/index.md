@@ -4,6 +4,7 @@ title: Waving robot (four-bar linkage)
 phase: 1
 grades: [5, 6]
 mechanism: linkage
+machines: [crank]
 syllabus_links:
   - subject: Coding and Robotics (CAPS, Intermediate Phase)
     topic: Motion - rotational motion changed into a back-and-forth swing; R.6 Build a robot that mimics a human movement

@@ -1,0 +1,130 @@
+---
+// "Parts in this robot" (machines spec FR-6): the Machines topics a lesson uses. Each part opens a
+// short card over the lesson; the cards are part of the lesson page, so they work offline whenever
+// the lesson does (FR-9). Without JavaScript, or where <dialog> isn't supported, each part is a
+// plain link to its topic page.
+import { localHref, m } from '../i18n';
+import { picture, type MachineEntry } from '../machines/load';
+
+interface Props {
+  /** The topics this lesson uses, in the lesson's order (only those visible in this build). */
+  topics: MachineEntry[];
+}
+
+const { topics } = Astro.props;
+---
+
+{topics.length > 0 && (
+  <section class="machines-strip" aria-labelledby="machines-strip-title">
+    <h2 id="machines-strip-title">{m.lesson_machines_title()}</h2>
+    <p class="muted">{m.lesson_machines_hint()}</p>
+    <ul>
+      {topics.map((t) => (
+        <li>
+          <a href={localHref(`/machines/${t.id}/`)} data-machine-card={t.id} lang="en">
+            {t.data.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+    {topics.map((t) => (
+      <dialog id={`machine-card-${t.id}`} aria-labelledby={`machine-card-${t.id}-title`}>
+        <h3 id={`machine-card-${t.id}-title`} lang="en">
+          {t.data.title}
+        </h3>
+        <figure class="picture" role="img" aria-label={t.data.picture_alt}>
+          <Fragment set:html={picture(t.id) ?? ''} />
+        </figure>
+        <p lang="en">{t.data.card}</p>
+        <p>
+          <a href={localHref(`/machines/${t.id}/`)}>
+            {m.machine_card_more({ title: t.data.title })}
+          </a>
+        </p>
+        <form method="dialog">
+          <button class="button" type="submit">
+            {m.machine_card_close()}
+          </button>
+        </form>
+      </dialog>
+    ))}
+  </section>
+)}
+
+<script>
+  // Open the card over the lesson instead of following the link. The browser's <dialog> keeps
+  // focus inside, closes on Escape and returns focus to the part that opened it.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-machine-card]')) {
+    const dialog = document.getElementById(`machine-card-${link.dataset['machineCard'] ?? ''}`);
+    if (!(dialog instanceof HTMLDialogElement) || typeof dialog.showModal !== 'function') continue;
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      dialog.showModal();
+    });
+  }
+</script>
+
+<style>
+  .machines-strip {
+    margin: var(--space-4) 0;
+  }
+
+  .machines-strip h2 {
+    margin-bottom: var(--space-1);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  ul a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--space-4);
+    border: 2px solid var(--color-accent);
+    border-radius: 999px;
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  dialog {
+    width: min(28rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 2rem);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  dialog::backdrop {
+    background: rgb(0 0 0 / 50%);
+  }
+
+  dialog h3 {
+    margin-top: 0;
+  }
+
+  .picture {
+    margin: 0 0 var(--space-3);
+  }
+
+  .picture :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media print {
+    .machines-strip {
+      display: none;
+    }
+  }
+</style>
